@@ -26580,7 +26580,12 @@
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: email,
                     password: losenord,
-                    options: { data: { username: displayUsername } }
+                    options: {
+                        data: { username: displayUsername },
+                        // Bekräftelselänken i mailet leder tillbaka till exakt den
+                        // här sidan (måste finnas bland Redirect URLs i Supabase).
+                        emailRedirectTo: window.location.origin + window.location.pathname
+                    }
                 });
 
                 const kvarstaende = MIN_LADD_TID - (Date.now() - start);
