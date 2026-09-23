@@ -4,7 +4,7 @@
 // Ren logik för Edge Function kor-race: förbereder AI-lag, bygger
 // säsongsschema och kör kval/lopp för en division. Ingen databaskod här
 // (den ligger i supabase/functions/kor-race/index.ts), så att allt kan
-// testas utan server. Kräver att spelmotor/race.js och varld.js är laddade.
+// testas utan server. Kräver att spelmotor/race.js, varld.js och sasong.js är laddade.
 // =====================================================================
 (function (root) {
     'use strict';
@@ -101,9 +101,50 @@
             lagId: r.lagId, lagNamn: r.lagNamn, bil: r.bil, forarId: r.forarId, forarNamn: r.forarNamn,
             startPos: r.startPos, placering: r.placering, poäng: r.poäng, dnf: r.dnf, dnfOrsak: r.dnfOrsak,
             snabbasteVarv: !!r.snabbasteVarv, procent: r.procent, strategi: r.strategi, depaTid: r.depaTid,
-            bransleProcent: r.bransleProcent, bransleStatus: r.bransleStatus
+            bransleVald: r.bransleVald, bransleRek: r.bransleRek, bransleProcent: r.bransleProcent, bransleStatus: r.bransleStatus
         }));
     }
 
-    root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp });
+    // Säsongsskifte. divisioner: [{ id, tier, parent_id }], lagRader: teams-rader
+    // (id, division_id, slot, name, is_ai), tabell: serietabell-rader för
+    // säsongen (team_id, poang, poang_bil1, poang_bil2). Returnerar nya platser
+    // för ALLA lag + historik per division (sluttabell och flyttar).
+    function sasongsskifte(divisioner, lagRader, tabell) {
+        const defs = {};
+        divisioner.forEach(d => { defs[d.id] = { tier: d.tier, parent: d.parent_id || null, children: [] }; });
+        divisioner.forEach(d => { if (d.parent_id && defs[d.parent_id]) defs[d.parent_id].children.push(d.id); });
+        Object.keys(defs).forEach(id => defs[id].children.sort());
+        const poang = new Map(tabell.map(r => [r.team_id, r]));
+        const tabeller = {};
+        Object.keys(defs).forEach(id => {
+            tabeller[id] = lagRader.filter(t => t.division_id === id).sort((a, b) => a.slot - b.slot).map(t => {
+                const p = poang.get(t.id);
+                return { lagId: t.id, namn: t.name, slot: t.slot, arManniska: !t.is_ai,
+                    poäng: p ? p.poang : 0, poängBil1: p ? p.poang_bil1 : 0, poängBil2: p ? p.poang_bil2 : 0 };
+            });
+        });
+        const { flyttar, sorted } = root.URMSasong.beraknaFlyttar(defs, tabeller, 3);
+        const flyttadeUt = new Map(flyttar.map(f => [f.lag.lagId, f]));
+        const placeringar = [];
+        Object.keys(defs).forEach(id => {
+            const kvar = tabeller[id].filter(l => !flyttadeUt.has(l.lagId));
+            const upptagna = new Set(kvar.map(l => l.slot));
+            kvar.forEach(l => placeringar.push({ id: l.lagId, division_id: id, slot: l.slot }));
+            const in_ = flyttar.filter(f => f.till === id).map(f => f.lag);
+            let slot = 0;
+            in_.forEach(l => {
+                while (upptagna.has(slot)) slot++;
+                upptagna.add(slot);
+                placeringar.push({ id: l.lagId, division_id: id, slot: slot });
+            });
+        });
+        const historik = Object.keys(defs).map(id => ({
+            division_id: id,
+            tabell: sorted[id].map((l, i) => ({ placering: i + 1, team_id: l.lagId, namn: l.namn, manniska: l.arManniska, poang: l.poäng, poang_bil1: l.poängBil1, poang_bil2: l.poängBil2 })),
+            flyttar: flyttar.filter(f => f.fran === id).map(f => ({ team_id: f.lag.lagId, namn: f.lag.namn, till: f.till, typ: f.typ }))
+        }));
+        return { placeringar, historik, antalFlyttar: flyttar.length };
+    }
+
+    root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte });
 })(typeof globalThis !== 'undefined' ? globalThis : this);
