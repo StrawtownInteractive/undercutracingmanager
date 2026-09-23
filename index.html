@@ -1753,10 +1753,11 @@
         }
 
         .auth-pass-wrap { position: relative; }
-        .auth-pass-wrap input { padding-right: 42px; }
+        .auth-pass-wrap input { padding-right: 64px; }
         .auth-pass-toggle {
             position: absolute;
             right: 4px;
+            width: auto; /* den globala button-regeln (width: 100%) täckte annars hela fältet */
             top: 50%;
             transform: translateY(-50%);
             min-width: 34px;
