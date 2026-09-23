@@ -1124,13 +1124,157 @@ import { createClient } from "npm:@supabase/supabase-js@2";
     root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte });
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 // =====================================================================
+// UNDERCUT RACING MANAGER – GEMENSAM TRANSFERMARKNAD (serverlogik)
+// ---------------------------------------------------------------------
+// Ren logik för kor-race: AI-lagens försäljningar och bud, avslut av
+// auktioner, fria agenter och ersättare i AI-lag. Ingen databaskod här.
+// Kräver spelmotor/race.js och varld.js. Reglerna följer den tidigare
+// lokala marknaden i b5_1-3.html (skapaAiListning, hojBudAI, losUtAuktion).
+// =====================================================================
+(function (root) {
+    'use strict';
+    const V = root.URMVarld;
+
+    const AUKTION_DAGAR = 7;
+    const ANTI_SNIPE_MS = 3 * 60 * 1000;
+    const MAX_AI_LISTNINGAR = 30;
+    const MIN_FRIA_AGENTER = 10;
+    const AI_BUD_CHANS = 0.25; // per körning (var 5:e minut)
+
+    const minHojning = bud => Math.max(10000, Math.round(bud * 0.02));
+    const utropFor = p => Math.max(20000, Math.round((p.formaga || 10) * 8000));
+    const listNyckel = { forare: 'forare', mekaniker: 'mekanikerLista', ingenjor: 'ingenjorLista' };
+
+    // Personens ögonblicksbild på marknaden (samma fält som skapaMarknadsSnapshot).
+    function marknadsPerson(p, kategori) {
+        return {
+            personId: p.id, kategori: kategori,
+            namn: p.namn, age: p.age, nationalitet: p.nationalitet, style: p.style || null, formaga: p.formaga,
+            popularitet: p.popularitet, rekryDatum: p.rekryDatum, stats: p.stats || null,
+            bilLabel: kategori === 'forare' ? (p.roll === 'reserv' ? 'Reserv' : 'Bil ' + String(p.roll || '').replace('bil', '')) : (p.bil ? 'Bil ' + p.bil : 'Reserv'),
+            foregaendeAgareLag: p.foregaendeAgareLag || null,
+            lon: p.contract ? p.contract.salaryPerSeason : null,
+            kontraktslangd: p.contract ? p.contract.contractYearsRemaining : null,
+            kontrakt: p.contract ? Object.assign({}, p.contract) : null,
+            karriar: kategori === 'forare' && p.karriar ? Object.assign({}, p.karriar) : null,
+            karriarHistorik: kategori === 'forare' && Array.isArray(p.karriarHistorik) ? p.karriarHistorik.slice() : null,
+            personalKarriar: kategori !== 'forare' && p.personalKarriar ? Object.assign({}, p.personalKarriar) : null,
+            personalHistorik: kategori !== 'forare' && Array.isArray(p.personalHistorik) ? p.personalHistorik.slice() : null
+        };
+    }
+
+    // Nya AI-försäljningar. aiLag: [{ id, snapshot }], upptagna: Set med
+    // person-id:n som redan är ute. Returnerar rader att lägga in i marknad.
+    function nyaAiListningar(aiLag, upptagna, antalAktiva, rng, nu) {
+        const ut = [];
+        const saljare = new Set();
+        let forsok = 0;
+        while (antalAktiva + ut.length < MAX_AI_LISTNINGAR && ut.length < 3 && forsok++ < 20 && aiLag.length) {
+            const lag = aiLag[Math.floor(rng() * aiLag.length)];
+            if (saljare.has(lag.id)) continue;
+            const s = lag.snapshot || {};
+            let kategori, p;
+            if (rng() < 0.35) {
+                kategori = 'forare';
+                const k = (s.forare || []).filter(f => f.roll !== 'reserv');
+                p = k[Math.floor(rng() * k.length)];
+            } else {
+                kategori = rng() < 0.5 ? 'mekaniker' : 'ingenjor';
+                const l = s[listNyckel[kategori]] || [];
+                p = l[Math.floor(rng() * l.length)];
+            }
+            if (!p || !p.namn || upptagna.has(p.id)) continue;
+            upptagna.add(p.id); saljare.add(lag.id);
+            const utrop = utropFor(p);
+            ut.push({
+                kategori, person_id: p.id, person: marknadsPerson(p, kategori), saljare_typ: 'lag',
+                saljare_team_id: lag.id, utropspris: utrop, hogsta_bud: utrop,
+                deadline: new Date(nu + AUKTION_DAGAR * 864e5).toISOString()
+            });
+        }
+        return ut;
+    }
+
+    // Ett AI-lag höjer budet – bara på auktioner där ingen människa har budat
+    // (samma regel som tidigare: AI:n tävlar aldrig mot en mänsklig budgivare).
+    function aiBud(auktion, aiLagIds, rng, nu) {
+        if (auktion.manskliga_bud > 0) return null;
+        if (Date.parse(auktion.deadline) - nu < ANTI_SNIPE_MS) return null;
+        if (rng() >= AI_BUD_CHANS) return null;
+        const kandidater = aiLagIds.filter(id => id !== auktion.saljare_team_id && id !== auktion.hogsta_budare);
+        if (!kandidater.length) return null;
+        const hojning = Math.max(minHojning(auktion.hogsta_bud), Math.round(auktion.hogsta_bud * (0.05 + rng() * 0.15)));
+        return { hogsta_bud: auktion.hogsta_bud + hojning, hogsta_budare: kandidater[Math.floor(rng() * kandidater.length)] };
+    }
+
+    // Tar bort en person ur en ögonblicksbild. ersatt=true (AI-lag) ger en ny
+    // person på samma plats, precis som ersattAiPerson() gjorde lokalt.
+    function taBortPerson(snapshot, kategori, personId, ersatt, tier) {
+        const s = JSON.parse(JSON.stringify(snapshot || {}));
+        const nyckel = listNyckel[kategori];
+        if (!nyckel) {
+            if (kategori === 'principal' && s.teamPrincipal && s.teamPrincipal.id === personId) s.teamPrincipal = null;
+            return s;
+        }
+        const lista = Array.isArray(s[nyckel]) ? s[nyckel] : [];
+        const idx = lista.findIndex(x => x.id === personId);
+        if (idx < 0) return s;
+        const gammal = lista[idx];
+        lista.splice(idx, 1);
+        if (ersatt) lista.push(ersattare(kategori, gammal.roll, gammal.bil, tier));
+        s[nyckel] = lista;
+        return s;
+    }
+
+    function ersattare(kategori, roll, bil, tier) {
+        if (kategori === 'forare') return V.skapaForarPerson(roll || 'reserv', tier, false, new Set());
+        const ny = V.skapaAiPersonalLista(1, tier, kategori, new Set())[0];
+        ny.bil = bil || 1;
+        return ny;
+    }
+
+    // Fyller vakanser (friköpta personer) i ett AI-lags ögonblicksbild.
+    function fyllVakanser(snapshot, tier) {
+        const s = JSON.parse(JSON.stringify(snapshot));
+        (s.vakanser || []).forEach(v => {
+            const nyckel = listNyckel[v.kategori];
+            if (!nyckel) return;
+            if (!Array.isArray(s[nyckel])) s[nyckel] = [];
+            s[nyckel].push(ersattare(v.kategori, v.roll, v.bil, tier));
+        });
+        delete s.vakanser;
+        return s;
+    }
+
+    function skapaFriAgent(kategori, sasong) {
+        const p = V.slumpaPerson();
+        const keys = kategori === 'forare' ? V.DRIVARE_STAT_KEYS : (kategori === 'ingenjor' ? V.ING_STAT_KEYS : V.MEK_STAT_KEYS);
+        const stats = {};
+        keys.forEach(k => { stats[k] = 10; });
+        const formaga = V.beraknaFormaga(stats, keys);
+        return {
+            id: V.nyttPersonId(), kategori, namn: p.namn, age: 20, nationalitet: p.nationalitet,
+            style: kategori === 'forare' ? V.slumpaStil() : null, stats, formaga,
+            popularitet: kategori === 'forare' ? V.skapaPopularitet(formaga) : null,
+            rekryDatum: new Date().toISOString(), friAgentSedanSasong: sasong
+        };
+    }
+
+    root.URMMarknad = Object.freeze({
+        AUKTION_DAGAR, MAX_AI_LISTNINGAR, MIN_FRIA_AGENTER,
+        marknadsPerson, nyaAiListningar, aiBud, taBortPerson, fyllVakanser, skapaFriAgent
+    });
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+// =====================================================================
 // Edge Function kor-race – serverns racemotor.
 // Anropas var 5:e minut av pg_cron (supabase/fas2/cron_kor_race.sql) med
 // headern x-cron-secret. Varje körning:
 //   1. ger AI-lag som saknar ögonblicksbild ett helt genererat lag,
 //   2. kör kvalet för alla divisioner när kval_at har passerats,
 //   3. kör loppet för alla divisioner när lopp_at har passerats,
-//   4. byter säsong (upp-/nedflyttning) när omgång 10 är klar överallt.
+//   4. byter säsong (upp-/nedflyttning) när omgång 10 är klar överallt,
+//   5. sköter den gemensamma transfermarknaden (AI-försäljningar och bud,
+//      avslut av auktioner, fria agenter, ersättare i AI-lag).
 // Allt är idempotent: ett kval/lopp som redan finns körs aldrig om.
 // Själva logiken ligger i spelmotor/ (samma kod som i webbläsaren).
 //
@@ -1140,6 +1284,10 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 // deno-lint-ignore no-explicit-any
 const S = (globalThis as any).URMServer;
+// deno-lint-ignore no-explicit-any
+const M = (globalThis as any).URMMarknad;
+// deno-lint-ignore no-explicit-any
+const V = (globalThis as any).URMVarld;
 // deno-lint-ignore no-explicit-any
 type Rad = Record<string, any>;
 
@@ -1196,6 +1344,13 @@ Deno.serve(async (req) => {
       if (r) { r.name = u.name; r.snapshot = u.snapshot; }
     }
     if (nya.length) logg.push(`${div.id}: ${nya.length} AI-lag genererade`);
+  }
+
+  // --- 1b. Transfermarknaden ---------------------------------------------
+  try {
+    await korMarknad(db, divisioner as Rad[], lag as Rad[], logg, nu);
+  } catch (e) {
+    logg.push("marknad: " + (e instanceof Error ? e.message : String(e)));
   }
 
   // --- 2. Vilka race ska köras? ------------------------------------------
@@ -1276,3 +1431,94 @@ Deno.serve(async (req) => {
   }
   return Response.json({ ok: true, sasong, logg });
 });
+
+// ---------------------------------------------------------------------------
+// Transfermarknaden (Fas 3a)
+// ---------------------------------------------------------------------------
+async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[], lag: Rad[], logg: string[], nu: number) {
+  const tierFor = new Map(divisioner.map((d) => [d.id, d.tier]));
+  const lagPerId = new Map(lag.map((t) => [t.id, t]));
+  const rng = S.rngFor("marknad", Math.floor(nu / 60000));
+  V.sattIdFunktion(() => crypto.randomUUID());
+  try {
+    // Vakanser efter friköp i AI-lag fylls med nya personer.
+    for (const t of lag) {
+      if (t.is_ai && t.snapshot && Array.isArray(t.snapshot.vakanser) && t.snapshot.vakanser.length) {
+        const ny = V.medSlump(rng, () => M.fyllVakanser(t.snapshot, tierFor.get(t.division_id) || 4));
+        await db.from("teams").update({ snapshot: ny }).eq("id", t.id);
+        t.snapshot = ny;
+      }
+    }
+
+    // Avsluta auktioner vars tid har gått ut.
+    const { data: utgangna } = await db.from("marknad").select("*").eq("status", "aktiv").lte("deadline", new Date(nu).toISOString());
+    for (const a of (utgangna as Rad[]) || []) {
+      const sald = !!a.hogsta_budare;
+      const { data: tagen } = await db.from("marknad")
+        .update({ status: sald ? "sald" : "osald", slutpris: sald ? a.hogsta_bud : null, avslutad: new Date(nu).toISOString() })
+        .eq("id", a.id).eq("status", "aktiv").select("id");
+      if (!tagen || !(tagen as Rad[]).length) continue; // en annan körning hann före
+      const saljare = a.saljare_team_id ? lagPerId.get(a.saljare_team_id) : null;
+      const kopare = sald ? lagPerId.get(a.hogsta_budare) : null;
+      const saljarNamn = a.saljare_typ === "lag" ? (saljare ? saljare.name : "Okänt lag") : (a.saljare_typ === "fri" ? "Fri agent" : "Sparkad personal");
+      if (!sald) {
+        if (a.saljare_typ === "fri") await db.from("fria_agenter").insert({ kategori: a.kategori, person: Object.assign({}, a.person, { id: a.person_id }) });
+        if (a.saljare_typ === "lag" && saljare && !saljare.is_ai) {
+          await db.from("leveranser").insert({ team_id: saljare.id, typ: "osald", auktion_id: a.id, kategori: a.kategori, person_id: a.person_id, motpart: a.person.namn });
+        }
+        continue;
+      }
+      if (kopare && !kopare.is_ai) {
+        await db.from("leveranser").insert({ team_id: kopare.id, typ: "kopt", auktion_id: a.id, kategori: a.kategori, person_id: a.person_id, person: a.person, belopp: a.hogsta_bud, motpart: saljarNamn });
+      }
+      if (a.saljare_typ === "lag" && saljare) {
+        if (!saljare.is_ai) {
+          await db.from("leveranser").insert({ team_id: saljare.id, typ: "salt", auktion_id: a.id, kategori: a.kategori, person_id: a.person_id, belopp: a.hogsta_bud, motpart: kopare ? kopare.name : "Okänt lag" });
+        }
+        if (saljare.snapshot) {
+          const ny = V.medSlump(rng, () => M.taBortPerson(saljare.snapshot, a.kategori, a.person_id, saljare.is_ai, tierFor.get(saljare.division_id) || 4));
+          await db.from("teams").update({ snapshot: ny }).eq("id", saljare.id);
+          saljare.snapshot = ny;
+        }
+      }
+      logg.push(`marknad: ${a.person.namn} såld till ${kopare ? kopare.name : "?"} för ${a.hogsta_bud}`);
+    }
+
+    // Aktiva auktioner: AI-bud och nya AI-försäljningar.
+    const { data: aktiva } = await db.from("marknad").select("id, person_id, saljare_team_id, hogsta_bud, hogsta_budare, antal_bud, manskliga_bud, deadline").eq("status", "aktiv");
+    const aiLag = lag.filter((t) => t.is_ai && t.snapshot);
+    const aiIds = aiLag.map((t) => t.id);
+    for (const a of (aktiva as Rad[]) || []) {
+      const bud = M.aiBud(a, aiIds, rng, nu);
+      if (!bud) continue;
+      await db.from("marknad").update({ hogsta_bud: bud.hogsta_bud, hogsta_budare: bud.hogsta_budare, antal_bud: a.antal_bud + 1 })
+        .eq("id", a.id).eq("status", "aktiv").eq("hogsta_bud", a.hogsta_bud).eq("manskliga_bud", 0);
+    }
+    const aiSaljare = new Set(aiIds);
+    const antalAiAktiva = ((aktiva as Rad[]) || []).filter((a) => aiSaljare.has(a.saljare_team_id)).length;
+    const upptagna = new Set(((aktiva as Rad[]) || []).map((a) => a.person_id));
+    const nya = V.medSlump(rng, () => M.nyaAiListningar(aiLag, upptagna, antalAiAktiva, rng, nu));
+    if (nya.length) {
+      const { error } = await db.from("marknad").insert(nya);
+      if (error) logg.push("marknad, nya listningar: " + error.message); else logg.push(`marknad: ${nya.length} nya AI-försäljningar`);
+    }
+
+    // Fria agenter: alltid minst MIN_FRIA_AGENTER lediga.
+    const { data: fria } = await db.from("fria_agenter").select("id").is("anstalld_av", null);
+    const saknas = M.MIN_FRIA_AGENTER - (((fria as Rad[]) || []).length);
+    if (saknas > 0) {
+      const { data: ss } = await db.from("season_state").select("season_number").maybeSingle();
+      const sasong = (ss && ss.season_number) || 1;
+      const roller = ["forare", "mekaniker", "ingenjor"];
+      const rader = V.medSlump(rng, () => Array.from({ length: saknas }, () => {
+        const kategori = roller[Math.floor(rng() * roller.length)];
+        const person = M.skapaFriAgent(kategori, sasong);
+        return { id: person.id, kategori, person, sasong };
+      }));
+      const { error } = await db.from("fria_agenter").insert(rader);
+      if (error) logg.push("fria agenter: " + error.message); else logg.push(`marknad: ${saknas} nya fria agenter`);
+    }
+  } finally {
+    V.sattIdFunktion(null);
+  }
+}

@@ -6135,26 +6135,26 @@
                                 let gammalRoll = p.roll;
                                 reserv.roll = gammalRoll;
                                 lista.splice(i, 1);
-                                spelarData.marknad.push(skapaMarknadsSnapshot(p, 'forare', { typ: 'fri' }));
+                                laggPaMarknad(skapaMarknadsSnapshot(p, 'forare', { typ: 'fri' }));
                                 notiser.push(p.namn + 's kontrakt har gått ut – han lämnar laget som Free Agent och läggs ut på transferlistan. Reservföraren ' + reserv.namn + ' flyttades upp till ' + (gammalRoll === 'bil1' ? 'Bil 1' : 'Bil 2') + '.');
                             } else {
                                 // Ingen reservförare tillgänglig – stallet rekryterar en ny rookie till platsen
                                 // så att bilen aldrig blir permanent förarlös (samma sak som ett AI-lag alltid gör).
                                 let gammalRoll = p.roll;
                                 lista.splice(i, 1);
-                                spelarData.marknad.push(skapaMarknadsSnapshot(p, 'forare', { typ: 'fri' }));
+                                laggPaMarknad(skapaMarknadsSnapshot(p, 'forare', { typ: 'fri' }));
                                 let ersattare = skapaForarPerson(gammalRoll, tier, false, signaturerILiga(gid));
                                 lista.push(ersattare);
                                 notiser.push(p.namn + 's kontrakt har gått ut – han lämnar laget som Free Agent och läggs ut på transferlistan. Ingen reservförare fanns tillgänglig, så rookien ' + ersattare.namn + ' rekryterades till ' + (gammalRoll === 'bil1' ? 'Bil 1' : 'Bil 2') + '.');
                             }
                         } else {
                             lista.splice(i, 1);
-                            spelarData.marknad.push(skapaMarknadsSnapshot(p, 'forare', { typ: 'fri' }));
+                            laggPaMarknad(skapaMarknadsSnapshot(p, 'forare', { typ: 'fri' }));
                             notiser.push('Reservföraren ' + p.namn + 's kontrakt har gått ut. Han lämnade laget som Free Agent och läggs ut på transferlistan.');
                         }
                     } else {
                         lista.splice(i, 1);
-                        spelarData.marknad.push(skapaMarknadsSnapshot(p, roll, { typ: 'fri' }));
+                        laggPaMarknad(skapaMarknadsSnapshot(p, roll, { typ: 'fri' }));
                         notiser.push(p.namn + 's kontrakt har gått ut och personen lämnade laget som Free Agent och läggs ut på transferlistan.');
                     }
                 }
@@ -7729,6 +7729,7 @@
                     }
                     tillampaOnlineLage(tab.data || [], sch.data && sch.data.schema);
                     onlineSenasteSynk = Date.now();
+                    synkaOnlineMarknad();
                     skickaOrderTillServer(spelarData.raceNr);
                     sparaOchUppdatera();
                 } catch (e) {
@@ -7737,6 +7738,167 @@
                 }
             })();
             try { await onlineSynk; } finally { onlineSynk = null; }
+        }
+
+        // ---------------------------------------------------------------------
+        // ONLINEMARKNADEN (Fas 3a): auktioner, fria agenter och friköp är
+        // gemensamma för alla managers (tabellerna marknad, fria_agenter och
+        // leveranser i Supabase). Servern (kor-race) avslutar auktionerna och
+        // skickar köp/försäljningar som leveranser, som klienten tillämpar på
+        // sin egen ekonomi och trupp här.
+        // ---------------------------------------------------------------------
+        let onlineMarknadSenast = 0, onlineMarknadSynk = null;
+
+        function onlineLagInfo(teamId) {
+            let f = teamId ? hittaLagMedId(teamId) : null;
+            return f ? { groupId: f.groupId, lagNamn: f.lag.namn, stallNr: f.lag.stallNr } : null;
+        }
+
+        // Gör om en marknadsrad från servern till samma format som den lokala
+        // marknaden använder (så att all befintlig UI fungerar oförändrad).
+        function mappaOnlineAuktion(r, minaBud) {
+            let egen = r.saljare_team_id === onlineData.lagId;
+            let saljInfo = onlineLagInfo(r.saljare_team_id);
+            let saljare = r.saljare_typ !== 'lag' ? { typ: r.saljare_typ }
+                : (egen ? { typ: 'spelare' } : Object.assign({ typ: 'ai' }, saljInfo || { groupId: null, lagNamn: tt('Okänt lag', 'Unknown team') }));
+            let budInfo = r.hogsta_budare && r.hogsta_budare !== onlineData.lagId ? onlineLagInfo(r.hogsta_budare) : null;
+            let a = Object.assign({}, r.person || {}, {
+                id: r.id, online: true, kategori: r.kategori, personId: r.person_id, saljare: saljare,
+                utropspris: r.utropspris, hogstaBud: r.hogsta_bud,
+                hogstaBudare: !r.hogsta_budare ? null : (r.hogsta_budare === onlineData.lagId ? 'Du' : (budInfo ? budInfo.lagNamn : tt('Annat lag', 'Other team'))),
+                hogstaBudareGroupId: budInfo ? budInfo.groupId : null,
+                hogstaBudareLagNamn: budInfo ? budInfo.lagNamn : null,
+                antalBud: r.antal_bud, dinaBud: minaBud.has(r.id) ? minaBud.get(r.id) : null,
+                skapad: r.skapad, deadline: r.deadline
+            });
+            if (!a.avatarTraits) {
+                let tmp = { id: r.person_id, age: a.age };
+                AvatarSystem.createAvatar(tmp, r.kategori, { age: a.age, forcedGender: 'maskulin' });
+                ['avatarId', 'avatarSeed', 'avatarTraits', 'avatarSignature', 'avatarVersion'].forEach(k => { a[k] = tmp[k]; });
+            }
+            return a;
+        }
+
+        function mappaOnlineFriAgent(r) {
+            let p = r.person || {};
+            let a = Object.assign({}, p, { id: r.id, online: true, personId: p.id, kategori: r.kategori, friAgentSedanSasong: r.sasong });
+            if (!a.avatarTraits) {
+                let tmp = { id: p.id, age: p.age };
+                AvatarSystem.createAvatar(tmp, r.kategori, { age: p.age, forcedGender: 'maskulin' });
+                ['avatarId', 'avatarSeed', 'avatarTraits', 'avatarSignature', 'avatarVersion'].forEach(k => { a[k] = tmp[k]; });
+            }
+            return a;
+        }
+
+        async function synkaOnlineMarknad() {
+            if (!arOnline()) return;
+            if (onlineMarknadSynk) return onlineMarknadSynk;
+            onlineMarknadSenast = Date.now();
+            onlineMarknadSynk = (async () => {
+                const sb = window.supabaseClient;
+                try {
+                    const [akt, bud, fria, lev] = await Promise.all([
+                        sb.from('marknad').select('*').eq('status', 'aktiv').order('deadline'),
+                        sb.from('marknad_bud').select('auktion_id, belopp'),
+                        sb.from('fria_agenter').select('id, kategori, person, sasong').is('anstalld_av', null),
+                        sb.from('leveranser').select('*').is('kvitterad', null).order('id')
+                    ]);
+                    [akt, bud, fria, lev].forEach(x => { if (x.error) throw x.error; });
+                    let minaBud = new Map((bud.data || []).map(b => [b.auktion_id, b.belopp]));
+                    spelarData.marknad = (akt.data || []).map(r => mappaOnlineAuktion(r, minaBud));
+                    spelarData.friaAgenter = (fria.data || []).map(mappaOnlineFriAgent);
+                    let nya = tillampaLeveranser(lev.data || []);
+                    sparaOchUppdatera();
+                    if (nya.length) {
+                        sparaNu(true);
+                        const k = await sb.rpc('leveranser_kvittera', { p_ids: nya });
+                        if (k.error) console.error('Kunde inte kvittera leveranser:', k.error);
+                    }
+                } catch (e) { console.error('Kunde inte synka transfermarknaden:', e); }
+            })();
+            try { await onlineMarknadSynk; } finally { onlineMarknadSynk = null; }
+        }
+
+        // Tillämpar köp, försäljningar m.m. från servern. Varje leverans
+        // tillämpas bara en gång (spelarData.onlineLeveranser), även om
+        // kvitteringen skulle misslyckas.
+        function tillampaLeveranser(rader) {
+            if (!spelarData.onlineLeveranser) spelarData.onlineLeveranser = [];
+            let redan = new Set(spelarData.onlineLeveranser);
+            let spelarLag = hamtaSpelarLag();
+            let tillampade = [];
+            rader.forEach(l => {
+                tillampade.push(l.id);
+                if (redan.has(l.id) || !spelarLag) return;
+                redan.add(l.id);
+                spelarData.onlineLeveranser.push(l.id);
+                let namn = (l.person && l.person.namn) || l.motpart || '';
+                if (l.typ === 'kopt') {
+                    let a = Object.assign({}, l.person || {}, { kategori: l.kategori, personId: l.person_id, hogstaBud: l.belopp, antalBud: 0 });
+                    spelarData.budget -= l.belopp;
+                    spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + l.belopp;
+                    a.foregaendeAgareLag = null;
+                    laggTillSpelarPerson(a);
+                    let ny = hittaPerson(spelarLag, l.kategori, l.person_id);
+                    if (ny && !ny.avatarTraits) AvatarSystem.createAvatar(ny, l.kategori, { age: ny.age, forcedGender: 'maskulin' });
+                    loggaTransaktion(tt('Köpte {rollText} {namn} från {lagNamn}', 'Bought {rollText} {namn} from {lagNamn}').replaceAll('{rollText}', rollText(l.kategori)).replaceAll('{namn}', namn).replaceAll('{lagNamn}', l.motpart || ''), -l.belopp);
+                    laggTillNyhet(tt('Du vann budgivningen om {namn} för {belopp}!', 'You won the bidding for {namn} for {belopp}!').replaceAll('{namn}', namn).replaceAll('{belopp}', formatBelopp(l.belopp)));
+                    laggTillSystemMeddelande(
+                        tt('Vunnen budgivning: {namn}', 'Won bid: {namn}').replaceAll('{namn}', namn),
+                        tt('Grattis! Du vann budgivningen om {rollText} {namn} för {belopp}. {namn2} är nu en del av ditt lag.', 'Congratulations! You won the bidding for {rollText} {namn} for {belopp}. {namn2} is now part of your team.').replaceAll('{rollText}', rollText(l.kategori)).replaceAll('{namn}', namn).replaceAll('{belopp}', formatBelopp(l.belopp)).replaceAll('{namn2}', namn),
+                        'auktion_vunnen'
+                    );
+                    skickaEpostNotis('auktion_vunnen', { namn: namn, summa: l.belopp, roll: l.kategori });
+                    registreraTransferHistorik(Object.assign({}, a, { namn: namn }), l.motpart || '', false, spelarLag.namn, true, null, { groupId: spelarData.serieId, lagNamn: spelarLag.namn });
+                } else if (l.typ === 'salt' || l.typ === 'frikopt') {
+                    let person = hittaPerson(spelarLag, l.kategori, l.person_id);
+                    let personNamn = person ? person.namn : namn;
+                    let netto = person ? tillampaForegaendeKlubbIntakt(person, null, l.belopp, l.kategori) : l.belopp;
+                    if (person) taBortSpelarPerson(l.kategori, l.person_id);
+                    spelarData.budget += netto;
+                    spelarData.veckoForsaljningsintakt = (spelarData.veckoForsaljningsintakt || 0) + netto;
+                    if (l.typ === 'salt') {
+                        loggaTransaktion(tt('Sålde {rollText} {namn} till {hogstaBudare}', 'Sold {rollText} {namn} to {hogstaBudare}').replaceAll('{rollText}', rollText(l.kategori)).replaceAll('{namn}', personNamn).replaceAll('{hogstaBudare}', l.motpart || ''), netto);
+                        laggTillNyhet(tt('{namn} såldes till {hogstaBudare} för {belopp}!', '{namn} was sold to {hogstaBudare} for {belopp}!').replaceAll('{namn}', personNamn).replaceAll('{hogstaBudare}', l.motpart || '').replaceAll('{belopp}', formatBelopp(l.belopp)));
+                    } else {
+                        loggaTransaktion(tt('Friköp av {namn} ({lagNamn})', 'Release clause for {namn} ({lagNamn})').replaceAll('{namn}', personNamn).replaceAll('{lagNamn}', l.motpart || ''), netto);
+                        laggTillNyhet(tt('{lagNamn} aktiverade friköpsklausulen för {namn} och betalade {belopp}.', '{lagNamn} activated the release clause for {namn} and paid {belopp}.').replaceAll('{lagNamn}', l.motpart || '').replaceAll('{namn}', personNamn).replaceAll('{belopp}', formatBelopp(l.belopp)));
+                    }
+                    registreraTransferHistorik({ namn: personNamn, kategori: l.kategori, bilLabel: null, formaga: person ? person.formaga : null, hogstaBud: l.belopp, antalBud: 0, personId: l.person_id }, spelarLag.namn, true, l.motpart || '', false, { groupId: spelarData.serieId, lagNamn: spelarLag.namn }, null);
+                } else if (l.typ === 'osald') {
+                    loggaHandelse(tt('Auktionen för {namn} avslutades utan bud. {namn2} stannar i laget.', 'The auction for {namn} ended without bids. {namn2} stays with the team.').replaceAll('{namn}', namn).replaceAll('{namn2}', namn));
+                } else if (l.typ === 'overbjuden') {
+                    laggTillNyhet(tt('Du blev överbjuden på {namn}: nytt högsta bud {belopp}.', 'You were outbid on {namn}: new highest bid {belopp}.').replaceAll('{namn}', l.motpart || namn).replaceAll('{belopp}', formatBelopp(l.belopp)));
+                }
+            });
+            if (spelarData.onlineLeveranser.length > 500) spelarData.onlineLeveranser = spelarData.onlineLeveranser.slice(-500);
+            return tillampade;
+        }
+
+        // En egen person till servermarknaden (försäljning eller sparkad/fri).
+        function personForServer(auktion) {
+            let p = Object.assign({}, auktion);
+            ['id', 'saljare', 'utropspris', 'hogstaBud', 'hogstaBudare', 'antalBud', 'dinaBud', 'skapad', 'deadline', 'online'].forEach(k => delete p[k]);
+            return p;
+        }
+        async function onlineLaggUt(auktion) {
+            try {
+                const { error } = await window.supabaseClient.rpc('marknad_lagg_ut', {
+                    p_kategori: auktion.kategori, p_person: personForServer(auktion),
+                    p_utropspris: auktion.utropspris, p_typ: auktion.saljare && auktion.saljare.typ !== 'spelare' ? auktion.saljare.typ : 'lag'
+                });
+                if (error) throw error;
+                return true;
+            } catch (e) {
+                console.error('Kunde inte lägga ut på marknaden:', e);
+                alert(tt('Kunde inte lägga ut på marknaden: ', 'Could not list on the market: ') + (e.message || e));
+                return false;
+            } finally { synkaOnlineMarknad(); }
+        }
+        // Används där spelet lägger ut en egen person (sparkad, utgånget kontrakt).
+        function laggPaMarknad(auktion) {
+            if (arOnline()) { onlineLaggUt(auktion); return; }
+            spelarData.marknad.push(auktion);
         }
 
         // Skickar det egna lagets order för en omgång till servern.
@@ -15797,6 +15959,16 @@
                 skapad: new Date().toISOString(),
                 deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
             };
+            if (arOnline()) {
+                stangUtropsprisPanel();
+                onlineLaggUt(auktion).then(ok => {
+                    if (!ok) return;
+                    loggaHandelse(tt('Du lade ut {namn} ({rollText}) till försäljning.', 'You listed {namn} ({rollText}) for sale.').replaceAll('{namn}', p.namn).replaceAll('{rollText}', rollText(roll)));
+                    sparaOchUppdatera();
+                    bytFlik('marknad');
+                });
+                return;
+            }
             spelarData.marknad.push(auktion);
             loggaHandelse(tt('Du lade ut {namn} ({rollText}) till försäljning. Auktionen avslutas {eraDatum}.', 'You listed {namn} ({rollText}) for sale. The auction ends {eraDatum}.').replaceAll('{namn}', p.namn).replaceAll('{rollText}', rollText(roll)).replaceAll('{eraDatum}', formateraDatum(auktion.deadline)));
             stangUtropsprisPanel();
@@ -15813,6 +15985,14 @@
             if (!a || a.saljare.typ !== 'spelare') return;
             if (a.hogstaBudare) { alert(tt("Auktionen har redan fått bud och kan inte avbrytas.", "The auction has already received bids and cannot be cancelled.")); return; }
             if (!confirm(tt('Vill du ta bort {namn} från marknaden?', 'Do you want to remove {namn} from the market?').replaceAll('{namn}', a.namn))) return;
+            if (a.online) {
+                window.supabaseClient.rpc('marknad_avbryt', { p_id: auktionId }).then(({ data, error }) => {
+                    if (error || !data) { alert(tt('Auktionen kunde inte avbrytas (den kan ha fått bud).', 'The auction could not be cancelled (it may have received bids).')); }
+                    else loggaHandelse(tt('Du tog bort {namn} från marknaden.', 'You removed {namn} from the market.').replaceAll('{namn}', a.namn));
+                    synkaOnlineMarknad();
+                });
+                return;
+            }
             spelarData.marknad = spelarData.marknad.filter(x => x.id !== auktionId);
             loggaHandelse(tt('Du tog bort {namn} från marknaden.', 'You removed {namn} from the market.').replaceAll('{namn}', a.namn));
             sparaOchUppdatera();
@@ -15882,7 +16062,7 @@
             // spelet (se losUtAuktion) – till skillnad från en förare/personal vars
             // kontrakt bara löpt ut, som istället hamnar bland Fria agenter.
             if (sparkad) {
-                spelarData.marknad.push(skapaMarknadsSnapshot(sparkad, roll, { typ: 'sparkad' }));
+                laggPaMarknad(skapaMarknadsSnapshot(sparkad, roll, { typ: 'sparkad' }));
             }
             lsPersonKontext = null;
             subflikar.lagsida = subflikar._lagsidaForegaende;
@@ -16020,6 +16200,16 @@
             if (a.kategori === 'mekaniker' && ickeExtraAntal(spelarLag.mekanikerLista) >= 10) { budSpararFel(tt("Du har nått maximal truppstorlek för mekaniker (10/10).", "You have reached the maximum roster size for mechanics (10/10).")); return; }
             if (a.kategori === 'ingenjor' && ickeExtraAntal(spelarLag.ingenjorLista) >= 10) { budSpararFel(tt("Du har nått maximal truppstorlek för ingenjörer (10/10).", "You have reached the maximum roster size for engineers (10/10).")); return; }
             if (new Date(a.deadline) - new Date() <= 0) { budSpararFel(tt("Auktionen har redan avslutats.", "The auction has already ended.")); return; }
+            if (a.online) {
+                // Onlinemarknaden: budet läggs på servern (som kontrollerar minsta höjning och tid).
+                window.supabaseClient.rpc('marknad_bud', { p_id: a.id, p_belopp: bud }).then(({ error }) => {
+                    if (error) { budSpararFel(error.message); return; }
+                    loggaHandelse(tt('Du la ett bud på {namn}: {belopp}.', 'You placed a bid on {namn}: {belopp}.').replaceAll('{namn}', a.namn).replaceAll('{belopp}', formatBelopp(bud)));
+                    stangBudPanel();
+                    synkaOnlineMarknad();
+                });
+                return;
+            }
             a.hogstaBud = bud;
             a.hogstaBudare = "Du";
             a.hogstaBudareGroupId = null;
@@ -16268,39 +16458,56 @@
             // Föregående klubb-intäkt (5% sell-on) - se
             // tillampaForegaendeKlubbIntakt(). Skriver även om p.foregaendeAgareLag
             // till lag.namn (den klubb hen just köptes FRÅN), inför snap nedan.
-            tillampaForegaendeKlubbIntakt(p, lag.namn, summa, roll);
+            const slutfor = (online) => {
+                tillampaForegaendeKlubbIntakt(p, lag.namn, summa, roll);
 
-            // Kontraktet (hela, inklusive lon/langd/bonusar/friköpsklausul) samt
-            // karriaren/karriarhistoriken foljer med och arvs av kopande lag - se
-            // laggTillSpelarPerson() - precis som vid ett vunnet marknadsbud
-            // (skapaMarknadsSnapshot()).
-            let snap = {
-                kategori: roll, personId: p.id, namn: p.namn, age: p.age, nationalitet: p.nationalitet, style: p.style || null,
-                formaga: p.formaga, popularitet: p.popularitet, rekryDatum: p.rekryDatum,
-                avatarId: p.avatarId, avatarSeed: p.avatarSeed, avatarTraits: p.avatarTraits, avatarSignature: p.avatarSignature, avatarVersion: p.avatarVersion,
-                kontrakt: p.contract ? Object.assign({}, p.contract) : null,
-                karriar: (roll === 'forare' && p.karriar) ? Object.assign(tomKarriar(), p.karriar) : null,
-                karriarHistorik: (roll === 'forare' && Array.isArray(p.karriarHistorik)) ? p.karriarHistorik.slice() : null,
-                personalKarriar: (roll !== 'forare' && p.personalKarriar) ? Object.assign(tomPersonalKarriar(), p.personalKarriar) : null,
-                personalHistorik: (roll !== 'forare' && Array.isArray(p.personalHistorik)) ? p.personalHistorik.slice() : null,
-                foregaendeAgareLag: p.foregaendeAgareLag || null
+                // Kontraktet (hela, inklusive lon/langd/bonusar/friköpsklausul) samt
+                // karriaren/karriarhistoriken foljer med och arvs av kopande lag - se
+                // laggTillSpelarPerson() - precis som vid ett vunnet marknadsbud
+                // (skapaMarknadsSnapshot()).
+                let snap = {
+                    kategori: roll, personId: p.id, namn: p.namn, age: p.age, nationalitet: p.nationalitet, style: p.style || null,
+                    formaga: p.formaga, popularitet: p.popularitet, rekryDatum: p.rekryDatum,
+                    avatarId: p.avatarId, avatarSeed: p.avatarSeed, avatarTraits: p.avatarTraits, avatarSignature: p.avatarSignature, avatarVersion: p.avatarVersion,
+                    kontrakt: p.contract ? Object.assign({}, p.contract) : null,
+                    karriar: (roll === 'forare' && p.karriar) ? Object.assign(tomKarriar(), p.karriar) : null,
+                    karriarHistorik: (roll === 'forare' && Array.isArray(p.karriarHistorik)) ? p.karriarHistorik.slice() : null,
+                    personalKarriar: (roll !== 'forare' && p.personalKarriar) ? Object.assign(tomPersonalKarriar(), p.personalKarriar) : null,
+                    personalHistorik: (roll !== 'forare' && Array.isArray(p.personalHistorik)) ? p.personalHistorik.slice() : null,
+                    foregaendeAgareLag: p.foregaendeAgareLag || null
+                };
+
+                spelarData.budget -= summa;
+                spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + summa;
+                laggTillSpelarPerson(snap);
+                registreraTransferHistorik({ namn: p.namn, kategori: roll, bilLabel: null, formaga: p.formaga, hogstaBud: summa, antalBud: 0, personId: p.id }, lag.namn, false, spelarLag.namn, true, { groupId: funnet.groupId, lagNamn: lag.namn }, { groupId: spelarData.serieId, lagNamn: spelarLag.namn });
+                loggaTransaktion(tt('Friköpte {rollText} {namn} från {namn2}', 'Bought out {rollText} {namn} from {namn2}').replaceAll('{rollText}', rollText(roll)).replaceAll('{namn}', p.namn).replaceAll('{namn2}', lag.namn), -summa);
+                laggTillNyhet(tt('Du aktiverade friköpsklausulen och värvade {namn} från {namn2} för {kr}!', 'You activated the release clause and signed {namn} from {namn2} for {kr}!').replaceAll('{namn}', p.namn).replaceAll('{namn2}', lag.namn).replaceAll('{kr}', kr(summa)));
+                registreraVarvningFranLag(spelarLag, lag.lagId, p.namn);
+                tillampaVarvningsMoral(spelarLag);
+                if (online) {
+                    // Servern har redan tagit bort personen ur det andra laget (och
+                    // ger AI-lag en ersättare) – här tas hen bara bort ur den lokala kopian.
+                    let lista = roll === 'forare' ? lag.forare : (roll === 'mekaniker' ? lag.mekanikerLista : lag.ingenjorLista);
+                    if (Array.isArray(lista)) { let ix = lista.findIndex(x => x.id === personId); if (ix >= 0) lista.splice(ix, 1); }
+                } else {
+                    ersattAiPerson({ typ: 'ai', groupId: funnet.groupId, lagNamn: lag.namn, kategori: roll, personId: personId });
+                }
+
+                // Personens profilsida pekar nu på en utbytt (ny) AI-person hos det
+                // gamla laget – gå tillbaka till scoutinglistan istället för att visa den.
+                lsPersonKontext = null;
+                subflikar.lagsida = 'scouting';
+                sparaOchUppdatera();
             };
-
-            spelarData.budget -= summa;
-            spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + summa;
-            laggTillSpelarPerson(snap);
-            registreraTransferHistorik({ namn: p.namn, kategori: roll, bilLabel: null, formaga: p.formaga, hogstaBud: summa, antalBud: 0, personId: p.id }, lag.namn, false, spelarLag.namn, true, { groupId: funnet.groupId, lagNamn: lag.namn }, { groupId: spelarData.serieId, lagNamn: spelarLag.namn });
-            loggaTransaktion(tt('Friköpte {rollText} {namn} från {namn2}', 'Bought out {rollText} {namn} from {namn2}').replaceAll('{rollText}', rollText(roll)).replaceAll('{namn}', p.namn).replaceAll('{namn2}', lag.namn), -summa);
-            laggTillNyhet(tt('Du aktiverade friköpsklausulen och värvade {namn} från {namn2} för {kr}!', 'You activated the release clause and signed {namn} from {namn2} for {kr}!').replaceAll('{namn}', p.namn).replaceAll('{namn2}', lag.namn).replaceAll('{kr}', kr(summa)));
-            registreraVarvningFranLag(spelarLag, lag.lagId, p.namn);
-            tillampaVarvningsMoral(spelarLag);
-            ersattAiPerson({ typ: 'ai', groupId: funnet.groupId, lagNamn: lag.namn, kategori: roll, personId: personId });
-
-            // Personens profilsida pekar nu på en utbytt (ny) AI-person hos det
-            // gamla laget – gå tillbaka till scoutinglistan istället för att visa den.
-            lsPersonKontext = null;
-            subflikar.lagsida = 'scouting';
-            sparaOchUppdatera();
+            if (arOnline()) {
+                window.supabaseClient.rpc('marknad_frikop', { p_team_id: lag.lagId, p_kategori: roll, p_person_id: personId }).then(({ error }) => {
+                    if (error) { alert(tt('Friköpet kunde inte genomföras: ', 'The buyout could not be completed: ') + error.message); synkaOnlineVarld(true); return; }
+                    slutfor(true);
+                });
+                return;
+            }
+            slutfor(false);
         }
 
         function skapaAiListning() {
@@ -16598,6 +16805,8 @@
 
         function marknadstick() {
             if (!Array.isArray(spelarData.marknad)) spelarData.marknad = [];
+            // Onlinemarknaden sköts av servern (kor-race) – se synkaOnlineMarknad().
+            if (arOnline() || onlineForvantat()) return false;
             let forandring = false;
             if (spelarData.marknad.length < 25 && Math.random() < 0.1) {
                 if (skapaAiListning()) forandring = true;
@@ -16729,6 +16938,7 @@
         function renderMarknadTab() {
             let spelarLag = hamtaSpelarLag();
             if (!spelarLag) return;
+            if (arOnline() && Date.now() - onlineMarknadSenast > 30000) synkaOnlineMarknad();
             if (subflikar.marknad === 'marknad') renderMarknadsPane();
             else if (subflikar.marknad === 'oversikt') renderMarknadOversiktPane();
             else if (subflikar.marknad === 'minabud') renderMinaBudPane();
@@ -17021,6 +17231,7 @@
 
         function sakerstallFriaAgenter() {
             if (!Array.isArray(spelarData.friaAgenter)) spelarData.friaAgenter = [];
+            if (arOnline() || onlineForvantat()) return; // fria agenter kommer från servern
             rensaGamlaFriaAgenter();
             while (spelarData.friaAgenter.length < MIN_FRIA_AGENTER) {
                 let kategori = FRI_AGENT_ROLLER[Math.floor(Math.random() * FRI_AGENT_ROLLER.length)];
@@ -17164,6 +17375,20 @@
             if (a.kategori === 'mekaniker' && ickeExtraAntal(spelarLag.mekanikerLista) >= 10) { alert(tt('Din mekanikertrupp är redan full (10/10).', 'Your mechanic roster is already full (10/10).')); return; }
             if (a.kategori === 'ingenjor' && ickeExtraAntal(spelarLag.ingenjorLista) >= 10) { alert(tt('Din ingenjörstrupp är redan full (10/10).', 'Your engineer roster is already full (10/10).')); return; }
             if (!confirm(tt('Skriv kontrakt med {namn} ({rollText}) som fri agent? Ingen transfersumma – bara en ny lön att betala.', 'Sign {namn} ({rollText}) as a free agent? No transfer fee – just a new salary to pay.').replaceAll('{namn}', a.namn).replaceAll('{rollText}', rollText(a.kategori)))) return;
+            if (a.online) {
+                window.supabaseClient.rpc('fri_agent_anstall', { p_id: a.id }).then(({ data, error }) => {
+                    if (error) { alert(error.message); synkaOnlineMarknad(); return; }
+                    let person = Object.assign({}, data || {}, { kategori: a.kategori, personId: (data && data.id) || a.personId });
+                    ['avatarId', 'avatarSeed', 'avatarTraits', 'avatarSignature', 'avatarVersion'].forEach(k => { if (a[k] !== undefined) person[k] = a[k]; });
+                    spelarData.friaAgenter = spelarData.friaAgenter.filter(x => x.id !== a.id);
+                    laggTillSpelarPerson(person);
+                    loggaHandelse(tt('Du skrev kontrakt med fria agenten {namn} ({rollText}).', 'You signed free agent {namn} ({rollText}).').replaceAll('{namn}', a.namn).replaceAll('{rollText}', rollText(a.kategori)));
+                    laggTillNyhet(tt('Du skrev kontrakt med fria agenten {namn}.', 'You signed free agent {namn}.').replaceAll('{namn}', a.namn));
+                    sparaOchUppdatera();
+                    synkaOnlineMarknad();
+                });
+                return;
+            }
             spelarData.friaAgenter.splice(idx, 1);
             laggTillSpelarPerson(a);
             loggaHandelse(tt('Du skrev kontrakt med fria agenten {namn} ({rollText}).', 'You signed free agent {namn} ({rollText}).').replaceAll('{namn}', a.namn).replaceAll('{rollText}', rollText(a.kategori)));
