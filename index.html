@@ -21,6 +21,7 @@
     <!-- Racemotorn delas med servern (Edge Function kor-race). -->
     <script src="spelmotor/race.js"></script>
     <script src="spelmotor/varld.js"></script>
+    <script src="spelmotor/sasong.js"></script>
     <script>
         // Globalt språkval – deklareras här (med förvalt värde) så att den
         // finns tillgänglig redan innan skriptblocket längre ner (som läser
@@ -6871,7 +6872,7 @@
             let scheman = {};
             ALL_GROUP_IDS.forEach(gid => { scheman[gid] = genereraSchema(tabeller[gid]); });
             return {
-                dataVersion: 6,
+                dataVersion: 7,
                 nastaEkonomiTid: schemaTider.ekonomi,
                 nastaTraningTid: schemaTider.traning,
                 nastaKvalTid: schemaTider.kval,
@@ -7016,11 +7017,23 @@
             let spelarDataRaw = null;
             try { spelarDataRaw = lasSparfil(nyckel); } catch (e) { spelarDataRaw = null; }
             let data;
-            if (spelarDataRaw && spelarDataRaw.dataVersion === 6 && spelarDataRaw.tabeller && spelarDataRaw.tabeller.T1) {
+            if (spelarDataRaw && spelarDataRaw.dataVersion === 7 && spelarDataRaw.tabeller && spelarDataRaw.tabeller.T1) {
                 data = spelarDataRaw;
             } else {
                 let bevarat = null;
-                if (spelarDataRaw) {
+                // Onlinestarten (dataVersion 7): ALLA managers börjar om från noll
+                // i den gemensamma pyramiden. Bara lagnamn, hemmaarena och land
+                // följer med – budget, trupp, tabeller och säsong nollställs.
+                let onlineStart = !!(spelarDataRaw && spelarDataRaw.dataVersion === 6);
+                if (onlineStart) {
+                    let gammaltLag = (spelarDataRaw.tabeller && spelarDataRaw.tabeller[spelarDataRaw.serieId] && spelarDataRaw.tabeller[spelarDataRaw.serieId].find(l => l.arSpelare)) || {};
+                    bevarat = {
+                        teamNamn: gammaltLag.namn || null,
+                        arenaNamn: (spelarDataRaw.arenaData && spelarDataRaw.arenaData.namn) || gammaltLag.bana || null,
+                        land: gammaltLag.land || null,
+                        budget: null, managerNamn: spelarDataRaw.managerNamn || null
+                    };
+                } else if (spelarDataRaw) {
                     bevarat = {
                         teamNamn: (spelarDataRaw.tabeller && spelarDataRaw.tabeller[spelarDataRaw.serieId] && spelarDataRaw.tabeller[spelarDataRaw.serieId].find(l => l.arSpelare) || {}).namn || spelarDataRaw.teamNamn || null,
                         budget: (typeof spelarDataRaw.budget === 'number') ? spelarDataRaw.budget : null,
@@ -7037,7 +7050,10 @@
                 // sedan innan) tar över ett datorstyrt lag från tomma händer (se
                 // skapaGrupp) – en uppgradering av en befintlig sparfil behåller
                 // sitt etablerade lag (namn/budget bevaras via bevarat ovan).
-                data = initierarSpelData(bevarat, !spelarDataRaw);
+                data = initierarSpelData(bevarat, !spelarDataRaw || onlineStart);
+                if (onlineStart) {
+                    loggaHandelse(tt("Onlinespelet har startat! Alla managers världen över tävlar nu i samma seriepyramid och racen körs på servern. Alla börjar om från början – ditt lagnamn och din hemmaarena har bevarats.", "Online play has started! Managers from all over the world now compete in the same league pyramid and races are run on the server. Everyone starts over – your team name and home arena have been kept."));
+                }
                 if (spelarDataRaw && spelarDataRaw.dataVersion === 5) {
                     loggaHandelse(tt("Spelet har uppdaterats med pension/åldrande, taktikgenomgång inför kval och race, popularitet, chefsmekaniker/-ingenjör, lagpresentationer, forum och scouting/juniorprogram – se fliken Manual för alla detaljer. Ditt lagnamn och din budget har bevarats, men trupp, tabeller och säsong börjar om.", "The game has been updated with retirement/aging, tactics briefings for qualifying and races, popularity, chief mechanic/engineer, team presentations, forum and scouting/junior program – see the Manual tab for all the details. Your team name and budget have been kept, but the roster, tables and season start over."));
                 } else if (spelarDataRaw && spelarDataRaw.dataVersion === 4) {
@@ -7524,7 +7540,7 @@
             kort.hidden = false;
             let manniskor = pyramidDivision.lag.filter(l => !l.is_ai).length;
             document.getElementById('online-division-rubrik').textContent = tt('Din onlinedivision: ', 'Your online division: ') + pyramidDivision.label;
-            document.getElementById('online-division-info').textContent = tt('{n} av {tot} lag styrs av riktiga managers. Racen i den gemensamma divisionen startar i nästa uppdatering – tills dess körs dina race som vanligt.', '{n} of {tot} teams are run by real managers. Races in the shared division start in the next update – until then your races run as usual.').replaceAll('{n}', manniskor).replaceAll('{tot}', pyramidDivision.lag.length);
+            document.getElementById('online-division-info').textContent = tt('{n} av {tot} lag styrs av riktiga managers. Kval och race körs på servern för alla samtidigt.', '{n} of {tot} teams are run by real managers. Qualifying and races are run on the server for everyone at the same time.').replaceAll('{n}', manniskor).replaceAll('{tot}', pyramidDivision.lag.length);
             document.getElementById('online-division-body').innerHTML = pyramidDivision.lag.map(l =>
                 `<tr><td>${l.slot + 1}</td><td>${l.id === pyramidLagId ? '<strong>' + inkorgEscapeHtml(l.name) + '</strong>' : inkorgEscapeHtml(l.name)}</td><td>${l.id === pyramidLagId ? tt('Du', 'You') : (l.is_ai ? tt('AI', 'AI') : tt('Manager', 'Manager'))}</td></tr>`
             ).join('');
@@ -7546,9 +7562,196 @@
                 pyramidLagId = lagId;
                 await publiceraLag();
                 await laddaOnlineDivision();
+                await synkaOnlineVarld(true);
+                kontrolleraSchemalagtRace();
                 if (!pyramidIntervall) pyramidIntervall = setInterval(laddaOnlineDivision, 5 * 60 * 1000);
             } catch (e) { console.error('Kunde inte ansluta till den gemensamma pyramiden:', e); }
         }
+
+        // ---------------------------------------------------------------------
+        // ONLINESERIEN (Fas 2): servern (Edge Function kor-race) kör kval och
+        // lopp för alla divisioner. Klienten hämtar pyramiden, lagen,
+        // resultaten och serietabellen därifrån i stället för att simulera
+        // lokalt, och skickar sin taktik med lagg_lagorder. Den egna
+        // ekonomin, träningen och marknaden körs fortfarande lokalt (Fas 3).
+        // ---------------------------------------------------------------------
+        let onlineData = null, onlineSynk = null, onlineSenasteSynk = 0;
+        function arOnline() {
+            return !!(onlineData && onlineData.lagId && typeof spelarData !== 'undefined' && !spelarData.arTestlage);
+        }
+        // Inloggad mot Supabase (inte testläge) = spelet ÄR online, även innan
+        // första synken hunnit bli klar. Då får inga race köras lokalt.
+        function onlineForvantat() {
+            return !!window.supabaseClient && typeof spelarData !== 'undefined' && !spelarData.arTestlage;
+        }
+        function onlineResultatFor(raceNr) {
+            if (!arOnline() || spelarData.sasong !== onlineData.sasong) return null;
+            return onlineData.resultat[raceNr] || null;
+        }
+        function onlineNyckel(sasong, raceNr) { return sasong + '-' + raceNr; }
+
+        // Gör om en teams-rad från servern till ett lokalt lagobjekt.
+        function importeraOnlineLag(rad, signaturer) {
+            let lag = rad.snapshot ? JSON.parse(JSON.stringify(rad.snapshot)) : {};
+            lag.lagId = rad.id;
+            lag.namn = rad.name;
+            lag.arSpelare = false;
+            lag.arManniska = !rad.is_ai;
+            lag.stallNr = rad.slot + 1;
+            lag.poäng = 0; lag.poängBil1 = 0; lag.poängBil2 = 0;
+            if (!lag.karriar) lag.karriar = tomKarriar();
+            if (!lag.teamFarger) lag.teamFarger = genereraTeamFarger(lag.namn);
+            if (!lag.parts1) lag.parts1 = nyborjarParts();
+            if (!lag.parts2) lag.parts2 = nyborjarParts();
+            const roller = { forare: 'forare', mekanikerLista: 'mekaniker', ingenjorLista: 'ingenjor' };
+            Object.keys(roller).forEach(k => {
+                if (!Array.isArray(lag[k])) lag[k] = [];
+                lag[k].forEach(p => AvatarSystem.createAvatar(p, roller[k], { age: p.age, forcedGender: 'maskulin' }, signaturer));
+            });
+            if (lag.teamPrincipal) AvatarSystem.createAvatar(lag.teamPrincipal, 'principal', { age: lag.teamPrincipal.age, forcedGender: 'maskulin' }, signaturer);
+            return lag;
+        }
+
+        // Ersätter de lokala tabellerna med serverns pyramid. Det egna laget
+        // (spelarens lokala lagobjekt) placeras på sin plats på servern.
+        function byggOnlineTabeller(rader, egen) {
+            let egetLag = hamtaSpelarLag();
+            if (!egetLag) return false;
+            let perDiv = {};
+            rader.forEach(t => { (perDiv[t.division_id] = perDiv[t.division_id] || []).push(t); });
+            if (!perDiv[egen.division_id]) return false;
+            Object.keys(perDiv).forEach(gid => {
+                if (!GROUP_DEFS[gid]) return;
+                let signaturer = new Set();
+                spelarData.tabeller[gid] = perDiv[gid].sort((a, b) => a.slot - b.slot).map(t => {
+                    if (t.id === egen.id) {
+                        egetLag.lagId = t.id;
+                        egetLag.stallNr = t.slot + 1;
+                        egetLag.arSpelare = true;
+                        return egetLag;
+                    }
+                    return importeraOnlineLag(t, signaturer);
+                });
+            });
+            spelarData.serieId = egen.division_id;
+            spelarData.visadSerieId = egen.division_id;
+            return true;
+        }
+
+        // Poäng, säsong, omgång, schema och tider från servern.
+        function tillampaOnlineLage(tabell, schema) {
+            let perLag = new Map(tabell.map(r => [r.team_id, r]));
+            if (spelarData.sasong < onlineData.sasong) {
+                spelarData.sasong = onlineData.sasong;
+                spelarData.raceNr = 1;
+                spelarData.vantandeKval = null;
+            }
+            if (spelarData.sasong !== onlineData.sasong) return; // lokalt redan i nästa säsong – väntar på servern
+            ALL_GROUP_IDS.forEach(gid => (spelarData.tabeller[gid] || []).forEach(l => {
+                let p = perLag.get(l.lagId);
+                l.poäng = p ? p.poang : 0;
+                l.poängBil1 = p ? p.poang_bil1 : 0;
+                l.poängBil2 = p ? p.poang_bil2 : 0;
+            }));
+            // Första synken: omgångar som redan var körda innan laget kom med
+            // räknas som avklarade (laget deltog inte i dem).
+            if (!spelarData.onlineTillampat) {
+                spelarData.onlineTillampat = {};
+                Object.keys(onlineData.resultat).forEach(nr => {
+                    if (onlineData.resultat[nr].lopp) spelarData.onlineTillampat[onlineNyckel(onlineData.sasong, nr)] = true;
+                });
+            }
+            let r = 1;
+            while (r <= 10 && spelarData.onlineTillampat[onlineNyckel(spelarData.sasong, r)]) r++;
+            if (r <= 10) spelarData.raceNr = r;
+            else if (onlineData.ikapp) {
+                // Hela den missade säsongen är tillämpad: kör säsongsslutet lokalt
+                // och hämta sedan den nya säsongen direkt.
+                spelarData.vantandeKval = null;
+                korSasongsslutLokalt();
+                onlineSenasteSynk = 0;
+                return;
+            }
+            let k = onlineData.kalender.find(x => x.sasong === spelarData.sasong && x.race_nr === spelarData.raceNr);
+            if (k) { spelarData.nastaKvalTid = k.kval_at; spelarData.nastaRaceTid = k.lopp_at; }
+            if (Array.isArray(schema) && schema.length) spelarData.scheman[spelarData.serieId] = schema;
+        }
+
+        async function synkaOnlineVarld(fullImport) {
+            if (onlineSynk) return onlineSynk;
+            // Tidsstämpeln sätts direkt, så att ett misslyckat eller tidigt
+            // avbrutet försök inte triggar ett nytt försök i en tät loop.
+            onlineSenasteSynk = Date.now();
+            onlineSynk = (async () => {
+                const sb = window.supabaseClient;
+                if (!sb || !pyramidLagId || spelarData.arTestlage) return;
+                try {
+                    const { data: egen, error: e1 } = await sb.from('teams').select('id, division_id').eq('id', pyramidLagId).maybeSingle();
+                    if (e1) throw e1;
+                    if (!egen || !GROUP_DEFS[egen.division_id]) return;
+                    const [ss, kal] = await Promise.all([
+                        sb.from('season_state').select('season_number').maybeSingle(),
+                        sb.rpc('race_schema')
+                    ]);
+                    if (ss.error) throw ss.error;
+                    if (kal.error) throw kal.error;
+                    const serverSasong = ss.data ? ss.data.season_number : 1;
+                    // Ikapp-läge: managern har spelat online förut men missat ett
+                    // säsongsskifte (t.ex. varit borta). Då spelas den gamla säsongens
+                    // återstående omgångar upp först, med de lokala tabellerna, så att
+                    // prispengar, kontrakt och säsongsslut blir rätt. Därefter hämtas
+                    // den nya säsongens pyramid.
+                    const ikapp = !!(spelarData.onlineTillampat && spelarData.sasong < serverSasong);
+                    const sasong = ikapp ? spelarData.sasong : serverSasong;
+                    // Alla lag (med ögonblicksbilder) hämtas vid inloggning, vid divisionsbyte
+                    // och därefter var 30:e minut, så att andra managers förändringar syns.
+                    const behoverLag = !ikapp && (fullImport || !onlineData || onlineData.divisionId !== egen.division_id || onlineData.sasong !== sasong || (Date.now() - (onlineData.lagHamtade || 0) > 30 * 60000));
+                    const [res, tab, sch, lagRader] = await Promise.all([
+                        ikapp
+                            ? sb.from('race_resultat').select('race_nr, bana, kval, lopp').eq('sasong', sasong).contains('kval', [{ lagId: egen.id }])
+                            : sb.from('race_resultat').select('race_nr, bana, kval, lopp').eq('division_id', egen.division_id).eq('sasong', sasong),
+                        sb.from('serietabell').select('team_id, poang, poang_bil1, poang_bil2').eq('sasong', sasong),
+                        sb.from('division_schema').select('schema').eq('division_id', ikapp ? spelarData.serieId : egen.division_id).eq('sasong', sasong).maybeSingle(),
+                        behoverLag ? sb.from('teams').select('id, division_id, name, is_ai, slot, snapshot') : Promise.resolve({ data: null, error: null })
+                    ]);
+                    [res, tab, sch, lagRader].forEach(x => { if (x.error) throw x.error; });
+                    let resultat = {};
+                    (res.data || []).forEach(r => { resultat[r.race_nr] = r; });
+                    // I ikapp-läget är den gamla säsongens alla tider redan passerade.
+                    let kalender = ikapp
+                        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(r => ({ sasong: sasong, race_nr: r, kval_at: new Date(Date.now() - (12 - r) * 60000).toISOString(), lopp_at: new Date(Date.now() - (11.5 - r) * 60000).toISOString() }))
+                        : (kal.data || []);
+                    onlineData = { lagId: egen.id, divisionId: ikapp ? spelarData.serieId : egen.division_id, sasong: sasong, ikapp: ikapp, kalender: kalender, resultat: resultat, lagHamtade: lagRader.data ? Date.now() : (onlineData && onlineData.lagHamtade) || 0 };
+                    if (lagRader.data && !byggOnlineTabeller(lagRader.data, egen)) { onlineData = null; return; }
+                    if (ikapp) {
+                        // Omgångar där laget inte deltog (t.ex. saknade förare) hoppas över.
+                        for (let r = 1; r <= 10; r++) if (!resultat[r]) spelarData.onlineTillampat[onlineNyckel(sasong, r)] = true;
+                    }
+                    tillampaOnlineLage(tab.data || [], sch.data && sch.data.schema);
+                    onlineSenasteSynk = Date.now();
+                    skickaOrderTillServer(spelarData.raceNr);
+                    sparaOchUppdatera();
+                } catch (e) {
+                    console.error('Kunde inte synka onlineserien:', e);
+                    onlineSenasteSynk = Date.now();
+                }
+            })();
+            try { await onlineSynk; } finally { onlineSynk = null; }
+        }
+
+        // Skickar det egna lagets order för en omgång till servern.
+        async function skickaOrderTillServer(raceNr) {
+            if (!arOnline() || spelarData.sasong !== onlineData.sasong) return;
+            let order = hamtaOrderForRace(hamtaSpelarLag(), spelarData.sasong, raceNr);
+            if (!order) return;
+            try {
+                const { error } = await window.supabaseClient.rpc('lagg_lagorder', {
+                    p_sasong: spelarData.sasong, p_race_nr: raceNr, p_kval: order.kval || null, p_lopp: order.lopp || null
+                });
+                if (error) throw error;
+            } catch (e) { console.error('Kunde inte skicka ordern till servern:', e); }
+        }
+
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && molnVantande) molnSparaNu(); });
 
         // Nyckeln som spelarData just nu är laddad/sparad under (se sparaOchUppdatera).
@@ -14418,7 +14621,14 @@
                 }
             });
             // Själva kvalberäkningen ligger i spelmotor/race.js (delas med servern).
-            entries = URMRace.simuleraKval(grupp, banaInfo, Math.random, spelarData.sasong + '-' + spelarData.raceNr);
+            // I onlineserien används serverns kval i stället.
+            let serverRes = onlineResultatFor(spelarData.raceNr);
+            if (serverRes && serverRes.kval) {
+                banaInfo = Object.assign({}, banaInfo || {}, serverRes.bana || {});
+                entries = serverRes.kval.map(e => Object.assign({}, e, { arSpelare: e.lagId === onlineData.lagId, procent: (e.procent || 0) / 100 }));
+            } else {
+                entries = URMRace.simuleraKval(grupp, banaInfo, Math.random, spelarData.sasong + '-' + spelarData.raceNr);
+            }
 
             spelarData.vantandeKval = {
                 raceNr: spelarData.raceNr,
@@ -14632,6 +14842,7 @@
         // Inga spelarspecifika sidoeffekter (nyheter, bonusar, skador, rekord).
         // =====================================================================
         function korOvrigaGruppersRace(raceNr) {
+            if (arOnline()) return; // onlineserien: poängen kommer från serverns serietabell
             if (!spelarData.gruppResultat) spelarData.gruppResultat = {};
             ALL_GROUP_IDS.forEach(gid => {
                 if (gid === spelarData.serieId) return;
@@ -14752,6 +14963,41 @@
                 </table></div>`;
         }
 
+        // Säsongsslutet i den egna spelvärlden (kontrakt, åldrande, historik,
+        // upp-/nedflyttning, ny säsong). Körs efter omgång 10 – och i
+        // onlineserien även när en hel säsong tillämpas i efterhand.
+        function korSasongsslutLokalt() {
+            // Kontrakt: mästerskapsbonus och nedräkning av kontraktsår görs INNAN
+            // poängen nollställs och lagen omstruktureras.
+            let mastarskapsNotiser = ContractManager.betalaMastarskapsBonusar();
+            let kontraktResultat = ContractManager.tickaAllaKontrakt();
+            let kontraktNotiser = kontraktResultat.notiser;
+            sparaSasongshistorik();
+            aldrasAlla();
+            avslutaSasongOchOmstrukturera();
+            kontrolleraKonkurs();
+            spelarData.raceNr = 1;
+            spelarData.sasong += 1;
+            mastarskapsNotiser.forEach(t => loggaHandelse(t));
+            kontraktNotiser.forEach(t => loggaHandelse(t));
+            kontraktResultat.utgarSnart.forEach(u => skickaEpostNotis('kontrakt_utgar', u));
+            loggaHandelse(tt('Säsong {sasong} börjar! Alla i spelet har fyllt år, poängen är nollställda och upp-/nedflyttning har genomförts.', 'Season {sasong} begins! Everyone in the game has had a birthday, points are reset and promotion/relegation has taken place.').replaceAll('{sasong}', spelarData.sasong));
+
+            // Tävlingsregel för den nya säsongen (se tillampaTavlingsregelForSasong) –
+            // körs EN gång per säsongsnummer, efter upp-/nedflyttning och konkurskoll,
+            // så att den nya komponentnivån gäller från och med säsongens första race.
+            let tavlingsregel = tillampaTavlingsregelForSasong(spelarData.sasong);
+            if (tavlingsregel) {
+                let attributNamn = KOMPONENT_LABEL[tavlingsregel.attribut];
+                loggaHandelse(tt('Ny tävlingsregel: {attributNamn} halveras för alla lag inför Säsong {sasong}.', 'New competition rule: {attributNamn} is halved for all teams ahead of Season {sasong}.').replaceAll('{attributNamn}', attributNamn).replaceAll('{sasong}', tavlingsregel.sasong));
+                laggTillNyhet(tt('<strong>Ny tävlingsregel!</strong> Inför Säsong {sasong} halveras {attributNamn} för alla lag i spelet.', '<strong>New competition rule!</strong> Ahead of Season {sasong}, {attributNamn} is halved for every team in the game.').replaceAll('{sasong}', tavlingsregel.sasong).replaceAll('{attributNamn}', attributNamn));
+                laggTillSystemMeddelande(
+                    tt('Ny tävlingsregel', 'New competition rule'),
+                    tt('Enligt det rullande tävlingsreglementet halveras {attributNamn} för alla lag inför Säsong {sasong}. Se fliken Manual för hur schemat fungerar.', 'Under the rolling competition regulations, {attributNamn} is halved for every team ahead of Season {sasong}. See the Manual tab for how the schedule works.').replaceAll('{attributNamn}', attributNamn).replaceAll('{sasong}', tavlingsregel.sasong)
+                );
+            }
+        }
+
         function korLoppet() {
             let grupp = spelarData.tabeller[spelarData.serieId];
             let vantande = spelarData.vantandeKval;
@@ -14776,13 +15022,23 @@
             // Själva loppberäkningen ligger i spelmotor/race.js (delas med servern).
             // Raderna kopplas sedan tillbaka till lagobjekten för poäng, moral,
             // karriär, nyheter och ekonomi nedan.
-            let loppResultat = URMRace.simuleraLopp(
-                vantande.resultat,
-                kvalRad => grupp.find(l => l.namn === kvalRad.lagNamn),
-                banaInfo, Math.random, spelarData.sasong + '-' + spelarData.raceNr
-            );
+            let serverRes = onlineResultatFor(spelarData.raceNr);
+            let loppResultat;
+            if (serverRes && serverRes.lopp) {
+                loppResultat = serverRes.lopp.map(r => Object.assign({}, r)).filter(r => grupp.some(l => l.lagId === r.lagId));
+                spelarData.onlineTillampat[onlineNyckel(spelarData.sasong, spelarData.raceNr)] = true;
+                onlineSenasteSynk = 0; // hämta nästa omgångs tider direkt
+            } else {
+                loppResultat = URMRace.simuleraLopp(
+                    vantande.resultat,
+                    kvalRad => grupp.find(l => l.namn === kvalRad.lagNamn),
+                    banaInfo, Math.random, spelarData.sasong + '-' + spelarData.raceNr
+                );
+            }
             loppResultat.forEach(res => {
-                res.lag = grupp.find(l => l.namn === res.lagNamn);
+                res.lag = serverRes && serverRes.lopp ? grupp.find(l => l.lagId === res.lagId) : grupp.find(l => l.namn === res.lagNamn);
+                // Online kommer poängen redan från serverns serietabell (se synkaOnlineVarld).
+                if (serverRes && serverRes.lopp) return;
                 res.lag.poäng += res.poäng;
                 if (res.bil === 1) res.lag.poängBil1 = (res.lag.poängBil1 || 0) + res.poäng;
                 else res.lag.poängBil2 = (res.lag.poängBil2 || 0) + res.poäng;
@@ -14953,35 +15209,7 @@
             if (skadeMeddelanden.length) loggaHandelse(tt('Skador i racet: ', 'Damage in the race: ') + renderSkadeText(skadeMeddelanden));
 
             if (spelarData.raceNr >= 10) {
-                // Kontrakt: mästerskapsbonus och nedräkning av kontraktsår görs INNAN
-                // poängen nollställs och lagen omstruktureras.
-                let mastarskapsNotiser = ContractManager.betalaMastarskapsBonusar();
-                let kontraktResultat = ContractManager.tickaAllaKontrakt();
-                let kontraktNotiser = kontraktResultat.notiser;
-                sparaSasongshistorik();
-                aldrasAlla();
-                avslutaSasongOchOmstrukturera();
-                kontrolleraKonkurs();
-                spelarData.raceNr = 1;
-                spelarData.sasong += 1;
-                mastarskapsNotiser.forEach(t => loggaHandelse(t));
-                kontraktNotiser.forEach(t => loggaHandelse(t));
-                kontraktResultat.utgarSnart.forEach(u => skickaEpostNotis('kontrakt_utgar', u));
-                loggaHandelse(tt('Säsong {sasong} börjar! Alla i spelet har fyllt år, poängen är nollställda och upp-/nedflyttning har genomförts.', 'Season {sasong} begins! Everyone in the game has had a birthday, points are reset and promotion/relegation has taken place.').replaceAll('{sasong}', spelarData.sasong));
-
-                // Tävlingsregel för den nya säsongen (se tillampaTavlingsregelForSasong) –
-                // körs EN gång per säsongsnummer, efter upp-/nedflyttning och konkurskoll,
-                // så att den nya komponentnivån gäller från och med säsongens första race.
-                let tavlingsregel = tillampaTavlingsregelForSasong(spelarData.sasong);
-                if (tavlingsregel) {
-                    let attributNamn = KOMPONENT_LABEL[tavlingsregel.attribut];
-                    loggaHandelse(tt('Ny tävlingsregel: {attributNamn} halveras för alla lag inför Säsong {sasong}.', 'New competition rule: {attributNamn} is halved for all teams ahead of Season {sasong}.').replaceAll('{attributNamn}', attributNamn).replaceAll('{sasong}', tavlingsregel.sasong));
-                    laggTillNyhet(tt('<strong>Ny tävlingsregel!</strong> Inför Säsong {sasong} halveras {attributNamn} för alla lag i spelet.', '<strong>New competition rule!</strong> Ahead of Season {sasong}, {attributNamn} is halved for every team in the game.').replaceAll('{sasong}', tavlingsregel.sasong).replaceAll('{attributNamn}', attributNamn));
-                    laggTillSystemMeddelande(
-                        tt('Ny tävlingsregel', 'New competition rule'),
-                        tt('Enligt det rullande tävlingsreglementet halveras {attributNamn} för alla lag inför Säsong {sasong}. Se fliken Manual för hur schemat fungerar.', 'Under the rolling competition regulations, {attributNamn} is halved for every team ahead of Season {sasong}. See the Manual tab for how the schedule works.').replaceAll('{attributNamn}', attributNamn).replaceAll('{sasong}', tavlingsregel.sasong)
-                    );
-                }
+                korSasongsslutLokalt();
             } else {
                 spelarData.raceNr += 1;
             }
@@ -15293,44 +15521,8 @@
             ALL_GROUP_IDS.forEach(gid => {
                 spelarData.tabeller[gid].forEach(l => sistaSasongPoang.set(l, l.poäng));
             });
-            let sorted = {}, uppIn = {}, nedIn = {}, utUppat = {};
-            ALL_GROUP_IDS.forEach(gid => {
-                sorted[gid] = [...spelarData.tabeller[gid]].sort(gruppSortering);
-                uppIn[gid] = []; nedIn[gid] = []; utUppat[gid] = 0;
-            });
-            let flyttar = [];
-            let tiers = [...new Set(ALL_GROUP_IDS.map(g => GROUP_DEFS[g].tier))].sort((a, b) => a - b);
-            tiers.forEach(tier => {
-                if (tier === 1) return;
-                gruppIdForTier(tier).forEach(gid => {
-                    let vinnare = sorted[gid][0];
-                    if (!vinnare) return;
-                    let till = GROUP_DEFS[gid].parent;
-                    uppIn[till].push(vinnare); utUppat[gid]++;
-                    flyttar.push({ lag: vinnare, fran: gid, till: till, typ: 'vinnare' });
-                });
-                let harPlats = g => uppIn[g].length < ANTAL_NEDFLYTTADE;
-                beraknaBastaTvaor(tier).slice(0, antalBastaTvaorSomGarUpp(tier)).forEach(({ lag, gid }) => {
-                    let egen = GROUP_DEFS[gid].parent;
-                    let till = harPlats(egen) ? egen : gruppIdForTier(tier - 1).find(harPlats);
-                    if (!till) return;
-                    uppIn[till].push(lag); utUppat[gid]++;
-                    flyttar.push({ lag: lag, fran: gid, till: till, typ: 'tvaa' });
-                });
-            });
-            ALL_GROUP_IDS.forEach(gid => {
-                let def = GROUP_DEFS[gid];
-                if (!def.children || def.children.length === 0) return;
-                let s = sorted[gid];
-                let underTier = GROUP_DEFS[def.children[0]].tier;
-                let ledig = g => utUppat[g] - nedIn[g].length > 0;
-                s.slice(Math.max(0, s.length - ANTAL_NEDFLYTTADE)).forEach(lag => {
-                    let till = def.children.find(ledig) || gruppIdForTier(underTier).find(ledig);
-                    if (!till) return;
-                    nedIn[till].push(lag);
-                    flyttar.push({ lag: lag, fran: gid, till: till, typ: 'ned' });
-                });
-            });
+            // Reglerna för upp-/nedflyttning ligger i spelmotor/sasong.js (delas med servern).
+            let { flyttar, uppIn, nedIn } = URMSasong.beraknaFlyttar(GROUP_DEFS, spelarData.tabeller, ANTAL_NEDFLYTTADE);
             let flyttade = new Set(flyttar.map(f => f.lag));
             ALL_GROUP_IDS.forEach(gid => { spelarData.tabeller[gid] = spelarData.tabeller[gid].filter(l => !flyttade.has(l)); });
             flyttar.forEach(f => {
@@ -17088,11 +17280,23 @@
             let kvalTid = new Date(spelarData.nastaKvalTid);
             let raceTid = new Date(spelarData.nastaRaceTid);
 
+            // Onlineserien: kval/lopp tillämpas först när serverns resultat finns.
+            let online = arOnline() || onlineForvantat();
+            let onlineRes = online ? onlineResultatFor(spelarData.raceNr) : null;
+            let onlineVantar = false;
             if (nu >= kvalTid && (!spelarData.vantandeKval || spelarData.vantandeKval.raceNr !== spelarData.raceNr) && (!spelarData.raceResultat || !spelarData.raceResultat[spelarData.raceNr])) {
-                korKvalifikation();
-                nagotHarKörts = true;
+                if (!online || (onlineRes && onlineRes.kval)) {
+                    korKvalifikation();
+                    nagotHarKörts = true;
+                } else {
+                    onlineVantar = true;
+                }
             }
-            if (nu >= raceTid && (!spelarData.raceResultat || !spelarData.raceResultat[spelarData.raceNr])) {
+            if (online && nu >= raceTid && !(onlineRes && onlineRes.lopp)) onlineVantar = true;
+            if (online && (Date.now() - onlineSenasteSynk > (onlineVantar ? 60000 : 5 * 60000))) {
+                synkaOnlineVarld(false).then(() => kontrolleraSchemalagtRace());
+            }
+            if (nu >= raceTid && (!spelarData.raceResultat || !spelarData.raceResultat[spelarData.raceNr]) && (!online || (onlineRes && onlineRes.lopp))) {
                 let körtRaceNr = korLoppet();
                 if (körtRaceNr) {
                     // Resultatet är redan avgjort (som tidigare), men vi portionerar ut
@@ -17123,6 +17327,7 @@
                 }
             }
 
+            if (online && onlineSenasteSynk === 0) setTimeout(kontrolleraSchemalagtRace, 50);
             let marknadForandrad = marknadstick();
             let kontraktForandrad = ContractManager.periodiskTick();
             let uppgraderingForandrad = tillampaFardigaUppgraderingar();
@@ -17353,6 +17558,7 @@
             // Om det redan är det aktuella racets tur uppdaterar vi även det
             // "levande" fältet direkt, som en extra säkerhet.
             if (raceNr === spelarData.raceNr) spelarLag.taktikKval = kval;
+            skickaOrderTillServer(raceNr);
             loggaHandelse(tt('Kvalorder lagd för Race {raceNr}. Däck: {dack}, Downforce {downforce}, Handling {handling}.', 'Qualifying order set for Race {raceNr}. Tyres: {dack}, Downforce {downforce}, Handling {handling}.').replaceAll('{raceNr}', raceNr).replaceAll('{dack}', DACK_LABEL[kval.dack]).replaceAll('{downforce}', kval.downforce).replaceAll('{handling}', kval.handling));
             renderTaktikCard(raceNr);
             renderRaceKalender();
@@ -17379,6 +17585,7 @@
             let befintlig = spelarLag.orderPerRace[nyckel] || {};
             spelarLag.orderPerRace[nyckel] = Object.assign({}, befintlig, { lopp: lopp });
             if (raceNr === spelarData.raceNr) spelarLag.taktikLopp = lopp;
+            skickaOrderTillServer(raceNr);
             let bransleTextSv = lopp.bransle ? `${lopp.bransle} L` : `${bransleRekForRace(raceNr)} L (rekommenderat)`;
             let bransleTextEn = lopp.bransle ? `${lopp.bransle} L` : `${bransleRekForRace(raceNr)} L (recommended)`;
             loggaHandelse(tt('Race-order lagd för Race {raceNr}. Däck: {dack}, Downforce {downforce}, Handling {handling}, Teamorder: {teamorder}, Bränsle: {bransle}.', 'Race order set for Race {raceNr}. Tyres: {dack}, Downforce {downforce}, Handling {handling}, Team order: {teamorder}, Fuel: {bransle}.').replaceAll('{raceNr}', raceNr).replaceAll('{dack}', DACK_LABEL[lopp.dack]).replaceAll('{downforce}', lopp.downforce).replaceAll('{handling}', lopp.handling).replaceAll('{teamorder}', (lopp.teamorder === 'ingen' ? tt('Ingen', 'None') : (tt('Bil', 'Car') + ' ' + lopp.teamorder.replace('bil', '')))).replaceAll('{bransle}', (lopp.bransle ? (lopp.bransle + ' L') : (bransleRekForRace(raceNr) + ' L (' + tt('rekommenderat', 'recommended') + ')'))));
@@ -26187,6 +26394,9 @@
             if (error) { console.error('Kunde inte tilldela pyramidplats:', error); return null; }
             return data; // teams.id för det tilldelade laget
         }
+        // anslutPyramiden() i huvudskriptet anropar den här – den ligger i ett
+        // eget skriptblock (IIFE) och måste därför göras global uttryckligen.
+        window.tilldelaNyManagerPlats = tilldelaNyManagerPlats;
 
         function visaInloggning() {
             appContainer.style.display = 'none';
