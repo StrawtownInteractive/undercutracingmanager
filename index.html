@@ -6070,7 +6070,7 @@
                     if (!driver || !driver.contract || !driver.contract.championshipBonus) return;
                     let bonus = driver.contract.championshipBonus;
                     // Bonusen betalas ut TILL föraren – det är en kostnad för laget.
-                    spelarData.budget -= bonus;
+                    medEkonomiTyp(onlineForvantat() ? 'server' : null, () => { spelarData.budget -= bonus; }); // online: bokförs av servern
                     spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + bonus;
                     loggaTransaktion(tt('Mästerskapsbonus: ', 'Championship bonus: ') + driver.namn, -bonus);
                     notiser.push(tt('{namn} tog flest poäng av alla bilar i {label} och löste ut sin mästerskapsbonus på {belopp}!', '{namn} scored the most points of all cars in {label} and earned their championship bonus of {belopp}!').replaceAll('{namn}', driver.namn).replaceAll('{label}', GROUP_DEFS[gid].label).replaceAll('{belopp}', formatBelopp(bonus)));
@@ -7731,7 +7731,7 @@
                     tillampaOnlineLage(tab.data || [], sch.data && sch.data.schema);
                     onlineSenasteSynk = Date.now();
                     await synkaEkonomi();
-                    synkaOnlineMarknad().then(() => synkaPersonal()).then(() => synkaTraning());
+                    synkaOnlineMarknad().then(() => synkaPersonal()).then(() => synkaTraning()).then(() => synkaVeckoekonomi());
                     skickaOrderTillServer(spelarData.raceNr);
                     sparaOchUppdatera();
                 } catch (e) {
@@ -7975,6 +7975,17 @@
             if (!lag || !bil) return;
             BIL_FALT.forEach(k => { if (bil[k]) lag[k] = JSON.parse(JSON.stringify(bil[k])); });
         }
+        // Arena och sponsoravtal ägs av servern (Fas 3b-4).
+        function sattServerEkonomi(ek) {
+            if (!ek) return;
+            if (typeof ek.arenaNiva === 'number') spelarData.arenaNivå = ek.arenaNiva;
+            if (typeof ek.arenaKapacitet === 'number') spelarData.arenaKapacitet = ek.arenaKapacitet;
+            const a = ek.sponsoravtal;
+            spelarData.sponsoravtal = a && a.veckorKvar > 0 ? {
+                sponsorNamn: a.sponsorNamn, grundbelopp: a.grundbelopp, pallBonus: a.pallBonus, vinstBonus: a.vinstBonus,
+                mastarskapsBonus: a.mastarskapsBonus, veckorKvar: a.veckorKvar, langdTotalt: a.langdTotalt || 10
+            } : null;
+        }
         async function synkaEkonomi() {
             if (!arOnline()) return;
             installeraBudgetVakt(spelarData);
@@ -7985,6 +7996,8 @@
                 const { data, error } = await window.supabaseClient.rpc('mitt_tillstand', { p_start_budget: Math.round(spelarData.budget || 0), p_start_bil: startBil });
                 if (error) throw error;
                 sattServerBil(data.bil);
+                const ek = await window.supabaseClient.rpc('mitt_ekonomi', { p_start: { arenaNiva: spelarData.arenaNivå || 1, arenaKapacitet: spelarData.arenaKapacitet || 5000, sponsoravtal: spelarData.sponsoravtal || null } });
+                if (ek.error) console.error('Kunde inte hämta ekonomin:', ek.error); else sattServerEkonomi(ek.data);
                 const efterFlush = await flushaEkonomi();
                 sattServerBudget(typeof efterFlush === 'number' ? efterFlush : data.budget);
             } catch (e) { console.error('Kunde inte synka ekonomin:', e); }
@@ -8017,8 +8030,8 @@
         // förmågor, ålder, kontrakt och skador. Personer som servern inte
         // godkänner (okänt ursprung) tas bort ur den lokala truppen.
         // ---------------------------------------------------------------------
-        const PERSONAL_SYNK_FALT = ['id', 'namn', 'nationalitet', 'age', 'style', 'roll', 'bil', 'extra', 'stats', 'contract', 'traningsval'];
-        const PERSONAL_SERVER_FALT = ['age', 'stats', 'formaga', 'contract', 'skadadTillRace', 'vantandeTraning'];
+        const PERSONAL_SYNK_FALT = ['id', 'namn', 'nationalitet', 'age', 'style', 'roll', 'bil', 'extra', 'stats', 'contract', 'traningsval', 'popularitet'];
+        const PERSONAL_SERVER_FALT = ['age', 'stats', 'formaga', 'contract', 'skadadTillRace', 'vantandeTraning', 'popularitet'];
         let personalSynk = null, personalSenast = { json: null, tid: 0 };
         function personalForSynk(lag) {
             const slim = p => { const o = {}; PERSONAL_SYNK_FALT.forEach(k => { if (p[k] !== undefined) o[k] = p[k]; }); return o; };
@@ -8131,6 +8144,58 @@
                 await synkaPersonal(true);
                 sparaOchUppdatera();
             } catch (e) { console.error('Kunde inte hämta träningsresultatet:', e); }
+        }
+
+        // Serverns veckoekonomi (Fas 3b-4): kor-race räknar söndagens ekonomi och
+        // sparar raden i ekonomi_vecka. Här loggas den som vanligt i spelet.
+        const VECKO_ETIKETT = {
+            merch: () => tt('Merchandiseförsäljning', 'Merchandise sales'), biljett: () => tt('Biljettintäkter', 'Ticket income'),
+            underhall: () => tt('Fabriksunderhåll', 'Factory maintenance'), forarLon: () => tt('Förarlöner (kontrakt)', 'Driver wages (contract)'),
+            mekLon: () => tt('Mekanikerlöner', 'Mechanic wages'), ingLon: () => tt('Ingenjörslöner', 'Engineer wages'),
+            principalLon: () => tt('Team Principal-lön', 'Team Principal salary'), minusRanta: () => tt('Ränta på minussaldo', 'Interest on negative balance')
+        };
+        function tillampaServerVeckoekonomi(rad) {
+            const info = rad.rader || {};
+            const belopp = {};
+            (info.rader || []).forEach(r => {
+                belopp[r.typ] = r.belopp;
+                if (!r.belopp) return;
+                const text = r.typ === 'sponsor'
+                    ? (info.sponsorNamn ? tt('Sponsorintäkt ({sponsorNamn})', 'Sponsor income ({sponsorNamn})').replaceAll('{sponsorNamn}', info.sponsorNamn) : tt('Sponsorintäkt', 'Sponsor income'))
+                    : (VECKO_ETIKETT[r.typ] ? VECKO_ETIKETT[r.typ]() : r.typ);
+                loggaTransaktion(text, r.belopp);
+            });
+            const prispengar = spelarData.veckoPrispengar || 0, forsaljning = spelarData.veckoForsaljningsintakt || 0;
+            const signOnBonus = spelarData.veckoSignOnBonus || 0, ovrigt = spelarData.veckoOvrigt || 0;
+            const loner = -((belopp.forarLon || 0) + (belopp.mekLon || 0) + (belopp.ingLon || 0) + (belopp.principalLon || 0));
+            const netto = (rad.netto || 0) + prispengar + forsaljning - signOnBonus - ovrigt;
+            spelarData.ekonomiHistorik = spelarData.ekonomiHistorik || [];
+            spelarData.ekonomiHistorik.unshift({
+                sasong: rad.sasong || spelarData.sasong, vecka: spelarData.raceNr, sponsor: belopp.sponsor || 0, merch: belopp.merch || 0, biljett: belopp.biljett || 0,
+                prispengar: prispengar, forsaljning: forsaljning, loner: loner, underhall: -(belopp.underhall || 0), signOnBonus: signOnBonus, ovrigt: ovrigt,
+                minusRanta: -(belopp.minusRanta || 0), netto: netto, budgetEfter: rad.budget_efter
+            });
+            if (spelarData.ekonomiHistorik.length > 200) spelarData.ekonomiHistorik.length = 200;
+            spelarData.veckoPrispengar = 0; spelarData.veckoForsaljningsintakt = 0; spelarData.veckoSignOnBonus = 0; spelarData.veckoOvrigt = 0;
+            loggaHandelse(tt('Ekonomiuppdatering (Säsong {sasong}): veckans netto {netto}.', 'Finance update (Season {sasong}): this week\'s net {netto}.').replaceAll('{sasong}', rad.sasong || spelarData.sasong).replaceAll('{netto}', formatBelopp(netto)));
+            if (info.utgatt) loggaHandelse(tt('Sponsoravtalet med {sponsorNamn} har gått ut.', 'The sponsorship deal with {sponsorNamn} has expired.').replaceAll('{sponsorNamn}', info.utgatt));
+            spelarData.onlineEkonomiVecka = rad.vecka;
+        }
+        async function synkaVeckoekonomi() {
+            if (!arOnline()) return;
+            try {
+                const { data, error } = await window.supabaseClient.from('ekonomi_vecka')
+                    .select('vecka, sasong, rader, netto, budget_efter').eq('team_id', onlineData.lagId).order('vecka', { ascending: false }).limit(5);
+                if (error) throw error;
+                let nya = (data || []).filter(r => r.vecka > (spelarData.onlineEkonomiVecka || 0)).sort((a, b) => a.vecka - b.vecka);
+                if (!spelarData.onlineEkonomiVecka) nya = nya.slice(-1);
+                if (!nya.length) return;
+                nya.forEach(tillampaServerVeckoekonomi);
+                await synkaEkonomi();
+                personalSenast.json = null;
+                await synkaPersonal(true);
+                sparaOchUppdatera();
+            } catch (e) { console.error('Kunde inte hämta veckoekonomin:', e); }
         }
 
         // Skickar det egna lagets order för en omgång till servern.
@@ -14220,6 +14285,17 @@
             if (budgetSparrarNyaKostnader()) return;
             let kostnad = 350000;
             if (spelarData.budget < kostnad) { alert(tt("Inte tillräckligt med pengar!", "Not enough money!")); return; }
+            if (arOnline()) {
+                window.supabaseClient.rpc('arena_uppgradera').then(({ data, error }) => {
+                    if (error) { alert(tt('Arenan kunde inte uppgraderas: ', 'The arena could not be upgraded: ') + error.message); return; }
+                    sattServerBudget(data.budget);
+                    sattServerEkonomi(data.ekonomi);
+                    spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + kostnad;
+                    loggaTransaktion(tt('Arenauppgradering', 'Arena upgrade'), -kostnad);
+                    sparaOchUppdatera();
+                });
+                return;
+            }
             spelarData.budget -= kostnad;
             spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + kostnad;
             spelarData.arenaNivå += 1;
@@ -14662,6 +14738,17 @@
             if (spelarData.sponsoravtal && spelarData.sponsoravtal.veckorKvar > 0) { alert(tt("Du har redan ett aktivt sponsoravtal. Säg upp det innan du tecknar ett nytt.", "You already have an active sponsorship deal. Cancel it before signing a new one.")); return; }
             if (!sponsorErbjudandenCache || !sponsorErbjudandenCache[idx]) return;
             let val = sponsorErbjudandenCache[idx];
+            if (arOnline() && !val.serverBekraftat) {
+                // Beloppen räknas av servern (division + Team Principalens sponsring).
+                window.supabaseClient.rpc('sponsor_teckna', { p_profil: val.profil, p_namn: val.sponsorNamn }).then(({ data, error }) => {
+                    if (error) { alert(tt('Avtalet kunde inte tecknas: ', 'The deal could not be signed: ') + error.message); return; }
+                    const a = data && data.ekonomi && data.ekonomi.sponsoravtal;
+                    if (a) Object.assign(val, { sponsorNamn: a.sponsorNamn, grundbelopp: a.grundbelopp, pallBonus: a.pallBonus, vinstBonus: a.vinstBonus, mastarskapsBonus: a.mastarskapsBonus, langd: a.langdTotalt || 10 });
+                    val.serverBekraftat = true;
+                    tecknaSponsoravtal(idx);
+                });
+                return;
+            }
             spelarData.sponsoravtal = {
                 sponsorNamn: val.sponsorNamn, grundbelopp: val.grundbelopp, pallBonus: val.pallBonus,
                 vinstBonus: val.vinstBonus, mastarskapsBonus: val.mastarskapsBonus,
@@ -14836,6 +14923,13 @@
             // Förberedelseträning: juniorprogrammets valda förmågor (+1 poäng/
             // vecka fram till 20 års ålder) - se traningJuniorprogram().
             traningJuniorprogram();
+            if (arOnline() || onlineForvantat()) {
+                // Veckoekonomin räknas av servern (Fas 3b-4) – se synkaVeckoekonomi().
+                let veckaOnline = (spelarData.senasteRaceNr !== undefined && spelarData.senasteRaceNr !== null) ? spelarData.senasteRaceNr : spelarData.raceNr;
+                let sasongOnline = (spelarData.senasteSasong !== undefined && spelarData.senasteSasong !== null) ? spelarData.senasteSasong : spelarData.sasong;
+                spelarData.senasteEkonomiKey = sasongOnline + '-' + veckaOnline;
+                return;
+            }
             // Sponsoravtal (om tecknat, se Ekonomi → Sponsoravtal) ger ett fast
             // grundbelopp istället för den rent slumpade sponsorintäkten.
             let harSponsoravtal = spelarData.sponsoravtal && spelarData.sponsoravtal.veckorKvar > 0;
@@ -15564,7 +15658,7 @@
                 let bonusInfo = ContractManager.racebonusForBil(förare, r.placering, r.poäng);
                 if (bonusInfo.summa > 0) {
                     // Bonusen betalas ut TILL föraren – det är en kostnad för laget.
-                    spelarData.budget -= bonusInfo.summa;
+                    medEkonomiTyp(onlineResultatFor(spelarData.raceNr) ? 'server' : null, () => { spelarData.budget -= bonusInfo.summa; }); // online: bokförs av servern
                     spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + bonusInfo.summa;
                     loggaTransaktion(tt('Kontraktsbonus: {namn}', 'Contract bonus: {namn}').replaceAll('{namn}', förare.namn), -bonusInfo.summa);
                     loggaHandelse(tt('{namn} löste ut {belopp} i kontraktsbonus ({join}).', '{namn} earned {belopp} in contract bonuses ({join}).').replaceAll('{namn}', förare.namn).replaceAll('{belopp}', formatBelopp(bonusInfo.summa)).replaceAll('{join}', bonusInfo.rader.join(', ')));
@@ -15591,7 +15685,7 @@
                     if (r.placering <= 3 && avtal.pallBonus) { bonus += avtal.pallBonus; rader.push(tt('pallplats', 'podium')); }
                     if (r.placering === 1 && avtal.vinstBonus) { bonus += avtal.vinstBonus; rader.push(tt('vinst', 'win')); }
                     if (bonus > 0) {
-                        medEkonomiTyp('sponsorbonus', () => { spelarData.budget += bonus; });
+                        medEkonomiTyp(onlineResultatFor(spelarData.raceNr) ? 'server' : 'sponsorbonus', () => { spelarData.budget += bonus; }); // online: bokförs av servern
                         loggaTransaktion(tt('Sponsorbonus ({sponsorNamn})', 'Sponsor bonus ({sponsorNamn})').replaceAll('{sponsorNamn}', avtal.sponsorNamn), bonus);
                         loggaHandelse(tt('{sponsorNamn} betalade ut {belopp} i sponsorbonus för Bil {bil} ({join}).', '{sponsorNamn} paid out {belopp} in sponsor bonus for Car {bil} ({join}).').replaceAll('{sponsorNamn}', avtal.sponsorNamn).replaceAll('{belopp}', formatBelopp(bonus)).replaceAll('{bil}', r.bil).replaceAll('{join}', rader.join(', ')));
                     }
@@ -15891,7 +15985,7 @@
                     // Sponsoravtalets mästerskapsklausul (se Ekonomi → Sponsoravtal).
                     if (spelarData.sponsoravtal && spelarData.sponsoravtal.mastarskapsBonus) {
                         let mb = spelarData.sponsoravtal.mastarskapsBonus;
-                        medEkonomiTyp('sponsorbonus', () => { spelarData.budget += mb; });
+                        medEkonomiTyp(onlineForvantat() ? 'server' : 'sponsorbonus', () => { spelarData.budget += mb; }); // online: bokförs av servern
                         loggaTransaktion(tt('Sponsorbonus – mästerskap ({sponsorNamn})', 'Sponsor bonus – championship ({sponsorNamn})').replaceAll('{sponsorNamn}', spelarData.sponsoravtal.sponsorNamn), mb);
                         laggTillNyhet(tt('{sponsorNamn} betalade ut {belopp} i mästerskapsbonus!', '{sponsorNamn} paid out {belopp} in championship bonus!').replaceAll('{sponsorNamn}', spelarData.sponsoravtal.sponsorNamn).replaceAll('{belopp}', formatBelopp(mb)));
                     }

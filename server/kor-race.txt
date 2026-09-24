@@ -1239,8 +1239,65 @@ import { createClient } from "npm:@supabase/supabase-js@2";
                 delete p.vantandeTraning;
             });
         });
+        // Team Principal: +1 i varje förmåga per vecka (utvecklaTeamPrincipal()).
+        const tp = ny.teamPrincipal;
+        if (tp && tp.stats) {
+            V.PRINCIPAL_STAT_KEYS.forEach(k => { tp.stats[k] = Math.min(100, (tp.stats[k] || 0) + 1); });
+            tp.formaga = Math.round(V.PRINCIPAL_STAT_KEYS.reduce((sum, k) => sum + tp.stats[k], 0) / V.PRINCIPAL_STAT_KEYS.length);
+        }
         return { personal: ny, antal };
     }
+
+    // ---------------------------------------------------------------------
+    // Veckoekonomin (Fas 3b-4), samma regler som korEkonomiUppdatering():
+    // sponsor (avtal eller slump), merchandise (slump × förarnas popularitet),
+    // biljetter (arenakapacitet × 700), löner, underhåll och ränta på minussaldo.
+    // ---------------------------------------------------------------------
+    const DIVISION_INTAKT = { 1: [600000, 1000000], 2: [350000, 700000], 3: [150000, 400000], 4: [50000, 200000], 5: [25000, 120000] };
+    function slumpaIntakt(tier, rng) {
+        const r = DIVISION_INTAKT[tier] || DIVISION_INTAKT[4];
+        return Math.min(1000000, Math.round((r[0] + rng() * (r[1] - r[0])) / 1000) * 1000);
+    }
+    function veckoLon(p) {
+        const c = p && p.contract;
+        return Math.round(((c && typeof c.salaryPerSeason === 'number') ? c.salaryPerSeason : 1000000) / 10);
+    }
+    function veckoekonomi(personal, ekonomi, tier, budget, rng) {
+        const ek = Object.assign({ arenaNiva: 1, arenaKapacitet: 5000, sponsoravtal: null }, JSON.parse(JSON.stringify(ekonomi || {})));
+        const avtal = ek.sponsoravtal && ek.sponsoravtal.veckorKvar > 0 ? ek.sponsoravtal : null;
+        const sponsor = avtal ? avtal.grundbelopp : Math.round(slumpaIntakt(tier, rng) * 1.3);
+        let merch = slumpaIntakt(tier, rng);
+        const p = personal || {};
+        const bilForare = [1, 2].map(n => (p.forare || []).find(f => f.roll === 'bil' + n)).filter(Boolean);
+        if (bilForare.length) {
+            const snittPop = bilForare.reduce((sum, f) => sum + (typeof f.popularitet === 'number' ? f.popularitet : 50), 0) / bilForare.length;
+            merch = Math.min(1000000, Math.round(merch * (0.4 + (snittPop / 100) * 0.8)));
+        }
+        const biljett = (ek.arenaKapacitet || 5000) * 700;
+        const summa = lista => (lista || []).reduce((sum, x) => sum + veckoLon(x), 0);
+        const forarLon = summa(p.forare), mekLon = summa(p.mekanikerLista), ingLon = summa(p.ingenjorLista);
+        const principalLon = p.teamPrincipal ? veckoLon(p.teamPrincipal) : 0;
+        const underhall = 30000;
+        const minusRanta = budget < 0 ? Math.round(Math.abs(budget) * 0.05) : 0;
+        const rader = [
+            { typ: 'sponsor', belopp: sponsor, text: avtal ? 'Sponsorintäkt (' + avtal.sponsorNamn + ')' : 'Sponsorintäkt' },
+            { typ: 'merch', belopp: merch, text: 'Merchandiseförsäljning' },
+            { typ: 'biljett', belopp: biljett, text: 'Biljettintäkter' },
+            { typ: 'underhall', belopp: -underhall, text: 'Fabriksunderhåll' },
+            { typ: 'forarLon', belopp: -forarLon, text: 'Förarlöner' },
+            { typ: 'mekLon', belopp: -mekLon, text: 'Mekanikerlöner' },
+            { typ: 'ingLon', belopp: -ingLon, text: 'Ingenjörslöner' },
+            { typ: 'principalLon', belopp: -principalLon, text: 'Team Principal-lön' },
+            { typ: 'minusRanta', belopp: -minusRanta, text: 'Ränta på minussaldo' }
+        ];
+        let utgatt = null;
+        if (avtal) {
+            avtal.veckorKvar -= 1;
+            if (avtal.veckorKvar <= 0) { utgatt = avtal.sponsorNamn; ek.sponsoravtal = null; }
+        }
+        return { ekonomi: ek, rader, netto: rader.reduce((sum, r) => sum + r.belopp, 0), sponsorNamn: avtal ? avtal.sponsorNamn : null, utgatt };
+    }
+
 
     // Ny säsong: alla blir ett år äldre (+5 erfarenhet), förare över 30 tappar
     // lite i övriga förmågor, och den som nått pensionsåldern lämnar laget.
@@ -1285,7 +1342,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
     root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
         prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, personalForRace,
-        traningsvecka, veckouppdateringPersonal, aldrasPersonal });
+        traningsvecka, veckouppdateringPersonal, aldrasPersonal, veckoekonomi });
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 // =====================================================================
 // UNDERCUT RACING MANAGER – GEMENSAM TRANSFERMARKNAD (serverlogik)
@@ -1610,6 +1667,14 @@ Deno.serve(async (req) => {
         for (const [lagId, p] of poang) {
           if (p > 0) await db.rpc("ekonomi_bokfor", { p_team: lagId, p_typ: "prispengar", p_belopp: p * perPoang, p_text: `Prispengar Race ${k.race_nr} (${p}p)`, p_nyckel: `pris:${sasong}:${k.race_nr}` });
         }
+        // Kontrakts- och sponsorbonusar samt förarnas popularitet (Fas 3b-4).
+        for (const lagId of manniskor) {
+          const rader = (lopp as Rad[]).filter((r) => r.lagId === lagId)
+            .map((r) => ({ forarId: r.forarId, bil: r.bil, placering: r.placering, poang: r["poäng"] || 0, dnf: !!r.dnf }));
+          if (!rader.length) continue;
+          const { error: bErr } = await db.rpc("race_bonusar", { p_team: lagId, p_sasong: sasong, p_race: k.race_nr, p_rader: rader });
+          if (bErr) logg.push(`bonusar ${lagId}: ${bErr.message}`);
+        }
       }
     }
   }
@@ -1627,12 +1692,33 @@ Deno.serve(async (req) => {
       else {
         logg.push(bytt ? `Säsong ${sasong} avslutad: ${skifte.antalFlyttar} lag flyttade, säsong ${sasong + 1} startar.` : "Säsongen var redan bytt.");
         if (bytt) {
+          // Bilen med flest poäng per division (samma ordning som spelets betalaMastarskapsBonusar()).
+          const poangPerLag = new Map(((tabell as Rad[]) || []).map((r) => [r.team_id, r]));
+          const bastaBil = new Map<string, Rad>();
+          for (const div of divisioner as Rad[]) {
+            let bast: Rad | null = null;
+            for (const t of (lagPerDiv.get(div.id) || []).slice().sort((a, b) => a.slot - b.slot)) {
+              const pr = poangPerLag.get(t.id) || {};
+              for (const bilNr of [1, 2]) {
+                const p = Number(pr["poang_bil" + bilNr]) || 0;
+                if (!bast || p > bast.poang) bast = { lagId: t.id, bilNr, poang: p };
+              }
+            }
+            if (bast) bastaBil.set(div.id, bast);
+          }
           for (const h of skifte.historik) {
             const tier = tierPerDiv.get(h.division_id) || 4;
             for (const rad of h.tabell) {
               if (!rad.manniska) continue;
               const bonus = S.slutplaceringsBonus(tier, rad.placering, h.tabell.length);
               if (bonus > 0) await db.rpc("ekonomi_bokfor", { p_team: rad.team_id, p_typ: "prispengar", p_belopp: bonus, p_text: `Prispengar säsong ${sasong} (P${rad.placering})`, p_nyckel: `sasongspris:${sasong}` });
+              // Mästerskapsbonusar: förarens (bilen med flest poäng i divisionen) och sponsorns (divisionsmästaren).
+              const bast = bastaBil.get(h.division_id);
+              const bastBil = bast && bast.lagId === rad.team_id ? bast.bilNr : null;
+              if (bastBil || rad.placering === 1) {
+                const { error: mErr } = await db.rpc("sasong_bonusar", { p_team: rad.team_id, p_sasong: sasong, p_bast_bil: bastBil, p_mastare: rad.placering === 1 });
+                if (mErr) logg.push(`mästerskapsbonus ${rad.team_id}: ${mErr.message}`);
+              }
             }
           }
           const attribut = S.tavlingsregelAttribut(sasong + 1);
@@ -1682,13 +1768,20 @@ async function korTraning(db: ReturnType<typeof createClient>, logg: string[]) {
       resultatRad = { team_id: t.team_id, vecka, sasong, resultat: r.resultat, ateranvant: ateranvant && r.resultat.length > 0 };
       andrat = true;
     }
+    // Söndag 20:00: personalens väntande träning, Team Principal och veckoekonomin.
+    let ekonomi: Rad | null = null, bokningar: Rad[] = [], veckoRad: Rad | null = null;
     if (klocka.uppdatering_dags && !(traning.senasteUppdatering >= vecka)) {
       personal = S.veckouppdateringPersonal(personal).personal;
+      const ve = S.veckoekonomi(personal, t.ekonomi, t.tier || 4, Number(t.budget) || 0, S.rngFor(t.team_id, vecka, "ekonomi"));
+      ekonomi = ve.ekonomi;
+      bokningar = ve.rader.filter((r: Rad) => r.belopp !== 0)
+        .map((r: Rad) => ({ typ: "vecka_" + r.typ, belopp: r.belopp, text: r.text, nyckel: `vecka:${vecka}:${r.typ}` }));
+      veckoRad = { vecka, sasong, rader: { rader: ve.rader, sponsorNamn: ve.sponsorNamn, utgatt: ve.utgatt, ekonomi: ve.ekonomi }, netto: ve.netto };
       traning.senasteUppdatering = vecka;
       andrat = true;
     }
     if (!andrat) continue;
-    const { data: ok, error: sErr } = await db.rpc("personal_server_spara", { p_team: t.team_id, p_version: t.version, p_personal: personal, p_traning: traning });
+    const { data: ok, error: sErr } = await db.rpc("lag_server_spara", { p_team: t.team_id, p_version: t.version, p_personal: personal, p_traning: traning, p_ekonomi: ekonomi, p_bokningar: bokningar, p_vecka: veckoRad });
     if (sErr || !ok) { logg.push(`träning ${t.team_id}: ${sErr ? sErr.message : "laget ändrades samtidigt – görs nästa körning"}`); continue; }
     if (resultatRad) {
       const { error: rErr } = await db.from("traning_resultat").upsert(resultatRad);

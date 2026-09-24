@@ -264,8 +264,65 @@
                 delete p.vantandeTraning;
             });
         });
+        // Team Principal: +1 i varje förmåga per vecka (utvecklaTeamPrincipal()).
+        const tp = ny.teamPrincipal;
+        if (tp && tp.stats) {
+            V.PRINCIPAL_STAT_KEYS.forEach(k => { tp.stats[k] = Math.min(100, (tp.stats[k] || 0) + 1); });
+            tp.formaga = Math.round(V.PRINCIPAL_STAT_KEYS.reduce((sum, k) => sum + tp.stats[k], 0) / V.PRINCIPAL_STAT_KEYS.length);
+        }
         return { personal: ny, antal };
     }
+
+    // ---------------------------------------------------------------------
+    // Veckoekonomin (Fas 3b-4), samma regler som korEkonomiUppdatering():
+    // sponsor (avtal eller slump), merchandise (slump × förarnas popularitet),
+    // biljetter (arenakapacitet × 700), löner, underhåll och ränta på minussaldo.
+    // ---------------------------------------------------------------------
+    const DIVISION_INTAKT = { 1: [600000, 1000000], 2: [350000, 700000], 3: [150000, 400000], 4: [50000, 200000], 5: [25000, 120000] };
+    function slumpaIntakt(tier, rng) {
+        const r = DIVISION_INTAKT[tier] || DIVISION_INTAKT[4];
+        return Math.min(1000000, Math.round((r[0] + rng() * (r[1] - r[0])) / 1000) * 1000);
+    }
+    function veckoLon(p) {
+        const c = p && p.contract;
+        return Math.round(((c && typeof c.salaryPerSeason === 'number') ? c.salaryPerSeason : 1000000) / 10);
+    }
+    function veckoekonomi(personal, ekonomi, tier, budget, rng) {
+        const ek = Object.assign({ arenaNiva: 1, arenaKapacitet: 5000, sponsoravtal: null }, JSON.parse(JSON.stringify(ekonomi || {})));
+        const avtal = ek.sponsoravtal && ek.sponsoravtal.veckorKvar > 0 ? ek.sponsoravtal : null;
+        const sponsor = avtal ? avtal.grundbelopp : Math.round(slumpaIntakt(tier, rng) * 1.3);
+        let merch = slumpaIntakt(tier, rng);
+        const p = personal || {};
+        const bilForare = [1, 2].map(n => (p.forare || []).find(f => f.roll === 'bil' + n)).filter(Boolean);
+        if (bilForare.length) {
+            const snittPop = bilForare.reduce((sum, f) => sum + (typeof f.popularitet === 'number' ? f.popularitet : 50), 0) / bilForare.length;
+            merch = Math.min(1000000, Math.round(merch * (0.4 + (snittPop / 100) * 0.8)));
+        }
+        const biljett = (ek.arenaKapacitet || 5000) * 700;
+        const summa = lista => (lista || []).reduce((sum, x) => sum + veckoLon(x), 0);
+        const forarLon = summa(p.forare), mekLon = summa(p.mekanikerLista), ingLon = summa(p.ingenjorLista);
+        const principalLon = p.teamPrincipal ? veckoLon(p.teamPrincipal) : 0;
+        const underhall = 30000;
+        const minusRanta = budget < 0 ? Math.round(Math.abs(budget) * 0.05) : 0;
+        const rader = [
+            { typ: 'sponsor', belopp: sponsor, text: avtal ? 'Sponsorintäkt (' + avtal.sponsorNamn + ')' : 'Sponsorintäkt' },
+            { typ: 'merch', belopp: merch, text: 'Merchandiseförsäljning' },
+            { typ: 'biljett', belopp: biljett, text: 'Biljettintäkter' },
+            { typ: 'underhall', belopp: -underhall, text: 'Fabriksunderhåll' },
+            { typ: 'forarLon', belopp: -forarLon, text: 'Förarlöner' },
+            { typ: 'mekLon', belopp: -mekLon, text: 'Mekanikerlöner' },
+            { typ: 'ingLon', belopp: -ingLon, text: 'Ingenjörslöner' },
+            { typ: 'principalLon', belopp: -principalLon, text: 'Team Principal-lön' },
+            { typ: 'minusRanta', belopp: -minusRanta, text: 'Ränta på minussaldo' }
+        ];
+        let utgatt = null;
+        if (avtal) {
+            avtal.veckorKvar -= 1;
+            if (avtal.veckorKvar <= 0) { utgatt = avtal.sponsorNamn; ek.sponsoravtal = null; }
+        }
+        return { ekonomi: ek, rader, netto: rader.reduce((sum, r) => sum + r.belopp, 0), sponsorNamn: avtal ? avtal.sponsorNamn : null, utgatt };
+    }
+
 
     // Ny säsong: alla blir ett år äldre (+5 erfarenhet), förare över 30 tappar
     // lite i övriga förmågor, och den som nått pensionsåldern lämnar laget.
@@ -310,5 +367,5 @@
 
     root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
         prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, personalForRace,
-        traningsvecka, veckouppdateringPersonal, aldrasPersonal });
+        traningsvecka, veckouppdateringPersonal, aldrasPersonal, veckoekonomi });
 })(typeof globalThis !== 'undefined' ? globalThis : this);
