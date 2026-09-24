@@ -5253,6 +5253,17 @@
             if (spelarData.managerlicens.hamtat[id]) return;
             let spelarLag = hamtaSpelarLag();
             if (!spelarLag || !def.klar(spelarLag)) return;
+            if (arOnline()) {
+                window.supabaseClient.rpc('managerlicens_hamta', { p_id: id }).then(({ data, error }) => {
+                    if (error) { alert(tt('Belöningen kunde inte hämtas: ', 'The reward could not be claimed: ') + error.message); return; }
+                    spelarData.managerlicens.hamtat[id] = true;
+                    sattServerBudget(data.budget);
+                    if (data.utbetald) loggaTransaktion(tt('Managerlicens: ', 'Manager license: ') + uppdragTitel(def), MANAGERLICENS_BELONING);
+                    sparaOchUppdatera();
+                    renderManagerlicens();
+                });
+                return;
+            }
             spelarData.managerlicens.hamtat[id] = true;
             medEkonomiTyp('managerlicens', () => { spelarData.budget += MANAGERLICENS_BELONING; });
             loggaTransaktion(tt('Managerlicens: ', 'Manager license: ') + uppdragTitel(def));
@@ -8041,8 +8052,23 @@
                 ingenjorLista: (lag.ingenjorLista || []).map(slim),
                 teamPrincipal: lag.teamPrincipal ? slim(lag.teamPrincipal) : null,
                 chefMekanikerId: lag.chefMekanikerId || null,
-                chefIngenjorId: lag.chefIngenjorId || null
+                chefIngenjorId: lag.chefIngenjorId || null,
+                juniorprogram: (spelarData.juniorprogram || []).map(j => {
+                    const o = {};
+                    JUNIOR_SYNK_FALT.forEach(k => { if (j[k] !== undefined) o[k] = j[k]; });
+                    return o;
+                })
             };
+        }
+        const JUNIOR_SYNK_FALT = ['id', 'namn', 'age', 'nationalitet', 'style', 'stats', 'traningsval', 'scoutadDatum', 'avatarId', 'avatarSeed', 'avatarTraits', 'avatarSignature', 'avatarVersion'];
+        function tillampaServerJuniorer(lista) {
+            if (!Array.isArray(lista)) return false;
+            const lokala = new Map((spelarData.juniorprogram || []).map(j => [j.id, j]));
+            const ny = lista.map(sj => Object.assign({}, lokala.get(sj.id) || {}, sj));
+            ny.forEach(j => { if (!j.avatarTraits && typeof AvatarSystem !== 'undefined') AvatarSystem.createAvatar(j, 'forare', { age: j.age, forcedGender: 'maskulin' }); });
+            if (JSON.stringify(ny) === JSON.stringify(spelarData.juniorprogram || [])) return false;
+            spelarData.juniorprogram = ny;
+            return true;
         }
         // Returnerar true om något i den lokala truppen ändrades.
         function tillampaServerPersonal(personal, avvisade) {
@@ -8074,6 +8100,7 @@
                 kvar.forEach(p => synka(p, serverPerId.get(p.id)));
             });
             if (lag.teamPrincipal && personal.teamPrincipal && personal.teamPrincipal.id === lag.teamPrincipal.id) synka(lag.teamPrincipal, personal.teamPrincipal);
+            if (tillampaServerJuniorer(personal.juniorprogram)) andrat = true;
             return andrat;
         }
         async function synkaPersonal(tvinga) {
@@ -13898,6 +13925,21 @@
                 return;
             }
             if (spelarData.budget < SCOUT_KOSTNAD) { alert(tt("Inte tillräckligt med pengar! Kostnad: ", "Not enough money! Cost: ") + formatBelopp(SCOUT_KOSTNAD) + ""); return; }
+            if (arOnline()) {
+                // Servern skapar prospektet (ålder och förmågor) och drar kostnaden (Fas 3b-5).
+                let pn = slumpaPerson();
+                window.supabaseClient.rpc('scouta', { p_person: { namn: pn.namn, nationalitet: pn.nationalitet, style: slumpaStil() } }).then(({ data, error }) => {
+                    if (error) { alert(tt('Scouterna kunde inte nås: ', 'The scouts could not be reached: ') + error.message); return; }
+                    sattServerBudget(data.budget);
+                    spelarData.scoutSenasteVeckoNyckel = veckoNyckel;
+                    spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + SCOUT_KOSTNAD;
+                    tillampaServerJuniorer(data.juniorprogram);
+                    loggaTransaktion(tt('Scouting: nytt juniorprospekt', 'Scouting: new junior prospect'), -SCOUT_KOSTNAD);
+                    personalSenast.json = null;
+                    sparaOchUppdatera();
+                });
+                return;
+            }
             spelarData.budget -= SCOUT_KOSTNAD;
             spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + SCOUT_KOSTNAD;
             spelarData.scoutSenasteVeckoNyckel = veckoNyckel;
@@ -14922,7 +14964,7 @@
             if (!(arOnline() || onlineForvantat())) tillampaVantandePersonalTraning();
             // Förberedelseträning: juniorprogrammets valda förmågor (+1 poäng/
             // vecka fram till 20 års ålder) - se traningJuniorprogram().
-            traningJuniorprogram();
+            if (!(arOnline() || onlineForvantat())) traningJuniorprogram();
             if (arOnline() || onlineForvantat()) {
                 // Veckoekonomin räknas av servern (Fas 3b-4) – se synkaVeckoekonomi().
                 let veckaOnline = (spelarData.senasteRaceNr !== undefined && spelarData.senasteRaceNr !== null) ? spelarData.senasteRaceNr : spelarData.raceNr;

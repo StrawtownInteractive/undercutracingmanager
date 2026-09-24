@@ -264,6 +264,13 @@
                 delete p.vantandeTraning;
             });
         });
+        // Juniorprogrammet: vald förmåga +1 per vecka tills prospektet fyller 20 (traningJuniorprogram()).
+        (ny.juniorprogram || []).forEach(j => {
+            if (!j.traningsval || !j.stats || j.age >= 20 || j.traningsval === 'erfarenhet') return;
+            if ((j.stats[j.traningsval] || 0) >= 100) return;
+            j.stats[j.traningsval] = Math.min(100, (j.stats[j.traningsval] || 0) + 1);
+            j.formaga = V.beraknaFormaga(j.stats, V.DRIVARE_STAT_KEYS);
+        });
         // Team Principal: +1 i varje förmåga per vecka (utvecklaTeamPrincipal()).
         const tp = ny.teamPrincipal;
         if (tp && tp.stats) {
@@ -358,6 +365,10 @@
             if (tp.age !== undefined && tp.age !== null) tp.age += 1;
             if (tp.age >= PRINCIPAL_PENSIONSALDER) { pension.push({ id: tp.id, namn: tp.namn, kat: 'principal' }); ny.teamPrincipal = null; }
         }
+        (ny.juniorprogram || []).forEach(j => {
+            if (j.age !== undefined && j.age !== null) j.age += 1;
+            if (j.stats) { j.stats.erfarenhet = V.erfarenhetForAlder(j.age); j.formaga = V.beraknaFormaga(j.stats, V.DRIVARE_STAT_KEYS); }
+        });
         if (pension.length) {
             const borttagna = pension.map(x => Object.assign({ pension: true }, x));
             ny.borttagna = borttagna.concat(ny.borttagna || []).slice(0, 30);
