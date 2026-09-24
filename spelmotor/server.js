@@ -146,5 +146,50 @@
         return { placeringar, historik, antalFlyttar: flyttar.length };
     }
 
-    root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte });
+    // ---------------------------------------------------------------
+    // Ekonomi och skador (Fas 3b). Samma formler som i b5_1-3.html.
+    // ---------------------------------------------------------------
+    const DIVISION_INTAKT_RANGES = { 1: [600000, 1000000], 2: [350000, 700000], 3: [150000, 400000], 4: [50000, 200000], 5: [25000, 120000] };
+    const KOMPONENT_NYCKLAR = ['dack', 'motor', 'aero', 'vaxellada', 'chassi'];
+    function prisPerPoang(tier) {
+        const r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
+        return Math.round(r[1] * 0.005 / 100) * 100;
+    }
+    function slutplaceringsBonus(tier, placering, antalLag) {
+        const r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
+        const topp = r[1] * 4, botten = r[1] * 0.6;
+        const andel = antalLag > 1 ? (antalLag - placering) / (antalLag - 1) : 1;
+        return Math.round((botten + (topp - botten) * andel) / 10000) * 10000;
+    }
+    function tavlingsregelAttribut(sasong) {
+        const n = KOMPONENT_NYCKLAR.length;
+        return KOMPONENT_NYCKLAR[((sasong - 1) % n + n) % n];
+    }
+    // 0–3 bilar skadas per race, aggressiva förare oftare (som tillampaSkador).
+    function valjSkador(lagLista, rng) {
+        const antal = Math.floor(rng() * 4);
+        const pool = [];
+        lagLista.forEach(lag => [1, 2].forEach(bilNr => { if (R.forarForBil(lag, bilNr)) pool.push({ lag, bilNr }); }));
+        const valda = [];
+        for (let n = 0; n < antal && pool.length > 0; n++) {
+            const vikter = pool.map(k => { const f = R.forarForBil(k.lag, k.bilNr); return (f && R.SKADE_VIKT_STIL[f.style]) || 1; });
+            let slump = rng() * vikter.reduce((s, v) => s + v, 0);
+            let idx = 0;
+            for (; idx < vikter.length; idx++) { slump -= vikter[idx]; if (slump <= 0) break; }
+            if (idx >= pool.length) idx = pool.length - 1;
+            valda.push(pool[idx]);
+            pool.splice(idx, 1);
+        }
+        return valda.map(v => {
+            const komponent = KOMPONENT_NYCKLAR[Math.floor(rng() * KOMPONENT_NYCKLAR.length)];
+            const andelSkada = 0.10 + rng() * 0.60;
+            const nuvarande = (R.bilParts(v.lag, v.bilNr) || {})[komponent] || 0;
+            const f = R.forarForBil(v.lag, v.bilNr);
+            return { lagId: v.lag.lagId, lagNamn: v.lag.namn, bilNr: v.bilNr, komponent, andelSkada,
+                nyttVarde: Math.max(0, Math.round(nuvarande * (1 - andelSkada))), forareNamn: f ? f.namn : null, forarId: f ? f.id : null };
+        });
+    }
+
+    root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
+        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador });
 })(typeof globalThis !== 'undefined' ? globalThis : this);

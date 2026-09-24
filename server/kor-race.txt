@@ -1121,7 +1121,52 @@ import { createClient } from "npm:@supabase/supabase-js@2";
         return { placeringar, historik, antalFlyttar: flyttar.length };
     }
 
-    root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte });
+    // ---------------------------------------------------------------
+    // Ekonomi och skador (Fas 3b). Samma formler som i b5_1-3.html.
+    // ---------------------------------------------------------------
+    const DIVISION_INTAKT_RANGES = { 1: [600000, 1000000], 2: [350000, 700000], 3: [150000, 400000], 4: [50000, 200000], 5: [25000, 120000] };
+    const KOMPONENT_NYCKLAR = ['dack', 'motor', 'aero', 'vaxellada', 'chassi'];
+    function prisPerPoang(tier) {
+        const r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
+        return Math.round(r[1] * 0.005 / 100) * 100;
+    }
+    function slutplaceringsBonus(tier, placering, antalLag) {
+        const r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
+        const topp = r[1] * 4, botten = r[1] * 0.6;
+        const andel = antalLag > 1 ? (antalLag - placering) / (antalLag - 1) : 1;
+        return Math.round((botten + (topp - botten) * andel) / 10000) * 10000;
+    }
+    function tavlingsregelAttribut(sasong) {
+        const n = KOMPONENT_NYCKLAR.length;
+        return KOMPONENT_NYCKLAR[((sasong - 1) % n + n) % n];
+    }
+    // 0–3 bilar skadas per race, aggressiva förare oftare (som tillampaSkador).
+    function valjSkador(lagLista, rng) {
+        const antal = Math.floor(rng() * 4);
+        const pool = [];
+        lagLista.forEach(lag => [1, 2].forEach(bilNr => { if (R.forarForBil(lag, bilNr)) pool.push({ lag, bilNr }); }));
+        const valda = [];
+        for (let n = 0; n < antal && pool.length > 0; n++) {
+            const vikter = pool.map(k => { const f = R.forarForBil(k.lag, k.bilNr); return (f && R.SKADE_VIKT_STIL[f.style]) || 1; });
+            let slump = rng() * vikter.reduce((s, v) => s + v, 0);
+            let idx = 0;
+            for (; idx < vikter.length; idx++) { slump -= vikter[idx]; if (slump <= 0) break; }
+            if (idx >= pool.length) idx = pool.length - 1;
+            valda.push(pool[idx]);
+            pool.splice(idx, 1);
+        }
+        return valda.map(v => {
+            const komponent = KOMPONENT_NYCKLAR[Math.floor(rng() * KOMPONENT_NYCKLAR.length)];
+            const andelSkada = 0.10 + rng() * 0.60;
+            const nuvarande = (R.bilParts(v.lag, v.bilNr) || {})[komponent] || 0;
+            const f = R.forarForBil(v.lag, v.bilNr);
+            return { lagId: v.lag.lagId, lagNamn: v.lag.namn, bilNr: v.bilNr, komponent, andelSkada,
+                nyttVarde: Math.max(0, Math.round(nuvarande * (1 - andelSkada))), forareNamn: f ? f.namn : null, forarId: f ? f.id : null };
+        });
+    }
+
+    root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
+        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador });
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 // =====================================================================
 // UNDERCUT RACING MANAGER – GEMENSAM TRANSFERMARKNAD (serverlogik)
@@ -1326,6 +1371,15 @@ Deno.serve(async (req) => {
   (lag as Rad[]).forEach((t) => {
     if (t.snapshot) { anvandaLagNamn.add(basNamn(t.name)); if (t.snapshot.bana) anvandaArenor.add(t.snapshot.bana); }
   });
+  // Mänskliga lags bil (komponenter, skador, köer) ägs av servern (lag_tillstand)
+  // och ersätter bilen i ögonblicksbilden när racen körs.
+  const { data: tillstand } = await db.rpc("tillstand_alla");
+  const bilPerLag = new Map<string, Rad>(((tillstand as Rad[]) || []).map((t) => [t.team_id, t.bil]));
+  const tierPerDiv = new Map((divisioner as Rad[]).map((d) => [d.id, d.tier]));
+  function raceRad(t: Rad): Rad {
+    const bil = !t.is_ai ? bilPerLag.get(t.id) : null;
+    return bil ? Object.assign({}, t, { snapshot: Object.assign({}, t.snapshot, bil) }) : t;
+  }
   const lagPerDiv = new Map<string, Rad[]>();
   (lag as Rad[]).forEach((t) => {
     if (!lagPerDiv.has(t.division_id)) lagPerDiv.set(t.division_id, []);
@@ -1388,7 +1442,7 @@ Deno.serve(async (req) => {
     const loppDags = Date.parse(k.lopp_at) <= nu;
 
     for (const div of divisioner as Rad[]) {
-      const rader = (lagPerDiv.get(div.id) || []).filter((t) => t.snapshot);
+      const rader = (lagPerDiv.get(div.id) || []).filter((t) => t.snapshot).map(raceRad);
       if (!rader.length) continue;
       const nyckel = div.id + "|" + k.race_nr;
       let rad = resultat.get(nyckel);
@@ -1406,12 +1460,25 @@ Deno.serve(async (req) => {
 
       if (loppDags && !rad.lopp) {
         const lopp = S.korLopp(div, sasong, k.race_nr, rader, order, rad.bana, rad.kval);
-        const { error } = await db.from("race_resultat")
-          .update({ lopp, lopp_at: new Date().toISOString() })
-          .eq("division_id", div.id).eq("sasong", sasong).eq("race_nr", k.race_nr).is("lopp", null);
+        const skador = S.valjSkador(rader.map(S.lagFranRad), S.rngFor(div.id, sasong, k.race_nr, "skador"));
+        const { data: uppdaterad, error } = await db.from("race_resultat")
+          .update({ lopp, skador, lopp_at: new Date().toISOString() })
+          .eq("division_id", div.id).eq("sasong", sasong).eq("race_nr", k.race_nr).is("lopp", null).select("race_nr");
         if (error) { logg.push(`lopp ${nyckel}: ${error.message}`); continue; }
         rad.lopp = lopp;
+        if (!uppdaterad || !(uppdaterad as Rad[]).length) continue; // en annan körning hann före
         logg.push(`lopp ${nyckel} klart`);
+        // Bilskador och prispengar för mänskliga lag (servern äger deras bil och budget).
+        const manniskor = new Set(rader.filter((t) => !t.is_ai).map((t) => t.id));
+        for (const sk of skador) {
+          if (manniskor.has(sk.lagId)) await db.rpc("bil_skada", { p_team: sk.lagId, p_bil: sk.bilNr, p_del: sk.komponent, p_andel: sk.andelSkada });
+        }
+        const perPoang = S.prisPerPoang(tierPerDiv.get(div.id) || 4);
+        const poang = new Map<string, number>();
+        (lopp as Rad[]).forEach((r) => { if (manniskor.has(r.lagId)) poang.set(r.lagId, (poang.get(r.lagId) || 0) + (r["poäng"] || 0)); });
+        for (const [lagId, p] of poang) {
+          if (p > 0) await db.rpc("ekonomi_bokfor", { p_team: lagId, p_typ: "prispengar", p_belopp: p * perPoang, p_text: `Prispengar Race ${k.race_nr} (${p}p)`, p_nyckel: `pris:${sasong}:${k.race_nr}` });
+        }
       }
     }
   }
@@ -1426,7 +1493,22 @@ Deno.serve(async (req) => {
       const skifte = S.sasongsskifte(divisioner, lag, tabell || []);
       const { data: bytt, error: sErr } = await db.rpc("genomfor_sasongsskifte", { p_sasong: sasong, p_placeringar: skifte.placeringar, p_historik: skifte.historik });
       if (sErr) logg.push("säsongsskifte: " + sErr.message);
-      else logg.push(bytt ? `Säsong ${sasong} avslutad: ${skifte.antalFlyttar} lag flyttade, säsong ${sasong + 1} startar.` : "Säsongen var redan bytt.");
+      else {
+        logg.push(bytt ? `Säsong ${sasong} avslutad: ${skifte.antalFlyttar} lag flyttade, säsong ${sasong + 1} startar.` : "Säsongen var redan bytt.");
+        if (bytt) {
+          for (const h of skifte.historik) {
+            const tier = tierPerDiv.get(h.division_id) || 4;
+            for (const rad of h.tabell) {
+              if (!rad.manniska) continue;
+              const bonus = S.slutplaceringsBonus(tier, rad.placering, h.tabell.length);
+              if (bonus > 0) await db.rpc("ekonomi_bokfor", { p_team: rad.team_id, p_typ: "prispengar", p_belopp: bonus, p_text: `Prispengar säsong ${sasong} (P${rad.placering})`, p_nyckel: `sasongspris:${sasong}` });
+            }
+          }
+          const attribut = S.tavlingsregelAttribut(sasong + 1);
+          await db.rpc("tavlingsregel_tillampa", { p_sasong: sasong + 1, p_attribut: attribut });
+          logg.push(`Tävlingsregel säsong ${sasong + 1}: ${attribut} halveras`);
+        }
+      }
     }
   }
   return Response.json({ ok: true, sasong, logg });
@@ -1469,10 +1551,12 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
         continue;
       }
       if (kopare && !kopare.is_ai) {
+        await db.rpc("ekonomi_bokfor", { p_team: kopare.id, p_typ: "marknad", p_belopp: -a.hogsta_bud, p_text: `Köp: ${a.person.namn}`, p_nyckel: `kop:${a.id}` });
         await db.from("leveranser").insert({ team_id: kopare.id, typ: "kopt", auktion_id: a.id, kategori: a.kategori, person_id: a.person_id, person: a.person, belopp: a.hogsta_bud, motpart: saljarNamn });
       }
       if (a.saljare_typ === "lag" && saljare) {
         if (!saljare.is_ai) {
+          await db.rpc("ekonomi_bokfor", { p_team: saljare.id, p_typ: "marknad", p_belopp: a.hogsta_bud, p_text: `Försäljning: ${a.person.namn}`, p_nyckel: `salj:${a.id}` });
           await db.from("leveranser").insert({ team_id: saljare.id, typ: "salt", auktion_id: a.id, kategori: a.kategori, person_id: a.person_id, belopp: a.hogsta_bud, motpart: kopare ? kopare.name : "Okänt lag" });
         }
         if (saljare.snapshot) {

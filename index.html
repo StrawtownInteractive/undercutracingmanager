@@ -5254,7 +5254,7 @@
             let spelarLag = hamtaSpelarLag();
             if (!spelarLag || !def.klar(spelarLag)) return;
             spelarData.managerlicens.hamtat[id] = true;
-            spelarData.budget += MANAGERLICENS_BELONING;
+            medEkonomiTyp('managerlicens', () => { spelarData.budget += MANAGERLICENS_BELONING; });
             loggaTransaktion(tt('Managerlicens: ', 'Manager license: ') + uppdragTitel(def));
             loggaHandelse(`<strong>${tt('Managerlicens:', 'Manager license:')}</strong> ${tt('du löste uppdraget', 'you completed the quest')} "${uppdragTitel(def)}" ${tt('och fick', 'and received')} ${formatBelopp(MANAGERLICENS_BELONING)}!`);
             visaNotis('spelhandelse', tt('Belöning hämtad!', 'Reward claimed!'), tt('{titel}: du fick {belopp}.', '{titel}: you received {belopp}.').replaceAll('{titel}', uppdragTitel(def)).replaceAll('{belopp}', formatBelopp(MANAGERLICENS_BELONING)));
@@ -6212,7 +6212,7 @@
                         loggaHandelse(tt('Transfernyheter: ' + c.aiInterest.lagNamn + ' är intresserade av ' + f.namn + ' och kan tänka sig ' + formatBelopp(lonPerVecka(c.aiInterest.lon)) + '/vecka.', 'Transfer news: ' + c.aiInterest.lagNamn + ' are interested in ' + f.namn + ' and could offer ' + formatBelopp(lonPerVecka(c.aiInterest.lon)) + '/week.'));
                         andrat = true;
                     }
-                    if (c.releaseClause > 0 && !c.skyddadForFrikopJuniorForstaKontrakt && !arForstaAretIKlubben(f) && Math.random() < 0.004 * Math.max(1, (f.formaga || 10) / 50)) {
+                    if (!onlineForvantat() && c.releaseClause > 0 && !c.skyddadForFrikopJuniorForstaKontrakt && !arForstaAretIKlubben(f) && Math.random() < 0.004 * Math.max(1, (f.formaga || 10) / 50)) {
                         let kopare = slumpaBudLagNamn();
                         let varsRoll = f.roll;
                         // Föregående klubb-intäkt (5% sell-on) - se
@@ -7708,8 +7708,8 @@
                     const behoverLag = !ikapp && (fullImport || !onlineData || onlineData.divisionId !== egen.division_id || onlineData.sasong !== sasong || (Date.now() - (onlineData.lagHamtade || 0) > 30 * 60000));
                     const [res, tab, sch, lagRader] = await Promise.all([
                         ikapp
-                            ? sb.from('race_resultat').select('race_nr, bana, kval, lopp').eq('sasong', sasong).contains('kval', [{ lagId: egen.id }])
-                            : sb.from('race_resultat').select('race_nr, bana, kval, lopp').eq('division_id', egen.division_id).eq('sasong', sasong),
+                            ? sb.from('race_resultat').select('race_nr, bana, kval, lopp, skador').eq('sasong', sasong).contains('kval', [{ lagId: egen.id }])
+                            : sb.from('race_resultat').select('race_nr, bana, kval, lopp, skador').eq('division_id', egen.division_id).eq('sasong', sasong),
                         sb.from('serietabell').select('team_id, poang, poang_bil1, poang_bil2').eq('sasong', sasong),
                         sb.from('division_schema').select('schema').eq('division_id', ikapp ? spelarData.serieId : egen.division_id).eq('sasong', sasong).maybeSingle(),
                         behoverLag ? sb.from('teams').select('id, division_id, name, is_ai, slot, snapshot') : Promise.resolve({ data: null, error: null })
@@ -7729,6 +7729,7 @@
                     }
                     tillampaOnlineLage(tab.data || [], sch.data && sch.data.schema);
                     onlineSenasteSynk = Date.now();
+                    await synkaEkonomi();
                     synkaOnlineMarknad();
                     skickaOrderTillServer(spelarData.raceNr);
                     sparaOchUppdatera();
@@ -7835,7 +7836,7 @@
                 let namn = (l.person && l.person.namn) || l.motpart || '';
                 if (l.typ === 'kopt') {
                     let a = Object.assign({}, l.person || {}, { kategori: l.kategori, personId: l.person_id, hogstaBud: l.belopp, antalBud: 0 });
-                    spelarData.budget -= l.belopp;
+                    medEkonomiTyp('server', () => { spelarData.budget -= l.belopp; }); // bokfört av servern
                     spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + l.belopp;
                     a.foregaendeAgareLag = null;
                     laggTillSpelarPerson(a);
@@ -7855,7 +7856,7 @@
                     let personNamn = person ? person.namn : namn;
                     let netto = person ? tillampaForegaendeKlubbIntakt(person, null, l.belopp, l.kategori) : l.belopp;
                     if (person) taBortSpelarPerson(l.kategori, l.person_id);
-                    spelarData.budget += netto;
+                    medEkonomiTyp('server', () => { spelarData.budget += netto; }); // bokfört av servern
                     spelarData.veckoForsaljningsintakt = (spelarData.veckoForsaljningsintakt || 0) + netto;
                     if (l.typ === 'salt') {
                         loggaTransaktion(tt('Sålde {rollText} {namn} till {hogstaBudare}', 'Sold {rollText} {namn} to {hogstaBudare}').replaceAll('{rollText}', rollText(l.kategori)).replaceAll('{namn}', personNamn).replaceAll('{hogstaBudare}', l.motpart || ''), netto);
@@ -7899,6 +7900,112 @@
         function laggPaMarknad(auktion) {
             if (arOnline()) { onlineLaggUt(auktion); return; }
             spelarData.marknad.push(auktion);
+        }
+
+        // ---------------------------------------------------------------------
+        // SERVERNS EKONOMI OCH BIL (Fas 3b-1): budgeten och bilens komponenter
+        // ägs av servern (lag_tillstand). Klienten rapporterar sina egna
+        // ekonomihändelser (kostnader alltid, intäkter inom tak per typ) och
+        // skriver sedan över budgeten med serverns värde vid varje synk.
+        // Budgeten övervakas med en setter, så att alla befintliga
+        // "spelarData.budget += / -=" i spelet rapporteras automatiskt.
+        // ---------------------------------------------------------------------
+        let ekonomiTyp = null, ekonomiFlushTimer = null, ekonomiFlush = null;
+        function medEkonomiTyp(typ, fn) {
+            const forra = ekonomiTyp;
+            ekonomiTyp = typ;
+            try { return fn(); } finally { ekonomiTyp = forra; }
+        }
+        function installeraBudgetVakt(data) {
+            if (!data || data.__budgetVakt) return;
+            let varde = data.budget;
+            Object.defineProperty(data, '__budgetVakt', { value: true, enumerable: false });
+            Object.defineProperty(data, 'budget', {
+                enumerable: true, configurable: true,
+                get() { return varde; },
+                set(ny) {
+                    const delta = Math.round((ny || 0) - (varde || 0));
+                    varde = ny;
+                    if (!delta || ekonomiTyp === 'server' || !onlineForvantat()) return;
+                    if (!Array.isArray(data.onlineEkonomiKo)) data.onlineEkonomiKo = [];
+                    data.onlineEkonomiKo.push({
+                        nyckel: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10),
+                        typ: delta < 0 ? 'kostnad' : (ekonomiTyp || 'okand'),
+                        belopp: delta
+                    });
+                    clearTimeout(ekonomiFlushTimer);
+                    ekonomiFlushTimer = setTimeout(() => { flushaEkonomi(); }, 2000);
+                }
+            });
+        }
+        // Skickar köade händelser. Returnerar serverns budget (eller null).
+        async function flushaEkonomi() {
+            if (ekonomiFlush) return ekonomiFlush;
+            ekonomiFlush = (async () => {
+                if (!arOnline()) return null;
+                const ko = (spelarData.onlineEkonomiKo || []).slice(0, 100);
+                if (!ko.length) return null;
+                try {
+                    const { data, error } = await window.supabaseClient.rpc('ekonomi_handelser', { p_handelser: ko });
+                    if (error) throw error;
+                    const skickade = new Set(ko.map(h => h.nyckel));
+                    spelarData.onlineEkonomiKo = (spelarData.onlineEkonomiKo || []).filter(h => !skickade.has(h.nyckel));
+                    if (data && Array.isArray(data.avvisade) && data.avvisade.length) {
+                        console.warn('Servern godtog inte dessa ekonomihändelser:', data.avvisade);
+                    }
+                    if (data && typeof data.budget === 'number') sattServerBudget(data.budget);
+                    sparaOchUppdatera();
+                    return data ? data.budget : null;
+                } catch (e) {
+                    console.error('Kunde inte skicka ekonomihändelser:', e);
+                    return null;
+                }
+            })();
+            try { return await ekonomiFlush; } finally { ekonomiFlush = null; }
+        }
+        // Serverns budget + det som ännu inte hunnit skickas.
+        function sattServerBudget(serverBudget) {
+            const vantande = (spelarData.onlineEkonomiKo || []).reduce((s, h) => s + (h.belopp || 0), 0);
+            medEkonomiTyp('server', () => { spelarData.budget = serverBudget + vantande; });
+        }
+        const BIL_FALT = ['parts1', 'parts2', 'partsSkadad1', 'partsSkadad2', 'uppgraderingKo1', 'uppgraderingKo2', 'reparationsKo1', 'reparationsKo2'];
+        function sattServerBil(bil) {
+            const lag = hamtaSpelarLag();
+            if (!lag || !bil) return;
+            BIL_FALT.forEach(k => { if (bil[k]) lag[k] = JSON.parse(JSON.stringify(bil[k])); });
+        }
+        async function synkaEkonomi() {
+            if (!arOnline()) return;
+            installeraBudgetVakt(spelarData);
+            const lag = hamtaSpelarLag();
+            const startBil = {};
+            if (lag) BIL_FALT.forEach(k => { if (lag[k]) startBil[k] = lag[k]; });
+            try {
+                const { data, error } = await window.supabaseClient.rpc('mitt_tillstand', { p_start_budget: Math.round(spelarData.budget || 0), p_start_bil: startBil });
+                if (error) throw error;
+                sattServerBil(data.bil);
+                const efterFlush = await flushaEkonomi();
+                sattServerBudget(typeof efterFlush === 'number' ? efterFlush : data.budget);
+            } catch (e) { console.error('Kunde inte synka ekonomin:', e); }
+        }
+        // Serverns skador från racet (race_resultat.skador) tillämpas på de
+        // lokala lagen, med samma effekt som tillampaSkador().
+        function tillampaServerSkador(grupp, skador) {
+            return (skador || []).map(sk => {
+                const lag = grupp.find(l => l.lagId === sk.lagId);
+                if (lag) {
+                    const partsKey = 'parts' + sk.bilNr, skadaKey = 'partsSkadad' + sk.bilNr;
+                    if (!lag[partsKey]) lag[partsKey] = nyborjarParts();
+                    const nuvarande = lag[partsKey][sk.komponent];
+                    if (!lag[skadaKey]) lag[skadaKey] = {};
+                    const befintlig = lag[skadaKey][sk.komponent];
+                    lag[skadaKey][sk.komponent] = { ursprungsvarde: befintlig ? befintlig.ursprungsvarde : nuvarande, bilNr: sk.bilNr };
+                    lag[partsKey][sk.komponent] = Math.max(0, Math.round(nuvarande * (1 - sk.andelSkada)));
+                    const f = forarForBil(lag, sk.bilNr);
+                    if (f) f.skadadTillRace = spelarData.sasong + '-' + (spelarData.raceNr + 1);
+                }
+                return { lagNamn: sk.lagNamn, bilNr: sk.bilNr, komponent: sk.komponent, andelSkada: sk.andelSkada, nyttVarde: sk.nyttVarde, forareNamn: sk.forareNamn };
+            });
         }
 
         // Skickar det egna lagets order för en omgång till servern.
@@ -13856,8 +13963,20 @@
             if (spelarData.budget < kostnad) { alert(tt("Inte tillräckligt med pengar! Kostnad: ", "Not enough money! Cost: ") + formatBelopp(kostnad) + ""); return; }
             let delLabel = KOMPONENT_LABEL[delNamn];
             let nyttIndex = Math.min(100, idx + 5);
+            const onlineUppgradering = arOnline();
             let bekraftat = confirm(tt('Uppgradera {delLabel} (Bil {bilNr}) från index {idx} till {nyttIndex} för {belopp}?\n\nUppgraderingen tar 1 dag innan den nya nivån slår igenom.', 'Upgrade {delLabel} (Car {bilNr}) from index {idx} to {nyttIndex} for {belopp}?\n\nThe upgrade takes 1 day before the new level takes effect.').replaceAll('{delLabel}', delLabel).replaceAll('{bilNr}', bilNr).replaceAll('{idx}', idx).replaceAll('{nyttIndex}', nyttIndex).replaceAll('{belopp}', formatBelopp(kostnad)));
             if (!bekraftat) return;
+            if (onlineUppgradering) {
+                window.supabaseClient.rpc('uppgradera_del', { p_bil: bilNr, p_del: delNamn }).then(({ data, error }) => {
+                    if (error) { alert(error.message); return; }
+                    sattServerBil(data.bil);
+                    sattServerBudget(data.budget);
+                    spelarData.managerlicens.flaggor.uppgradering = true;
+                    loggaTransaktion(tt('Uppgraderade ', 'Upgraded ') + delLabel + ' (' + tt('Bil', 'Car') + ' ' + bilNr + ')', -data.kostnad);
+                    sparaOchUppdatera();
+                });
+                return;
+            }
             spelarData.budget -= kostnad;
             spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + kostnad;
             let klarTid = new Date(Date.now() + UPPGRADERING_TID_MS).toISOString();
@@ -13933,6 +14052,16 @@
             if (spelarLag[repKoKey][delNamn]) { alert(tt("Den här delen repareras redan – klar ", "This part is already being repaired – ready ") + formateraDatum(spelarLag[repKoKey][delNamn].klar) + "."); return; }
             let kostnad = 100000;
             if (spelarData.budget < kostnad) { alert(tt("Inte tillräckligt med pengar! Kostnad: 100 000 kr", "Not enough money! Cost: 100,000 kr")); return; }
+            if (arOnline()) {
+                window.supabaseClient.rpc('reparera_del', { p_bil: bilNr, p_del: delNamn }).then(({ data, error }) => {
+                    if (error) { alert(error.message); return; }
+                    sattServerBil(data.bil);
+                    sattServerBudget(data.budget);
+                    loggaTransaktion(tt('Påbörjade reparation av ', 'Started repairing ') + KOMPONENT_LABEL[delNamn] + ' (' + tt('Bil', 'Car') + ' ' + bilNr + ')', -kostnad);
+                    sparaOchUppdatera();
+                });
+                return;
+            }
             spelarData.budget -= kostnad;
             spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + kostnad;
             // Precis som en vanlig uppgradering (se uppgraderaDel()) slår inte
@@ -14597,7 +14726,7 @@
             let netto = sponsor + merch + biljett + prispengar + forsaljning - underhall - totalLoner - signOnBonus - ovrigt - minusRanta;
             // Prispengar, försäljning, sign-on bonus och övrigt är redan bokade mot
             // budgeten när de inträffade – här läggs bara de löpande posterna till.
-            spelarData.budget += netto - prispengar - forsaljning + signOnBonus + ovrigt;
+            medEkonomiTyp('veckoekonomi', () => { spelarData.budget += netto - prispengar - forsaljning + signOnBonus + ovrigt; });
             utvecklaTeamPrincipal(spelarLag);
 
             if (harSponsoravtal) spelarData.sponsoravtal.veckorKvar -= 1;
@@ -15306,7 +15435,7 @@
             if (racePoangSpelare > 0) {
                 let perPoang = berakaRacePrisPerPoang(GROUP_DEFS[spelarData.serieId].tier);
                 let racePris = racePoangSpelare * perPoang;
-                spelarData.budget += racePris;
+                medEkonomiTyp(onlineResultatFor(spelarData.raceNr) ? 'server' : null, () => { spelarData.budget += racePris; }); // online: bokförs av servern
                 spelarData.veckoPrispengar = (spelarData.veckoPrispengar || 0) + racePris;
                 loggaTransaktion(tt('Prispengar Race {raceNr} ({poang}p)', 'Prize money Race {raceNr} ({poang}p)').replaceAll('{raceNr}', spelarData.raceNr).replaceAll('{poang}', racePoangSpelare), racePris);
                 loggaHandelse(tt('Laget tog {poang} poäng i Race {raceNr} och fick {belopp} i prispengar ({perPoang}/poäng).', 'The team scored {poang} points in Race {raceNr} and received {belopp} in prize money ({perPoang}/point).').replaceAll('{poang}', racePoangSpelare).replaceAll('{raceNr}', spelarData.raceNr).replaceAll('{belopp}', formatBelopp(racePris)).replaceAll('{perPoang}', formatBelopp(perPoang)));
@@ -15321,7 +15450,7 @@
                     if (r.placering <= 3 && avtal.pallBonus) { bonus += avtal.pallBonus; rader.push(tt('pallplats', 'podium')); }
                     if (r.placering === 1 && avtal.vinstBonus) { bonus += avtal.vinstBonus; rader.push(tt('vinst', 'win')); }
                     if (bonus > 0) {
-                        spelarData.budget += bonus;
+                        medEkonomiTyp('sponsorbonus', () => { spelarData.budget += bonus; });
                         loggaTransaktion(tt('Sponsorbonus ({sponsorNamn})', 'Sponsor bonus ({sponsorNamn})').replaceAll('{sponsorNamn}', avtal.sponsorNamn), bonus);
                         loggaHandelse(tt('{sponsorNamn} betalade ut {belopp} i sponsorbonus för Bil {bil} ({join}).', '{sponsorNamn} paid out {belopp} in sponsor bonus for Car {bil} ({join}).').replaceAll('{sponsorNamn}', avtal.sponsorNamn).replaceAll('{belopp}', formatBelopp(bonus)).replaceAll('{bil}', r.bil).replaceAll('{join}', rader.join(', ')));
                     }
@@ -15335,7 +15464,7 @@
             }
 
             // Skador: 0-3 bilar skadas varje race.
-            let skadeMeddelanden = tillampaSkador(grupp);
+            let skadeMeddelanden = (serverRes && serverRes.lopp) ? tillampaServerSkador(grupp, serverRes.skador) : tillampaSkador(grupp);
 
             genereraForumChatterEfterRace(grupp, loppResultat, loppResultat[0] ? loppResultat[0].lag : null);
 
@@ -15596,7 +15725,7 @@
                     });
                     let prisPengar = berakaSlutplaceringsBonus(GROUP_DEFS[gid].tier, spelarPlacering + 1, sorted.length);
                     if (prisPengar > 0) {
-                        spelarData.budget += prisPengar;
+                        medEkonomiTyp(arOnline() ? 'server' : null, () => { spelarData.budget += prisPengar; }); // online: bokförs av servern
                         spelarData.veckoPrispengar = (spelarData.veckoPrispengar || 0) + prisPengar;
                         loggaTransaktion(tt('Prispengar (P{spelarPlacering} i {kort})', 'Prize money (P{spelarPlacering} in {kort})').replaceAll('{spelarPlacering}', spelarPlacering + 1).replaceAll('{kort}', GROUP_DEFS[gid].kort), prisPengar);
                         laggTillNyhet(tt('Säsongsslut: {namn} slutade P{spelarPlacering} av {length} i {label} och fick {belopp} i prispengar.', 'Season end: {namn} finished P{spelarPlacering} of {length} in {label} and received {belopp} in prize money.').replaceAll('{namn}', sorted[spelarPlacering].namn).replaceAll('{spelarPlacering}', spelarPlacering + 1).replaceAll('{length}', sorted.length).replaceAll('{label}', GROUP_DEFS[gid].label).replaceAll('{belopp}', formatBelopp(prisPengar)));
@@ -15621,7 +15750,7 @@
                     // Sponsoravtalets mästerskapsklausul (se Ekonomi → Sponsoravtal).
                     if (spelarData.sponsoravtal && spelarData.sponsoravtal.mastarskapsBonus) {
                         let mb = spelarData.sponsoravtal.mastarskapsBonus;
-                        spelarData.budget += mb;
+                        medEkonomiTyp('sponsorbonus', () => { spelarData.budget += mb; });
                         loggaTransaktion(tt('Sponsorbonus – mästerskap ({sponsorNamn})', 'Sponsor bonus – championship ({sponsorNamn})').replaceAll('{sponsorNamn}', spelarData.sponsoravtal.sponsorNamn), mb);
                         laggTillNyhet(tt('{sponsorNamn} betalade ut {belopp} i mästerskapsbonus!', '{sponsorNamn} paid out {belopp} in championship bonus!').replaceAll('{sponsorNamn}', spelarData.sponsoravtal.sponsorNamn).replaceAll('{belopp}', formatBelopp(mb)));
                     }
@@ -16400,7 +16529,7 @@
                 nettoForSaljare = totalSumma - cut;
                 let spelarLag = hamtaSpelarLag();
                 if (cut > 0 && spelarLag && foregaende === spelarLag.namn) {
-                    spelarData.budget += cut;
+                    medEkonomiTyp('foregaende_klubb', () => { spelarData.budget += cut; });
                     spelarData.veckoForsaljningsintakt = (spelarData.veckoForsaljningsintakt || 0) + cut;
                     loggaTransaktion(tt('Föregående klubb-intäkt: {namn}', 'Previous-club revenue: {namn}').replaceAll('{namn}', personObjekt.namn), cut);
                     laggTillSystemMeddelande(
@@ -16503,7 +16632,7 @@
             if (arOnline()) {
                 window.supabaseClient.rpc('marknad_frikop', { p_team_id: lag.lagId, p_kategori: roll, p_person_id: personId }).then(({ error }) => {
                     if (error) { alert(tt('Friköpet kunde inte genomföras: ', 'The buyout could not be completed: ') + error.message); synkaOnlineVarld(true); return; }
-                    slutfor(true);
+                    medEkonomiTyp('server', () => slutfor(true)); // betalningen bokförs av servern
                 });
                 return;
             }
