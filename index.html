@@ -7632,6 +7632,25 @@
         }
         function onlineNyckel(sasong, raceNr) { return sasong + '-' + raceNr; }
 
+        // Vem styr vilket lag? Hämtas vid varje synk (billigt) så att ett lag
+        // som nyss tagits över av en annan manager inte står kvar som
+        // datorstyrt tills nästa fulla lagimport. Fel här stoppar inte synken.
+        async function synkaOnlineManagers() {
+            try {
+                const { data, error } = await window.supabaseClient.rpc('lag_managers');
+                if (error) throw error;
+                let karta = {};
+                (data || []).forEach(r => { karta[r.team_id] = r.username; });
+                ALL_GROUP_IDS.forEach(gid => (spelarData.tabeller[gid] || []).forEach(l => {
+                    if (!l.lagId || l.arSpelare) return;
+                    if (karta[l.lagId]) { l.arManniska = true; l.managerNamn = karta[l.lagId]; }
+                    else { l.arManniska = false; delete l.managerNamn; }
+                }));
+            } catch (e) {
+                console.warn('Kunde inte hämta managernamn:', e);
+            }
+        }
+
         // Gör om en teams-rad från servern till ett lokalt lagobjekt.
         function importeraOnlineLag(rad, signaturer) {
             let lag = rad.snapshot ? JSON.parse(JSON.stringify(rad.snapshot)) : {};
@@ -7770,6 +7789,7 @@
                         for (let r = 1; r <= 10; r++) if (!resultat[r]) spelarData.onlineTillampat[onlineNyckel(sasong, r)] = true;
                     }
                     tillampaOnlineLage(tab.data || [], sch.data && sch.data.schema);
+                    await synkaOnlineManagers();
                     onlineSenasteSynk = Date.now();
                     await synkaEkonomi();
                     synkaOnlineMarknad().then(() => synkaPersonal()).then(() => synkaTraning()).then(() => synkaVeckoekonomi());
@@ -12241,9 +12261,15 @@
             let plac = lagPlaceringIGrupp(lsGroupId, lag.namn);
             let placText = plac.plac > 0 ? tt('{ord} av {total}', '{ord} of {total}').replaceAll('{ord}', lokalOrdinal(plac.plac)).replaceAll('{total}', plac.total) : '-';
 
+            // Online: lag.arManniska kommer från teams.is_ai, lag.managerNamn
+            // från RPC:n lag_managers() (se synkaOnlineManagers).
             let ledareHTML = egetLag
                 ? `<span class="team-link" onclick="visaKontosida()">${escNamn((document.getElementById('auth-username-display') || {}).textContent || tt('Du', 'You'))}</span>`
-                : tt('Datorstyrt', 'Computer-controlled');
+                : (lag.arManniska
+                    ? (lag.managerNamn
+                        ? `<span class="team-link" onclick="visaForumAnvandarprofil('${escNamn(lag.managerNamn)}')">${inkorgEscapeHtml(lag.managerNamn)}</span>`
+                        : tt('Manager', 'Manager'))
+                    : tt('Datorstyrt', 'Computer-controlled'));
 
             let serieLabelHTML = def.label
                 ? `<span class="team-link" onclick="bytVisadSerie('${lsGroupId}'); bytFlik('serie'); bytSubflik('serie','tabell')">${def.label}</span>`
