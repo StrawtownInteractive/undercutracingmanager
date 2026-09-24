@@ -62,7 +62,7 @@
             if (!VALUTA_KURS[kod] || kod === aktivValuta) return;
             aktivValuta = kod;
             try { localStorage.setItem(VALUTA_KEY, kod); } catch (e) { /* strunta i det om det inte går att spara */ }
-            ['installningar-valuta-valjare', 'auth-valuta-valjare'].forEach(function (id) {
+            ['installningar-valuta-valjare', 'auth-reg-valuta'].forEach(function (id) {
                 var valjare = document.getElementById(id);
                 if (valjare) valjare.value = kod;
             });
@@ -1671,13 +1671,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 9px;
-            background: var(--blue-soft);
-            font-size: 15px;
+            width: 58px;
+            height: 48px;
         }
-        .auth-pitch-icon--accent { background: var(--accent-soft); }
+        .auth-pitch-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
         .auth-pitch-list-highlight {
             background: var(--accent-soft);
             border-color: rgba(239, 68, 68, 0.25);
@@ -2537,29 +2534,22 @@
     =================================================================== -->
     <div id="auth-screen" class="auth-screen">
         <div class="auth-bg" aria-hidden="true"></div>
-        <!-- Språk- och valutaval på inloggningssidan. Språkväxlaren är en
-             återanvändbar komponent som monteras via JS (skapaSprakvaxlare);
-             valutan sparas i localStorage via sattValuta() och kan ändras
-             senare under Mitt konto → Inställningar. -->
+        <!-- Språkval på inloggningssidan. Språkväxlaren är en återanvändbar
+             komponent som monteras via JS (skapaSprakvaxlare). Valutan väljs
+             vid registreringen (under Land) och kan ändras senare under
+             Mitt konto → Inställningar. -->
         <div class="lang-switcher-slot auth-sprak-valuta">
-            <select id="auth-valuta-valjare" class="valuta-switcher-select" onchange="sattValuta(this.value)" aria-label="Valuta" data-i18n-aria-label="kontoValutaRubrik">
-                <option value="SEK">kr SEK</option>
-                <option value="USD">$ USD</option>
-                <option value="EUR">€ EUR</option>
-                <option value="GBP">£ GBP</option>
-            </select>
             <div id="lang-switcher-auth"></div>
         </div>
 
         <div class="auth-pitch">
-            <span class="auth-pitch-badge">🏁 <span data-i18n="authPitchBadge">Gratis att spela – inget kreditkort krävs</span></span>
             <h2 class="auth-pitch-heading" data-i18n-html="authPitchHeading">Bygg ett <span class="auth-pitch-accent">vinnande stall</span> från grunden</h2>
             <p class="auth-pitch-lead" data-i18n="authPitchLead">Undercut Racing Manager är ett gratis, webbläsarbaserat managerspel om racing. Inget att installera – skapa ett konto och sätt ihop ditt drömlag på några minuter.</p>
             <ul class="auth-pitch-list">
-                <li><span class="auth-pitch-icon">🏎️</span><span data-i18n="authPitchPunkt1">Led ditt lag genom fyra divisioner och tävla vecka för vecka mot AI-styrda rivaler</span></li>
-                <li><span class="auth-pitch-icon">🔧</span><span data-i18n="authPitchPunkt2">Anställ förare, mekaniker och ingenjörer – förhandla kontrakt och bygg bilarna komponent för komponent</span></li>
-                <li><span class="auth-pitch-icon">🏆</span><span data-i18n="authPitchPunkt3">Jaga mästerskap, troféer och personliga rekord, säsong efter säsong</span></li>
-                <li class="auth-pitch-list-highlight"><span class="auth-pitch-icon auth-pitch-icon--accent">🎁</span><span data-i18n="authPitchPunkt4">Helt gratis att skapa konto – du får direkt en Managerlicens med 10 uppdrag värda 100 000 kr vardera</span></li>
+                <li><span class="auth-pitch-icon"><img src="assets/pitch-forare.png" alt=""></span><span data-i18n="authPitchPunkt1">Led ditt lag genom divisionerna och tävla vecka för vecka mot andra managers!</span></li>
+                <li><span class="auth-pitch-icon"><img src="assets/pitch-verktyg.png" alt=""></span><span data-i18n="authPitchPunkt2">Anställ förare, mekaniker och ingenjörer – förhandla kontrakt och bygg bilarna komponent för komponent!</span></li>
+                <li><span class="auth-pitch-icon"><img src="assets/pitch-bana.png" alt=""></span><span data-i18n="authPitchPunkt3">Jaga mästerskap, troféer och personliga rekord, säsong efter säsong!</span></li>
+                <li><span class="auth-pitch-icon"><img src="assets/pitch-pokal.png" alt=""></span><span data-i18n="authPitchPunkt4">Det bästa av allt: det är helt gratis att spela!</span></li>
             </ul>
         </div>
 
@@ -2641,6 +2631,16 @@
                         <label for="auth-reg-land" data-i18n="teamCountryLabel">Land</label>
                         <select id="auth-reg-land"></select>
                         <span class="auth-field-error" id="auth-reg-land-error"></span>
+                    </div>
+                    <div class="auth-field">
+                        <label for="auth-reg-valuta" data-i18n="kontoValutaRubrik">Valuta</label>
+                        <select id="auth-reg-valuta" onchange="sattValuta(this.value)">
+                            <option value="SEK">kr SEK</option>
+                            <option value="USD">$ USD</option>
+                            <option value="EUR">€ EUR</option>
+                            <option value="GBP">£ GBP</option>
+                        </select>
+                        <span class="auth-field-error"></span>
                     </div>
                     <div class="auth-field">
                         <label for="auth-reg-pass" data-i18n="passwordLabel">Lösenord</label>
@@ -3631,17 +3631,6 @@
                 </div>
             </div>
 
-            <div class="card" id="online-division-card" hidden>
-                <h3 id="online-division-rubrik" style="margin-top:0;">-</h3>
-                <p style="font-size:12px; color:#aaa; margin-top:0;" id="online-division-info">-</p>
-                <div class="tabell-scroll">
-                <table>
-                    <thead><tr><th>#</th><th data-i18n="appStall">Stall</th><th>Manager</th></tr></thead>
-                    <tbody id="online-division-body"></tbody>
-                </table>
-                </div>
-            </div>
-
             <div class="card">
                 <h3><span data-i18n="appForumLabel">Forum –</span> <span id="forum-grupplabel">-</span></h3>
                 <p style="font-size:12px; color:#aaa; margin-top:0;" data-i18n="appForumBeskrivning">Diskutera med de andra lagen i den serie du just nu tittar på ovan. Inläggen sparas per serie som en chattlogg.</p>
@@ -4101,6 +4090,21 @@
             <!-- DETALJVY: en egen sida per race, öppnas via visaRaceSida(raceNr)
                  när man klickar ett race i listan ovan. -->
             <div id="race-detalj-vy" style="display:none;">
+            <!-- Racerapportens ordning: pallen överst, sedan loppresultatet, sist resten. -->
+            <div class="card" id="race-podium-card" style="display:none;">
+                <div id="race-podium"></div>
+            </div>
+
+            <div class="card" id="race-lopp-card" style="display:none;">
+                <h3 data-i18n="appLoppresultat">Loppresultat</h3>
+                <div class="tabell-scroll">
+                <table>
+                    <thead><tr><th data-i18n="appPl">Pl</th><th data-i18n="appStall">Stall</th><th data-i18n="appBil">Bil</th><th data-i18n="appForare">Förare</th><th data-i18n="appStart">Start</th><th data-i18n="appPoang">Poäng</th><th data-i18n="appPrestation">Prestation</th><th data-i18n="appDepastrategi">Depåstrategi</th><th data-i18n="appDepatid">Depåtid</th><th data-i18n="appBransle">Bränsle</th></tr></thead>
+                    <tbody id="race-lopp-body"></tbody>
+                </table>
+                </div>
+            </div>
+
             <div class="card">
                 <h3><span data-i18n="appRace">Race</span> <span id="race-titel-nr">-</span>: <span id="race-titel-bana">-</span></h3>
                 <p><strong data-i18n="appVardlag">Värdlag:</strong> <span id="race-arrangor">-</span></p>
@@ -4202,26 +4206,12 @@
                 <p id="taktik-lopp-bekraftelse" style="display:none; color:var(--success); font-weight:600; margin:8px 0 0;" data-i18n="raceTaktikLoppSparad">Race-ordern är sparad.</p>
             </div>
 
-            <div class="card" id="race-podium-card" style="display:none;">
-                <div id="race-podium"></div>
-            </div>
-
             <div class="card" id="race-kval-card" style="display:none;">
                 <h3 data-i18n="appKvalStartuppstallning">Kval – Startuppställning</h3>
                 <div class="tabell-scroll">
                 <table>
                     <thead><tr><th data-i18n="appPos">Pos</th><th data-i18n="appStall">Stall</th><th data-i18n="appBil">Bil</th><th data-i18n="appForare">Förare</th><th data-i18n="appKvaltidIndex">Bästa kvaltid</th><th data-i18n="appPrestation">Prestation</th></tr></thead>
                     <tbody id="race-kval-body"></tbody>
-                </table>
-                </div>
-            </div>
-
-            <div class="card" id="race-lopp-card" style="display:none;">
-                <h3 data-i18n="appLoppresultat">Loppresultat</h3>
-                <div class="tabell-scroll">
-                <table>
-                    <thead><tr><th data-i18n="appPl">Pl</th><th data-i18n="appStall">Stall</th><th data-i18n="appBil">Bil</th><th data-i18n="appForare">Förare</th><th data-i18n="appStart">Start</th><th data-i18n="appPoang">Poäng</th><th data-i18n="appPrestation">Prestation</th><th data-i18n="appDepastrategi">Depåstrategi</th><th data-i18n="appDepatid">Depåtid</th><th data-i18n="appBransle">Bränsle</th></tr></thead>
-                    <tbody id="race-lopp-body"></tbody>
                 </table>
                 </div>
             </div>
@@ -4651,12 +4641,6 @@
                     <button class="btn-secondary" style="width:auto;" onclick="CookieConsent.openSettings()" data-i18n="kontoCookieInstallningarBtn">Cookie-inställningar</button>
                 </div>
 
-                <div class="card">
-                    <h3 data-i18n="appAterstallNollstallSpel">Återställ / Nollställ Spel</h3>
-                    <p style="font-size:13px; color:var(--text-muted); margin-top:0;" data-i18n="kontoNollstallIntro">Nollställer allt sparat spelläge och startar om från början. Går inte att ångra.</p>
-                    <button onclick="nollstallSpelData()" style="background-color: var(--danger-strong);" data-i18n="appAterstallNollstallSpel">Återställ / Nollställ Spel</button>
-                </div>
-
                 <!-- Visas bara när spelarData.arTestlage är true (se uppdateraUI/renderTestlageKort) –
                      dvs. bara för det inloggade testkontot ("Testläge (utan Supabase)"), aldrig för
                      ett riktigt konto. -->
@@ -4863,6 +4847,11 @@
 
     <div id="racearkivmodal-overlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) stangRaceArkiv()">
         <div class="card modal-card" id="racearkivmodal-card" style="max-width:560px;"></div>
+    </div>
+
+    <!-- Inloggningsbonus (7 dagar × 100 000 kr) – visas direkt efter inloggning. Fylls av visaInloggningsbonus(). -->
+    <div id="inloggningsbonus-overlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) stangInloggningsbonus()">
+        <div class="card modal-card" id="inloggningsbonus-card" style="max-width:460px;"></div>
     </div>
 
     <!-- Personinfo för sparkad personal / fria agenter på Marknad – dessa saknar
@@ -5302,6 +5291,67 @@
             visaNotis('spelhandelse', tt('Belöning hämtad!', 'Reward claimed!'), tt('{titel}: du fick {belopp}.', '{titel}: you received {belopp}.').replaceAll('{titel}', uppdragTitel(def)).replaceAll('{belopp}', formatBelopp(MANAGERLICENS_BELONING)));
             sparaOchUppdatera();
             renderManagerlicens();
+        }
+
+        // ---------------------------------------------------------------------
+        // INLOGGNINGSBONUS: 100 000 kr per inloggningsdag, 7 gånger per lag.
+        // Servern (inloggningsbonus_status/_hamta, supabase/fas3b8.sql) avgör
+        // om dagens bonus finns kvar och betalar ut – klienten visar bara rutan.
+        // Kollas en gång per session, efter första ekonomisynken.
+        // ---------------------------------------------------------------------
+        let inloggningsbonusKollad = false, inloggningsbonusStatus = null;
+        async function kollaInloggningsbonus() {
+            if (inloggningsbonusKollad || !arOnline()) return;
+            inloggningsbonusKollad = true;
+            try {
+                const { data, error } = await window.supabaseClient.rpc('inloggningsbonus_status');
+                if (error) throw error;
+                if (data && data.kanHamta) { inloggningsbonusStatus = data; visaInloggningsbonus(); }
+            } catch (e) { console.error('Kunde inte hämta inloggningsbonusen:', e); }
+        }
+        function visaInloggningsbonus(fel) {
+            const st = inloggningsbonusStatus;
+            if (!st) return;
+            const max = st.max || 7, dag = st.hamtade + 1;
+            const dagar = Array.from({ length: max }, (_, i) => {
+                const n = i + 1, hamtad = n < dag, idag = n === dag;
+                return `<div style="flex:1; min-width:0; text-align:center; padding:6px 0; border-radius:var(--radius-md); font-size:11px; font-weight:600;
+                    border:1px solid ${idag ? 'var(--success)' : 'var(--border)'}; background:${idag ? 'var(--success-soft)' : 'var(--surface-2)'}; color:${hamtad || idag ? 'var(--text)' : 'var(--text-muted)'};">
+                    ${tt('Dag', 'Day')} ${n}<div style="font-size:14px; margin-top:2px;">${hamtad ? '✓' : ''}&nbsp;</div></div>`;
+            }).join('');
+            document.getElementById('inloggningsbonus-card').innerHTML = `
+                <h3 style="margin-bottom:4px;">${tt('Inloggningsbonus', 'Login bonus')}</h3>
+                <p style="font-size:13px; color:var(--text-muted); margin-top:0;">${tt('Logga in 7 dagar och få {belopp} varje dag.', 'Log in on 7 days and get {belopp} each day.').replace('{belopp}', formatBelopp(st.belopp))}</p>
+                <div style="display:flex; gap:5px; margin:12px 0;">${dagar}</div>
+                <div style="text-align:center; background:var(--surface-2); border:1px solid var(--success); border-radius:var(--radius-md); padding:18px 12px; margin-bottom:12px;">
+                    <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">${tt('Dag {dag} av {max}', 'Day {dag} of {max}').replace('{dag}', dag).replace('{max}', max)}</div>
+                    <div style="font-size:28px; font-weight:700; margin:6px 0 12px;">${formatBelopp(st.belopp)}</div>
+                    <button class="btn-green" id="inloggningsbonus-knapp" onclick="hamtaInloggningsbonus()">${tt('Hämta', 'Claim')}</button>
+                    ${fel ? `<p style="color:var(--accent); font-size:12.5px; margin:8px 0 0;">${fel}</p>` : ''}
+                </div>
+                <button class="btn-small btn-secondary" style="width:100%;" onclick="stangInloggningsbonus()">${tt('Senare', 'Later')}</button>`;
+            document.getElementById('inloggningsbonus-overlay').style.display = 'flex';
+        }
+        async function hamtaInloggningsbonus() {
+            const knapp = document.getElementById('inloggningsbonus-knapp');
+            if (knapp) { knapp.disabled = true; knapp.textContent = tt('Hämtar…', 'Claiming…'); }
+            try {
+                const { data, error } = await window.supabaseClient.rpc('inloggningsbonus_hamta');
+                if (error) throw error;
+                const belopp = inloggningsbonusStatus.belopp;
+                inloggningsbonusStatus = null;
+                sattServerBudget(data.budget);
+                loggaTransaktion(tt('Inloggningsbonus dag ', 'Login bonus day ') + data.hamtade, belopp);
+                sparaOchUppdatera();
+                stangInloggningsbonus();
+                visaNotis('spelhandelse', tt('Bonus hämtad!', 'Bonus claimed!'), tt('Du fick {belopp} (dag {dag} av {max}).', 'You received {belopp} (day {dag} of {max}).').replace('{belopp}', formatBelopp(belopp)).replace('{dag}', data.hamtade).replace('{max}', data.max));
+            } catch (e) {
+                console.error('Kunde inte hämta inloggningsbonusen:', e);
+                visaInloggningsbonus(tt('Bonusen kunde inte hämtas: ', 'The bonus could not be claimed: ') + escNamn(e.message || ''));
+            }
+        }
+        function stangInloggningsbonus() {
+            document.getElementById('inloggningsbonus-overlay').style.display = 'none';
         }
 
         // Sänker en förares övriga förmågor lite grann (formågeförfall) om hen är äldre än 30.
@@ -7800,6 +7850,7 @@
                     await synkaOnlineManagers();
                     onlineSenasteSynk = Date.now();
                     await synkaEkonomi();
+                    kollaInloggningsbonus();
                     synkaOnlineMarknad().then(() => synkaPersonal()).then(() => synkaTraning()).then(() => synkaVeckoekonomi());
                     skickaOrderTillServer(spelarData.raceNr);
                     sparaOchUppdatera();
@@ -15458,12 +15509,12 @@
             card.innerHTML = `
                 <h3>${tt('Race', 'Race')} ${r.raceNr}, ${tt('Säsong', 'Season')} ${r.sasong}: ${escNamn(r.banaNamn)}</h3>
                 <p style="font-size:12.5px; color:var(--text-muted); margin-top:-6px;">${tt('Värd:', 'Host:')} ${escNamn(r.arrangorNamn || '-')} · ${r.banaLangd} km · ${r.banaKurvor} ${tt('kurvor', 'corners')}</p>
-                ${(r.referat || r.referatData) ? `<p style="font-size:13px;">${renderReferatText(r)}</p>` : ''}
                 ${pallSektionHTML(r.lopp)}
-                <h4 style="margin-bottom:4px;">${tt('Kval', 'Qualifying')}</h4>
-                <div style="overflow-x:auto;"><table><thead><tr><th>${tt('Pos', 'Pos')}</th><th>${tt('Lag', 'Team')}</th><th>${tt('Bil', 'Car')}</th><th>${tt('Förare', 'Driver')}</th><th>${tt('Poäng', 'Points')}</th><th>%</th></tr></thead><tbody>${kvalRader}</tbody></table></div>
                 <h4 style="margin-bottom:4px;">${tt('Lopp', 'Race')}</h4>
                 <div style="overflow-x:auto;"><table><thead><tr><th>${tt('Plac', 'Pos')}</th><th>${tt('Lag', 'Team')}</th><th>${tt('Bil', 'Car')}</th><th>${tt('Förare', 'Driver')}</th><th>${tt('Start', 'Start')}</th><th>${tt('Poäng', 'Points')}</th><th>%</th><th>${tt('Strategi', 'Strategy')}</th><th>${tt('Depå', 'Pit')}</th><th>${tt('Bränsle', 'Fuel')}</th></tr></thead><tbody>${loppRader}</tbody></table></div>
+                ${(r.referat || r.referatData) ? `<p style="font-size:13px;">${renderReferatText(r)}</p>` : ''}
+                <h4 style="margin-bottom:4px;">${tt('Kval', 'Qualifying')}</h4>
+                <div style="overflow-x:auto;"><table><thead><tr><th>${tt('Pos', 'Pos')}</th><th>${tt('Lag', 'Team')}</th><th>${tt('Bil', 'Car')}</th><th>${tt('Förare', 'Driver')}</th><th>${tt('Poäng', 'Points')}</th><th>%</th></tr></thead><tbody>${kvalRader}</tbody></table></div>
                 ${r.skador && r.skador.length ? `<p style="font-size:12px; color:var(--text-muted);">${tt('Skador:', 'Damage:')} ${renderSkadeText(r.skador)}</p>` : ''}
                 <button class="btn-small btn-secondary" style="width:100%; margin-top:10px;" onclick="stangRaceArkiv()">${tt('Stäng', 'Close')}</button>
             `;
@@ -18462,12 +18513,9 @@
         // (visaRaceSida(), se #race-podium) och Racearkivet (visaRaceArkiv()),
         // samma delade-cell-princip som bransleCellHTML() ovan. lopp =
         // resultatlistans rader (samma format som sparas i
-        // raceResultat[...].lopp/raceArkiv[...].lopp). Avataren måste renderas
-        // med storlek 'large' och sedan skalas ner visuellt – se
-        // getAvatarImage()/AvatarSystem: alla andra storlekar är avstängda
-        // ("De små ikonerna bredvid namn i listor... är borttagna på begäran"),
-        // samma knep som redan används t.ex. i hubForareKortHTML().
-        const PALL_MEDALJ = ['🥇', '🥈', '🥉'];
+        // raceResultat[...].lopp/raceArkiv[...].lopp). Varje placering visas med
+        // sin pokalbild (assets/pall-1..3.png) i stället för medalj-emoji.
+        const PALL_BILD = ['assets/pall-1.png', 'assets/pall-2.png', 'assets/pall-3.png'];
         // falt: vilket fält raderna ska rankas på – 'placering' (standard, för
         // ett loppresultat) eller 'startPos' (för en ren kvalrapport, där det
         // ännu inte finns något loppresultat att rangordna efter).
@@ -18477,15 +18525,11 @@
             let pall = lopp.filter(r => !r.dnf).sort((a, b) => a[falt] - b[falt]).slice(0, 3);
             if (!pall.length) return '';
             let kort = pall.map((r, i) => {
-                let upplost = loshaPersonOchLagForRaceRad(r);
-                let farger = upplost.lag ? hamtaTeamFarger(upplost.lag) : null;
-                let avatar = avatarHTML(upplost.person, 'forare', 'large', farger);
                 let namnHTML = (r.forarId && r.lagId) ? `<span class="team-link" onclick="visaForarProfil('${r.forarId}','${r.lagId}')">${escNamn(r.forarNamn)}</span>` : escNamn(r.forarNamn);
                 let lagHTML = r.lagId ? `<span class="team-link" onclick="visaLagsidaForLagId('${r.lagId}')">${escNamn(r.lagNamn)}</span>` : escNamn(r.lagNamn);
                 return `
-                    <div style="flex:1; min-width:110px; text-align:center; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 8px;">
-                        <div style="font-size:22px; line-height:1;">${PALL_MEDALJ[i] || ('P' + r.placering)}</div>
-                        <div style="width:56px; height:56px; overflow:hidden; margin:6px auto;"><div style="transform:scale(0.5); transform-origin:top left;">${avatar}</div></div>
+                    <div style="flex:1; min-width:150px; text-align:center; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 8px;">
+                        <img src="${PALL_BILD[i]}" alt="P${i + 1}" style="display:block; width:100%; max-width:320px; aspect-ratio:61/33; object-fit:contain; margin:0 auto 6px;">
                         <div style="font-weight:600; font-size:13px;">${namnHTML}</div>
                         <div style="font-size:12px; color:var(--text-muted);">${lagHTML}</div>
                     </div>`;
@@ -19553,10 +19597,10 @@
                 authPitchBadge: 'Gratis att spela – inget kreditkort krävs',
                 authPitchHeading: 'Bygg ett <span class="auth-pitch-accent">vinnande stall</span> från grunden',
                 authPitchLead: 'Undercut Racing Manager är ett gratis, webbläsarbaserat managerspel om racing. Inget att installera – skapa ett konto och sätt ihop ditt drömlag på några minuter.',
-                authPitchPunkt1: 'Led ditt lag genom fyra divisioner och tävla vecka för vecka mot AI-styrda rivaler',
-                authPitchPunkt2: 'Anställ förare, mekaniker och ingenjörer – förhandla kontrakt och bygg bilarna komponent för komponent',
-                authPitchPunkt3: 'Jaga mästerskap, troféer och personliga rekord, säsong efter säsong',
-                authPitchPunkt4: 'Helt gratis att skapa konto – du får direkt en Managerlicens med 10 uppdrag värda 100 000 kr vardera',
+                authPitchPunkt1: "Led ditt lag genom divisionerna och tävla vecka för vecka mot andra managers!",
+                authPitchPunkt2: "Anställ förare, mekaniker och ingenjörer – förhandla kontrakt och bygg bilarna komponent för komponent!",
+                authPitchPunkt3: "Jaga mästerskap, troféer och personliga rekord, säsong efter säsong!",
+                authPitchPunkt4: "Det bästa av allt: det är helt gratis att spela!",
                 loginHeading: 'Välkommen tillbaka!',
                 loginLead: 'Logga in för att fortsätta bygga ditt lag.',
                 usernameOrEmailLabel: 'Användarnamn eller e-post',
@@ -20356,10 +20400,10 @@
                 authPitchBadge: 'Free to play – no credit card required',
                 authPitchHeading: 'Build a winning team from the ground up',
                 authPitchLead: 'Undercut Racing Manager is a free browser-based racing management game – nothing to install, just create an account and put together your dream team in minutes.',
-                authPitchPunkt1: 'Lead your own team through four divisions and compete week by week against AI-controlled rivals',
-                authPitchPunkt2: 'Hire drivers, mechanics and engineers, negotiate contracts, and upgrade the cars component by component',
-                authPitchPunkt3: 'Chase championships, trophies and personal records season after season',
-                authPitchPunkt4: 'Free to create an account – new players get a Manager License with 10 quests worth 100,000 kr each',
+                authPitchPunkt1: "Lead your team through the divisions and compete week by week against other managers!",
+                authPitchPunkt2: "Hire drivers, mechanics and engineers – negotiate contracts and build the cars component by component!",
+                authPitchPunkt3: "Chase championships, trophies and personal records, season after season!",
+                authPitchPunkt4: "Best of all: it is completely free to play!",
                 loginHeading: 'Welcome back!',
                 loginLead: 'Log in to keep building your team.',
                 usernameOrEmailLabel: 'Username or email',
@@ -21170,10 +21214,10 @@
                 authPitchBadge: "Kostenlos spielen – keine Kreditkarte erforderlich",
                 authPitchHeading: "Baue von Grund auf ein siegreiches Team",
                 authPitchLead: "Undercut Racing Manager ist ein kostenloses browserbasiertes Renn-Manager-Spiel – nichts zu installieren, erstelle einfach ein Konto und stelle dein Traumteam in wenigen Minuten zusammen.",
-                authPitchPunkt1: "Führe dein eigenes Team durch vier Divisionen und tritt Woche für Woche gegen KI-gesteuerte Rivalen an",
-                authPitchPunkt2: "Stelle Fahrer, Mechaniker und Ingenieure ein, verhandle Verträge und verbessere die Autos Komponente für Komponente",
-                authPitchPunkt3: "Jage Meisterschaften, Trophäen und persönliche Rekorde Saison für Saison",
-                authPitchPunkt4: "Kostenlose Kontoerstellung – neue Spieler erhalten eine Manager-Lizenz mit 10 Aufgaben im Wert von je 100.000 kr",
+                authPitchPunkt1: "Führe dein Team durch die Divisionen und tritt Woche für Woche gegen andere Manager an!",
+                authPitchPunkt2: "Stelle Fahrer, Mechaniker und Ingenieure ein – verhandle Verträge und baue die Autos Komponente für Komponente!",
+                authPitchPunkt3: "Jage Meisterschaften, Trophäen und persönliche Rekorde, Saison für Saison!",
+                authPitchPunkt4: "Das Beste daran: Das Spiel ist komplett kostenlos!",
                 loginHeading: "Willkommen zurück!",
                 loginLead: "Melde dich an, um weiter an deinem Team zu bauen.",
                 usernameOrEmailLabel: "Benutzername oder E-Mail",
@@ -21932,10 +21976,10 @@
                 authPitchBadge: "Gratuit – aucune carte bancaire requise",
                 authPitchHeading: "Bâtissez une équipe gagnante depuis les fondations",
                 authPitchLead: "Undercut Racing Manager est un jeu de gestion de course gratuit et basé sur navigateur – rien à installer, il suffit de créer un compte et de constituer votre équipe de rêve en quelques minutes.",
-                authPitchPunkt1: "Dirigez votre propre équipe à travers quatre divisions et affrontez semaine après semaine des rivaux contrôlés par l'IA",
-                authPitchPunkt2: "Recrutez des pilotes, des mécaniciens et des ingénieurs, négociez des contrats et améliorez les voitures composant par composant",
-                authPitchPunkt3: "Poursuivez championnats, trophées et records personnels saison après saison",
-                authPitchPunkt4: "Création de compte gratuite – les nouveaux joueurs reçoivent une licence de manager avec 10 quêtes d'une valeur de 100 000 kr chacune",
+                authPitchPunkt1: "Menez votre équipe à travers les divisions et affrontez d'autres managers semaine après semaine !",
+                authPitchPunkt2: "Recrutez des pilotes, des mécaniciens et des ingénieurs – négociez des contrats et construisez les voitures composant par composant !",
+                authPitchPunkt3: "Chassez les championnats, les trophées et les records personnels, saison après saison !",
+                authPitchPunkt4: "Le meilleur de tout : c'est entièrement gratuit !",
                 loginHeading: "Content de vous revoir !",
                 loginLead: "Connectez-vous pour continuer à construire votre équipe.",
                 usernameOrEmailLabel: "Nom d'utilisateur ou e-mail",
@@ -22694,10 +22738,10 @@
                 authPitchBadge: "Gratis para jugar – no se requiere tarjeta de crédito",
                 authPitchHeading: "Construye un equipo ganador desde cero",
                 authPitchLead: "Undercut Racing Manager es un juego gratuito de gestión de carreras basado en el navegador – no hay que instalar nada, solo crea una cuenta y arma tu equipo soñado en minutos.",
-                authPitchPunkt1: "Dirige tu propio equipo a través de cuatro divisiones y compite semana a semana contra rivales controlados por la IA",
-                authPitchPunkt2: "Contrata pilotos, mecánicos e ingenieros, negocia contratos y mejora los coches componente a componente",
-                authPitchPunkt3: "Persigue campeonatos, trofeos y récords personales temporada tras temporada",
-                authPitchPunkt4: "Crear una cuenta es gratis – los nuevos jugadores reciben una Licencia de Mánager con 10 misiones que valen 100.000 kr cada una",
+                authPitchPunkt1: "¡Dirige tu equipo a través de las divisiones y compite semana a semana contra otros mánagers!",
+                authPitchPunkt2: "¡Contrata pilotos, mecánicos e ingenieros – negocia contratos y construye los coches componente a componente!",
+                authPitchPunkt3: "¡Persigue campeonatos, trofeos y récords personales, temporada tras temporada!",
+                authPitchPunkt4: "Lo mejor de todo: ¡es totalmente gratis!",
                 loginHeading: "¡Bienvenido de nuevo!",
                 loginLead: "Inicia sesión para seguir construyendo tu equipo.",
                 usernameOrEmailLabel: "Usuario o correo electrónico",
@@ -23445,10 +23489,10 @@
                 authPitchBadge: 'Gra darmowa – karta kredytowa niepotrzebna',
                 authPitchHeading: 'Zbuduj <span class="auth-pitch-accent">zwycięską stajnię</span> od podstaw',
                 authPitchLead: 'Undercut Racing Manager to darmowa, przeglądarkowa gra menedżerska o wyścigach. Nic do instalowania – załóż konto i złóż swój wymarzony zespół w kilka minut.',
-                authPitchPunkt1: 'Prowadź swój zespół przez cztery dywizje i rywalizuj tydzień po tygodniu z rywalami sterowanymi przez AI',
-                authPitchPunkt2: 'Zatrudniaj kierowców, mechaników i inżynierów – negocjuj kontrakty i buduj bolidy komponent po komponencie',
-                authPitchPunkt3: 'Goń za mistrzostwami, trofeami i osobistymi rekordami, sezon po sezonie',
-                authPitchPunkt4: 'Całkowicie darmowe założenie konta – od razu otrzymujesz Licencję Menedżera z 10 zadaniami wartymi po 100 000 kr każde',
+                authPitchPunkt1: "Prowadź swój zespół przez dywizje i rywalizuj tydzień po tygodniu z innymi menedżerami!",
+                authPitchPunkt2: "Zatrudniaj kierowców, mechaników i inżynierów – negocjuj kontrakty i buduj bolidy komponent po komponencie!",
+                authPitchPunkt3: "Goń za mistrzostwami, trofeami i osobistymi rekordami, sezon po sezonie!",
+                authPitchPunkt4: "A co najlepsze: gra jest całkowicie darmowa!",
                 loginHeading: 'Witaj z powrotem!',
                 loginLead: 'Zaloguj się, aby kontynuować budowę swojego zespołu.',
                 usernameOrEmailLabel: 'Nazwa użytkownika lub e-mail',
@@ -24207,10 +24251,10 @@
                 authPitchBadge: 'Ilmainen pelata – ei luottokorttia tarvita',
                 authPitchHeading: 'Rakenna <span class="auth-pitch-accent">voittava talli</span> alusta alkaen',
                 authPitchLead: 'Undercut Racing Manager on ilmainen, selainpohjainen kilpa-autoilun managerpeli. Ei mitään asennettavaa – luo tili ja kokoa unelmajoukkueesi muutamassa minuutissa.',
-                authPitchPunkt1: 'Johda joukkuettasi neljän divisioonan läpi ja kilpaile viikko viikolta tekoälyn ohjaamia kilpailijoita vastaan',
-                authPitchPunkt2: 'Palkkaa kuljettajia, mekaanikoita ja insinöörejä – neuvottele sopimuksia ja rakenna autoja komponentti kerrallaan',
-                authPitchPunkt3: 'Tavoittele mestaruuksia, pokaaleja ja henkilökohtaisia ennätyksiä kausi toisensa jälkeen',
-                authPitchPunkt4: 'Täysin ilmainen tilin luominen – saat heti Manager-lisenssin, jossa on 10 tehtävää, kukin arvoltaan 100 000 kr',
+                authPitchPunkt1: "Johda joukkuettasi divisioonien läpi ja kilpaile viikko viikolta muita managereita vastaan!",
+                authPitchPunkt2: "Palkkaa kuljettajia, mekaanikoita ja insinöörejä – neuvottele sopimuksia ja rakenna autoja komponentti kerrallaan!",
+                authPitchPunkt3: "Tavoittele mestaruuksia, pokaaleja ja henkilökohtaisia ennätyksiä kausi toisensa jälkeen!",
+                authPitchPunkt4: "Parasta kaikessa: pelaaminen on täysin ilmaista!",
                 loginHeading: 'Tervetuloa takaisin!',
                 loginLead: 'Kirjaudu sisään jatkaaksesi joukkueesi rakentamista.',
                 usernameOrEmailLabel: 'Käyttäjätunnus tai sähköposti',
@@ -24969,10 +25013,10 @@
                 authPitchBadge: 'Ingyen játszható – nincs szükség bankkártyára',
                 authPitchHeading: 'Építs <span class="auth-pitch-accent">győztes istállót</span> a semmiből',
                 authPitchLead: 'Az Undercut Racing Manager egy ingyenes, böngészőalapú versenymenedzser-játék. Nincs mit telepíteni – hozz létre fiókot, és néhány perc alatt összerakhatod álomcsapatodat.',
-                authPitchPunkt1: 'Vezesd csapatodat négy divízión keresztül, és versenyezz hétről hétre gépi vezérlésű riválisok ellen',
-                authPitchPunkt2: 'Szerződtess versenyzőket, szerelőket és mérnököket – tárgyalj szerződéseket, és építsd fel az autókat komponensről komponensre',
-                authPitchPunkt3: 'Hajszold a bajnoki címeket, trófeákat és személyes rekordokat, szezonról szezonra',
-                authPitchPunkt4: 'Teljesen ingyenes fiókot létrehozni – azonnal kapsz egy Menedzserlicencet 10, egyenként 100 000 kr értékű feladattal',
+                authPitchPunkt1: "Vezesd csapatodat a divíziókon keresztül, és versenyezz hétről hétre más menedzserekkel!",
+                authPitchPunkt2: "Szerződtess versenyzőket, szerelőket és mérnököket – tárgyalj szerződéseket, és építsd fel az autókat komponensről komponensre!",
+                authPitchPunkt3: "Hajszold a bajnoki címeket, trófeákat és személyes rekordokat, szezonról szezonra!",
+                authPitchPunkt4: "A legjobb pedig: teljesen ingyenes játszani!",
                 loginHeading: 'Üdvözlünk újra!',
                 loginLead: 'Jelentkezz be, hogy folytathasd a csapatod építését.',
                 usernameOrEmailLabel: 'Felhasználónév vagy e-mail',
@@ -25731,10 +25775,10 @@
                 authPitchBadge: '無料プレイ――クレジットカード不要',
                 authPitchHeading: 'ゼロから<span class="auth-pitch-accent">勝利するチーム</span>を作り上げよう',
                 authPitchLead: 'Undercut Racing Managerは無料のブラウザベースのレーシングマネージメントゲームです。インストール不要――アカウントを作成し、数分で夢のチームを組み上げましょう。',
-                authPitchPunkt1: '4つのディビジョンを通してチームを率い、AI操作のライバルたちと毎週対戦',
-                authPitchPunkt2: 'ドライバー、メカニック、エンジニアを雇用――契約を交渉し、コンポーネントごとに車を作り上げる',
-                authPitchPunkt3: '選手権、トロフィー、個人記録をシーズンを重ねて追い求める',
-                authPitchPunkt4: 'アカウント作成は完全無料――登録するとすぐに、1つあたり100,000 kr相当の10個のミッションが入ったマネージャーライセンスがもらえます',
+                authPitchPunkt1: "チームを率いてディビジョンを勝ち上がり、毎週ほかのマネージャーと対戦しよう！",
+                authPitchPunkt2: "ドライバー、メカニック、エンジニアを雇用――契約を交渉し、コンポーネントごとに車を作り上げよう！",
+                authPitchPunkt3: "選手権、トロフィー、個人記録をシーズンを重ねて追い求めよう！",
+                authPitchPunkt4: "何より、完全無料でプレイできます！",
                 loginHeading: 'おかえりなさい！',
                 loginLead: 'チーム作りを続けるにはログインしてください。',
                 usernameOrEmailLabel: 'ユーザー名またはメールアドレス',
@@ -26641,7 +26685,7 @@
             applyOversattningar(document);
             var mountAuth = document.getElementById('lang-switcher-auth');
             if (mountAuth) skapaSprakvaxlare(mountAuth);
-            var authValuta = document.getElementById('auth-valuta-valjare');
+            var authValuta = document.getElementById('auth-reg-valuta');
             if (authValuta) authValuta.value = aktivValuta;
             var mountApp = document.getElementById('lang-switcher-app');
             if (mountApp) skapaSprakvaxlare(mountApp);
@@ -26846,6 +26890,18 @@
             let sel = document.getElementById('auth-reg-land');
             if (!sel) return;
             sel.innerHTML = nationalitetPool.map(land => `<option value="${land}">${land}</option>`).join('');
+            // Valutan föreslås utifrån valt land (kan ändras i Valuta-väljaren
+            // direkt under, och senare under Mitt konto → Inställningar).
+            const LAND_VALUTA = { 'Sverige': 'SEK', 'Danmark': 'SEK', 'Norge': 'SEK', 'Storbritannien': 'GBP',
+                'Italien': 'EUR', 'Tyskland': 'EUR', 'Frankrike': 'EUR', 'Spanien': 'EUR', 'Nederländerna': 'EUR',
+                'Finland': 'EUR', 'Belgien': 'EUR', 'Österrike': 'EUR', 'Monaco': 'EUR' };
+            let valutaSel = document.getElementById('auth-reg-valuta');
+            if (valutaSel) valutaSel.value = aktivValuta;
+            sel.addEventListener('change', function () {
+                let kod = LAND_VALUTA[sel.value] || 'USD';
+                sattValuta(kod);
+                if (valutaSel) valutaSel.value = kod;
+            });
         })();
 
         let registreringPagar = false;
