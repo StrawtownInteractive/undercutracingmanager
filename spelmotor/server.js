@@ -212,6 +212,103 @@
         return ut;
     }
 
+
+    // ---------------------------------------------------------------------
+    // Träning och utveckling (Fas 3b-3). Samma regler som spelet:
+    // korTraningsrace(), tillampaVantandePersonalTraning() och aldrasAlla().
+    // ---------------------------------------------------------------------
+    const PERSONAL_LISTOR = [['forare', 'forare'], ['mekanikerLista', 'mekaniker'], ['ingenjorLista', 'ingenjor']];
+    function statNycklar(kat) {
+        return kat === 'forare' ? V.DRIVARE_STAT_KEYS : (kat === 'mekaniker' ? V.MEK_STAT_KEYS : V.ING_STAT_KEYS);
+    }
+    function kopiaPersonal(personal) { return JSON.parse(JSON.stringify(personal || {})); }
+
+    // val: [{ id, kat, attribut }]. Förarna förbättras direkt, personalen
+    // får en väntande förbättring som slår igenom vid veckouppdateringen.
+    function traningsvecka(personal, val, rng) {
+        const ny = kopiaPersonal(personal);
+        const resultat = [];
+        (val || []).forEach(v => {
+            const nyckel = (PERSONAL_LISTOR.find(x => x[1] === v.kat) || [])[0];
+            const p = nyckel && (ny[nyckel] || []).find(x => x.id === v.id);
+            if (!p || !p.stats || v.attribut === 'erfarenhet' || statNycklar(v.kat).indexOf(v.attribut) < 0) return;
+            const prest = R.simuleraForarPrestation(p, rng);
+            const forbattring = Math.max(1, Math.min(5, Math.round(1 + prest.procent * 4)));
+            if (v.kat === 'forare') {
+                p.stats[v.attribut] = Math.min(100, (p.stats[v.attribut] || 0) + forbattring);
+                p.formaga = V.beraknaFormaga(p.stats, statNycklar(v.kat));
+            } else {
+                p.vantandeTraning = { attribut: v.attribut, forbattring: forbattring, procent: prest.procent };
+            }
+            resultat.push({ id: p.id, namn: p.namn, typ: v.kat, attribut: v.attribut, procent: Math.round(prest.procent * 100),
+                procentExakt: prest.procent, forbattring: forbattring, vantande: v.kat !== 'forare', nyttVarde: p.stats[v.attribut] });
+        });
+        resultat.sort((a, b) => b.procent - a.procent);
+        resultat.forEach((r, i) => { r.placering = i + 1; });
+        return { personal: ny, resultat };
+    }
+
+    // Söndagens uppdatering: personalens väntande träning slår igenom.
+    function veckouppdateringPersonal(personal) {
+        const ny = kopiaPersonal(personal);
+        let antal = 0;
+        [['mekanikerLista', 'mekaniker'], ['ingenjorLista', 'ingenjor']].forEach(([nyckel, kat]) => {
+            (ny[nyckel] || []).forEach(p => {
+                const vt = p.vantandeTraning;
+                if (!vt) return;
+                if (p.stats && vt.attribut) {
+                    p.stats[vt.attribut] = Math.min(100, (p.stats[vt.attribut] || 0) + vt.forbattring);
+                    p.formaga = V.beraknaFormaga(p.stats, statNycklar(kat));
+                    antal++;
+                }
+                delete p.vantandeTraning;
+            });
+        });
+        return { personal: ny, antal };
+    }
+
+    // Ny säsong: alla blir ett år äldre (+5 erfarenhet), förare över 30 tappar
+    // lite i övriga förmågor, och den som nått pensionsåldern lämnar laget.
+    const FORARE_PENSIONSALDER = 40, STAB_MAXALDER = 60, PRINCIPAL_PENSIONSALDER = 60, FORARE_NEDGANG_START = 30;
+    const DRIVARE_NEDGANG_KEYS = ['snabbhet', 'dackhantering', 'forsvar', 'lagformaga'];
+    function aldrasPersonal(personal, rng) {
+        const ny = kopiaPersonal(personal);
+        const pension = [];
+        PERSONAL_LISTOR.forEach(([nyckel, kat]) => {
+            ny[nyckel] = (ny[nyckel] || []).filter(p => {
+                if (p.age !== undefined && p.age !== null) p.age += 1;
+                if (p.stats) {
+                    p.stats.erfarenhet = Math.min(100, (p.stats.erfarenhet || 0) + 5);
+                    if (kat === 'forare' && p.age > FORARE_NEDGANG_START) {
+                        const arOver = p.age - FORARE_NEDGANG_START;
+                        DRIVARE_NEDGANG_KEYS.forEach(k => {
+                            const maxNedgang = 1 + Math.min(5, Math.floor(arOver / 2));
+                            const nedgang = 1 + Math.floor(rng() * maxNedgang);
+                            p.stats[k] = Math.max(0, (p.stats[k] || 0) - nedgang);
+                        });
+                    }
+                    p.formaga = V.beraknaFormaga(p.stats, statNycklar(kat));
+                }
+                const grans = kat === 'forare' ? FORARE_PENSIONSALDER : STAB_MAXALDER;
+                if (p.age !== undefined && p.age >= grans) { pension.push({ id: p.id, namn: p.namn, kat }); return false; }
+                return true;
+            });
+        });
+        if (ny.chefMekanikerId && !(ny.mekanikerLista || []).some(p => p.id === ny.chefMekanikerId)) delete ny.chefMekanikerId;
+        if (ny.chefIngenjorId && !(ny.ingenjorLista || []).some(p => p.id === ny.chefIngenjorId)) delete ny.chefIngenjorId;
+        const tp = ny.teamPrincipal;
+        if (tp) {
+            if (tp.age !== undefined && tp.age !== null) tp.age += 1;
+            if (tp.age >= PRINCIPAL_PENSIONSALDER) { pension.push({ id: tp.id, namn: tp.namn, kat: 'principal' }); ny.teamPrincipal = null; }
+        }
+        if (pension.length) {
+            const borttagna = pension.map(x => Object.assign({ pension: true }, x));
+            ny.borttagna = borttagna.concat(ny.borttagna || []).slice(0, 30);
+        }
+        return { personal: ny, pension };
+    }
+
     root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
-        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, personalForRace });
+        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, personalForRace,
+        traningsvecka, veckouppdateringPersonal, aldrasPersonal });
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -7731,7 +7731,7 @@
                     tillampaOnlineLage(tab.data || [], sch.data && sch.data.schema);
                     onlineSenasteSynk = Date.now();
                     await synkaEkonomi();
-                    synkaOnlineMarknad().then(() => synkaPersonal());
+                    synkaOnlineMarknad().then(() => synkaPersonal()).then(() => synkaTraning());
                     skickaOrderTillServer(spelarData.raceNr);
                     sparaOchUppdatera();
                 } catch (e) {
@@ -8017,8 +8017,8 @@
         // förmågor, ålder, kontrakt och skador. Personer som servern inte
         // godkänner (okänt ursprung) tas bort ur den lokala truppen.
         // ---------------------------------------------------------------------
-        const PERSONAL_SYNK_FALT = ['id', 'namn', 'nationalitet', 'age', 'style', 'roll', 'bil', 'extra', 'stats', 'contract'];
-        const PERSONAL_SERVER_FALT = ['age', 'stats', 'formaga', 'contract', 'skadadTillRace'];
+        const PERSONAL_SYNK_FALT = ['id', 'namn', 'nationalitet', 'age', 'style', 'roll', 'bil', 'extra', 'stats', 'contract', 'traningsval'];
+        const PERSONAL_SERVER_FALT = ['age', 'stats', 'formaga', 'contract', 'skadadTillRace', 'vantandeTraning'];
         let personalSynk = null, personalSenast = { json: null, tid: 0 };
         function personalForSynk(lag) {
             const slim = p => { const o = {}; PERSONAL_SYNK_FALT.forEach(k => { if (p[k] !== undefined) o[k] = p[k]; }); return o; };
@@ -8082,6 +8082,55 @@
                 } catch (e) { console.error('Kunde inte synka personalen:', e); }
             })();
             try { await personalSynk; } finally { personalSynk = null; }
+        }
+
+        // Serverns träningsrace (Fas 3b-3): kor-race kör veckans träning måndag
+        // 20:00 med lagets träningsval och sparar resultatet i traning_resultat.
+        // Här visas det som ett vanligt träningsreferat och truppen hämtas om.
+        function tillampaServerTraning(rad) {
+            const lag = hamtaSpelarLag();
+            if (!lag || !rad) return;
+            const resultat = rad.resultat || [];
+            let referatRader = [];
+            if (resultat.length === 0) {
+                referatRader.push(tt("Inget träningsrace genomfördes denna vecka – ingen förare eller personal var anmäld till träning.", "No training race was held this week – no driver or staff member was signed up for training."));
+            } else if (rad.ateranvant) {
+                referatRader.push(tt("Ingen ny träningsorder lades denna vecka – laget körde med samma personer och inställning som förra gången.", "No new training order was placed this week – the team trained with the same people and settings as last time."));
+            }
+            resultat.forEach(r => {
+                const p = hittaPerson(lag, r.typ, r.id);
+                const namn = p ? p.namn : r.namn;
+                if (r.typ === 'forare') {
+                    referatRader.push(tt('{namn} tränade {attribut} i träningsracet och presterade {procent}% – förmågan ökade med +{forbattring} (nu {attribut2}/100).', '{namn} trained {attribut} in the training race and performed at {procent}% – the ability increased by +{forbattring} (now {attribut2}/100).').replaceAll('{namn}', namn).replaceAll('{attribut}', ATTRIBUT_LABEL[r.attribut]).replaceAll('{procent}', r.procent).replaceAll('{forbattring}', r.forbattring).replaceAll('{attribut2}', r.nyttVarde));
+                } else {
+                    referatRader.push(tt('{namn} tränade {attribut} i träningsracet och presterade {procent}% – förmågan ökar med +{forbattring} vid söndagens ekonomiuppdatering.', '{namn} trained {attribut} in the training race and performed at {procent}% – the ability will increase by +{forbattring} at Sunday\'s finance update.').replaceAll('{namn}', namn).replaceAll('{attribut}', ATTRIBUT_LABEL[r.attribut]).replaceAll('{procent}', r.procent).replaceAll('{forbattring}', r.forbattring));
+                }
+                if (p) {
+                    laggTillTraningsHistorik(p, { sasong: spelarData.sasong, vecka: spelarData.raceNr, attribut: r.attribut, forbattring: r.forbattring, procent: r.procentExakt });
+                    p.traningsval = null;
+                }
+            });
+            spelarData.traningReferat = {
+                sasong: spelarData.sasong, vecka: spelarData.raceNr, text: referatRader.join('<br>'),
+                resultat: resultat.map(r => ({ namn: r.namn, typ: r.typ, attribut: r.attribut, procent: r.procent, forbattring: r.forbattring, vantande: r.vantande, placering: r.placering }))
+            };
+            loggaHandelse(tt("Träningsrace (Vecka ", "Training race (Week ") + spelarData.raceNr + "): " + spelarData.traningReferat.text.replace(/<br>/g, ' '));
+            spelarData.onlineTraningVecka = rad.vecka;
+            spelarData.senasteTraningKey = spelarData.sasong + '-' + spelarData.raceNr;
+        }
+        async function synkaTraning() {
+            if (!arOnline()) return;
+            try {
+                const { data, error } = await window.supabaseClient.from('traning_resultat')
+                    .select('vecka, resultat, ateranvant').eq('team_id', onlineData.lagId).order('vecka', { ascending: false }).limit(1);
+                if (error) throw error;
+                const rad = data && data[0];
+                if (!rad || rad.vecka <= (spelarData.onlineTraningVecka || 0)) return;
+                tillampaServerTraning(rad);
+                personalSenast.json = null;
+                await synkaPersonal(true);
+                sparaOchUppdatera();
+            } catch (e) { console.error('Kunde inte hämta träningsresultatet:', e); }
         }
 
         // Skickar det egna lagets order för en omgång till servern.
@@ -14783,7 +14832,7 @@
             // korTraningsrace()/tillampaVantandePersonalTraning()) tillämpas här,
             // i samband med ekonomiuppdateringen – till skillnad från förarnas
             // träning som redan slagit igenom direkt på måndagen.
-            tillampaVantandePersonalTraning();
+            if (!(arOnline() || onlineForvantat())) tillampaVantandePersonalTraning();
             // Förberedelseträning: juniorprogrammets valda förmågor (+1 poäng/
             // vecka fram till 20 års ålder) - se traningJuniorprogram().
             traningJuniorprogram();
@@ -15626,7 +15675,7 @@
                             if (lag.arSpelare) f.stats.erfarenhet = Math.min(100, f.stats.erfarenhet + 5);
                             f.formaga = beraknaFormaga(f.stats, DRIVARE_STAT_KEYS);
                         }
-                        applyAldersNedgang(f);
+                        if (!(lag.arSpelare && (arOnline() || onlineForvantat()))) applyAldersNedgang(f);
                         if (f.age !== undefined && f.age >= FORARE_PENSIONSALDER) {
                             let gammalRoll = f.roll, gammaltNamn = f.namn;
                             // Legends: bevara karriären permanent om föraren spelade för DITT
@@ -17717,7 +17766,7 @@
                 spelarData.traningVarningNyckel = traningKey;
                 nagotHarKörts = true;
             }
-            if (nu >= new Date(spelarData.nastaTraningTid) && spelarData.senasteTraningKey !== traningKey) {
+            if (nu >= new Date(spelarData.nastaTraningTid) && spelarData.senasteTraningKey !== traningKey && !(arOnline() || onlineForvantat())) {
                 korTraningsrace();
                 spelarData.senasteTraningKey = traningKey;
                 nagotHarKörts = true;
