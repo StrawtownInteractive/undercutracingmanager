@@ -12412,8 +12412,6 @@
             if (egetLag) {
                 let expiring = hubKontraktGarUtSnart(lag).length;
                 cards.push(hubNavCard('<img src="assets/hub-icon-kontrakt.png" alt="">', tt('Kontrakt', 'Contracts'), expiring > 0 ? tt('{expiring} går ut snart', '{expiring} expiring soon').replaceAll('{expiring}', expiring) : tt('Allt under kontroll', 'All under control'), "bytSubflik('lagsida', 'kontrakt')"));
-                // Arena har ingen egen knapp i huvudmenyn längre (ligger under Lagsida).
-                cards.push(hubNavCard('<span style="font-size:30px; line-height:1;">🏟️</span>', tt('Arena', 'Arena'), String((spelarData.arenaData && spelarData.arenaData.namn) || lag.bana || '').replace(/&/g, '&amp;').replace(/</g, '&lt;'), "bytArenaVy('oversikt'); bytFlik('arena'); renderArenaListaTab()"));
             }
             el.innerHTML = cards.join('');
         }
