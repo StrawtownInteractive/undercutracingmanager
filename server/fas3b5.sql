@@ -130,7 +130,7 @@ begin
     s := s || jsonb_build_object(
       'teamPrincipal', case when jsonb_typeof(p_personal->'teamPrincipal') = 'object'
                             then coalesce(case when jsonb_typeof(p_snapshot->'teamPrincipal') = 'object' then p_snapshot->'teamPrincipal' end, '{}'::jsonb)
-                                 || (p_personal->'teamPrincipal' - '_v0' - '_anv' - '_s')
+                                 || ((p_personal->'teamPrincipal') - '_v0' - '_anv' - '_s')
                             else 'null'::jsonb end,
       'chefMekanikerId', coalesce(p_personal->'chefMekanikerId', 'null'::jsonb),
       'chefIngenjorId', coalesce(p_personal->'chefIngenjorId', 'null'::jsonb));

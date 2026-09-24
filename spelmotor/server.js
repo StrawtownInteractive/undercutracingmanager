@@ -283,7 +283,7 @@
     // ---------------------------------------------------------------------
     // Veckoekonomin (Fas 3b-4), samma regler som korEkonomiUppdatering():
     // sponsor (avtal eller slump), merchandise (slump × förarnas popularitet),
-    // biljetter (arenakapacitet × 700), löner, underhåll och ränta på minussaldo.
+    // löner, underhåll och ränta på minussaldo. (Inga biljett-/publikintäkter.)
     // ---------------------------------------------------------------------
     const DIVISION_INTAKT = { 1: [600000, 1000000], 2: [350000, 700000], 3: [150000, 400000], 4: [50000, 200000], 5: [25000, 120000] };
     function slumpaIntakt(tier, rng) {
@@ -305,7 +305,6 @@
             const snittPop = bilForare.reduce((sum, f) => sum + (typeof f.popularitet === 'number' ? f.popularitet : 50), 0) / bilForare.length;
             merch = Math.min(1000000, Math.round(merch * (0.4 + (snittPop / 100) * 0.8)));
         }
-        const biljett = (ek.arenaKapacitet || 5000) * 700;
         const summa = lista => (lista || []).reduce((sum, x) => sum + veckoLon(x), 0);
         const forarLon = summa(p.forare), mekLon = summa(p.mekanikerLista), ingLon = summa(p.ingenjorLista);
         const principalLon = p.teamPrincipal ? veckoLon(p.teamPrincipal) : 0;
@@ -314,7 +313,6 @@
         const rader = [
             { typ: 'sponsor', belopp: sponsor, text: avtal ? 'Sponsorintäkt (' + avtal.sponsorNamn + ')' : 'Sponsorintäkt' },
             { typ: 'merch', belopp: merch, text: 'Merchandiseförsäljning' },
-            { typ: 'biljett', belopp: biljett, text: 'Biljettintäkter' },
             { typ: 'underhall', belopp: -underhall, text: 'Fabriksunderhåll' },
             { typ: 'forarLon', belopp: -forarLon, text: 'Förarlöner' },
             { typ: 'mekLon', belopp: -mekLon, text: 'Mekanikerlöner' },
