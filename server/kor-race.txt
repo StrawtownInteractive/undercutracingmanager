@@ -1382,6 +1382,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
     const MAX_AI_LISTNINGAR = 30;
     const MIN_FRIA_AGENTER = 10;
     const AI_BUD_CHANS = 0.25; // per körning (var 5:e minut)
+    const AI_MAX_BUD = 100000; // AI-lag budar aldrig över detta på en person
 
     const minHojning = bud => Math.max(10000, Math.round(bud * 0.02));
     const utropFor = p => Math.max(20000, Math.round((p.formaga || 10) * 8000));
@@ -1441,12 +1442,17 @@ import { createClient } from "npm:@supabase/supabase-js@2";
     // (samma regel som tidigare: AI:n tävlar aldrig mot en mänsklig budgivare).
     function aiBud(auktion, aiLagIds, rng, nu) {
         if (auktion.manskliga_bud > 0) return null;
+        // AI budar aldrig på personer från lag med en mänsklig manager
+        // (saljare_team_id är satt och laget är inte ett AI-lag).
+        if (auktion.saljare_team_id && !aiLagIds.includes(auktion.saljare_team_id)) return null;
         if (Date.parse(auktion.deadline) - nu < ANTI_SNIPE_MS) return null;
         if (rng() >= AI_BUD_CHANS) return null;
         const kandidater = aiLagIds.filter(id => id !== auktion.saljare_team_id && id !== auktion.hogsta_budare);
         if (!kandidater.length) return null;
         const hojning = Math.max(minHojning(auktion.hogsta_bud), Math.round(auktion.hogsta_bud * (0.05 + rng() * 0.15)));
-        return { hogsta_bud: auktion.hogsta_bud + hojning, hogsta_budare: kandidater[Math.floor(rng() * kandidater.length)] };
+        const nyttBud = Math.min(AI_MAX_BUD, auktion.hogsta_bud + hojning);
+        if (nyttBud < auktion.hogsta_bud + minHojning(auktion.hogsta_bud)) return null; // taket nått
+        return { hogsta_bud: nyttBud, hogsta_budare: kandidater[Math.floor(rng() * kandidater.length)] };
     }
 
     // Tar bort en person ur en ögonblicksbild. ersatt=true (AI-lag) ger en ny

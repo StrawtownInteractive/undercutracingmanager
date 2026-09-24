@@ -817,6 +817,8 @@
         }
         .dash-kalender-dag.utanfor { color: var(--text-muted); opacity: 0.4; }
         .dash-kalender-dag.passerad:not(.utanfor):not(.idag) { opacity: 0.55; }
+        /* Kommande race/kval/träning/kontrakt i nästa månad visas lika ljust som i innevarande månad. */
+        .dash-kalender-dag.utanfor:not(.passerad):is(.race, .traning, .kval, .kontrakt) { opacity: 1; }
         .dash-kalender-dag.idag { border: 1px solid var(--border-strong); font-weight: 700; color: var(--text); }
         .dash-kalender-dag.race { background: var(--blue); color: #fff; font-weight: 700; }
         .dash-kalender-dag.traning { background: var(--blue); color: #fff; font-weight: 700; }
@@ -1090,6 +1092,12 @@
             flex-wrap: wrap;
             margin: 14px 0;
         }
+        .marknad-paginering button:not(.active) {
+            background-color: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--border-strong);
+        }
+        .marknad-paginering button:not(.active):not(:disabled):hover { background-color: var(--surface-hover); }
         .marknad-paginering button.active {
             background: var(--blue);
             color: #fff;
@@ -17063,7 +17071,10 @@
             if (new Date(a.deadline) - new Date() < ANTI_SNIPE_MS) return false;
             let duVarLedande = a.hogstaBudare === "Du";
             let hojning = Math.max(minHojning(a), Math.round(a.hogstaBud * (0.05 + Math.random() * 0.15)));
-            a.hogstaBud += hojning;
+            // AI-lag budar aldrig över 100 000 kr (samma tak som AI_MAX_BUD i spelmotor/marknad.js).
+            let nyttBud = Math.min(100000, a.hogstaBud + hojning);
+            if (nyttBud < a.hogstaBud + minHojning(a)) return false;
+            a.hogstaBud = nyttBud;
             let budLag = slumpaRiktigtBudLag();
             if (budLag) {
                 a.hogstaBudare = budLag.lagNamn + " (" + GROUP_DEFS[budLag.groupId].kort + ")";
