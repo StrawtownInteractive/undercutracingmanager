@@ -489,6 +489,12 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
         function basePrincipalLon(tier) { return PRINCIPAL_LON_TIER[tier] || PRINCIPAL_LON_TIER[4]; }
 
+        // Startlön för spelarens egen Team Principal: 10 000 kr/vecka.
+        // Lönen betalas ut veckovis som salaryPerSeason / 10 (10 race per
+        // säsong, se weeklyLon() i klienten och veckoLon() i server.js).
+        const PRINCIPAL_STARTLON_VECKA = 10000;
+        const PRINCIPAL_STARTLON_SASONG = PRINCIPAL_STARTLON_VECKA * 10;
+
         function nyttForarKontrakt(formaga, tier, arSpelare) {
             let lon = arSpelare ? avrunda10k(Math.max(200000, (formaga || 10) * (TIER_LON_SKALA_FORARE[tier] || TIER_LON_SKALA_FORARE[4]))) : baseForarLon(formaga, tier);
             let langd = arSpelare ? 3 : (2 + Math.floor(slump() * 3));
@@ -512,8 +518,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
             };
         }
 
-        function nyttStabKontrakt(formaga, tier, roll) {
-            let lon = roll === 'principal' ? basePrincipalLon(tier) : baseStabLon(formaga, tier); // ingångslön efter förmåga/division (samma nivå som lönekraven i förhandlingar)
+        function nyttStabKontrakt(formaga, tier, roll, fastLon) {
+            let lon = (typeof fastLon === 'number') ? fastLon : (roll === 'principal' ? basePrincipalLon(tier) : baseStabLon(formaga, tier)); // ingångslön efter förmåga/division (samma nivå som lönekraven i förhandlingar)
             let langd = 2 + Math.floor(slump() * 3);
             return {
                 typ: 'stab',
@@ -691,7 +697,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
                 personalHistorik: []
             };
             hooks.skapaAvatar(principal, 'principal', { age: principal.age, forcedGender: 'maskulin' }, signaturSet);
-            principal.contract = nyttStabKontrakt(principal.formaga, tier, 'principal');
+            principal.contract = nyttStabKontrakt(principal.formaga, tier, 'principal', arSpelare ? PRINCIPAL_STARTLON_SASONG : undefined);
             return principal;
         }
 
@@ -895,7 +901,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
         aiTeamBasNamn,
         TIER_LON_SKALA_FORARE,
         TIER_LON_SKALA_STAB,
-        PRINCIPAL_LON_TIER
+        PRINCIPAL_LON_TIER,
+        PRINCIPAL_STARTLON_SASONG
     });
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 // =====================================================================
@@ -1130,11 +1137,16 @@ import { createClient } from "npm:@supabase/supabase-js@2";
         const r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
         return Math.round(r[1] * 0.005 / 100) * 100;
     }
-    function slutplaceringsBonus(tier, placering, antalLag) {
-        const r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
-        const topp = r[1] * 4, botten = r[1] * 0.6;
-        const andel = antalLag > 1 ? (antalLag - placering) / (antalLag - 1) : 1;
-        return Math.round((botten + (topp - botten) * andel) / 10000) * 10000;
+    // Säsongsprispengar – ekonomiskt träd: varje division har totalt
+    // 20 000 000 kr. Division 1 (1 serie) har hela potten i sin enda serie;
+    // för varje division nedåt fördubblas antalet serier och potten per
+    // serie halveras. Inom serien delas potten ut till placering 1–10.
+    // Samma formel som berakaSlutplaceringsBonus() i b5_1-3.html.
+    const PRISPOTT_PER_DIVISION = 20000000;
+    const PRIS_FORDELNING = [0.50, 0.20, 0.10, 0.07, 0.05, 0.03, 0.02, 0.015, 0.01, 0.005];
+    function slutplaceringsBonus(tier, placering, antalLag) { // antalLag behålls för bakåtkompatibilitet
+        const pottPerSerie = PRISPOTT_PER_DIVISION / Math.pow(2, Math.max(1, tier || 1) - 1);
+        return Math.round(pottPerSerie * (PRIS_FORDELNING[placering - 1] || 0));
     }
     function tavlingsregelAttribut(sasong) {
         const n = KOMPONENT_NYCKLAR.length;

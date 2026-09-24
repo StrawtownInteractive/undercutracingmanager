@@ -158,6 +158,12 @@
 
         function basePrincipalLon(tier) { return PRINCIPAL_LON_TIER[tier] || PRINCIPAL_LON_TIER[4]; }
 
+        // Startlön för spelarens egen Team Principal: 10 000 kr/vecka.
+        // Lönen betalas ut veckovis som salaryPerSeason / 10 (10 race per
+        // säsong, se weeklyLon() i klienten och veckoLon() i server.js).
+        const PRINCIPAL_STARTLON_VECKA = 10000;
+        const PRINCIPAL_STARTLON_SASONG = PRINCIPAL_STARTLON_VECKA * 10;
+
         function nyttForarKontrakt(formaga, tier, arSpelare) {
             let lon = arSpelare ? avrunda10k(Math.max(200000, (formaga || 10) * (TIER_LON_SKALA_FORARE[tier] || TIER_LON_SKALA_FORARE[4]))) : baseForarLon(formaga, tier);
             let langd = arSpelare ? 3 : (2 + Math.floor(slump() * 3));
@@ -181,8 +187,8 @@
             };
         }
 
-        function nyttStabKontrakt(formaga, tier, roll) {
-            let lon = roll === 'principal' ? basePrincipalLon(tier) : baseStabLon(formaga, tier); // ingångslön efter förmåga/division (samma nivå som lönekraven i förhandlingar)
+        function nyttStabKontrakt(formaga, tier, roll, fastLon) {
+            let lon = (typeof fastLon === 'number') ? fastLon : (roll === 'principal' ? basePrincipalLon(tier) : baseStabLon(formaga, tier)); // ingångslön efter förmåga/division (samma nivå som lönekraven i förhandlingar)
             let langd = 2 + Math.floor(slump() * 3);
             return {
                 typ: 'stab',
@@ -360,7 +366,7 @@
                 personalHistorik: []
             };
             hooks.skapaAvatar(principal, 'principal', { age: principal.age, forcedGender: 'maskulin' }, signaturSet);
-            principal.contract = nyttStabKontrakt(principal.formaga, tier, 'principal');
+            principal.contract = nyttStabKontrakt(principal.formaga, tier, 'principal', arSpelare ? PRINCIPAL_STARTLON_SASONG : undefined);
             return principal;
         }
 
@@ -564,6 +570,7 @@
         aiTeamBasNamn,
         TIER_LON_SKALA_FORARE,
         TIER_LON_SKALA_STAB,
-        PRINCIPAL_LON_TIER
+        PRINCIPAL_LON_TIER,
+        PRINCIPAL_STARTLON_SASONG
     });
 })(typeof globalThis !== 'undefined' ? globalThis : this);

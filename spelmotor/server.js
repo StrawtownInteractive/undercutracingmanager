@@ -155,11 +155,16 @@
         const r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
         return Math.round(r[1] * 0.005 / 100) * 100;
     }
-    function slutplaceringsBonus(tier, placering, antalLag) {
-        const r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
-        const topp = r[1] * 4, botten = r[1] * 0.6;
-        const andel = antalLag > 1 ? (antalLag - placering) / (antalLag - 1) : 1;
-        return Math.round((botten + (topp - botten) * andel) / 10000) * 10000;
+    // Säsongsprispengar – ekonomiskt träd: varje division har totalt
+    // 20 000 000 kr. Division 1 (1 serie) har hela potten i sin enda serie;
+    // för varje division nedåt fördubblas antalet serier och potten per
+    // serie halveras. Inom serien delas potten ut till placering 1–10.
+    // Samma formel som berakaSlutplaceringsBonus() i b5_1-3.html.
+    const PRISPOTT_PER_DIVISION = 20000000;
+    const PRIS_FORDELNING = [0.50, 0.20, 0.10, 0.07, 0.05, 0.03, 0.02, 0.015, 0.01, 0.005];
+    function slutplaceringsBonus(tier, placering, antalLag) { // antalLag behålls för bakåtkompatibilitet
+        const pottPerSerie = PRISPOTT_PER_DIVISION / Math.pow(2, Math.max(1, tier || 1) - 1);
+        return Math.round(pottPerSerie * (PRIS_FORDELNING[placering - 1] || 0));
     }
     function tavlingsregelAttribut(sasong) {
         const n = KOMPONENT_NYCKLAR.length;
