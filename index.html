@@ -4676,12 +4676,12 @@
 
                 <div class="card">
                     <h3 data-i18n="kontoTipsaVanRubrik">Tipsa en vän</h3>
-                    <p style="font-size:13px; color:var(--text-muted); margin-top:0;" data-i18n="kontoTipsaVanIntro">Ange din väns e-postadress så öppnas ett färdigskrivet mail med en länk till Undercut Racing Manager, som du kan skicka direkt från ditt eget mailprogram.</p>
+                    <p style="font-size:13px; color:var(--text-muted); margin-top:0;" data-i18n="kontoTipsaVanIntro">Skriv in din väns e-postadress så skickar vi en inbjudan till spelet. Registrerar sig din vän med den adressen klarar du Managerlicens-uppdraget "Värva en annan användare".</p>
                     <label><span data-i18n="kontoVansEpostLabel">Väns e-postadress</span>
                         <input type="email" id="tipsa-van-epost" data-i18n-placeholder="kontoNamnExempelPlaceholder" placeholder="namn@exempel.se">
                     </label>
-                    <button class="btn-blue" onclick="tipsaVan()" style="margin-top:10px;" data-i18n="kontoSkickaTips">Skicka tips</button>
-                    <p id="tipsa-van-bekraftelse" style="display:none; color:var(--success); font-weight:600; margin-top:10px;" data-i18n="kontoMailForberett">Mailet är förberett i ditt mailprogram – tryck skicka där för att slutföra.</p>
+                    <button class="btn-blue" id="tipsa-van-knapp" onclick="tipsaVan()" style="margin-top:10px;" data-i18n="kontoSkickaTips">Skicka inbjudan</button>
+                    <p id="tipsa-van-bekraftelse" style="display:none; color:var(--success); font-weight:600; margin-top:10px;" role="status">Mailet är förberett i ditt mailprogram – tryck skicka där för att slutföra.</p>
                 </div>
             </div>
 
@@ -9588,32 +9588,60 @@
             }
         }
 
-        // Tipsa en vän (Mitt konto → Inställningar). Spelet har ingen server/mailtjänst
-        // (allt körs lokalt i webbläsaren), så vi öppnar ett färdigskrivet mail via en
-        // mailto-länk i spelarens eget mailprogram istället för att skicka från en server.
+        // Tipsa en vän (Mitt konto → Inställningar): spelaren skriver bara in sin
+        // väns e-postadress och Edge Function-en "bjud-in-van" skickar en inbjudan
+        // från spelets egen adress och sparar den i public.referrals, så att
+        // Managerlicens-uppdraget "Värva en annan användare" låses upp när vännen
+        // registrerar sig (installos_referral(), kontrolleraVarvning()). Servern
+        // begränsar antalet inbjudningar (spamskydd). I testläget utan Supabase
+        // öppnas i stället ett färdigskrivet mail i spelarens mailprogram.
+        let tipsaVanPagar = false;
         async function tipsaVan() {
+            if (tipsaVanPagar) return;
             let epostFalt = document.getElementById('tipsa-van-epost');
+            let bekraftEl = document.getElementById('tipsa-van-bekraftelse');
             let epost = (epostFalt.value || '').trim();
+            function visa(text, ok) {
+                if (!bekraftEl) { alert(text); return; }
+                bekraftEl.textContent = text;
+                bekraftEl.style.color = ok ? 'var(--success)' : 'var(--danger, #e53935)';
+                bekraftEl.style.display = 'block';
+            }
             if (!epost || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(epost)) {
-                alert(tt("Ange en giltig e-postadress.", "Enter a valid email address."));
+                visa(tt("Ange en giltig e-postadress.", "Enter a valid email address."), false);
                 return;
             }
-            let avsandare = (document.getElementById('auth-username-display') || {}).textContent || tt('En kompis', 'A friend');
-            let amne = tt('{avsandare} har tipsat dig om Undercut Racing Manager!', '{avsandare} recommended Undercut Racing Manager to you!').replaceAll('{avsandare}', avsandare);
-            let brodtext = tt('Hej!\n\n{avsandare} spelar Undercut Racing Manager – ett webbläsarbaserat managerspel om racing – och tycker att du borde testa det också.\n\nKlicka här för att komma igång: {href}\n\nVi ses på banan!', 'Hi!\n\n{avsandare} plays Undercut Racing Manager – a browser-based racing management game – and thinks you should try it too.\n\nClick here to get started: {href}\n\nSee you on track!').replaceAll('{avsandare}', avsandare).replaceAll('{href}', window.location.href);
-            // Registrerar inbjudan i Supabase (public.referrals) så att Managerlicens-
-            // prestationen "Värva en annan användare" kan låsas upp automatiskt om/när
-            // just den här e-postadressen faktiskt registrerar ett konto (se
-            // installos_referral() i SQL-blocket i <head> samt kontrolleraVarvning()
-            // nedan). Rent best-effort – ett misslyckat sparande hindrar aldrig
-            // mailet från att skickas.
-            if (window.supabaseClient) {
-                try { await window.supabaseClient.from('referrals').insert({ inbjuden_epost: epost }); } catch (e) { /* best effort */ }
+            if (!window.supabaseClient) {
+                let avsandare = (document.getElementById('auth-username-display') || {}).textContent || tt('En kompis', 'A friend');
+                let amne = tt('{avsandare} har tipsat dig om Undercut Racing Manager!', '{avsandare} recommended Undercut Racing Manager to you!').replaceAll('{avsandare}', avsandare);
+                let brodtext = tt('Hej!\n\n{avsandare} spelar Undercut Racing Manager och tycker att du borde testa det också: {href}', 'Hi!\n\n{avsandare} plays Undercut Racing Manager and thinks you should try it too: {href}').replaceAll('{avsandare}', avsandare).replaceAll('{href}', window.location.href.split('#')[0]);
+                window.location.href = `mailto:${encodeURIComponent(epost)}?subject=${encodeURIComponent(amne)}&body=${encodeURIComponent(brodtext)}`;
+                return;
             }
-            window.location.href = `mailto:${encodeURIComponent(epost)}?subject=${encodeURIComponent(amne)}&body=${encodeURIComponent(brodtext)}`;
-            let bekraftEl = document.getElementById('tipsa-van-bekraftelse');
-            if (bekraftEl) bekraftEl.style.display = "block";
-            epostFalt.value = '';
+            let knapp = document.getElementById('tipsa-van-knapp');
+            tipsaVanPagar = true;
+            if (knapp) knapp.disabled = true;
+            let status = 'kunde_inte_skicka';
+            try {
+                const { data, error } = await window.supabaseClient.functions.invoke('bjud-in-van', { body: { epost: epost, sprak: aktivtSprak } });
+                if (data && data.status) status = data.status;
+                else if (error && error.context && typeof error.context.json === 'function') {
+                    try { status = (await error.context.json()).status || status; } catch (e) { /* strunta i det */ }
+                }
+            } catch (e) { /* nätverksfel – visas som kunde_inte_skicka */ }
+            tipsaVanPagar = false;
+            if (knapp) knapp.disabled = false;
+            const texter = {
+                skickad: [tt('Inbjudan är skickad till {epost}!', 'The invitation has been sent to {epost}!'), true],
+                redan_spelare: [tt('{epost} har redan ett konto i spelet.', '{epost} already has an account in the game.'), false],
+                redan_inbjuden: [tt('{epost} har redan fått en inbjudan den senaste månaden.', '{epost} has already been invited in the last month.'), false],
+                egen_adress: [tt('Du kan inte bjuda in dig själv.', 'You cannot invite yourself.'), false],
+                ogiltig_adress: [tt('Ange en giltig e-postadress.', 'Enter a valid email address.'), false],
+                for_manga: [tt('Du har skickat många inbjudningar på kort tid. Försök igen i morgon.', 'You have sent many invitations in a short time. Please try again tomorrow.'), false]
+            };
+            let [text, ok] = texter[status] || [tt('Inbjudan kunde inte skickas just nu. Försök igen senare.', 'The invitation could not be sent right now. Please try again later.'), false];
+            visa(text.replaceAll('{epost}', epost), ok);
+            if (ok) epostFalt.value = '';
         }
 
         // Spelledningens mailadress för "Anmäl fusk" och "Rapportera bugg" (Mitt
@@ -19614,9 +19642,9 @@
                 kontoCookiesIntro: 'Hantera vilka cookies du tillåter (nödvändiga, statistik och personliga annonser).',
                 kontoCookieInstallningarBtn: 'Cookie-inställningar',
                 kontoTipsaVanRubrik: 'Tipsa en vän',
-                kontoTipsaVanIntro: 'Ange din väns e-postadress så öppnas ett färdigskrivet mail med en länk till Undercut Racing Manager, som du kan skicka direkt från ditt eget mailprogram.',
+                kontoTipsaVanIntro: 'Skriv in din väns e-postadress så skickar vi en inbjudan till spelet. Registrerar sig din vän med den adressen klarar du Managerlicens-uppdraget "Värva en annan användare".',
                 kontoVansEpostLabel: 'Väns e-postadress',
-                kontoSkickaTips: 'Skicka tips',
+                kontoSkickaTips: 'Skicka inbjudan',
                 kontoMailForberett: 'Mailet är förberett i ditt mailprogram – tryck skicka där för att slutföra.',
                 kontoKontaktaSpelledningenRubrik: 'Kontakta spelledningen',
                 kontoKontaktIntro: 'Har du hittat en bugg, en idé eller en fråga? Skriv till oss så läser vi det så snart vi kan.',
@@ -20417,9 +20445,9 @@
                 kontoCookiesIntro: 'Manage which cookies you allow (necessary, statistics and personalized ads).',
                 kontoCookieInstallningarBtn: 'Cookie settings',
                 kontoTipsaVanRubrik: 'Tell a friend',
-                kontoTipsaVanIntro: 'Enter your friend\'s email address and a pre-written email with a link to Undercut Racing Manager will open, which you can send directly from your own email program.',
+                kontoTipsaVanIntro: 'Enter your friend\'s email address and we\'ll send them an invitation to the game. If your friend signs up with that address, you complete the Manager licence task "Recruit another user".',
                 kontoVansEpostLabel: 'Friend\'s email address',
-                kontoSkickaTips: 'Send tip',
+                kontoSkickaTips: 'Send invitation',
                 kontoMailForberett: 'The email is ready in your email program – press send there to finish.',
                 kontoKontaktaSpelledningenRubrik: 'Contact the game staff',
                 kontoKontaktIntro: 'Found a bug, have an idea or a question? Write to us and we\'ll read it as soon as we can.',
@@ -21228,9 +21256,9 @@
                 kontoCookiesIntro: "Verwalte, welche Cookies du zulässt (notwendige, Statistik und personalisierte Werbung).",
                 kontoCookieInstallningarBtn: "Cookie-Einstellungen",
                 kontoTipsaVanRubrik: "Einen Freund empfehlen",
-                kontoTipsaVanIntro: "Gib die E-Mail-Adresse deines Freundes ein, dann öffnet sich eine vorformulierte E-Mail mit einem Link zu Undercut Racing Manager, die du direkt aus deinem eigenen E-Mail-Programm senden kannst.",
+                kontoTipsaVanIntro: 'Gib die E-Mail-Adresse deines Freundes ein, und wir schicken ihm eine Einladung zum Spiel. Registriert er sich mit dieser Adresse, erfüllst du die Managerlizenz-Aufgabe „Einen anderen Nutzer werben".',
                 kontoVansEpostLabel: "E-Mail-Adresse des Freundes",
-                kontoSkickaTips: "Tipp senden",
+                kontoSkickaTips: 'Einladung senden',
                 kontoMailForberett: "Die E-Mail ist in deinem E-Mail-Programm vorbereitet – klicke dort auf Senden, um abzuschließen.",
                 kontoKontaktaSpelledningenRubrik: "Spielleitung kontaktieren",
                 kontoKontaktIntro: "Hast du einen Fehler gefunden, eine Idee oder eine Frage? Schreib uns, wir lesen es so schnell wie möglich.",
@@ -21990,9 +22018,9 @@
                 kontoCookiesIntro: "Gérez les cookies que vous autorisez (nécessaires, statistiques et publicités personnalisées).",
                 kontoCookieInstallningarBtn: "Paramètres des cookies",
                 kontoTipsaVanRubrik: "Recommander à un ami",
-                kontoTipsaVanIntro: "Saisissez l'adresse e-mail de votre ami et un e-mail préécrit avec un lien vers Undercut Racing Manager s'ouvrira, que vous pourrez envoyer directement depuis votre propre programme de messagerie.",
+                kontoTipsaVanIntro: 'Saisissez l\'adresse e-mail de votre ami et nous lui enverrons une invitation au jeu. S\'il s\'inscrit avec cette adresse, vous validez la mission de licence de manager « Recruter un autre utilisateur ».',
                 kontoVansEpostLabel: "Adresse e-mail de l'ami",
-                kontoSkickaTips: "Envoyer la recommandation",
+                kontoSkickaTips: 'Envoyer l\'invitation',
                 kontoMailForberett: "L'e-mail est préparé dans votre programme de messagerie – appuyez sur envoyer là-bas pour terminer.",
                 kontoKontaktaSpelledningenRubrik: "Contacter l'organisation",
                 kontoKontaktIntro: "Vous avez trouvé un bug, une idée ou une question ? Écrivez-nous, nous la lirons dès que possible.",
@@ -22752,9 +22780,9 @@
                 kontoCookiesIntro: "Gestiona qué cookies permites (necesarias, estadísticas y anuncios personalizados).",
                 kontoCookieInstallningarBtn: "Configuración de cookies",
                 kontoTipsaVanRubrik: "Recomendar a un amigo",
-                kontoTipsaVanIntro: "Introduce la dirección de correo de tu amigo y se abrirá un correo ya redactado con un enlace a Undercut Racing Manager, que podrás enviar directamente desde tu propio programa de correo.",
+                kontoTipsaVanIntro: 'Introduce el correo de tu amigo y le enviaremos una invitación al juego. Si se registra con esa dirección, completas la misión de licencia de mánager «Reclutar a otro usuario».',
                 kontoVansEpostLabel: "Correo del amigo",
-                kontoSkickaTips: "Enviar recomendación",
+                kontoSkickaTips: 'Enviar invitación',
                 kontoMailForberett: "El correo está preparado en tu programa de correo – pulsa enviar allí para terminar.",
                 kontoKontaktaSpelledningenRubrik: "Contactar con la organización",
                 kontoKontaktIntro: "¿Has encontrado un error, tienes una idea o una pregunta? Escríbenos y lo leeremos lo antes posible.",
@@ -23503,9 +23531,9 @@
                 kontoCookiesIntro: 'Zarządzaj, na jakie pliki cookie się zgadzasz (niezbędne, statystyczne i spersonalizowane reklamy).',
                 kontoCookieInstallningarBtn: 'Ustawienia cookies',
                 kontoTipsaVanRubrik: 'Poleć znajomemu',
-                kontoTipsaVanIntro: 'Podaj adres e-mail znajomego, a otworzy się gotowy e-mail z linkiem do Undercut Racing Manager, który możesz wysłać bezpośrednio z własnego programu pocztowego.',
+                kontoTipsaVanIntro: 'Wpisz adres e-mail znajomego, a wyślemy mu zaproszenie do gry. Jeśli zarejestruje się z tego adresu, wykonasz zadanie licencji menedżera „Zwerbuj innego użytkownika".',
                 kontoVansEpostLabel: 'Adres e-mail znajomego',
-                kontoSkickaTips: 'Wyślij polecenie',
+                kontoSkickaTips: 'Wyślij zaproszenie',
                 kontoMailForberett: 'E-mail jest przygotowany w twoim programie pocztowym – naciśnij tam wyślij, aby dokończyć.',
                 kontoKontaktaSpelledningenRubrik: 'Skontaktuj się z administracją gry',
                 kontoKontaktIntro: 'Znalazłeś błąd, masz pomysł albo pytanie? Napisz do nas, a przeczytamy to najszybciej jak to możliwe.',
@@ -24265,9 +24293,9 @@
                 kontoCookiesIntro: 'Hallitse, mitä evästeitä sallit (välttämättömät, tilastointi ja personoidut mainokset).',
                 kontoCookieInstallningarBtn: 'Evästeasetukset',
                 kontoTipsaVanRubrik: 'Vinkkaa kaverille',
-                kontoTipsaVanIntro: 'Anna kaverisi sähköpostiosoite, niin avautuu valmiiksi kirjoitettu sähköposti, jossa on linkki Undercut Racing Manageriin ja jonka voit lähettää suoraan omasta sähköpostiohjelmastasi.',
+                kontoTipsaVanIntro: 'Kirjoita kaverisi sähköpostiosoite, niin lähetämme hänelle kutsun peliin. Jos hän rekisteröityy tällä osoitteella, suoritat manageriluvan tehtävän ”Värvää toinen käyttäjä”.',
                 kontoVansEpostLabel: 'Kaverin sähköpostiosoite',
-                kontoSkickaTips: 'Lähetä vinkki',
+                kontoSkickaTips: 'Lähetä kutsu',
                 kontoMailForberett: 'Sähköposti on valmisteltu sähköpostiohjelmassasi – paina siellä lähetä viimeistelläksesi.',
                 kontoKontaktaSpelledningenRubrik: 'Ota yhteyttä pelinjohtoon',
                 kontoKontaktIntro: 'Löysitkö virheen, onko sinulla idea tai kysymys? Kirjoita meille, niin luemme sen mahdollisimman pian.',
@@ -25027,9 +25055,9 @@
                 kontoCookiesIntro: 'Kezeld, mely cookie-kat engedélyezed (szükséges, statisztikai és személyre szabott hirdetési).',
                 kontoCookieInstallningarBtn: 'Cookie-beállítások',
                 kontoTipsaVanRubrik: 'Ajánld egy barátodnak',
-                kontoTipsaVanIntro: 'Add meg barátod e-mail címét, és megnyílik egy előre megírt e-mail az Undercut Racing Managerre mutató linkkel, amit közvetlenül elküldhetsz a saját levelezőprogramodból.',
+                kontoTipsaVanIntro: 'Add meg barátod e-mail címét, és küldünk neki egy meghívót a játékba. Ha ezzel a címmel regisztrál, teljesíted a menedzserlicenc „Toborozz egy másik felhasználót” feladatát.',
                 kontoVansEpostLabel: 'Barátod e-mail címe',
-                kontoSkickaTips: 'Ajánlás küldése',
+                kontoSkickaTips: 'Meghívó küldése',
                 kontoMailForberett: 'Az e-mail elő van készítve a levelezőprogramodban – nyomd meg ott a küldést a befejezéshez.',
                 kontoKontaktaSpelledningenRubrik: 'Kapcsolatfelvétel a játékvezetéssel',
                 kontoKontaktIntro: 'Találtál egy hibát, van egy ötleted vagy kérdésed? Írj nekünk, és amint tudjuk, elolvassuk.',
@@ -25789,9 +25817,9 @@
                 kontoCookiesIntro: '許可するCookie（必須、統計、パーソナライズ広告）を管理します。',
                 kontoCookieInstallningarBtn: 'Cookie設定',
                 kontoTipsaVanRubrik: '友達に教える',
-                kontoTipsaVanIntro: '友達のメールアドレスを入力すると、Undercut Racing Managerへのリンクが記載済みのメールが開き、あなた自身のメールソフトからそのまま送信できます。',
+                kontoTipsaVanIntro: '友達のメールアドレスを入力すると、ゲームへの招待メールを送信します。友達がそのアドレスで登録すると、マネージャーライセンスの課題「他のユーザーを勧誘する」を達成できます。',
                 kontoVansEpostLabel: '友達のメールアドレス',
-                kontoSkickaTips: '送信する',
+                kontoSkickaTips: '招待を送信',
                 kontoMailForberett: 'メールはあなたのメールソフト内に準備できました――送信ボタンを押して完了してください。',
                 kontoKontaktaSpelledningenRubrik: '運営に問い合わせる',
                 kontoKontaktIntro: 'バグ、アイデア、質問を見つけましたか？私たちにメッセージを送ってください。できるだけ早く確認します。',
