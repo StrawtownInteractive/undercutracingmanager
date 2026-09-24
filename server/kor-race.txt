@@ -1165,8 +1165,30 @@ import { createClient } from "npm:@supabase/supabase-js@2";
         });
     }
 
+    // Mänskliga lags personal ägs av servern (lag_tillstand.personal, Fas 3b-2).
+    // Ögonblicksbildens personer ersätts av serverns: bara godkända personer
+    // kör, med serverns förmågor, roller, kontrakt och skador. Övriga fält
+    // (avatar, karriär m.m.) behålls från ögonblicksbilden.
+    function personalForRace(snapshot, personal) {
+        const s = snapshot || {};
+        if (!personal) return s;
+        const ut = Object.assign({}, s);
+        ['forare', 'mekanikerLista', 'ingenjorLista'].forEach(k => {
+            const egna = new Map((s[k] || []).map(p => [p && p.id, p]));
+            ut[k] = (personal[k] || []).map(p => {
+                const kopia = Object.assign({}, egna.get(p.id) || {}, p);
+                delete kopia._v0; delete kopia._anv; delete kopia._s;
+                return kopia;
+            });
+        });
+        ut.teamPrincipal = personal.teamPrincipal ? Object.assign({}, s.teamPrincipal || {}, personal.teamPrincipal) : null;
+        ut.chefMekanikerId = personal.chefMekanikerId || null;
+        ut.chefIngenjorId = personal.chefIngenjorId || null;
+        return ut;
+    }
+
     root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
-        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador });
+        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, personalForRace });
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 // =====================================================================
 // UNDERCUT RACING MANAGER – GEMENSAM TRANSFERMARKNAD (serverlogik)
@@ -1371,15 +1393,7 @@ Deno.serve(async (req) => {
   (lag as Rad[]).forEach((t) => {
     if (t.snapshot) { anvandaLagNamn.add(basNamn(t.name)); if (t.snapshot.bana) anvandaArenor.add(t.snapshot.bana); }
   });
-  // Mänskliga lags bil (komponenter, skador, köer) ägs av servern (lag_tillstand)
-  // och ersätter bilen i ögonblicksbilden när racen körs.
-  const { data: tillstand } = await db.rpc("tillstand_alla");
-  const bilPerLag = new Map<string, Rad>(((tillstand as Rad[]) || []).map((t) => [t.team_id, t.bil]));
   const tierPerDiv = new Map((divisioner as Rad[]).map((d) => [d.id, d.tier]));
-  function raceRad(t: Rad): Rad {
-    const bil = !t.is_ai ? bilPerLag.get(t.id) : null;
-    return bil ? Object.assign({}, t, { snapshot: Object.assign({}, t.snapshot, bil) }) : t;
-  }
   const lagPerDiv = new Map<string, Rad[]>();
   (lag as Rad[]).forEach((t) => {
     if (!lagPerDiv.has(t.division_id)) lagPerDiv.set(t.division_id, []);
@@ -1405,6 +1419,17 @@ Deno.serve(async (req) => {
     await korMarknad(db, divisioner as Rad[], lag as Rad[], logg, nu);
   } catch (e) {
     logg.push("marknad: " + (e instanceof Error ? e.message : String(e)));
+  }
+
+  // Mänskliga lags bil (komponenter, skador, köer) och personal ägs av servern
+  // (lag_tillstand) och ersätter det i ögonblicksbilden när racen körs.
+  // Läses efter marknaden, så att nyss sålda personer inte kör.
+  const { data: tillstand } = await db.rpc("tillstand_alla");
+  const tillstandPerLag = new Map<string, Rad>(((tillstand as Rad[]) || []).map((t) => [t.team_id, t]));
+  function raceRad(t: Rad): Rad {
+    const ts = !t.is_ai ? tillstandPerLag.get(t.id) : null;
+    if (!ts) return t;
+    return Object.assign({}, t, { snapshot: Object.assign({}, S.personalForRace(t.snapshot, ts.personal), ts.bil || {}) });
   }
 
   // --- 2. Vilka race ska köras? ------------------------------------------
@@ -1471,7 +1496,9 @@ Deno.serve(async (req) => {
         // Bilskador och prispengar för mänskliga lag (servern äger deras bil och budget).
         const manniskor = new Set(rader.filter((t) => !t.is_ai).map((t) => t.id));
         for (const sk of skador) {
-          if (manniskor.has(sk.lagId)) await db.rpc("bil_skada", { p_team: sk.lagId, p_bil: sk.bilNr, p_del: sk.komponent, p_andel: sk.andelSkada });
+          if (!manniskor.has(sk.lagId)) continue;
+          await db.rpc("bil_skada", { p_team: sk.lagId, p_bil: sk.bilNr, p_del: sk.komponent, p_andel: sk.andelSkada });
+          await db.rpc("forare_skada", { p_team: sk.lagId, p_bil: sk.bilNr, p_skada: `${sasong}-${k.race_nr + 1}` });
         }
         const perPoang = S.prisPerPoang(tierPerDiv.get(div.id) || 4);
         const poang = new Map<string, number>();
@@ -1556,6 +1583,7 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
       }
       if (a.saljare_typ === "lag" && saljare) {
         if (!saljare.is_ai) {
+          await db.rpc("personal_ta_bort", { p_team: saljare.id, p_person_id: a.person_id });
           await db.rpc("ekonomi_bokfor", { p_team: saljare.id, p_typ: "marknad", p_belopp: a.hogsta_bud, p_text: `Försäljning: ${a.person.namn}`, p_nyckel: `salj:${a.id}` });
           await db.from("leveranser").insert({ team_id: saljare.id, typ: "salt", auktion_id: a.id, kategori: a.kategori, person_id: a.person_id, belopp: a.hogsta_bud, motpart: kopare ? kopare.name : "Okänt lag" });
         }

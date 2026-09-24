@@ -190,6 +190,28 @@
         });
     }
 
+    // Mänskliga lags personal ägs av servern (lag_tillstand.personal, Fas 3b-2).
+    // Ögonblicksbildens personer ersätts av serverns: bara godkända personer
+    // kör, med serverns förmågor, roller, kontrakt och skador. Övriga fält
+    // (avatar, karriär m.m.) behålls från ögonblicksbilden.
+    function personalForRace(snapshot, personal) {
+        const s = snapshot || {};
+        if (!personal) return s;
+        const ut = Object.assign({}, s);
+        ['forare', 'mekanikerLista', 'ingenjorLista'].forEach(k => {
+            const egna = new Map((s[k] || []).map(p => [p && p.id, p]));
+            ut[k] = (personal[k] || []).map(p => {
+                const kopia = Object.assign({}, egna.get(p.id) || {}, p);
+                delete kopia._v0; delete kopia._anv; delete kopia._s;
+                return kopia;
+            });
+        });
+        ut.teamPrincipal = personal.teamPrincipal ? Object.assign({}, s.teamPrincipal || {}, personal.teamPrincipal) : null;
+        ut.chefMekanikerId = personal.chefMekanikerId || null;
+        ut.chefIngenjorId = personal.chefIngenjorId || null;
+        return ut;
+    }
+
     root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
-        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador });
+        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, personalForRace });
 })(typeof globalThis !== 'undefined' ? globalThis : this);

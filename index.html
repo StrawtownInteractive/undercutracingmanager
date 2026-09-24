@@ -7513,6 +7513,7 @@
             clearTimeout(pyramidTimer); pyramidTimer = null;
             let lag = hamtaSpelarLag();
             if (!window.supabaseClient || !pyramidLagId || !lag) return;
+            if (arOnline()) await synkaPersonal();
             try {
                 const { error } = await window.supabaseClient.rpc('publicera_lag', { p_snapshot: lagSnapshot(lag) });
                 if (error) throw error;
@@ -7730,7 +7731,7 @@
                     tillampaOnlineLage(tab.data || [], sch.data && sch.data.schema);
                     onlineSenasteSynk = Date.now();
                     await synkaEkonomi();
-                    synkaOnlineMarknad();
+                    synkaOnlineMarknad().then(() => synkaPersonal());
                     skickaOrderTillServer(spelarData.raceNr);
                     sparaOchUppdatera();
                 } catch (e) {
@@ -8006,6 +8007,81 @@
                 }
                 return { lagNamn: sk.lagNamn, bilNr: sk.bilNr, komponent: sk.komponent, andelSkada: sk.andelSkada, nyttVarde: sk.nyttVarde, forareNamn: sk.forareNamn };
             });
+        }
+
+        // ---------------------------------------------------------------------
+        // SERVERNS PERSONAL OCH KONTRAKT (Fas 3b-2): servern har en egen kopia
+        // av truppen (lag_tillstand.personal) och racen körs med den. Klienten
+        // skickar sin trupp, servern godkänner det som kan ha hänt i spelet
+        // (se personal_synka i schema.sql) och klienten tar sedan över serverns
+        // förmågor, ålder, kontrakt och skador. Personer som servern inte
+        // godkänner (okänt ursprung) tas bort ur den lokala truppen.
+        // ---------------------------------------------------------------------
+        const PERSONAL_SYNK_FALT = ['id', 'namn', 'nationalitet', 'age', 'style', 'roll', 'bil', 'extra', 'stats', 'contract'];
+        const PERSONAL_SERVER_FALT = ['age', 'stats', 'formaga', 'contract', 'skadadTillRace'];
+        let personalSynk = null, personalSenast = { json: null, tid: 0 };
+        function personalForSynk(lag) {
+            const slim = p => { const o = {}; PERSONAL_SYNK_FALT.forEach(k => { if (p[k] !== undefined) o[k] = p[k]; }); return o; };
+            return {
+                forare: (lag.forare || []).map(slim),
+                mekanikerLista: (lag.mekanikerLista || []).map(slim),
+                ingenjorLista: (lag.ingenjorLista || []).map(slim),
+                teamPrincipal: lag.teamPrincipal ? slim(lag.teamPrincipal) : null,
+                chefMekanikerId: lag.chefMekanikerId || null,
+                chefIngenjorId: lag.chefIngenjorId || null
+            };
+        }
+        // Returnerar true om något i den lokala truppen ändrades.
+        function tillampaServerPersonal(personal, avvisade) {
+            const lag = hamtaSpelarLag();
+            if (!lag || !personal) return false;
+            let andrat = false;
+            const avv = new Map((avvisade || []).map(a => [a.id, a]));
+            const synka = (lokal, server) => {
+                if (!lokal || !server) return;
+                PERSONAL_SERVER_FALT.forEach(k => {
+                    if (k === 'skadadTillRace' && lokal.roll === undefined) return;
+                    const ny = server[k] === undefined || server[k] === null ? undefined : server[k];
+                    if (JSON.stringify(lokal[k]) === JSON.stringify(ny)) return;
+                    if (ny === undefined) delete lokal[k]; else lokal[k] = JSON.parse(JSON.stringify(ny));
+                    andrat = true;
+                });
+            };
+            ['forare', 'mekanikerLista', 'ingenjorLista'].forEach(nyckel => {
+                const lista = lag[nyckel] || [];
+                const serverPerId = new Map((personal[nyckel] || []).map(p => [p.id, p]));
+                const kvar = lista.filter(p => {
+                    if (!avv.has(p.id)) return true;
+                    console.warn('Servern godkände inte ' + p.namn + ' (' + avv.get(p.id).orsak + ') – personen tas bort ur truppen.');
+                    loggaHandelse(tt('{namn} kunde inte registreras hos spelservern och har lämnat laget.', '{namn} could not be registered with the game server and has left the team.').replaceAll('{namn}', p.namn));
+                    andrat = true;
+                    return false;
+                });
+                if (kvar.length !== lista.length) lag[nyckel] = kvar;
+                kvar.forEach(p => synka(p, serverPerId.get(p.id)));
+            });
+            if (lag.teamPrincipal && personal.teamPrincipal && personal.teamPrincipal.id === lag.teamPrincipal.id) synka(lag.teamPrincipal, personal.teamPrincipal);
+            return andrat;
+        }
+        async function synkaPersonal(tvinga) {
+            if (!arOnline()) return;
+            if (personalSynk) return personalSynk;
+            personalSynk = (async () => {
+                const lag = hamtaSpelarLag();
+                if (!lag) return;
+                const data = personalForSynk(lag);
+                const json = JSON.stringify(data);
+                if (!tvinga && json === personalSenast.json && Date.now() - personalSenast.tid < 10 * 60 * 1000) return;
+                try {
+                    const { data: svar, error } = await window.supabaseClient.rpc('personal_synka', { p_personal: data });
+                    if (error) throw error;
+                    if (svar && Array.isArray(svar.avvisade) && svar.avvisade.length) console.warn('Servern godtog inte dessa personer:', svar.avvisade);
+                    const andrat = tillampaServerPersonal(svar && svar.personal, svar && svar.avvisade);
+                    personalSenast = { json: JSON.stringify(personalForSynk(hamtaSpelarLag())), tid: Date.now() };
+                    if (andrat) sparaOchUppdatera();
+                } catch (e) { console.error('Kunde inte synka personalen:', e); }
+            })();
+            try { await personalSynk; } finally { personalSynk = null; }
         }
 
         // Skickar det egna lagets order för en omgång till servern.
@@ -13577,14 +13653,30 @@
             if (spelarData.budget < kostnad) { alert(tt("Inte tillräckligt med pengar!", "Not enough money!")); return; }
             let lista = typ === 'mekaniker' ? spelarLag.mekanikerLista : spelarLag.ingenjorLista;
             if (!lista || lista.length === 0) { alert(tt("Du har ingen personal av den typen att träna.", "You have no staff of that type to train.")); return; }
+            if (arOnline()) {
+                // Träningen görs på servern (Fas 3b-2), som drar kostnaden och höjer förmågorna.
+                synkaPersonal(true)
+                    .then(() => window.supabaseClient.rpc('trana_personal', { p_typ: typ, p_attribut: attribut }))
+                    .then(({ data, error }) => {
+                        if (error) { alert(tt('Träningen kunde inte genomföras: ', 'The training could not be completed: ') + error.message); return; }
+                        sattServerBudget(data.budget);
+                        tillampaServerPersonal(data.personal, []);
+                        personalSenast.json = null;
+                        tranaPersonalKlar(typ, attribut, kostnad);
+                    });
+                return;
+            }
             spelarData.budget -= kostnad;
-            spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + kostnad;
             let statKeys = typ === 'mekaniker' ? MEK_STAT_KEYS : ING_STAT_KEYS;
             lista.forEach(p => {
                 if (!p.stats) return;
                 p.stats[attribut] = Math.min(100, (p.stats[attribut] || 0) + 3);
                 p.formaga = beraknaFormaga(p.stats, statKeys);
             });
+            tranaPersonalKlar(typ, attribut, kostnad);
+        }
+        function tranaPersonalKlar(typ, attribut, kostnad) {
+            spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + kostnad;
             let etikett = (typ === 'mekaniker' ? tt('Träning: Mekaniker ({attr})', 'Training: Mechanics ({attr})') : tt('Träning: Ingenjörer ({attr})', 'Training: Engineers ({attr})')).replace('{attr}', ATTRIBUT_LABEL[attribut]);
             loggaTransaktion(etikett, -kostnad);
             loggaHandelse(tt('{team} tränade {attr} (+3 var)! (-{kostnad})', '{team} trained {attr} (+3 each)! (-{kostnad})').replaceAll('{team}', (typ === 'mekaniker' ? tt('Mekanikerteamet', 'The mechanic team') : tt('Ingenjörsteamet', 'The engineer team'))).replaceAll('{attr}', ATTRIBUT_LABEL[attribut]).replaceAll('{kostnad}', formatBelopp(kostnad)));
