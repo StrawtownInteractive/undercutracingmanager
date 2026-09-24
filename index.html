@@ -446,7 +446,8 @@
         }
         .notis.notis-ute { animation: notisUt 200ms ease forwards; }
         .notis.notis-auktion_vunnen, .notis.notis-spelhandelse { border-left-color: var(--success); }
-        .notis-ikon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+        .notis-ikon { font-size: 18px; line-height: 1; flex-shrink: 0; display: inline-flex; color: var(--text-secondary); }
+        .live-prick { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--danger, #ef4444); margin-right: 6px; vertical-align: middle; }
         .notis-innehall { flex: 1; min-width: 0; }
         .notis-titel { font-weight: 700; font-size: 13px; margin: 0 0 2px; }
         .notis-text { font-size: 12.5px; color: var(--text-secondary); margin: 0; }
@@ -1549,6 +1550,8 @@
         .lang-switcher-btn:hover { background: var(--surface-hover); color: var(--text); border-color: var(--border-strong); }
         .lang-switcher-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
         .lang-switcher-flag { font-size: 14px; line-height: 1; }
+        /* iOS Safari: förstora inte texten automatiskt när telefonen vrids till liggande läge */
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         .lang-switcher-chevron {
             font-size: 10px;
             color: var(--text-muted);
@@ -2396,7 +2399,7 @@
                 min-height: 48px;
             }
             .mobil-nav-btn.active { color: var(--accent); }
-            .mobil-nav-ikon { font-size: 19px; line-height: 1; }
+            .mobil-nav-ikon { font-size: 19px; line-height: 1; display: inline-flex; }
             .mobil-nav-label { font-size: 10.5px; font-weight: 600; line-height: 1; }
 
             body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
@@ -2491,6 +2494,7 @@
                 min-height: 44px;
                 font-size: 16px; /* förhindrar att iOS Safari zoomar in vid fokus på fältet */
             }
+            .auth-search input[type="text"] { font-size: 16px; } /* samma iOS-zoomskydd för sökfältet i headern */
             input[type="checkbox"] { width: 20px; height: 20px; }
 
             /* ---------- Modaler: nästan hela skärmbredden, bottom sheet-känsla ---------- */
@@ -2749,7 +2753,7 @@
             <div class="auth-userbar-right">
                 <!-- Språkväxlare – återanvändbar komponent, monteras via JS (skapaSprakvaxlare) -->
                 <span id="lang-switcher-app"></span>
-                <span id="testlage-badge" style="display:none; background:var(--danger,#ef4444); color:#fff; font-size:11px; font-weight:bold; padding:2px 8px; border-radius:10px; letter-spacing:0.03em;" title="Testkonto – helt separerad testdata, se Mitt konto → Inställningar">🧪 TESTLÄGE</span>
+                <span id="testlage-badge" style="display:none; background:var(--danger,#ef4444); color:#fff; font-size:11px; font-weight:bold; padding:2px 8px; border-radius:10px; letter-spacing:0.03em;" title="Testkonto – helt separerad testdata, se Mitt konto → Inställningar">TESTLÄGE</span>
                 <span class="auth-user-chip" id="auth-user-chip-btn" onclick="visaKontosida()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();visaKontosida();}" title="Mitt konto" style="cursor:pointer; position:relative;">
                     <span class="auth-user-avatar" id="auth-user-avatar">?</span>
                     <span id="notis-dot" class="notis-dot" hidden></span>
@@ -2793,19 +2797,19 @@
         =================================================================== -->
         <div id="mobil-bottom-nav" class="mobil-bottom-nav">
             <button type="button" class="mobil-nav-btn active" id="mnav-hem-btn" onclick="document.getElementById('tab-team-btn').click()">
-                <span class="mobil-nav-ikon">🏠</span><span class="mobil-nav-label" data-i18n="appHem">Hem</span>
+                <span class="mobil-nav-ikon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-6h4v6"/></svg></span><span class="mobil-nav-label" data-i18n="appHem">Hem</span>
             </button>
             <button type="button" class="mobil-nav-btn" id="mnav-lag-btn" onclick="document.getElementById('tab-lagsida-btn').click()">
-                <span class="mobil-nav-ikon">🏎️</span><span class="mobil-nav-label" data-i18n="appLagsida">Lag</span>
+                <span class="mobil-nav-ikon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 16v-3l2.5-5h13L21 13v3"/><path d="M3 16h18"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg></span><span class="mobil-nav-label" data-i18n="appLagsida">Lag</span>
             </button>
             <button type="button" class="mobil-nav-btn" id="mnav-marknad-btn" onclick="document.getElementById('tab-marknad-btn').click()">
-                <span class="mobil-nav-ikon">🛒</span><span class="mobil-nav-label" data-i18n="appMarknad">Marknad</span>
+                <span class="mobil-nav-ikon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.5h11.6L21.5 7H6"/></svg></span><span class="mobil-nav-label" data-i18n="appMarknad">Marknad</span>
             </button>
             <button type="button" class="mobil-nav-btn" id="mnav-race-btn" onclick="document.getElementById('tab-race-btn').click()">
-                <span class="mobil-nav-ikon">🏁</span><span class="mobil-nav-label" data-i18n="appRace">Race</span>
+                <span class="mobil-nav-ikon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V3.5"/><path d="M5 4h13l-2.5 4.5L18 13H5"/></svg></span><span class="mobil-nav-label" data-i18n="appRace">Race</span>
             </button>
             <button type="button" class="mobil-nav-btn" id="mnav-mer-btn" onclick="visaMobilMeny()">
-                <span class="mobil-nav-ikon">⋯</span><span class="mobil-nav-label" data-i18n="navMer">Mer</span>
+                <span class="mobil-nav-ikon"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="none" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></span><span class="mobil-nav-label" data-i18n="navMer">Mer</span>
             </button>
         </div>
 
@@ -3256,7 +3260,7 @@
                 </div>
                 <div class="card">
                     <h3 data-i18n="appKarriarrekord">Karriärrekord</h3>
-                    <p style="font-size:12px; color:var(--text-muted); margin-top:0;" data-i18n="lsKarriarrekordInfo">Förarens placering bland ALLA förare i spelet (aktiva och pensionerade) i varje kategori.markerar en delad eller egen förstaplats – det faktiska rekordet.</p>
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:0;" data-i18n="lsKarriarrekordInfo">Förarens placering bland ALLA förare i spelet (aktiva och pensionerade) i varje kategori.</p>
                     <div class="tabell-scroll">
                     <table>
                         <thead><tr><th data-i18n="appKategori">Kategori</th><th data-i18n="appVarde">Värde</th><th data-i18n="appPlacering">Placering</th></tr></thead>
@@ -4119,7 +4123,7 @@
 
             <!-- Live-racet, när det pågår, visas mellan rubrikkortet och racets undersida (taktik/resultat). -->
             <div class="card" id="race-live-card" style="display:none; border-left: 3px solid var(--danger, #ef4444);">
-                <h3>🔴 <span id="race-live-titel" data-i18n="raceLivePagar">Race pågår</span></h3>
+                <h3><span class="live-prick"></span><span id="race-live-titel" data-i18n="raceLivePagar">Race pågår</span></h3>
                 <div style="background:var(--bg-secondary,#1c2129); border-radius:6px; height:10px; overflow:hidden; margin:6px 0;">
                     <div id="race-live-bar" style="background:var(--danger,#ef4444); height:100%; width:0%; transition:width 1s linear;"></div>
                 </div>
@@ -4153,7 +4157,7 @@
                     <select id="taktik-race-val" onchange="bytTaktikRace(parseInt(this.value,10))"></select>
                 </label>
                 <p id="taktik-banprofil" style="font-size:13px; color:var(--text-secondary,#ccc); font-weight:600; margin:0 0 10px;">-</p>
-                <button type="button" class="btn-secondary btn-small" onclick="foreslaTaktik('kval')" style="margin:0 0 14px;" data-i18n="appForeslaTaktik">🔧 Förslag från chefingenjören</button>
+                <button type="button" class="btn-secondary btn-small" onclick="foreslaTaktik('kval')" style="margin:0 0 14px;" data-i18n="appForeslaTaktik">Förslag från chefingenjören</button>
 
                 <label><span data-i18n="appStartdack">Startdäck</span>
                     <select id="taktik-kval-dack">
@@ -4176,7 +4180,7 @@
             <div class="card" id="race-taktik-lopp-card">
                 <h3><span data-i18n="appTaktikgenomgang">Taktikgenomgång</span> – <span data-i18n="appInforRacet">Inför racet</span></h3>
                 <p id="taktik-lopp-banprofil" style="font-size:13px; color:var(--text-secondary,#ccc); font-weight:600; margin:0 0 10px;">-</p>
-                <button type="button" class="btn-secondary btn-small" onclick="foreslaTaktik('lopp')" style="margin:0 0 14px;" data-i18n="appForeslaTaktik">🔧 Förslag från chefingenjören</button>
+                <button type="button" class="btn-secondary btn-small" onclick="foreslaTaktik('lopp')" style="margin:0 0 14px;" data-i18n="appForeslaTaktik">Förslag från chefingenjören</button>
                 <label><span data-i18n="appStartdack">Startdäck</span>
                     <select id="taktik-lopp-dack">
                         <option value="soft" data-i18n="appSoftMjukaSnabbastSlitsFortast">Soft (mjuka) – snabbast, slits fortast</option>
@@ -4422,7 +4426,7 @@
             </div>
 
             <div class="card" id="man-testlage">
-                <h3 data-i18n="manTestlageTitel">🧪 Testläge</h3>
+                <h3 data-i18n="manTestlageTitel">Testläge</h3>
                 <p data-i18n-html="manTestlageP1"><strong>Vad det är:</strong> Knappen "Testläge (utan Supabase)" på inloggningssidan loggar in på ett fast, lokalt testkonto utan att gå via Supabase. Precis som alla andra konton får testkontot sin egen, helt isolerade spelvärld (egen lagringsnyckel i webbläsaren) – testdata kan alltså aldrig blandas ihop med eller påverka ett riktigt kontos budget, trupp eller historik, och tvärtom.</p>
                 <p data-i18n-html="manTestlageP2"><strong>Vad testkontot får (bara vid den allra första inloggningen):</strong> en budget på 1 000 000 000 kr, tre slumpade förare (Bil 1, Bil 2, Reserv), ett redan avklarat träningsrace med en riktig resultatlista, samt ett redan avklarat kval och race (Race 1) med en fullständig racerapport – riktiga motståndarlag, start-/slutpositioner, tider, arena och bränsledata per bil. Allt genereras av spelets egen racemotor, inte påhittad exempeldata. En andra inloggning på samma testkonto återställer INTE budgeten och kör inte om testracet – din egen efterföljande speldata i testläget sparas precis som i ett vanligt konto.</p>
                 <p data-i18n-html="manTestlageP3"><strong>Radera testdata:</strong> Under Mitt konto → Inställningar visas ett eget "Testläge"-kort (bara när du faktiskt är inloggad på testkontot) med en knapp som raderar hela testkontots sparfil och tar dig tillbaka till inloggningen – ett enkelt sätt att nollställa alla tester utan att det påverkar något annat konto.</p>
@@ -4645,7 +4649,7 @@
                      dvs. bara för det inloggade testkontot ("Testläge (utan Supabase)"), aldrig för
                      ett riktigt konto. -->
                 <div class="card" id="installningar-testlage-kort" style="display:none; border: 1px solid var(--danger, #ef4444);">
-                    <h3 data-i18n="testlageTitel">🧪 Testläge</h3>
+                    <h3 data-i18n="testlageTitel">Testläge</h3>
                     <p style="font-size:13px; color:var(--text-muted); margin-top:0;" data-i18n="testlageBeskrivning">Du är inloggad på testkontot. Sparfilen ligger helt separerad från riktiga användares data (egen lagringsnyckel) och påverkar aldrig någon annans spel. Testkontot fick vid första inloggningen 1 000 000 000 kr samt ett redan avklarat träningsrace och en avklarad kval+race-rapport som testdata.</p>
                     <p style="font-size:12px; color:var(--text-muted);"><span data-i18n="testlageSkapadLabel">Testdata skapad:</span> <span id="testlage-skapad-datum">-</span> | <span data-i18n="testlageTraningsraceLabel">Träningsrace daterat:</span> <span id="testlage-traningsrace-datum">-</span></p>
                     <button onclick="raderaTestdata()" style="background-color: var(--danger-strong);" data-i18n="testlageRaderaKnapp">Radera testdata och gå till inloggningen</button>
@@ -9819,8 +9823,8 @@
         const NOTIS_INSTALLNING_KEY = 'apexNotiserAktiverade';
         const NOTIS_VISNINGSTID_MS = 6000;
         const NOTISTYPER = {
-            auktion_vunnen: { ikon: '🏆' },
-            spelhandelse: { ikon: '🔔' }
+            auktion_vunnen: { ikon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/><path d="M12 14v4M8 21h8M9.5 18h5"/></svg>' },
+            spelhandelse: { ikon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>' }
         };
 
         function notiserAktiverade() {
@@ -9931,7 +9935,7 @@
             let el = document.createElement('div');
             el.className = 'notis notis-' + (NOTISTYPER[typ] ? typ : 'ovrigt');
             el.innerHTML =
-                '<span class="notis-ikon">' + (def.ikon || '🔔') + '</span>' +
+                '<span class="notis-ikon">' + (def.ikon || '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>') + '</span>' +
                 '<span class="notis-innehall"><p class="notis-titel"></p><p class="notis-text"></p></span>' +
                 '<span class="notis-stang">×</span>';
             el.querySelector('.notis-titel').textContent = titel || '';
@@ -11149,7 +11153,7 @@
                 <div class="card" style="margin-bottom:8px; padding:10px 12px; cursor:pointer;" onclick="forumOppnaTrad('${t.id}')" role="button" tabindex="0">
                     <p style="margin:0; font-weight:600; display:flex; justify-content:space-between; gap:10px;">
                         <span>${inkorgEscapeHtml(t.titel)}</span>
-                        ${admin ? `<span style="color:var(--danger-soft); font-size:11px; font-weight:400; white-space:nowrap;" onclick="event.stopPropagation(); forumRaderaTrad('${t.id}')">🗑 ${tt('Ta bort', 'Delete')}</span>` : ''}
+                        ${admin ? `<span style="color:var(--danger-soft); font-size:11px; font-weight:400; white-space:nowrap;" onclick="event.stopPropagation(); forumRaderaTrad('${t.id}')">${tt('Ta bort', 'Delete')}</span>` : ''}
                     </p>
                     <p style="margin:4px 0 0; font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between; gap:10px;">
                         <span>${tt('Startad av', 'Started by')} <span style="cursor:pointer; text-decoration:underline dotted;" onclick="event.stopPropagation(); visaForumAnvandarprofil('${escNamn(t.author_username)}')">${inkorgEscapeHtml(t.author_username)}</span> · ${inkorgFormatteraTid(t.skapad)}</span>
@@ -11350,8 +11354,8 @@
                 let arEget = (i.author_username || '').toLowerCase() === eget.toLowerCase();
                 let rostHtml = arEget ? '' : `
                     <span style="display:flex; align-items:center; gap:8px; font-size:12px;">
-                        <span onclick="forumRostaInlagg('${i.id}', 1)" style="cursor:pointer; color:${i.minRost === 1 ? 'var(--blue)' : 'var(--text-muted)'};">👍 ${i.upp || 0}</span>
-                        <span onclick="forumRostaInlagg('${i.id}', -1)" style="cursor:pointer; color:${i.minRost === -1 ? 'var(--danger-soft)' : 'var(--text-muted)'};">👎 ${i.ner || 0}</span>
+                        <span onclick="forumRostaInlagg('${i.id}', 1)" style="cursor:pointer; color:${i.minRost === 1 ? 'var(--blue)' : 'var(--text-muted)'};">▲ ${i.upp || 0}</span>
+                        <span onclick="forumRostaInlagg('${i.id}', -1)" style="cursor:pointer; color:${i.minRost === -1 ? 'var(--danger-soft)' : 'var(--text-muted)'};">▼ ${i.ner || 0}</span>
                     </span>`;
                 return `
                 <div style="border-top:1px solid #333; padding:10px 0;">
@@ -11360,7 +11364,7 @@
                         <span style="display:flex; align-items:center; gap:10px;">
                             ${rostHtml}
                             <span style="color:var(--text-muted); font-size:11px; cursor:pointer; white-space:nowrap;" onclick="forumCiteraInlagg('${i.id}')">❝ ${tt('Citera', 'Quote')}</span>
-                            ${admin ? `<span style="color:var(--danger-soft); font-size:11px; cursor:pointer; white-space:nowrap;" onclick="forumRaderaInlagg('${i.id}')">🗑 ${tt('Ta bort', 'Delete')}</span>` : ''}
+                            ${admin ? `<span style="color:var(--danger-soft); font-size:11px; cursor:pointer; white-space:nowrap;" onclick="forumRaderaInlagg('${i.id}')">${tt('Ta bort', 'Delete')}</span>` : ''}
                         </span>
                     </p>
                     ${forumFormateraInlaggText(i.brodtext)}
@@ -11370,7 +11374,7 @@
             innehall.innerHTML = `
                 <h3 style="margin-top:0; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
                     <span>${inkorgEscapeHtml(trad.titel)}</span>
-                    ${admin ? `<span style="color:var(--danger-soft); font-size:12px; font-weight:400; cursor:pointer; white-space:nowrap;" onclick="forumRaderaTrad('${trad.id}')">🗑 ${tt('Ta bort tråden', 'Delete thread')}</span>` : ''}
+                    ${admin ? `<span style="color:var(--danger-soft); font-size:12px; font-weight:400; cursor:pointer; white-space:nowrap;" onclick="forumRaderaTrad('${trad.id}')">${tt('Ta bort tråden', 'Delete thread')}</span>` : ''}
                 </h3>
                 <p style="margin:0; font-size:12px; color:var(--text-muted);">${tt('Startad av', 'Started by')} <span style="cursor:pointer; text-decoration:underline dotted;" onclick="visaForumAnvandarprofil('${escNamn(trad.author_username)}')">${inkorgEscapeHtml(trad.author_username)}</span> · ${inkorgFormatteraTid(trad.skapad)}</p>
                 <p style="margin:10px 0; font-size:13.5px; white-space:pre-wrap;">${inkorgEscapeHtml(trad.brodtext)}</p>
@@ -11745,22 +11749,22 @@
                 } else {
                     let orderLagd = harKvalOrderForRace(spelarLag, spelarData.sasong, omgang.raceNr);
                     let orderBadge = orderLagd
-                        ? `<span style="color:var(--success);">✅ ${tt('Order lagd', 'Order set')}</span>`
-                        : `<span style="color:var(--warning,#f59e0b);">⚠️ ${tt('Order saknas', 'Order missing')}</span>`;
+                        ? `<span style="color:var(--success);">✓ ${tt('Order lagd', 'Order set')}</span>`
+                        : `<span style="color:var(--warning,#f59e0b);">${tt('Order saknas', 'Order missing')}</span>`;
                     let lankText = (omgang.raceNr === spelarData.raceNr) ? tt('▶ Nästa – visa & sätt order', '▶ Next – view & set order') : tt('Kommande – visa & sätt order', 'Upcoming – view & set order');
                     kvalStatusHTML = `<span class="team-link" onclick="visaRaceSida(${omgang.raceNr})">${lankText}</span><br>${orderBadge}`;
                 }
 
                 let raceStatusHTML;
                 if (liveHärt) {
-                    raceStatusHTML = `<span class="team-link" onclick="visaRaceSida(${omgang.raceNr})" style="color:var(--danger,#ef4444); font-weight:700;">🔴 ${tt('Live nu – följ racet', 'Live now – follow the race')}</span>`;
+                    raceStatusHTML = `<span class="team-link" onclick="visaRaceSida(${omgang.raceNr})" style="color:var(--danger,#ef4444); font-weight:700;"><span class="live-prick"></span>${tt('Live nu – följ racet', 'Live now – follow the race')}</span>`;
                 } else if (omgang.raceNr < spelarData.raceNr) {
                     raceStatusHTML = `<span class="team-link" onclick="visaRaceSida(${omgang.raceNr}, 'lopp')">${tt('Genomfört – visa resultat', 'Completed – view result')}</span>`;
                 } else {
                     let orderLagd = harLoppOrderForRace(spelarLag, spelarData.sasong, omgang.raceNr);
                     let orderBadge = orderLagd
-                        ? `<span style="color:var(--success);">✅ ${tt('Order lagd', 'Order set')}</span>`
-                        : `<span style="color:var(--warning,#f59e0b);">⚠️ ${tt('Order saknas', 'Order missing')}</span>`;
+                        ? `<span style="color:var(--success);">✓ ${tt('Order lagd', 'Order set')}</span>`
+                        : `<span style="color:var(--warning,#f59e0b);">${tt('Order saknas', 'Order missing')}</span>`;
                     let lankText = (omgang.raceNr === spelarData.raceNr) ? tt('▶ Nästa – visa & sätt order', '▶ Next – view & set order') : tt('Kommande – visa & sätt order', 'Upcoming – view & set order');
                     raceStatusHTML = `<span class="team-link" onclick="visaRaceSida(${omgang.raceNr})">${lankText}</span><br>${orderBadge}`;
                 }
@@ -12023,7 +12027,7 @@
             if (hist.length === 0) return `<p style="margin:0 0 6px 0; font-size:11px; color:var(--text-muted);">${tt('Ingen träningshistorik ännu.', 'No training history yet.')}</p>`;
             let lista = hist.map(h => `${ATTRIBUT_LABEL[h.attribut]} (${tt('v.', 'wk')} ${h.vecka})`).join(', ');
             let sammaAttribut = hist.length >= 3 && hist.every(h => h.attribut === hist[0].attribut);
-            let varning = sammaAttribut ? ` <span style="color:var(--accent);">⚠ ${tt('Samma förmåga tränad 3 veckor i rad – överväg att variera träningen.', 'Same ability trained 3 weeks in a row – consider varying the training.')}</span>` : '';
+            let varning = sammaAttribut ? ` <span style="color:var(--accent);">${tt('Samma förmåga tränad 3 veckor i rad – överväg att variera träningen.', 'Same ability trained 3 weeks in a row – consider varying the training.')}</span>` : '';
             return `<p style="margin:0 0 6px 0; font-size:11px; color:var(--text-muted);">${tt('Senaste träningen:', 'Recent training:')} ${lista}.${varning}</p>`;
         }
 
@@ -12112,8 +12116,8 @@
             let orderEl = document.getElementById('traning-order-block');
             if (orderEl) {
                 let statusHtml = harTraningOrderLagd()
-                    ? `<span style="color:var(--success);">✅ ${tt('Order lagd', 'Order set')}</span>`
-                    : `<span style="color:var(--warning,#f59e0b);">⚠️ ${tt('Order saknas', 'Order missing')}</span>`;
+                    ? `<span style="color:var(--success);">✓ ${tt('Order lagd', 'Order set')}</span>`
+                    : `<span style="color:var(--warning,#f59e0b);">${tt('Order saknas', 'Order missing')}</span>`;
                 orderEl.innerHTML = `<button class="btn-blue" onclick="skickaInTraningsorder()">${tt('Skicka in order', 'Submit order')}</button> ${statusHtml}`;
             }
             renderTraningForarVal();
@@ -18146,7 +18150,7 @@
                 let lagg = hamtaSpelarLag();
                 let kvalOrder = harKvalOrderForRace(lagg, spelarData.sasong, r);
                 let loppOrder = harLoppOrderForRace(lagg, spelarData.sasong, r);
-                let status = `Kval: ${kvalOrder ? '✅' : '—'}, Race: ${loppOrder ? '✅' : '—'}`;
+                let status = `Kval: ${kvalOrder ? '✓' : '—'}, Race: ${loppOrder ? '✓' : '—'}`;
                 opt.text = `Race ${r}` + (r === spelarData.raceNr ? ' (nästa)' : '') + ' – ' + status;
                 sel.appendChild(opt);
             }
@@ -19550,7 +19554,7 @@
                 lsJuniorprogramInfo: 'Dina scoutade prospekt. Förmågan är scoutens bedömning redan idag – den fortsätter utvecklas precis som för alla andra förare i spelet.',
                 lsBilplaceringInfo: 'Välj vilken av lagets bilar personen ska tillhöra. Personalen som tillhör en bil påverkar den bilens resultat i loppet.',
                 lsSkrivKontraktReservbanken: 'Skriv kontrakt (till reservbänken)',
-                lsKarriarrekordInfo: 'Förarens placering bland ALLA förare i spelet (aktiva och pensionerade) i varje kategori. 🥇 markerar en delad eller egen förstaplats – det faktiska rekordet.',
+                lsKarriarrekordInfo: 'Förarens placering bland ALLA förare i spelet (aktiva och pensionerade) i varje kategori.',
                 lsSasongsresultatInfo: 'Slutplacering och intjänade poäng, säsong för säsong (senaste säsongen överst).',
                 lsKarriarhistorikForareInfo: 'Säsong för säsong: lag, liga och resultat. Historiken börjar fyllas på från och med nästa säsongsskifte.',
                 lsKarriarhistorikLagInfo: 'Säsong för säsong: lag, liga och lagets resultat den säsongen. Historiken börjar fyllas på från och med nästa säsongsskifte.',
@@ -20056,7 +20060,7 @@
                 appSoftMjukaSnabbastSlitsFortast: 'Soft (mjuka) – snabbast, slits fortast',
                 appSparaKvalOrder: 'Spara kvalorder',
                 appSparaTaktik: 'Spara race-order',
-                appForeslaTaktik: '🔧 Förslag från chefingenjören',
+                appForeslaTaktik: 'Förslag från chefingenjören',
                 appSparkaPersonen: 'Sparka personen',
                 appSponsor: 'Sponsor',
                 appSponsoravtal: 'Sponsoravtal',
@@ -20112,13 +20116,13 @@
                 appAlder: 'Ålder',
                 appArKvar: 'Säsonger kvar',
                 appAterstallNollstallSpel: 'Återställ / Nollställ Spel',
-                testlageTitel: '🧪 Testläge',
+                testlageTitel: 'Testläge',
                 testlageBeskrivning: 'Du är inloggad på testkontot. Sparfilen ligger helt separerad från riktiga användares data (egen lagringsnyckel) och påverkar aldrig någon annans spel. Testkontot fick vid första inloggningen 1 000 000 000 kr samt ett redan avklarat träningsrace och en avklarad kval+race-rapport som testdata.',
                 testlageSkapadLabel: 'Testdata skapad:',
                 testlageTraningsraceLabel: 'Träningsrace daterat:',
                 testlageRaderaKnapp: 'Radera testdata och gå till inloggningen',
                 manTocTestlage: 'Testläge',
-                manTestlageTitel: '🧪 Testläge',
+                manTestlageTitel: 'Testläge',
                 manTestlageP1: '<strong>Vad det är:</strong> Knappen "Testläge (utan Supabase)" på inloggningssidan loggar in på ett fast, lokalt testkonto utan att gå via Supabase. Precis som alla andra konton får testkontot sin egen, helt isolerade spelvärld (egen lagringsnyckel i webbläsaren) – testdata kan alltså aldrig blandas ihop med eller påverka ett riktigt kontos budget, trupp eller historik, och tvärtom.',
                 manTestlageP2: '<strong>Vad testkontot får (bara vid den allra första inloggningen):</strong> en budget på 1 000 000 000 kr, tre slumpade förare (Bil 1, Bil 2, Reserv), ett redan avklarat träningsrace med en riktig resultatlista, samt ett redan avklarat kval och race (Race 1) med en fullständig racerapport – riktiga motståndarlag, start-/slutpositioner, tider, arena och bränsledata per bil. Allt genereras av spelets egen racemotor, inte påhittad exempeldata. En andra inloggning på samma testkonto återställer INTE budgeten och kör inte om testracet – din egen efterföljande speldata i testläget sparas precis som i ett vanligt konto.',
                 manTestlageP3: '<strong>Radera testdata:</strong> Under Mitt konto → Inställningar visas ett eget "Testläge"-kort (bara när du faktiskt är inloggad på testkontot) med en knapp som raderar hela testkontots sparfil och tar dig tillbaka till inloggningen – ett enkelt sätt att nollställa alla tester utan att det påverkar något annat konto.',
@@ -20353,7 +20357,7 @@
                 lsJuniorprogramInfo: 'Your scouted prospects. The ability shown is the scout’s assessment as of today – it keeps developing just like for every other driver in the game.',
                 lsBilplaceringInfo: 'Choose which of the team’s cars the person should belong to. Staff assigned to a car affect that car’s result in the race.',
                 lsSkrivKontraktReservbanken: 'Sign contract (to the reserve bench)',
-                lsKarriarrekordInfo: 'The driver’s ranking among ALL drivers in the game (active and retired) in each category. 🥇 marks a shared or outright first place – the actual record.',
+                lsKarriarrekordInfo: 'The driver’s ranking among ALL drivers in the game (active and retired) in each category.',
                 lsSasongsresultatInfo: 'Final position and points earned, season by season (most recent season on top).',
                 lsKarriarhistorikForareInfo: 'Season by season: team, league and result. The history starts filling in from the next season change.',
                 lsKarriarhistorikLagInfo: 'Season by season: team, league and the team’s result that season. The history starts filling in from the next season change.',
@@ -20859,7 +20863,7 @@
                 appSoftMjukaSnabbastSlitsFortast: 'Soft – fastest, wears quickest',
                 appSparaKvalOrder: 'Save qualifying order',
                 appSparaTaktik: 'Save race order',
-                appForeslaTaktik: "🔧 Chief engineer's suggestion",
+                appForeslaTaktik: "Chief engineer's suggestion",
                 appSparkaPersonen: 'Fire this person',
                 appSponsor: 'Sponsor',
                 appSponsoravtal: 'Sponsorship deals',
@@ -20915,13 +20919,13 @@
                 appAlder: 'Age',
                 appArKvar: 'Seasons left',
                 appAterstallNollstallSpel: 'Reset / Wipe Game',
-                testlageTitel: '🧪 Test mode',
+                testlageTitel: 'Test mode',
                 testlageBeskrivning: 'You are logged in on the test account. Its save file is fully separated from real users\' data (its own storage key) and never affects anyone else\'s game. On first login the test account received 1,000,000,000 kr plus an already-completed training race and a completed qualifying+race report as test data.',
                 testlageSkapadLabel: 'Test data created:',
                 testlageTraningsraceLabel: 'Training race dated:',
                 testlageRaderaKnapp: 'Delete test data and return to login',
                 manTocTestlage: 'Test mode',
-                manTestlageTitel: '🧪 Test mode',
+                manTestlageTitel: 'Test mode',
                 manTestlageP1: '<strong>What it is:</strong> The "Test mode (without Supabase)" button on the login screen logs in to a fixed, local test account without going through Supabase. Just like any other account, the test account gets its own, fully isolated game world (its own browser storage key) – test data can therefore never mix with or affect a real account\'s budget, roster or history, and vice versa.',
                 manTestlageP2: '<strong>What the test account receives (only on the very first login):</strong> a budget of 1,000,000,000 kr, three randomly generated drivers (Car 1, Car 2, Reserve), an already-completed training race with a real results list, and an already-completed qualifying session and race (Race 1) with a full race report – real opposing teams, starting/finishing positions, times, arena and fuel data per car. Everything is generated by the game\'s own race engine, not made-up sample data. Logging in to the same test account a second time does NOT reset the budget or re-run the test race – your own subsequent play in test mode is saved just like on a regular account.',
                 manTestlageP3: '<strong>Deleting test data:</strong> Under My Account → Settings, a dedicated "Test mode" card is shown (only while actually logged in on the test account) with a button that deletes the entire test account\'s save file and returns you to the login screen – a simple way to reset all testing without affecting any other account.',
@@ -21156,7 +21160,7 @@
                 lsJuniorprogramInfo: 'Deine gescouteten Talente. Die angezeigte Fähigkeit ist die heutige Einschätzung des Scouts – sie entwickelt sich weiter, genau wie bei allen anderen Fahrern im Spiel.',
                 lsBilplaceringInfo: 'Wähle aus, zu welchem der Teamautos die Person gehören soll. Personal, das einem Auto zugewiesen ist, beeinflusst das Ergebnis dieses Autos im Rennen.',
                 lsSkrivKontraktReservbanken: 'Vertrag unterschreiben (auf die Ersatzbank)',
-                lsKarriarrekordInfo: 'Die Platzierung des Fahrers unter ALLEN Fahrern im Spiel (aktiv und im Ruhestand) in jeder Kategorie. 🥇 markiert einen geteilten oder alleinigen ersten Platz – den tatsächlichen Rekord.',
+                lsKarriarrekordInfo: 'Die Platzierung des Fahrers unter ALLEN Fahrern im Spiel (aktiv und im Ruhestand) in jeder Kategorie.',
                 lsSasongsresultatInfo: 'Endplatzierung und erzielte Punkte, Saison für Saison (aktuellste Saison oben).',
                 lsKarriarhistorikForareInfo: 'Saison für Saison: Team, Liga und Ergebnis. Die Historie beginnt sich ab dem nächsten Saisonwechsel zu füllen.',
                 lsKarriarhistorikLagInfo: 'Saison für Saison: Team, Liga und das Ergebnis des Teams in dieser Saison. Die Historie beginnt sich ab dem nächsten Saisonwechsel zu füllen.',
@@ -21642,7 +21646,7 @@
                 appSoftMjukaSnabbastSlitsFortast: "Weich – am schnellsten, verschleißt am schnellsten",
                 appSparaKvalOrder: "Qualifying-Order speichern",
                 appSparaTaktik: "Renn-Order speichern",
-                appForeslaTaktik: "🔧 Vorschlag des Chefingenieurs",
+                appForeslaTaktik: "Vorschlag des Chefingenieurs",
                 appSparkaPersonen: "Diese Person entlassen",
                 appSponsor: "Sponsor",
                 appSponsoravtal: "Sponsorenverträge",
@@ -21698,13 +21702,13 @@
                 appAlder: "Alter",
                 appArKvar: "Verbleibende Saisons",
                 appAterstallNollstallSpel: "Spiel zurücksetzen / löschen",
-                testlageTitel: "🧪 Testmodus",
+                testlageTitel: "Testmodus",
                 testlageBeskrivning: "Du bist im Testkonto angemeldet. Dessen Spielstand ist vollständig von den Daten echter Nutzer getrennt (eigener Speicherschlüssel) und beeinflusst niemals das Spiel anderer. Beim ersten Login erhielt das Testkonto 1.000.000.000 kr sowie ein bereits abgeschlossenes Trainingsrennen und einen abgeschlossenen Qualifying- und Rennbericht als Testdaten.",
                 testlageSkapadLabel: "Testdaten erstellt:",
                 testlageTraningsraceLabel: "Trainingsrennen vom:",
                 testlageRaderaKnapp: "Testdaten löschen und zur Anmeldung zurückkehren",
                 manTocTestlage: "Testmodus",
-                manTestlageTitel: "🧪 Testmodus",
+                manTestlageTitel: "Testmodus",
                 manTestlageP1: "<strong>Was es ist:</strong> Die Schaltfläche „Testmodus (ohne Supabase)\" auf dem Anmeldebildschirm meldet dich bei einem festen, lokalen Testkonto an, ohne über Supabase zu laufen. Wie jedes andere Konto erhält das Testkonto seine eigene, vollständig isolierte Spielwelt (eigener Browser-Speicherschlüssel) – Testdaten können sich daher niemals mit dem Budget, Kader oder der Historie eines echten Kontos vermischen oder diese beeinflussen, und umgekehrt.",
                 manTestlageP2: "<strong>Was das Testkonto erhält (nur beim allerersten Login):</strong> ein Budget von 1.000.000.000 kr, drei zufällig generierte Fahrer (Auto 1, Auto 2, Ersatz), ein bereits abgeschlossenes Trainingsrennen mit einer echten Ergebnisliste sowie ein bereits abgeschlossenes Qualifying und Rennen (Rennen 1) mit einem vollständigen Rennbericht – echte gegnerische Teams, Start-/Zielpositionen, Zeiten, Arena- und Kraftstoffdaten pro Auto. Alles wird von der eigenen Rennengine des Spiels erzeugt, keine erfundenen Beispieldaten. Eine erneute Anmeldung beim selben Testkonto setzt das Budget NICHT zurück und wiederholt auch nicht das Testrennen – dein weiteres Spiel im Testmodus wird genau wie bei einem regulären Konto gespeichert.",
                 manTestlageP3: "<strong>Testdaten löschen:</strong> Unter Mein Konto → Einstellungen wird (nur solange du tatsächlich im Testkonto angemeldet bist) eine eigene Karte „Testmodus\" mit einer Schaltfläche angezeigt, die den gesamten Spielstand des Testkontos löscht und dich zum Anmeldebildschirm zurückbringt – eine einfache Möglichkeit, alle Tests zurückzusetzen, ohne ein anderes Konto zu beeinflussen.",
@@ -21918,7 +21922,7 @@
                 lsJuniorprogramInfo: 'Vos espoirs recrutés. La capacité affichée est l’évaluation actuelle du recruteur – elle continue d’évoluer comme pour tous les autres pilotes du jeu.',
                 lsBilplaceringInfo: 'Choisissez à quelle voiture de l’équipe la personne doit être affectée. Le personnel affecté à une voiture influence le résultat de cette voiture en course.',
                 lsSkrivKontraktReservbanken: 'Signer un contrat (au banc de réserve)',
-                lsKarriarrekordInfo: 'Le classement du pilote parmi TOUS les pilotes du jeu (actifs et retraités) dans chaque catégorie. 🥇 signale une première place partagée ou exclusive – le record réel.',
+                lsKarriarrekordInfo: 'Le classement du pilote parmi TOUS les pilotes du jeu (actifs et retraités) dans chaque catégorie.',
                 lsSasongsresultatInfo: 'Position finale et points marqués, saison par saison (la saison la plus récente en haut).',
                 lsKarriarhistorikForareInfo: 'Saison par saison : équipe, ligue et résultat. L’historique commence à se remplir à partir du prochain changement de saison.',
                 lsKarriarhistorikLagInfo: 'Saison par saison : équipe, ligue et résultat de l’équipe cette saison-là. L’historique commence à se remplir à partir du prochain changement de saison.',
@@ -22404,7 +22408,7 @@
                 appSoftMjukaSnabbastSlitsFortast: "Tendres – les plus rapides, s'usent le plus vite",
                 appSparaKvalOrder: "Enregistrer les ordres de qualification",
                 appSparaTaktik: "Enregistrer les ordres de course",
-                appForeslaTaktik: "🔧 Suggestion de l'ingénieur en chef",
+                appForeslaTaktik: "Suggestion de l'ingénieur en chef",
                 appSparkaPersonen: "Licencier cette personne",
                 appSponsor: "Sponsor",
                 appSponsoravtal: "Contrats de sponsoring",
@@ -22460,13 +22464,13 @@
                 appAlder: "Âge",
                 appArKvar: "Saisons restantes",
                 appAterstallNollstallSpel: "Réinitialiser / Effacer la partie",
-                testlageTitel: "🧪 Mode test",
+                testlageTitel: "Mode test",
                 testlageBeskrivning: "Vous êtes connecté sur le compte de test. Sa sauvegarde est entièrement séparée des données des utilisateurs réels (sa propre clé de stockage) et n'affecte jamais la partie de qui que ce soit d'autre. Lors de la première connexion, le compte de test a reçu 1 000 000 000 kr ainsi qu'une course d'entraînement déjà terminée et un rapport de qualifications + course déjà complété comme données de test.",
                 testlageSkapadLabel: "Données de test créées :",
                 testlageTraningsraceLabel: "Course d'entraînement datée du :",
                 testlageRaderaKnapp: "Supprimer les données de test et revenir à la connexion",
                 manTocTestlage: "Mode test",
-                manTestlageTitel: "🧪 Mode test",
+                manTestlageTitel: "Mode test",
                 manTestlageP1: "<strong>De quoi il s'agit :</strong> Le bouton « Mode test (sans Supabase) » sur l'écran de connexion vous connecte à un compte de test local fixe, sans passer par Supabase. Comme tout autre compte, le compte de test dispose de son propre monde de jeu totalement isolé (sa propre clé de stockage du navigateur) – les données de test ne peuvent donc jamais se mélanger avec le budget, l'effectif ou l'historique d'un compte réel, ni les affecter, et inversement.",
                 manTestlageP2: "<strong>Ce que reçoit le compte de test (uniquement lors de la toute première connexion) :</strong> un budget de 1 000 000 000 kr, trois pilotes générés aléatoirement (Voiture 1, Voiture 2, Remplaçant), une course d'entraînement déjà terminée avec une véritable liste de résultats, ainsi qu'une séance de qualifications et une course déjà terminées (Course 1) avec un rapport de course complet – de vraies équipes adverses, positions de départ/d'arrivée, temps, données d'arène et de carburant par voiture. Tout est généré par le propre moteur de course du jeu, et non par des données d'exemple inventées. Se reconnecter au même compte de test une seconde fois ne réinitialise PAS le budget et ne relance PAS la course de test – votre progression ultérieure en mode test est sauvegardée comme sur un compte normal.",
                 manTestlageP3: "<strong>Supprimer les données de test :</strong> Sous Mon compte → Paramètres, une carte dédiée « Mode test » s'affiche (uniquement lorsque vous êtes réellement connecté sur le compte de test) avec un bouton qui supprime l'intégralité de la sauvegarde du compte de test et vous ramène à l'écran de connexion – un moyen simple de réinitialiser tous les tests sans affecter aucun autre compte.",
@@ -22680,7 +22684,7 @@
                 lsJuniorprogramInfo: 'Tus talentos ojeados. La habilidad mostrada es la valoración del ojeador a día de hoy; sigue evolucionando igual que la de cualquier otro piloto del juego.',
                 lsBilplaceringInfo: 'Elige a cuál de los coches del equipo debe pertenecer la persona. El personal asignado a un coche influye en el resultado de ese coche en la carrera.',
                 lsSkrivKontraktReservbanken: 'Firmar contrato (al banquillo de reservas)',
-                lsKarriarrekordInfo: 'La clasificación del piloto entre TODOS los pilotos del juego (activos y retirados) en cada categoría. 🥇 marca un primer puesto compartido o en solitario: el récord real.',
+                lsKarriarrekordInfo: 'La clasificación del piloto entre TODOS los pilotos del juego (activos y retirados) en cada categoría.',
                 lsSasongsresultatInfo: 'Posición final y puntos ganados, temporada a temporada (la más reciente arriba).',
                 lsKarriarhistorikForareInfo: 'Temporada a temporada: equipo, liga y resultado. El historial empieza a rellenarse a partir del próximo cambio de temporada.',
                 lsKarriarhistorikLagInfo: 'Temporada a temporada: equipo, liga y el resultado del equipo esa temporada. El historial empieza a rellenarse a partir del próximo cambio de temporada.',
@@ -23166,7 +23170,7 @@
                 appSoftMjukaSnabbastSlitsFortast: "Blandos – los más rápidos, se desgastan antes",
                 appSparaKvalOrder: "Guardar orden de clasificación",
                 appSparaTaktik: "Guardar orden de carrera",
-                appForeslaTaktik: "🔧 Sugerencia del ingeniero jefe",
+                appForeslaTaktik: "Sugerencia del ingeniero jefe",
                 appSparkaPersonen: "Despedir a esta persona",
                 appSponsor: "Patrocinador",
                 appSponsoravtal: "Acuerdos de patrocinio",
@@ -23222,13 +23226,13 @@
                 appAlder: "Edad",
                 appArKvar: "Temporadas restantes",
                 appAterstallNollstallSpel: "Reiniciar / Borrar partida",
-                testlageTitel: "🧪 Modo de prueba",
+                testlageTitel: "Modo de prueba",
                 testlageBeskrivning: "Has iniciado sesión en la cuenta de prueba. Su partida guardada está completamente separada de los datos de usuarios reales (su propia clave de almacenamiento) y nunca afecta la partida de nadie más. En el primer inicio de sesión, la cuenta de prueba recibió 1.000.000.000 kr, además de una carrera de entrenamiento ya completada y un informe de clasificación y carrera completado como datos de prueba.",
                 testlageSkapadLabel: "Datos de prueba creados:",
                 testlageTraningsraceLabel: "Carrera de entrenamiento con fecha:",
                 testlageRaderaKnapp: "Eliminar datos de prueba y volver al inicio de sesión",
                 manTocTestlage: "Modo de prueba",
-                manTestlageTitel: "🧪 Modo de prueba",
+                manTestlageTitel: "Modo de prueba",
                 manTestlageP1: "<strong>Qué es:</strong> El botón \"Modo de prueba (sin Supabase)\" de la pantalla de inicio de sesión accede a una cuenta de prueba local fija sin pasar por Supabase. Como cualquier otra cuenta, la cuenta de prueba obtiene su propio mundo de juego totalmente aislado (su propia clave de almacenamiento del navegador) – por eso los datos de prueba nunca pueden mezclarse con el presupuesto, la plantilla o el historial de una cuenta real, ni afectarlos, y viceversa.",
                 manTestlageP2: "<strong>Qué recibe la cuenta de prueba (solo en el primerísimo inicio de sesión):</strong> un presupuesto de 1.000.000.000 kr, tres pilotos generados aleatoriamente (Coche 1, Coche 2, Reserva), una carrera de entrenamiento ya completada con una lista de resultados real, y una sesión de clasificación y una carrera ya completadas (Carrera 1) con un informe de carrera completo: equipos rivales reales, posiciones de salida/llegada, tiempos, datos de arena y combustible por coche. Todo lo genera el propio motor de carreras del juego, no son datos de ejemplo inventados. Iniciar sesión en la misma cuenta de prueba por segunda vez NO reinicia el presupuesto ni repite la carrera de prueba: tu juego posterior en modo de prueba se guarda igual que en una cuenta normal.",
                 manTestlageP3: "<strong>Eliminar datos de prueba:</strong> En Mi cuenta → Configuración se muestra una tarjeta específica de \"Modo de prueba\" (solo mientras has iniciado sesión realmente en la cuenta de prueba) con un botón que elimina toda la partida guardada de la cuenta de prueba y te devuelve a la pantalla de inicio de sesión – una forma sencilla de reiniciar todas las pruebas sin afectar a ninguna otra cuenta.",
@@ -23442,7 +23446,7 @@
                 lsJuniorprogramInfo: 'Twoje wyskautowane talenty. Umiejętność to ocena skauta już dziś – nadal będzie się rozwijać, tak jak u wszystkich innych kierowców w grze.',
                 lsBilplaceringInfo: 'Wybierz, do którego bolidu zespołu ma zostać przypisana ta osoba. Personel przypisany do bolidu wpływa na wynik tego bolidu w wyścigu.',
                 lsSkrivKontraktReservbanken: 'Podpisz kontrakt (na ławkę rezerwowych)',
-                lsKarriarrekordInfo: 'Pozycja kierowcy wśród WSZYSTKICH kierowców w grze (aktywnych i emerytowanych) w każdej kategorii. 🥇 oznacza dzielone lub samodzielne pierwsze miejsce – faktyczny rekord.',
+                lsKarriarrekordInfo: 'Pozycja kierowcy wśród WSZYSTKICH kierowców w grze (aktywnych i emerytowanych) w każdej kategorii.',
                 lsSasongsresultatInfo: 'Pozycja końcowa i zdobyte punkty, sezon po sezonie (najnowszy sezon na górze).',
                 lsKarriarhistorikForareInfo: 'Sezon po sezonie: zespół, liga i wynik. Historia zaczyna się wypełniać od następnej zmiany sezonu.',
                 lsKarriarhistorikLagInfo: 'Sezon po sezonie: zespół, liga i wynik zespołu w danym sezonie. Historia zaczyna się wypełniać od następnej zmiany sezonu.',
@@ -23928,7 +23932,7 @@
                 appSoftMjukaSnabbastSlitsFortast: 'Soft (miękkie) – najszybsze, zużywają się najszybciej',
                 appSparaKvalOrder: 'Zapisz zlecenie kwalifikacyjne',
                 appSparaTaktik: 'Zapisz zlecenie wyścigowe',
-                appForeslaTaktik: '🔧 Sugestia głównego inżyniera',
+                appForeslaTaktik: 'Sugestia głównego inżyniera',
                 appSparkaPersonen: 'Zwolnij osobę',
                 appSponsor: 'Sponsor',
                 appSponsoravtal: 'Umowa sponsorska',
@@ -23984,13 +23988,13 @@
                 appAlder: 'Wiek',
                 appArKvar: 'Pozostałe lata',
                 appAterstallNollstallSpel: 'Przywróć / zresetuj grę',
-                testlageTitel: '🧪 Tryb testowy',
+                testlageTitel: 'Tryb testowy',
                 testlageBeskrivning: 'Jesteś zalogowany na koncie testowym. Plik zapisu jest całkowicie oddzielony od danych prawdziwych użytkowników (własny klucz przechowywania) i nigdy nie wpływa na czyjąkolwiek grę. Przy pierwszym logowaniu konto testowe otrzymało 1 000 000 000 kr oraz już ukończony wyścig treningowy i ukończony raport z kwalifikacji i wyścigu jako dane testowe.',
                 testlageSkapadLabel: 'Dane testowe utworzone:',
                 testlageTraningsraceLabel: 'Data wyścigu treningowego:',
                 testlageRaderaKnapp: 'Usuń dane testowe i przejdź do logowania',
                 manTocTestlage: 'Tryb testowy',
-                manTestlageTitel: '🧪 Tryb testowy',
+                manTestlageTitel: 'Tryb testowy',
                 manTestlageP1: '<strong>Czym jest:</strong> Przycisk "Tryb testowy (bez Supabase)" na stronie logowania loguje na stałe, lokalne konto testowe bez przechodzenia przez Supabase. Podobnie jak wszystkie inne konta, konto testowe otrzymuje własny, całkowicie odizolowany świat gry (własny klucz przechowywania w przeglądarce) – dane testowe nigdy nie mogą więc zmieszać się z budżetem, kadrą ani historią prawdziwego konta ani na nie wpłynąć, i odwrotnie.',
                 manTestlageP2: '<strong>Co otrzymuje konto testowe (tylko przy pierwszym logowaniu):</strong> budżet 1 000 000 000 kr, trzech losowych kierowców (Bolid 1, Bolid 2, Rezerwa), już ukończony wyścig treningowy z prawdziwą listą wyników, a także już ukończone kwalifikacje i wyścig (Wyścig 1) z pełnym raportem z wyścigu – prawdziwe zespoły przeciwników, pozycje startowe/końcowe, czasy, arena i dane o paliwie dla każdego bolidu. Wszystko generowane przez własny silnik wyścigowy gry, nie zmyślone przykładowe dane. Kolejne logowanie na to samo konto testowe NIE resetuje budżetu ani nie powtarza wyścigu testowego – twoje kolejne dane z gry w trybie testowym są zapisywane tak jak na zwykłym koncie.',
                 manTestlageP3: '<strong>Usuwanie danych testowych:</strong> W Moje konto → Ustawienia widoczna jest osobna karta "Tryb testowy" (tylko gdy faktycznie jesteś zalogowany na koncie testowym) z przyciskiem, który usuwa cały plik zapisu konta testowego i przenosi cię z powrotem do logowania – prosty sposób na zresetowanie wszystkich testów bez wpływu na inne konto.',
@@ -24204,7 +24208,7 @@
                 lsJuniorprogramInfo: 'Tiiviestien löytämät lupaukset. Kyky on tiiviestin arvio jo tänään – se jatkaa kehittymistään aivan kuten kaikilla muillakin pelin kuljettajilla.',
                 lsBilplaceringInfo: 'Valitse, kumpaan joukkueen autoista henkilö kuuluu. Autoon kuuluva henkilöstö vaikuttaa kyseisen auton tulokseen kilpailussa.',
                 lsSkrivKontraktReservbanken: 'Tee sopimus (varapenkille)',
-                lsKarriarrekordInfo: 'Kuljettajan sijoitus KAIKKIEN pelin kuljettajien (aktiivisten ja eläköityneiden) joukossa kussakin kategoriassa. 🥇 merkitsee jaettua tai omaa ykkössijaa – varsinaista ennätystä.',
+                lsKarriarrekordInfo: 'Kuljettajan sijoitus KAIKKIEN pelin kuljettajien (aktiivisten ja eläköityneiden) joukossa kussakin kategoriassa.',
                 lsSasongsresultatInfo: 'Loppusijoitus ja ansaitut pisteet, kausi kaudelta (uusin kausi ylimpänä).',
                 lsKarriarhistorikForareInfo: 'Kausi kaudelta: joukkue, sarja ja tulos. Historia alkaa täyttyä seuraavasta kaudenvaihdosta lähtien.',
                 lsKarriarhistorikLagInfo: 'Kausi kaudelta: joukkue, sarja ja joukkueen tulos sinä kautena. Historia alkaa täyttyä seuraavasta kaudenvaihdosta lähtien.',
@@ -24690,7 +24694,7 @@
                 appSoftMjukaSnabbastSlitsFortast: 'Soft (pehmeät) – nopeimmat, kuluvat nopeimmin',
                 appSparaKvalOrder: 'Tallenna aika-ajo-ohjeet',
                 appSparaTaktik: 'Tallenna kilpailuohjeet',
-                appForeslaTaktik: '🔧 Pääinsinöörin ehdotus',
+                appForeslaTaktik: 'Pääinsinöörin ehdotus',
                 appSparkaPersonen: 'Erota henkilö',
                 appSponsor: 'Sponsori',
                 appSponsoravtal: 'Sponsorisopimus',
@@ -24746,13 +24750,13 @@
                 appAlder: 'Ikä',
                 appArKvar: 'Vuosia jäljellä',
                 appAterstallNollstallSpel: 'Palauta / Nollaa peli',
-                testlageTitel: '🧪 Testitila',
+                testlageTitel: 'Testitila',
                 testlageBeskrivning: 'Olet kirjautuneena testitilille. Tallennustiedosto on täysin erillään todellisten käyttäjien tiedoista (oma tallennusavain) eikä koskaan vaikuta kenenkään muun peliin. Testitili sai ensimmäisellä kirjautumisella 1 000 000 000 kr sekä jo valmiin harjoituskilpailun ja valmiin aika-ajo- ja kilpailuraportin testidatana.',
                 testlageSkapadLabel: 'Testidata luotu:',
                 testlageTraningsraceLabel: 'Harjoituskilpailu päivätty:',
                 testlageRaderaKnapp: 'Poista testidata ja siirry kirjautumiseen',
                 manTocTestlage: 'Testitila',
-                manTestlageTitel: '🧪 Testitila',
+                manTestlageTitel: 'Testitila',
                 manTestlageP1: '<strong>Mitä se on:</strong> Kirjautumissivun painike "Testitila (ilman Supabasea)" kirjaa sisään kiinteälle, paikalliselle testitilille menemättä Supabasen kautta. Aivan kuten kaikki muutkin tilit, testitili saa oman, täysin eristetyn pelimaailmansa (oma tallennusavain selaimessa) – testidata ei siis voi koskaan sekoittua todellisen tilin budjettiin, joukkueeseen tai historiaan tai vaikuttaa niihin, eikä päinvastoin.',
                 manTestlageP2: '<strong>Mitä testitili saa (vain aivan ensimmäisellä kirjautumisella):</strong> budjetin 1 000 000 000 kr, kolme satunnaista kuljettajaa (Auto 1, Auto 2, Vara), jo valmiin harjoituskilpailun aidolla tulosluettelolla, sekä jo valmiin aika-ajon ja kilpailun (Kilpailu 1) täydellisellä kilpailuraportilla – aidot vastustajajoukkueet, lähtö-/loppusijat, ajat, areena ja polttoainedata autoa kohti. Kaikki on pelin oman kilpailumoottorin luomaa, ei keksittyä esimerkkidataa. Toinen kirjautuminen samalle testitilille EI nollaa budjettia eikä aja testikilpailua uudelleen – oma myöhempi pelidatasi testitilassa tallentuu aivan kuten tavallisella tilillä.',
                 manTestlageP3: '<strong>Testidatan poistaminen:</strong> Kohdassa Oma tili → Asetukset näkyy oma "Testitila"-kortti (vain kun olet todella kirjautuneena testitilille) painikkeella, joka poistaa koko testitilin tallennustiedoston ja vie sinut takaisin kirjautumiseen – yksinkertainen tapa nollata kaikki testit ilman, että se vaikuttaa mihinkään muuhun tiliin.',
@@ -24966,7 +24970,7 @@
                 lsJuniorprogramInfo: 'A beszervezett tehetségeid. A képesség a beszervező mai értékelése – ugyanúgy tovább fejlődik, mint minden más versenyzőé a játékban.',
                 lsBilplaceringInfo: 'Válaszd ki, a csapat melyik autójához tartozzon az illető. Az autóhoz tartozó személyzet befolyásolja az adott autó versenyeredményét.',
                 lsSkrivKontraktReservbanken: 'Szerződés kötése (a tartalékpadra)',
-                lsKarriarrekordInfo: 'A versenyző helyezése a játék ÖSSZES versenyzője (aktívak és visszavonultak) között az egyes kategóriákban. A 🥇 megosztott vagy egyedüli első helyet jelöl – a tényleges rekordot.',
+                lsKarriarrekordInfo: 'A versenyző helyezése a játék ÖSSZES versenyzője (aktívak és visszavonultak) között az egyes kategóriákban.',
                 lsSasongsresultatInfo: 'Végső helyezés és megszerzett pontok, szezonról szezonra (a legutóbbi szezon legfelül).',
                 lsKarriarhistorikForareInfo: 'Szezonról szezonra: csapat, liga és eredmény. A történet a következő szezonváltástól kezd feltöltődni.',
                 lsKarriarhistorikLagInfo: 'Szezonról szezonra: csapat, liga és a csapat eredménye abban a szezonban. A történet a következő szezonváltástól kezd feltöltődni.',
@@ -25452,7 +25456,7 @@
                 appSoftMjukaSnabbastSlitsFortast: 'Soft (lágy) – leggyorsabb, leggyorsabban kopik',
                 appSparaKvalOrder: 'Időmérő utasítás mentése',
                 appSparaTaktik: 'Verseny utasítás mentése',
-                appForeslaTaktik: '🔧 Főmérnök javaslata',
+                appForeslaTaktik: 'Főmérnök javaslata',
                 appSparkaPersonen: 'A személy elbocsátása',
                 appSponsor: 'Szponzor',
                 appSponsoravtal: 'Szponzori megállapodás',
@@ -25508,13 +25512,13 @@
                 appAlder: 'Életkor',
                 appArKvar: 'Hátralévő évek',
                 appAterstallNollstallSpel: 'Játék visszaállítása / nullázása',
-                testlageTitel: '🧪 Teszt mód',
+                testlageTitel: 'Teszt mód',
                 testlageBeskrivning: 'A tesztfiókkal vagy bejelentkezve. A mentési fájl teljesen elkülönül a valódi felhasználók adataitól (saját tárolási kulcs), és soha nem érinti mások játékát. A tesztfiók az első bejelentkezéskor 1 000 000 000 kr-t, valamint egy már lezajlott edzőversenyt és egy lezárt időmérő+verseny jelentést kapott tesztadatként.',
                 testlageSkapadLabel: 'Tesztadat létrehozva:',
                 testlageTraningsraceLabel: 'Edzőverseny dátuma:',
                 testlageRaderaKnapp: 'Tesztadat törlése és ugrás a bejelentkezéshez',
                 manTocTestlage: 'Teszt mód',
-                manTestlageTitel: '🧪 Teszt mód',
+                manTestlageTitel: 'Teszt mód',
                 manTestlageP1: '<strong>Mi ez:</strong> A bejelentkezési oldal "Teszt mód (Supabase nélkül)" gombja egy állandó, helyi tesztfiókkal jelentkezik be, Supabase használata nélkül. Akárcsak minden más fiók, a tesztfiók is saját, teljesen elkülönített játékvilágot kap (saját tárolási kulcs a böngészőben) – a tesztadatok tehát soha nem keveredhetnek egy valódi fiók költségvetésével, keretével vagy történetével, sem befolyásolhatják azt, és fordítva sem.',
                 manTestlageP2: '<strong>Mit kap a tesztfiók (csak a legelső bejelentkezéskor):</strong> 1 000 000 000 kr költségvetést, három véletlenszerű versenyzőt (1-es autó, 2-es autó, Tartalék), egy már lezajlott edzőversenyt valódi eredménylistával, valamint egy már lezajlott időmérőt és versenyt (1. verseny) teljes versenyjelentéssel – valódi ellenfélcsapatokkal, rajt-/célhelyezésekkel, időkkel, arénával és üzemanyagadatokkal autónként. Minden a játék saját versenymotorja által generált, nem kitalált mintaadat. Ugyanazzal a tesztfiókkal való második bejelentkezés NEM állítja vissza a költségvetést, és nem futtatja újra a tesztversenyt – a teszt módban keletkező saját, későbbi játékadataid ugyanúgy mentődnek, mint egy normál fiókban.',
                 manTestlageP3: '<strong>Tesztadatok törlése:</strong> A Fiókom → Beállítások alatt megjelenik egy saját "Teszt mód" kártya (csak akkor, ha valóban a tesztfiókkal vagy bejelentkezve), amelynek gombja törli a teljes tesztfiók mentési fájlját, és visszavisz a bejelentkezéshez – egyszerű módja az összes teszt nullázásának anélkül, hogy ez bármely más fiókot érintene.',
@@ -25728,7 +25732,7 @@
                 lsJuniorprogramInfo: 'あなたがスカウトしたプロスペクトです。能力値は現時点でのスカウトの評価であり、ゲーム内の他のすべてのドライバーと同じように今後も成長していきます。',
                 lsBilplaceringInfo: 'この人物をチームのどちらの車に所属させるか選んでください。車に所属するスタッフは、その車のレース結果に影響します。',
                 lsSkrivKontraktReservbanken: '契約する（リザーブへ）',
-                lsKarriarrekordInfo: '各カテゴリーにおける、ゲーム内の全ドライバー（現役・引退済み含む）の中でのこのドライバーの順位です。🥇は単独または同着の1位――実際の記録――を示します。',
+                lsKarriarrekordInfo: '各カテゴリーにおける、ゲーム内の全ドライバー（現役・引退済み含む）の中でのこのドライバーの順位です。',
                 lsSasongsresultatInfo: 'シーズンごとの最終順位と獲得ポイント（直近のシーズンが一番上）。',
                 lsKarriarhistorikForareInfo: 'シーズンごとの所属チーム、リーグ、成績。履歴は次のシーズン切り替わりから蓄積が始まります。',
                 lsKarriarhistorikLagInfo: 'シーズンごとの所属チーム、リーグ、そのシーズンのチーム成績。履歴は次のシーズン切り替わりから蓄積が始まります。',
@@ -26216,7 +26220,7 @@
                 appSoftMjukaSnabbastSlitsFortast: 'ソフト――最速だが最も摩耗が早い',
                 appSparaKvalOrder: '予選オーダーを保存',
                 appSparaTaktik: 'レースオーダーを保存',
-                appForeslaTaktik: '🔧 チーフエンジニアからの提案',
+                appForeslaTaktik: 'チーフエンジニアからの提案',
                 appSparkaPersonen: 'この人物を解雇する',
                 appSponsor: 'スポンサー',
                 appSponsoravtal: 'スポンサー契約',
@@ -26272,13 +26276,13 @@
                 appAlder: '年齢',
                 appArKvar: '残り年数',
                 appAterstallNollstallSpel: 'ゲームをリセット／初期化',
-                testlageTitel: '🧪 テストモード',
+                testlageTitel: 'テストモード',
                 testlageBeskrivning: 'テストアカウントでログイン中です。セーブデータは実際のユーザーのデータとは完全に分離されており（専用の保存キー）、他の誰のゲームにも影響しません。テストアカウントは初回ログイン時に1,000,000,000 krと、テストデータとしてすでに完了したトレーニングレース1件、予選＋レースのレポート1件を受け取りました。',
                 testlageSkapadLabel: 'テストデータ作成日：',
                 testlageTraningsraceLabel: 'トレーニングレース日付：',
                 testlageRaderaKnapp: 'テストデータを削除してログイン画面へ',
                 manTocTestlage: 'テストモード',
-                manTestlageTitel: '🧪 テストモード',
+                manTestlageTitel: 'テストモード',
                 manTestlageP1: '<strong>これは何か：</strong>ログイン画面の「テストモード（Supabaseなし）」ボタンは、Supabaseを経由せずに固定のローカルテストアカウントにログインします。他のすべてのアカウントと同様、テストアカウントも完全に隔離された独自のゲーム世界（ブラウザ内の専用保存キー）を持ちます――そのため、テストデータが実際のアカウントの予算・トループ・履歴と混ざったり影響したりすることは決してなく、その逆もありません。',
                 manTestlageP2: '<strong>テストアカウントが受け取るもの（最初のログイン時のみ）：</strong>1,000,000,000 krの予算、ランダムに生成された3人のドライバー（車1、車2、リザーブ）、実際の結果リストを伴うすでに完了したトレーニングレース1件、そして完全なレースリポートを伴うすでに完了した予選とレース（レース1、実在の対戦チーム、スタート/フィニッシュ順位、タイム、アリーナ、各車の燃料データ）です。これらはすべてゲーム自体のレースエンジンによって生成されたものであり、作り物のサンプルデータではありません。同じテストアカウントへの2回目以降のログインでは予算はリセットされず、テストレースも再実行されません――テストモードでのその後のあなた自身のプレイデータは、通常のアカウントと同様に保存されます。',
                 manTestlageP3: '<strong>テストデータの削除：</strong>マイアカウント → 設定に、専用の「テストモード」カード（実際にテストアカウントでログインしているときのみ表示）があり、ボタンを押すとテストアカウントのセーブデータ全体を削除してログイン画面に戻ります――他のアカウントに影響を与えずに、すべてのテストをリセットする簡単な方法です。',
@@ -26592,8 +26596,7 @@
                 var sprak = sprakObjekt(hamtaSprak());
                 knapp.setAttribute('aria-label', t('selectLanguage'));
                 knapp.innerHTML =
-                    '<span class="lang-switcher-flag">' + sprak.flag + '</span>' +
-                    '<span class="lang-switcher-label">' + sprak.label + '</span>' +
+                                        '<span class="lang-switcher-label">' + sprak.label + '</span>' +
                     '<span class="lang-switcher-chevron" aria-hidden="true">▾</span>';
             }
 
@@ -26608,8 +26611,7 @@
                     item.setAttribute('role', 'option');
                     item.setAttribute('aria-selected', aktiv ? 'true' : 'false');
                     item.innerHTML =
-                        '<span class="lang-switcher-flag">' + sprak.flag + '</span>' +
-                        '<span>' + sprak.label + '</span>' +
+                                                '<span>' + sprak.label + '</span>' +
                         (aktiv ? '<span class="lang-switcher-check" aria-hidden="true">✓</span>' : '');
                     item.addEventListener('click', function () {
                         sattSprak(sprak.code);
