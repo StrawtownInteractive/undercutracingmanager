@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Manual – Undercut Racing Manager</title>
+<meta name="description" content="Komplett manual för Undercut Racing Manager: trupp, bilar, taktik, ekonomi, serier, transfermarknad och mer.">
+<link rel="canonical" href="https://undercutmanager.com/manual.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="./"><img src="assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">Om spelet</a><a href="manual.html" aria-current="page">Manual</a><a href="integritetspolicy.html">Integritetspolicy</a><a class="knapp" href="./">Spela gratis</a></nav>
+</div></header>
+<main>
+<h1>Manual</h1>
+<p class="ingress">Den kompletta guiden till Undercut Racing Manager – samma manual som finns under fliken Manual i spelet.</p>
+
+            <img src="assets/manual-header.png" alt="Team-personal i diskussion vid depåtaket med publikläktare i bakgrunden" style="width:100%; max-height:280px; object-fit:cover; border-radius:10px; display:block; margin-bottom:14px;">
+            <div class="card" id="man-toc">
+                <h3>Innehållsförteckning</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Ny i Undercut Racing Manager? Börja med <a href="#man-intro">Kom igång</a>. Klicka på en rubrik nedan för att hoppa direkt till avsnittet.</p>
+                <div class="man-toc-grid">
+                    <div>
+                        <p class="man-toc-heading">Kom igång</p>
+                        <ul>
+                            <li><a href="#man-intro">Så funkar spelet & navigationen</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Trupp & tävling</p>
+                        <ul>
+                            <li><a href="#man-trupp">Din trupp & personal</a></li>
+                            <li><a href="#man-lagsidor">Lagsidor & profiler</a></li>
+                            <li><a href="#man-tavling">Säsonger, race & poäng</a></li>
+                            <li><a href="#man-serier">Serier, marknad & veckoschema</a></li>
+                            <li><a href="#man-serier">Hemmabana, banrekord & transferhistorik</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Utveckling</p>
+                        <ul>
+                            <li><a href="#man-egenskaper">Egenskaper & träning</a></li>
+                            <li><a href="#man-skador-ekonomi">Skador, ekonomi & depåstopp</a></li>
+                            <li><a href="#man-sponsoravtal">Sponsoravtal</a></li>
+                            <li><a href="#man-prispengar">Prispengar</a></li>
+                            <li><a href="#man-valuta">Valuta</a></li>
+                            <li><a href="#man-moral-ovrigt">Lagmoral, Team Principal & illustrationer</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="man-toc-heading">Kontrakt & personal</p>
+                        <ul>
+                            <li><a href="#man-kontrakt">Kontraktssystem</a></li>
+                            <li><a href="#man-pension">Pension & åldrande</a></li>
+                            <li><a href="#man-principal">Team Principal</a></li>
+                            <li><a href="#man-chefer">Chefsmekaniker & Chefsingenjör</a></li>
+                            <li><a href="#man-scouting">Scouting & Juniorprogram</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Race & socialt</p>
+                        <ul>
+                            <li><a href="#man-taktik">Taktikgenomgång</a></li>
+                            <li><a href="#man-popularitet">Popularitet & Merchandise</a></li>
+                            <li><a href="#man-lagledare">Lagledare, presentation & nation</a></li>
+                            <li><a href="#man-forum">Forum</a></li>
+                            <li><a href="#man-inkorg">Inkorg</a></li>
+                            <li><a href="#man-historia">Statistik, troféer & Legends</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="man-intro">
+                <h3>Kom igång: så funkar spelet & navigationen</h3>
+                <p>Du leder ditt eget racinglag genom fyra divisioner. Du anställer förare, mekaniker och ingenjörer, uppgraderar bilen, sätter din taktik inför tävling – och spelet sköter resten automatiskt varje vecka enligt schemat nedan.</p>
+                <p><strong>Veckoschemat (sker helt automatiskt):</strong></p>
+                <ul style="margin:4px 0 12px; padding-left:18px;">
+                    <li><strong>Måndag 20.00</strong> – träningsrace för anmälda förare</li>
+                    <li><strong>Onsdag 20.00</strong> – kval</li>
+                    <li><strong>Fredag 20.00</strong> – race</li>
+                    <li><strong>Söndag 20.00</strong> – ekonomin uppdateras</li>
+                </ul>
+                <p><strong>Så hittar du rätt i navigationen:</strong></p>
+                <ul style="margin:4px 0 0; padding-left:18px;">
+                    <li><strong>Hem</strong> – din arbetsyta: mästerskapsplacering och budget överst, en lista med det som kräver din uppmärksamhet just nu, samt lagstatus, personal, nästa tävling, Nyheter och Händelseloggen.</li>
+                    <li><strong>Lagsida</strong> – trupp och bilar (ditt eget lag och alla andra), med underflikarna Översikt, Förare, Mekaniker, Ingenjör, <strong>Bilar</strong> (uppgradera och reparera varje bils egna komponenter, Bil 1 och Bil 2 var för sig), Troféer och (för ditt eget lag) <strong>Träning</strong>, <strong>Scouting</strong> och <strong>Kontrakt</strong>.</li>
+                    <li><strong>Arena</strong> – din hemmaarena.</li>
+                    <li><strong>Ekonomi</strong> – budget, intäkter, kostnader och historik.</li>
+                    <li><strong>Serie</strong> – tabeller, resultat och forum för din grupp.</li>
+                    <li><strong>Marknad</strong> – transfermarknaden, köp och sälj personal.</li>
+                    <li><strong>Race</strong> – ditt lags nästa (eller senaste) kval och race, med Taktikgenomgången där du sätter order inför båda, samt racerapporter.</li>
+                    <li><strong>Statistik</strong> – mästarlista, rekord, lagstatistik, achievements och Legends.</li>
+                    <li><strong>Manual</strong> – den här sidan.</li>
+                    <li><strong>Forum</strong> – ett eget diskussionsforum med riktiga trådar, öppet för alla inloggade spelare i alla lag (inga AI-lag postar här). Helt skilt från chattloggen längst ner under fliken Serie, se <a href="#man-forum">Forum</a>.</li>
+                    <li><strong>Ditt användarnamn</strong> (uppe till höger) – <strong>Inställningar</strong> och <strong>Om Undercut Racing Manager</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="card" id="man-trupp">
+                <h3>Din trupp & personal</h3>
+                <p><strong>Truppregler:</strong> Varje lag har exakt 2 aktiva bilar och egna förare till varje bil ("Bil 1" och "Bil 2"), samt upp till 10 reservförare gemensamma för laget. Du kan anställa upp till 10 mekaniker och 10 ingenjörer per lag (kostar 100 000 kr att anställa samt 100 000 kr i veckolön per anställd). Varje mekaniker och ingenjör tilldelas en av lagets två bilar – och du väljer själv vilken bil, via personens profilsida.</p>
+                <p><strong>Sparka personal:</strong> Från din egen personals profilsida kan du när som helst sparka personen – hen lämnar laget omedelbart utan ersättning (en förare i Bil 1/Bil 2 ersätts av reservföraren om en sådan finns). Är personen samtidigt utlagd till försäljning avbryts auktionen.</p>
+                <p><strong>Namn & nationalitet:</strong> Alla förare, mekaniker, ingenjörer och Team Principals i spelet är män, men kan komma från vilken som helst av spelets nationaliteter (Sverige, Italien, Tyskland, Frankrike, Spanien, Storbritannien, Nederländerna, Finland, Brasilien, USA, Japan, Australien, Belgien, Österrike, Monaco, Mexiko, Kanada, Danmark, Norge och Schweiz) – namnet matchar personens nationalitet.</p>
+            </div>
+
+            <div class="card" id="man-lagsidor">
+                <h3>Lagsidor & profiler</h3>
+                <p>Alla lag (ditt eget och alla motståndare) visas på samma sorts Lagsida, med underflikarna Översikt, Förare, Mekaniker och Ingenjör. Klicka på namnet på vilken förare, mekaniker eller ingenjör som helst – i din egen trupp, hos en motståndare, eller på transfermarknaden – för att öppna personens profilsida som en undersida till Lagsidan. Där visas ålder, nationalitet, alla förmågor, körstil (för förare), vilken bil personen tillhör och rekryteringsdatum. Är personen din egen kan du därifrån lägga ut personen till försäljning, sparka personen, eller (för mekaniker/ingenjörer) flytta personen mellan Bil 1 och Bil 2.</p>
+                <p>På din egen Lagsida → underfliken <strong>Översikt</strong> finns två extra genvägar: knappen <strong>Rivaler</strong> visar en lista över lag du har frikopt förare eller personal från via en friköpsklausul de senaste 10 säsongerna, med en kort motivering per rad, och länken <strong>Karriärhistorik</strong> visar ditt eget lags placering säsong för säsong genom hela din karriär.</p>
+            </div>
+
+            <div class="card" id="man-tavling">
+                <h3>Säsonger, race & poäng</h3>
+                <p><strong>Säsonger & åldrande:</strong> En säsong består av 10 veckor (10 race). Efter varje avslutad säsong fyller alla i spelet år – det gäller förare, mekaniker och ingenjörer i samtliga lag, inte bara ditt eget – och poängen i alla tabeller nollställs inför den nya säsongen. Se avsnittet <a href="#man-pension">Pension & åldrande</a> för pensionsåldrar och hur förmågan förändras över tid.</p>
+                <p><strong>Förare:</strong> Förare har en slumpmässigt tilldelad körstil (Aggressiv, Defensiv eller Balanserad) och startar vid 20 års ålder. Körstilen påverkar inte bara racet utan även risken för skador – se <a href="#man-skador-ekonomi">Skador, ekonomi & depåstopp</a>.</p>
+                <p><strong>Racingförmåga per bil:</strong> Varje bil får sitt EGET race-resultat. En bils prestation är ett vägt snitt av förarens presterade förmåga och förmågan hos just den bilens tilldelade mekaniker och ingenjörer (föraren väger 10 gånger så tungt som mekanikernas snitt respektive ingenjörernas snitt, dvs. 10-1-1). Till detta läggs komponentbidraget från just den bilens egna komponenter (se fliken Bilar), depåstoppet och lagmoralen.</p>
+                <p><strong>Förarprestation:</strong> Ingen förare kör på topp varje gång. Inför varje kval och varje lopp slumpas en prestationsnivå fram för respektive förare på mellan 70% och 100% av dennes förmåga.</p>
+                <p><strong>Komponenternas bidrag i racet:</strong> Bilens fem komponenter (Däck, Motor, Aerodynamik, Växellåda, Chassi) bidrar alla olika mycket till kval respektive lopp, och effekten skalar även med banans egenskaper. Motorn ger mest i loppet (extra på långa banor), aerodynamiken ger mest i kvalet (extra på kurviga banor), däcken avgör hur bra bilen håller pace genom loppet (viktigare ju fler kurvor), medan växellåda och chassi ger ett jämnt bidrag i både kval och lopp. Se fliken Bilar för en komponent-för-komponent-förklaring – där uppgraderar och reparerar du Bil 1 och Bil 2 helt separat.</p>
+                <p><strong>Poäng per bil:</strong> Varje race tävlar alla bilar (två per lag) individellt om startposition och placering. De 10 bästa bilarna i loppet får poäng enligt 25-18-15-12-10-8-6-4-2-1. Lagets totalpoäng är summan av vad de båda bilarna tar in, och serietabellen visar hur mycket VARDERA bil (Bil 1 / Bil 2) har bidragit med under säsongen.</p>
+                <p><strong>Tävlingsregler mellan säsonger:</strong> Efter varje avslutad säsong träder ett nytt reglemente i kraft: en av bilens fem komponenter (Däck, Motor, Aerodynamik, Växellåda, Chassi – i den ordningen) halveras för ALLA lag i spelet, ditt eget såväl som samtliga AI-lag. Detta upprepas i ett rullande 5-säsongersschema: Säsong 2 straffar Däck, Säsong 3 Motor, Säsong 4 Aerodynamik, Säsong 5 Växellåda, Säsong 6 Chassi, Säsong 7 Däck igen, och så vidare. Regeln tillämpas EXAKT en gång per säsongsnummer och rör aldrig redan spelade säsonger i efterhand – den första säsongen (Säsong 1) hinner aldrig straffas, eftersom regeln bygger på att en säsong faktiskt har avslutats innan den kan aktiveras. Du meddelas i Nyheter och Inkorgen varje gång en ny regel träder i kraft, och den senaste tillämpade regeln visas alltid under fliken Race.</p>
+            </div>
+
+            <div class="card" id="man-serier">
+                <h3>Serier, marknad & veckoschema</h3>
+                <p><strong>Transfermarknad:</strong> Under fliken "Marknad" listas alla pågående auktioner. Du kan lägga ut din egen förare, mekaniker eller ingenjör till försäljning från personens profilsida – auktionen pågår då i exakt 7 dagar. Alla lag i serierna (inklusive AI-lagen) kan lägga bud på varandras personal, både från Marknad-fliken och direkt från personens profilsida. Du kan aldrig buda på din egen notering. När deadline passeras går personen till den som lagt högst bud: säljer du med vinst läggs pengarna till din budget, och köper du någon dras kostnaden från din budget (så länge du har råd och plats i truppen när auktionen avgörs).</p>
+                <p><strong>Serier & Seriepyramiden:</strong> Spelet har fem nivåer: <strong>Undercut Masters League</strong> (1 grupp, 10 lag), <strong>Division 2</strong> (2 grupper à 10 lag), <strong>Division 3</strong> (4 grupper à 10 lag), <strong>Division 4</strong> (8 grupper à 10 lag) och <strong>Division 5</strong> (16 grupper à 10 lag) – totalt 310 lag. Alla grupper fylls med AI-lag som har egna förare, mekaniker, ingenjörer, åldrar, nationaliteter, komponenter och hemmabanor. Som ny spelare tar du över ett datorstyrt lags plats i Division 4 – finns inget datorstyrt lag där blir det Division 5 osv., aldrig Division 3 eller högre. Du kan klicka på vilket lag som helst i tabellen för att inspektera deras Lagsida, bil för bil.</p>
+                <p><strong>Upp- och nedflyttning:</strong> När en säsong på 10 race är färdig flyttas i varje grupp (utom Undercut Masters League) 1:an upp till divisionen ovanför. Dessutom går divisionens bästa 2:or upp – lika många som det finns grupper i divisionen ovanför (1 från Division 2, 2 från Division 3, 4 från Division 4 och 8 från Division 5). Tvåorna rankas efter poäng, och vid lika poäng avgör den bästa bilens poäng. I varje grupp (utom i Division 5, som är lägsta nivån) flyttas de 3 sämsta lagen ner till divisionen under, i första hand till de två grupper som är kopplade till just den gruppen. Det gör att antalet lag i varje grupp alltid förblir 10. Aktuell ställning för tvåorna ser du under Serie → Serietabell → Bästa 2:or.</p>
+                <p><strong>Banor & Race:</strong> Varje säsong består av 10 race där lag i samma grupp turas om att vara värdar på sina hemmabanor. Banlängd och antal kurvor påverkar hur mycket varje komponent betyder i just det racet.</p>
+                <p><strong>Veckoschema:</strong> Varje vecka följer samma cykel: <strong>måndag kl 20.00</strong> körs träningsracet, <strong>onsdag kl 20.00</strong> körs kvalet, <strong>fredag kl 20.00</strong> körs själva racet, och <strong>söndag kl 20.00</strong> uppdateras ekonomin. Allt sker automatiskt av spelet när klockan slår – det finns ingen knapp för att köra något av detta själv.</p>
+                <p><strong>Hemmabana & banrekord:</strong> Under fliken <strong>Arena</strong> kan du gratis konfigurera om din egen hemmabanas antal kurvor (5-20) och längd (2,0-8,0 km) samt döpa om den (100 000 kr) – ändringen gäller bara framtida, ännu inte kvalade race. Fler kurvor gynnar aerodynamik/däck/handling, en längre bana gynnar motorn men kräver mer bränsle. Varje arena har ett eget banrekord (snabbaste genomförda race på just den banan, oavsett vilket lag som körde det), synligt när du tittar på laget som är värd.</p>
+                <p><strong>Transferhistorik:</strong> Under fliken <strong>Marknad</strong> hittar du en logg över alla genomförda köp och försäljningar i serierna (vem som såldes, från och till vilket lag, samt slutpriset) – det är den listan som avgörs av auktionerna beskrivna ovan.</p>
+            </div>
+
+            <div class="card" id="man-egenskaper">
+                <h3>Egenskaper & träning</h3>
+                <p><strong>Egenskaper (0-100):</strong> Varje förare, mekaniker och ingenjör har fem individuella egenskaper på 0-100, och personens "Förmåga" är genomsnittet av dessa fem. Förare har Erfarenhet, Snabbhet, Däckhantering, Försvar och Lagförmåga. Mekaniker har Erfarenhet, Motorkunskap, Snabbhet, Press och Lagförmåga. Ingenjörer har Erfarenhet, Taktik, Snabbhet, Press och Lagförmåga. Alla egenskaper visas i personens profil under Lagsidan (klicka på namnet).</p>
+                <p><strong>Erfarenhet:</strong> Erfarenhet går inte att träna. Den växer istället automatiskt med 5 poäng varje gång personen fyller år (en gång per avslutad säsong för alla i spelet). En förare börjar alltid på Erfarenhet 10 vid 20 års ålder, och samma grundprincip används för mekaniker och ingenjörer.</p>
+                <p><strong>Träningsflik & träningsrace:</strong> Under Lagsidan → underfliken "Träning" väljer du, för var och en av dina förare, vilken förmåga (Snabbhet, Däckhantering, Försvar eller Lagförmåga – allt utom Erfarenhet) föraren ska fokusera på inför veckan. Varje måndag kl 20.00 körs automatiskt ett träningsrace för de förare som är anmälda (valt en förmåga). Hur mycket förmågan förbättras (1-5 poäng) avgörs av hur föraren presterar i träningsracet, och uppdateringen sker direkt när träningsracet är klart, med ett kort referat under samma underflik. Mekaniker och ingenjörer tränas istället direkt från deras sida under Lagsidan mot en fast kostnad (80 000 kr / 90 000 kr) där du väljer vilken förmåga som ska förbättras (+3 till alla i teamet, allt utom Erfarenhet).</p>
+            </div>
+
+            <div class="card" id="man-skador-ekonomi">
+                <h3>Skador, ekonomi & depåstopp</h3>
+                <p><strong>Skador & reparation:</strong> Efter varje avslutat race skadas slumpmässigt 0-3 bilar bland de tävlande lagen (ibland alltså ingen alls). En skada slår mot en av bilens fem komponenter (Däck, Motor, Aerodynamik, Växellåda eller Chassi) och sänker den med 10-70% av dess nuvarande värde – permanent, tills du reparerar. En skadad komponent syns med en varningsmarkering under fliken Bilar (på just den bil den drabbade), och du reparerar den till sitt ursprungliga värde för en fast kostnad på 100 000 kr, oavsett hur högt indexet var (till skillnad från vanlig uppgradering, se nedan). <strong>Körstilen spelar roll:</strong> en förare med Aggressiv körstil kör mer på gränsen och löper väsentligt större risk att bilen skadas än förare med Balanserad eller Defensiv stil.</p>
+                <p><strong>Uppgraderingskostnad – billigt i början, dyrt i toppen:</strong> Varje uppgradering under fliken Bilar höjer komponentens index med 5 (upp till max 100), och priset räknas ut från indexet <em>innan</em> uppgraderingen enligt formeln <code>20 000 kr + index² × 30</code>. I praktiken betyder det att kostnaden växer med kvadraten på indexet: att uppgradera en nästan obearbetad komponent (index 0) kostar bara 20 000 kr, vid index 50 kostar det 95 000 kr, och strax innan en komponent når maxvärdet 100 (index 95) kostar det hela 290 750 kr. Det lönar sig alltså nästan alltid att bygga upp lagets svagaste komponenter innan man pressar en redan stark komponent ännu högre. Uppgraderingsknappen under fliken Bilar visar alltid exakt vad nästa steg kostar, och du får en kontrollfråga att bekräfta innan pengarna dras. <strong>Varje uppgradering tar 1 dag:</strong> kostnaden dras direkt när du bekräftar, men komponenten visar "Uppgraderas..." och håller sitt gamla index tills dagen har gått, då den nya nivån slår igenom automatiskt (du behöver inte göra något mer). En komponent kan bara ha en uppgradering i kön åt gången – du måste vänta färdigt (eller vänta ut en skada som inträffar under tiden) innan du kan starta nästa uppgradering på samma komponent.</p>
+                <p><strong>Ekonomiuppdatering (varje söndag kl 20.00):</strong> Varje söndag får ditt lag – liksom alla andra lag i serierna – en sponsorintäkt och intäkter från försäljning av merchandise, utöver personalens löner och fast fabriksunderhåll (30 000 kr). Så länge du inte har ett aktivt sponsoravtal (se <a href="#man-sponsoravtal">Sponsoravtal</a>) slumpas sponsorintäkten fram utifrån vilken division du tävlar i just nu – högre division ger ett högre snitt. Merchandiseintäkten slumpas alltid fram på samma sätt men skalas dessutom av dina två förares snittpopularitet (se <a href="#man-popularitet">Popularitet & Merchandise</a>). Ingen av intäkterna kan någonsin överstiga 1 000 000 kr per vecka. <strong>Negativ budget kostar ränta:</strong> så länge ditt lags budget är under 0 kr dras dessutom 5% av det negativa saldot i ränta varje vecka (syns som "Lånränta" i veckans ekonomi) – ytterligare ett skäl att hålla koll på budgeten, se nästa stycke. Alla veckans siffror sparas i din ekonomiska historik, som du hittar under fliken Ekonomi → Ekonomisk historik: där ser du både en vecka-för-vecka-lista över tidigare veckor och en sammanställning av alla veckor i varje säsong.</p>
+                <p><strong>Negativ budget – begränsningar (inte konkurs):</strong> Ditt lag kan aldrig gå i konkurs eller tvingas börja om från noll, oavsett hur negativ budgeten blir. Så länge budgeten är under 0 kr blir laget istället kraftigt begränsat: du kan inte köpa eller värva spelare/personal (varken via marknaden, fria agenter eller friköpsklausuler), erbjuda eller skriva nya kontrakt (inklusive kontraktsförlängningar och att skriva upp juniorprospekt), uppgradera eller reparera bilen, ringa scouterna, träna personal, eller på annat sätt ta på dig nya kostnader (t.ex. arenauppgradering eller att byta namn på arenan). Löner, underhåll och lånränta dras dock som vanligt varje vecka. Sälj personal, ta ett lån eller vänta in nästa ekonomiuppdatering för att ta dig tillbaka över 0 kr och få tillbaka full handlingsfrihet.</p>
+                <p><strong>Depåstopp & däckstrategi:</strong> Varje bil gör ett depåstopp under loppet med en slumpad däckstrategi (till exempel 1-stopp offensiv, 2-stopp balanserad eller 1-stopp defensiv), och detta visas som en egen kolumn i loppresultatet. Hur bra depåstoppet går ger ett tillägg till bilens poäng i loppet, och det är dina ingenjörer som avgör hur stort detta tillägg blir – ju högre snittförmåga dina ingenjörer på den bilen har, desto bättre depåstopp och desto större bonus. Bilens däckkomponent samverkar också med strategin: bättre däck gör att en offensivare strategi lönar sig mer. Depåstoppet samverkar dessutom med däckvalet du gör i Taktikgenomgången (se <a href="#man-taktik">Taktikgenomgång</a>) – ju bättre ingenjörer, desto mer kompenserar depåstoppet för ett hårt däckvals nackdel i loppet.</p>
+            </div>
+
+            <div class="card" id="man-sponsoravtal">
+                <h3>Sponsoravtal</h3>
+                <p>Under fliken <strong>Ekonomi → Sponsoravtal</strong> kan du teckna ett fast sponsoravtal istället för att förlita dig på den slumpade sponsorintäkten (se <a href="#man-skador-ekonomi">Skador, ekonomi & depåstopp</a>). Så fort du inte har ett aktivt avtal visas tre erbjudanden med olika profil: <strong>Trygg</strong> (högt grundbelopp per vecka, låga bonusar), <strong>Balanserad</strong> (jämn mix) och <strong>Risk</strong> (lågt grundbelopp, höga bonusar om laget presterar). Varje erbjudande har ett fast grundbelopp per vecka som ersätter den slumpade sponsorintäkten, plus bonusklausuler som betalas ut per pallplats, per vinst och vid mästerskapstitel. Ditt Team Principals sponsringsskicklighet påverkar grundbeloppet i alla tre erbjudanden.</p>
+                <p>Ett tecknat sponsoravtal löper alltid en hel säsong (10 race) och <strong>kan inte sägas upp i förtid</strong> – du får teckna ett nytt först när det löpt ut. Du kan bara ha ett sponsoravtal aktivt åt gången. Så länge avtalet löper visas det under Ekonomi → Sponsoravtal tillsammans med hur många veckor som återstår.</p>
+            </div>
+
+            <div class="card" id="man-prispengar">
+                <h3>Prispengar</h3>
+                <p><strong>Enskilt race:</strong> Laget får <strong>prispengar per poäng</strong> som bilarna kör in i varje race: 5 000 kr/poäng i Undercut Masters League, 3 500 kr i Division 2, 2 000 kr i Division 3, 1 000 kr i Division 4 och 600 kr i Division 5. Har du ett sponsoravtal tillkommer <strong>sponsorbonusar</strong> (pall- och vinstbonus, per bil). Förarnas <strong>kontraktsbonusar</strong> (pall-, vinst- och poängbonus) betalas däremot ut till föraren och är en <strong>kostnad</strong> för laget. Allt bokas direkt efter målgång och syns i Kontoutdraget.</p>
+                <p><strong>Serietabellen – prispengarnas ekonomiska träd:</strong> När säsongen är slut får varje lag prispengar utifrån sin slutplacering i serietabellen. Varje serie har 10 lag. Division 1 har 1 serie, division 2 har 2 serier, division 3 har 4 serier och så vidare – antalet serier <strong>fördubblas</strong> för varje division ner till division 10 (512 serier). Varje division har alltid samma totala prispott: <strong>20 000 000 kr</strong>. I division 1 ligger hela potten i den enda serien. För varje division nedåt <strong>halveras potten per serie</strong> – men eftersom antalet serier samtidigt fördubblas blir divisionens totalsumma alltid densamma (halva potten × dubbelt så många serier). Inom varje serie delas potten ut till placering 1–10: <strong>50 %, 20 %, 10 %, 7 %, 5 %, 3 %, 2 %, 1,5 %, 1 % och 0,5 %</strong> (totalt 100 %). Exempel: vinnaren i division 1 får 50 % av 20 000 000 kr = <strong>10 000 000 kr</strong>. En serie i division 3 har 20 000 000 ÷ 4 = 5 000 000 kr, så seriesegraren där får 2 500 000 kr.</p>
+                <div><p><strong>Tabell 1 – Prispott per division och serie</strong></p><div class="tabell-scroll"><table><thead><tr><th>Division</th><th>Serier</th><th>Pott per serie</th><th>Vinnare (50 %)</th><th>10:e plats (0,5 %)</th><th>Totalt i divisionen</th></tr></thead><tbody><tr><td>Division 1 (Undercut Masters League)</td><td>1</td><td>20 000 000 kr</td><td>10 000 000 kr</td><td>100 000 kr</td><td>1 × 20 000 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Division 2</td><td>2</td><td>10 000 000 kr</td><td>5 000 000 kr</td><td>50 000 kr</td><td>2 × 10 000 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Division 3</td><td>4</td><td>5 000 000 kr</td><td>2 500 000 kr</td><td>25 000 kr</td><td>4 × 5 000 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Division 4</td><td>8</td><td>2 500 000 kr</td><td>1 250 000 kr</td><td>12 500 kr</td><td>8 × 2 500 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Division 5</td><td>16</td><td>1 250 000 kr</td><td>625 000 kr</td><td>6 250 kr</td><td>16 × 1 250 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Division 6</td><td>32</td><td>625 000 kr</td><td>312 500 kr</td><td>3 125 kr</td><td>32 × 625 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Division 7</td><td>64</td><td>312 500 kr</td><td>156 250 kr</td><td>1 562,5 kr</td><td>64 × 312 500 = <strong>20 000 000 kr</strong></td></tr><tr><td>Division 8</td><td>128</td><td>156 250 kr</td><td>78 125 kr</td><td>781,25 kr</td><td>128 × 156 250 = <strong>20 000 000 kr</strong></td></tr><tr><td>Division 9</td><td>256</td><td>78 125 kr</td><td>39 062,5 kr</td><td>390,625 kr</td><td>256 × 78 125 = <strong>20 000 000 kr</strong></td></tr><tr><td>Division 10</td><td>512</td><td>39 062,5 kr</td><td>19 531,25 kr</td><td>195,3125 kr</td><td>512 × 39 062,5 = <strong>20 000 000 kr</strong></td></tr></tbody></table></div><p><strong>Tabell 2 – Utbetalning per placering (kr, avrundat till hela kronor)</strong></p><div class="tabell-scroll"><table><thead><tr><th>Division</th><th>1:a</th><th>2:a</th><th>3:e</th><th>4:e</th><th>5:e</th><th>6:e</th><th>7:e</th><th>8:e</th><th>9:e</th><th>10:e</th></tr><tr><th></th><th>50 %</th><th>20 %</th><th>10 %</th><th>7 %</th><th>5 %</th><th>3 %</th><th>2 %</th><th>1,5 %</th><th>1 %</th><th>0,5 %</th></tr></thead><tbody><tr><td>Div 1</td><td>10 000 000</td><td>4 000 000</td><td>2 000 000</td><td>1 400 000</td><td>1 000 000</td><td>600 000</td><td>400 000</td><td>300 000</td><td>200 000</td><td>100 000</td></tr><tr><td>Div 2</td><td>5 000 000</td><td>2 000 000</td><td>1 000 000</td><td>700 000</td><td>500 000</td><td>300 000</td><td>200 000</td><td>150 000</td><td>100 000</td><td>50 000</td></tr><tr><td>Div 3</td><td>2 500 000</td><td>1 000 000</td><td>500 000</td><td>350 000</td><td>250 000</td><td>150 000</td><td>100 000</td><td>75 000</td><td>50 000</td><td>25 000</td></tr><tr><td>Div 4</td><td>1 250 000</td><td>500 000</td><td>250 000</td><td>175 000</td><td>125 000</td><td>75 000</td><td>50 000</td><td>37 500</td><td>25 000</td><td>12 500</td></tr><tr><td>Div 5</td><td>625 000</td><td>250 000</td><td>125 000</td><td>87 500</td><td>62 500</td><td>37 500</td><td>25 000</td><td>18 750</td><td>12 500</td><td>6 250</td></tr><tr><td>Div 6</td><td>312 500</td><td>125 000</td><td>62 500</td><td>43 750</td><td>31 250</td><td>18 750</td><td>12 500</td><td>9 375</td><td>6 250</td><td>3 125</td></tr><tr><td>Div 7</td><td>156 250</td><td>62 500</td><td>31 250</td><td>21 875</td><td>15 625</td><td>9 375</td><td>6 250</td><td>4 688</td><td>3 125</td><td>1 563</td></tr><tr><td>Div 8</td><td>78 125</td><td>31 250</td><td>15 625</td><td>10 938</td><td>7 813</td><td>4 688</td><td>3 125</td><td>2 344</td><td>1 563</td><td>781</td></tr><tr><td>Div 9</td><td>39 063</td><td>15 625</td><td>7 813</td><td>5 469</td><td>3 906</td><td>2 344</td><td>1 563</td><td>1 172</td><td>781</td><td>391</td></tr><tr><td>Div 10</td><td>19 531</td><td>7 813</td><td>3 906</td><td>2 734</td><td>1 953</td><td>1 172</td><td>781</td><td>586</td><td>391</td><td>195</td></tr></tbody></table></div><p style="font-size:12px; color:var(--text-muted);">Från division 7 blir en del belopp decimaltal (t.ex. 4 687,50 kr) och avrundas vid utbetalningen till hela kronor. Därför kan summan i division 7–10 skilja sig med högst några hundra kronor från exakt 20 000 000 kr.</p></div>
+                <p>Säsongsprispengarna bokas direkt på kontot vid säsongsskiftet och syns under <strong>Prispengar</strong> i Ekonomi → Ekonomi, per vecka samt i Kontoutdraget. Mästerskapsbonusar från förarkontrakt och sponsoravtal betalas ut utöver detta.</p>
+            </div>
+
+            <div class="card" id="man-valuta">
+                <h3>Valuta</h3>
+                <p>Alla belopp i spelet lagras och räknas internt alltid i svenska kronor (SEK) – det påverkar ingen spelbalans. Under fliken <strong>Mitt konto → Inställningar</strong> kan du däremot välja vilken valuta beloppen <em>visas</em> i: SEK, USD, EUR eller GBP. Växelkursen är fast: <strong>10 SEK = 1 USD = 1 EUR = 1 GBP</strong>. Bytet gäller omedelbart och påverkas bara av ditt eget val – det är alltså rent kosmetiskt och ändrar inte hur mycket något faktiskt kostar i spelets ekonomi.</p>
+            </div>
+
+            
+
+            <div class="card" id="man-moral-ovrigt">
+                <h3>Lagmoral, Team Principal & illustrationer</h3>
+                <p><strong>Lagmoral:</strong> Varje lag har en lagmoral på 0-100, som visas högst upp på Lagsidan med en egen mätare. Moralen förändras efter varje race: vinster och pallplatser höjer den, dåliga resultat sänker den, och den dras dessutom sakta mot ett neutralt mittenläge över tid. Lagmoralen ger en mindre bonus eller ett mindre avdrag på bilarnas poäng i varje race – moral över 50 ger ett litet lyft, moral under 50 ett litet avdrag – så den spelar en roll, men avgör aldrig ett race på egen hand.</p>
+                <p><strong>Team Principal:</strong> Varje lag, ditt eget såväl som alla motståndarlag, tilldelas en Team Principal redan när laget skapas. Denne visas överst på Lagsidan tillsammans med sin nationalitet och en egen illustration, men påverkar inte själva racet.</p>
+                <p><strong>Illustrationer:</strong> Alla personer i spelet – förare, mekaniker, ingenjörer och Team Principals – visas med en egen färgad illustration (initialer i en färgad cirkel, unik per namn) vid namnet, både i listor och på profilsidan.</p>
+                <p><strong>Race-översikt:</strong> Under fliken Hem och fliken Serie ser du hur många race som är genomförda den aktuella säsongen (av totalt 10), samt det totala antalet race som genomförts i din karriär oavsett säsong.</p>
+            </div>
+
+            <div class="card" id="man-kontrakt">
+                <h3>Kontraktssystem – så funkar det (enkelt förklarat)</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Alla förare, mekaniker, ingenjörer och din Team Principal har ett kontrakt. Du hittar en samlad lista över alla dina kontrakt under <strong>Lagsida → Kontrakt</strong>, och varje enskild persons kontrakt hanterar du från personens egen profilsida (klicka på namnet var som helst i spelet, t.ex. på Lagsidan) – där finns knapparna <strong>Förhandla kontrakt</strong> och <strong>Säg upp kontrakt</strong>.</p>
+                <p><strong>1. Förhandla ett kontrakt:</strong> Öppna personens profil och klicka på "Förhandla kontrakt". Du får se personens rating, ålder, nuvarande villkor, motivation och relation till laget, samt vad personen minst kräver och helst vill ha (lön, kontraktslängd, ev. förstaförarstatus, friköpsklausul). Du ställer själv in ditt erbjudande – lön per vecka, antal år, sign-on-bonus, pall- och vinstbonus, mästerskapsbonus och (för förare) förstaförarstatus – och ser direkt en "Sannolikhet att acceptera" i procent, med en lista över vad som drar upp eller ner chansen (t.ex. för låg lön, för kort kontrakt, dåligt lag, andra lags intresse).</p>
+                <p><strong>2. Skicka erbjudandet:</strong> Personen accepterar, avvisar eller kommer med ett motbud (t.ex. "kräver 5,8M kr och förstaförarstatus"). Du kan då höja erbjudandet och skicka igen, acceptera motbudet, eller avbryta – men efter några försök i rad tappar personen intresset och förhandlingen avbryts för den här gången.</p>
+                <p><strong>3. Kontraktet påverkar ekonomin automatiskt:</strong> Grundlönen dras automatiskt varje vecka (söndagens ekonomiuppdatering, precis som mekaniker- och ingenjörslönerna redan gjorde). Bonusar betalas ut och bokförs som egna transaktioner så fort de tjänas in: pallbonus vid varje pallplacering, vinstbonus vid varje seger, poängbonus för varje poäng bilen tar hem, och mästerskapsbonus om personens bil vinner sin serie vid säsongsslutet.</p>
+                <p><strong>4. Kontraktstiden räknas ner:</strong> Varje avslutad säsong minskar "År kvar" med 1 för alla dina kontrakt. Har någon bara ett år kvar visas kontraktet som "Expiring" och du får en påminnelse på personens profil med tre val: <strong>Förhandla förlängning</strong>, <strong>Behåll nuvarande kontrakt</strong> (vänta och se) eller <strong>Låt kontraktet löpa ut</strong> (personen blir Free Agent och lämnar laget vid säsongsslutet). Går ett förarkontrakt ut utan förlängning ersätts platsen automatiskt av reservföraren – finns ingen reservförare rekryteras istället en ny rookie till platsen, så en bil aldrig blir permanent förarlös. För mekaniker och ingenjörer lämnas platsen tom (precis som när du sparkar dem manuellt), och Team Principal-kontraktet förnyas alltid automatiskt eftersom rollen inte kan lämnas obesatt.</p>
+                <p><strong>5. Förstaförare:</strong> Sätter du förstaförarstatus i ett förarkontrakt förväntar sig personen att gynnas i strategival och uppgraderingar. Ett aktivt förstaförarkontrakt ger bilen ett litet extra poängbidrag i loppet, men om lagets andra bil ändå presterar bättre race efter race sjunker förarens relation till laget – ett tecken på att förstaföraren känner sig sviken.</p>
+                <p><strong>6. Andra lag & friköpsklausul:</strong> Har en förare kort tid kvar på kontraktet kan ett annat lag i serierna visa intresse och lägga ett eget lönebud – detta syns som en notis och som en faktor i förhandlingen. Har föraren dessutom en friköpsklausul kan ett AI-lag när som helst betala hela klausulsumman för att ta över kontraktet direkt; du får då ett brev i Inkorgen (med tips om att en högre friköpsklausul nästa gång minskar risken för det) och pengarna sätts in på ditt konto automatiskt. En persons friköpsklausul kan aldrig utlösas under personens FÖRSTA ÅR i klubben, oavsett hur hög den är.</p>
+                <p><strong>7. Personal (mekaniker, ingenjörer, Team Principal):</strong> Samma kontraktssystem används för din personal, fast med färre villkor (lön, kontraktslängd, sign-on-bonus, prestationsbonus och friköpsklausul – ingen pall-/vinst-/mästerskapsbonus eller förstaförarstatus). Team Principal-kontraktet hanterar du direkt under Lagsida → Kontrakt.</p>
+                <p><strong>8. Notiser:</strong> Allt som rör kontrakt – närmar sig kontraktsslut, lönekrav, intresse från andra lag, utgångna kontrakt, utbetalda bonusar, aktiverade friköpsklausuler samt lyckade och misslyckade förhandlingar – dyker upp som meddelanden i Händelseloggen, som du hittar under fliken <strong>Hem</strong>.</p>
+                <p><strong>9. Relation till laget:</strong> Varje kontrakt har en relation till laget på 0–100 som visar hur nöjd personen är med ditt lag. En ny person startar på 50–79. Relationen påverkar chansen att personen accepterar ditt erbjudande i kontraktsförhandlingar: 50 är neutralt, 100 ger +10 procentenheter och 0 ger −10 procentenheter. I förhandlingsvyn ingår relationen även i värdet Motivation (snittet av relationen och lagmoralen), som bara är informativt. Relationen ökar med +8 varje gång ni kommer överens om ett nytt eller förlängt kontrakt. För dina ordinarie förare ändras den dessutom vid varje säsongsslut: +4 om föraren nått sitt prestationsmål i poäng, −6 om föraren fått mindre än hälften av målet. En förare med förstaförarstatus får +1 efter varje race där hen kommer före lagkamraten och −3 om lagkamraten kommer före.</p>
+            </div>
+
+            <div class="card" id="man-pension">
+                <h3>Pension & åldrande</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Gäller alla i spelet – ditt eget lag såväl som samtliga AI-lag.</p>
+                <p><strong>Förare pensioneras vid 40 år:</strong> Så fort en förare fyller 40 år (vid säsongsskiftet) lämnar hen laget. Precis som vid ett utgånget kontrakt flyttas reservföraren upp till platsen om en sådan finns – annars rekryteras en ny rookie direkt, så en bil aldrig blir permanent förarlös. Var därför uppmärksam på din reservbänk och ditt Juniorprogram (se <a href="#man-scouting">Scouting & Juniorprogram</a>) när dina förare närmar sig 40.</p>
+                <p><strong>Mekaniker & ingenjörer kan max bli 60 år:</strong> Vid 60 års ålder går personen i pension och lämnar laget. Hos AI-lag fylls platsen automatiskt på med en ny anställd, precis som med utgångna kontrakt. I ditt eget lag står platsen tom tills du anställer någon ny.</p>
+                <p><strong>Förmågeförfall efter 30 år (endast förare):</strong> En förares övriga förmågor – Snabbhet, Däckhantering, Försvar och Lagförmåga – försämras gradvis varje säsong hen är äldre än 30 år, och nedgången blir gradvis större ju äldre föraren blir. Erfarenhet påverkas inte av detta – den fortsätter tvärtom att öka med 5 poäng per år precis som för alla andra. En äldre förare har alltså mer Erfarenhet men svagare fysiska/tekniska förmågor, vilket gör att formen på en trupp är något att planera långsiktigt kring.</p>
+            </div>
+
+            <div class="card" id="man-taktik">
+                <h3>Taktikgenomgång: order inför kval & race</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Under fliken <strong>Race</strong> finns två separata taktikgenomgångar – <strong>Taktikgenomgång – Inför kvalet</strong> och <strong>Taktikgenomgång – Inför racet</strong> – där du som lagets ledare ger order till ditt lag. Varje genomgång har ett eget förslag från chefingenjören och sparas för sig. Valen gäller båda dina bilar och ligger kvar tills du ändrar dem – sätt din taktik i god tid innan kvalet (onsdag 20.00) respektive racet (fredag 20.00) körs automatiskt. AI-lagen sätter sin egen taktik automatiskt inför varje kval/race.</p>
+                <p><strong>Startdäck (Soft / Medium / Hard):</strong> Soft är snabbast men slits fortast, Hard håller bäst men är långsammast, och Medium ligger balanserat mitt emellan. Ett hårt slitage straffar mest på kurviga banor. <strong>Depåstoppet kan förbättra slitna däck:</strong> ju högre snittförmåga dina ingenjörer på bilen har, desto mer kompenserar depåstoppet för ett tufft däckvals nackdel under loppet.</p>
+                <p><strong>Downforce (0-100):</strong> Högre downforce ger bättre grepp i kurvor (hjälper i kvalet, särskilt på kurviga banor, och i loppet på kurviga banor) men kostar toppfart på raksträckor (missgynnar loppet på banor med långa raksträckor). Lägre downforce är tvärtom bra för toppfart men ger sämre kurvtagning. Rätt inställning beror alltså på banans karaktär.</p>
+                <p><strong>Handling (0-100):</strong> Handlingsinställningen gör bilen mer lätthanterlig och ger ett rakt igenom positivt bidrag till både kval och lopp ju högre den ställs.</p>
+                <p><strong>Teamorder (endast racet):</strong> Du kan välja att prioritera Bil 1 eller Bil 2 – den prioriterade bilen får ett extra poängtillägg i loppet medan den andra bilen ger lite efter, eller välja "Ingen prioritet" för ett fritt race mellan dina två förare.</p>
+                <p><strong>Bränsle:</strong> Fliken Race visar en rekommenderad bränslemängd (liter) för racets bana, baserad på banans längd och antal kurvor. Kör du med mindre bränsle än rekommenderat sparar bilen inte tid utan tvärtom förlorar prestanda ("sparkörning") och risken för DNF (motorstopp) ökar ju större bristen är. Kör du med mer bränsle än rekommenderat straffas prestandan av den extra vikten. Bäst resultat får du alltså genom att ligga så nära den rekommenderade mängden som möjligt – detta visas per bil i Race-fliken både före och efter racet.</p>
+            </div>
+
+            <div class="card" id="man-popularitet">
+                <h3>Popularitet & Merchandise</h3>
+                <p>Varje förare har en <strong>Popularitet</strong> (0-100), synlig på förarens profilsida. Popularitet stiger efter en vinst eller pallplacering, ökar något vid en topp-10-placering, sjunker vid ett dåligt race och dras annars sakta mot ett neutralt mittenläge över tid – precis som lagmoralen.</p>
+                <p>Snittpopulariteten hos dina två tävlande förare (Bil 1 och Bil 2) skalar din veckovisa <strong>merchandiseförsäljning</strong> i ekonomiuppdateringen: en hög snittpopularitet ger upp till +80% extra, en låg snittpopularitet kan dra ner intäkten med upp till -60%. Populära förare är alltså värda pengar utöver vad de tar hem på banan.</p>
+            </div>
+
+            <div class="card" id="man-principal">
+                <h3>Team Principal</h3>
+                <p><strong>Förmågor:</strong> Team Principal har tre förmågor (0–100): <strong>Förhandling</strong> påverkar chansen att lyckas i kontraktsförhandlingar, <strong>Sponsring</strong> påverkar storleken på sponsorerbjudanden och <strong>Moral</strong> påverkar lagets långsiktiga moral.</p>
+                <p><strong>Start och utveckling:</strong> Vid spelstart får du en Team Principal med <strong>10</strong> i alla förmågor och en slumpad ålder på <strong>40–45 år</strong>. Din Team Principal blir sedan bättre med <strong>+1 i varje förmåga per vecka</strong> (vid söndagens ekonomiuppdatering), upp till max 100. Datorstyrda lags Team Principals stannar på 10.</p>
+                <p><strong>Pension:</strong> Team Principal blir ett år äldre vid varje säsongsskifte och går i pension vid <strong>60 år</strong>. Datorstyrda lag får automatiskt en ersättare.</p>
+                <p><strong>Rekrytering:</strong> Saknar ditt lag en Team Principal (efter pension, eller om du har sparkat/sålt din) kan du rekrytera en ny <strong>gratis</strong> via knappen på Lagsida → Översikt (Personal-kortet). Den nya har 10 i alla förmågor och är 40–45 år, precis som vid start. Ingen rekryteringsavgift tas ut, men Team Principal har en vanlig veckolön enligt kontraktet.</p>
+            </div>
+
+            <div class="card" id="man-chefer">
+                <h3>Chefsmekaniker & Chefsingenjör</h3>
+                <p>Under Lagsidan → Mekaniker respektive Ingenjör kan du utse en av dina anställda till <strong>Chefsmekaniker</strong> eller <strong>Chefsingenjör</strong> med knappen "Utse chef" i tabellen (och avsätta med samma knapp igen). Chefen märks ut med en-badge var hen än visas i spelet.</p>
+                <p>Chefen får en boost på <strong>20% på sin förmåga</strong> (upp till max 100) i beräkningen av just den bil hen är tilldelad – så placera din chef på den bil du vill prioritera. Du kan bara ha en chefsmekaniker och en chefsingenjör åt gången.</p>
+            </div>
+
+            <div class="card" id="man-lagledare">
+                <h3>Lagsidan: lagledare, presentation & nation</h3>
+                <p>Överst på varje Lagsida visas numera vilken <strong>nation</strong> laget kommer från, samt vem som <strong>styr laget</strong> under rubriken "Användare". På din egen Lagsida är detta klickbart och tar dig till din kontosida, och du kan ange ditt eget namn (knappen "Ange lagledarens namn") och skriva en kort <strong>presentation</strong> av laget (knappen "Redigera presentation") som visas för alla som besöker din Lagsida. Motståndarnas lag visas som "Datorstyrt".</p>
+            </div>
+
+            <div class="card" id="man-forum">
+                <h3>Forum</h3>
+                <p><strong>Forum-fliken i huvudmenyn:</strong> ett eget diskussionsforum med riktiga trådar, sökfunktion och sorteringsval (Senaste aktivitet, Nyast, Flest svar). Klicka på <strong>Ny tråd</strong> för att starta en egen diskussion med rubrik och första inlägg, eller öppna en befintlig tråd för att läsa och svara – varje tråd visar vem som startade den och hur många svar den fått. Trådarna är gemensamma för alla inloggade spelare oavsett lag och division, och inga AI-lag postar här.</p>
+                <p><strong>Chattloggen under fliken Serie:</strong> ett separat, mindre "Forum" längst ner under fliken <strong>Serie</strong> – en löpande chattlogg knuten till den serie/grupp du för tillfället tittar på i serieväljaren ovanför. Där kan du skriva korta meddelanden till just de andra lagen i din grupp, och AI-lagen i din egen serie kommenterar då och då spontant efter varje avslutat race (t.ex. gratulerar vinnaren eller pratar om en tuff helg). Blanda inte ihop den med Forum-fliken ovan: chattloggen är per grupp och kan innehålla AI-inlägg, Forum-fliken är global och enbart mänskliga spelare.</p>
+            </div>
+
+            <div class="card" id="man-inkorg">
+                <h3>Inkorg</h3>
+                <p>Under <strong>Ditt användarnamn → Inkorg</strong> hittar du dels systemmeddelanden från <strong>Spelledningen</strong> (t.ex. vunna transfers, mästerskap, upp-/nedflyttning och aktiverade friköpsklausuler), dels privata meddelanden från andra Undercut Racing Manager-spelare. En badge på fliken visar hur många olästa meddelanden du har, och du markerar ett meddelande som läst genom att klicka på det.</p>
+                <p>Klicka på <strong>Nytt</strong> för att själv skicka ett privat meddelande till en annan spelare – du anger mottagarens användarnamn, en rubrik och ett meddelande. Du kan inte skicka ett meddelande till dig själv, och du hittar mottagna svar i samma inkorg tillsammans med systemmeddelandena.</p>
+            </div>
+
+            <div class="card" id="man-scouting">
+                <h3>Scouting & Juniorprogram</h3>
+                <p>Under <strong>Lagsida → Scouting</strong> (syns bara på din egen Lagsida) kan du ringa dina scouter för <strong>500 000 kr</strong> per samtal. Varje samtal ger ett nytt prospekt (15-19 år) till ditt <strong>Juniorprogram</strong>, med en egen scoutad Förmåga, körstil och nationalitet. Prospekten åldras precis som alla andra i spelet vid varje säsongsskifte.</p>
+                <p>Så fort ett prospekt fyller <strong>20 år</strong> blir hen "Redo att anställas" och du kan skriva hen till lagets reservbänk med knappen "Anställ" – detta kräver att din reservbänk inte är full (max 10 reservförare – sälj eller sparka en befintlig reservförare först om den är full).</p>
+                <p>Ditt Juniorprogram kan innehålla <strong>max 5 prospekt</strong> samtidigt. Du kan bara ringa dina scouter <strong>en gång i veckan</strong> – begränsningen nollställs varje söndag kl 20.00, tillsammans med veckans ekonomiuppdatering. Prospektets ålder slumpas inte jämnt: 15 år (8% sannolikhet), 16 år (23%), 17 år (23%), 18 år (23%) och 19 år (23%).</p>
+                <p>Under underfliken <strong>Förberedelseträning</strong> väljer du, för varje prospekt som ännu inte fyllt 20 år, en förmåga (Snabbhet, Däckhantering, Försvar eller Lagförmåga) hen ska förbereda sig inom. Den valda förmågan ökar med <strong>+1 poäng varje vecka</strong> (vid söndagens ekonomiuppdatering) fram till och med den säsong prospektet fyller 20 år.</p>
+                <p>När ett prospekt fyller 20 år och skrivs till lagets reservbänk får hen automatiskt ett <strong>4-årskontrakt</strong>. Det här första kontraktet är dessutom skyddat: inget lag – varken du själv eller andra lag – kan utlösa dess friköpsklausul. Skyddet gäller bara tills kontraktet nästa gång omförhandlas eller förnyas, då gäller de vanliga reglerna igen.</p>
+            </div>
+
+            <div class="card" id="man-historia">
+                <h3>Statistik, troféer & Legends</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Till skillnad från tabellpoäng, som nollställs varje säsong (se <a href="#man-tavling">Säsonger, race & poäng</a>), byggs det här upp permanent – säsong efter säsong, genom hela din karriär.</p>
+                <p><strong>Mästarlista (fliken Statistik):</strong> När en säsong avslutas krönas vinnaren av varje division till mästare, precis innan poängen nollställs. Under fliken <strong>Statistik → Mästarlista</strong> ser du vem som vann Undercut Masters League varje säsong, kan bläddra mästare division för division, se en topplista över flest mästerskap genom tiderna och förarnas fullständiga <strong>karriärstatistik</strong> (lopp, vinster, pallplatser, poäng, poles, snabbaste varv och DNF) rankad bland alla förare som just nu tävlar i serierna samt alla Legends.</p>
+                <p><strong>Rekord (fliken Statistik):</strong> Topplistor över flest vinster, flest pallplatser, flest pole positions, flest snabbaste varv och flest DNF genom tiderna, samt lagets depåstoppsrekord (kortaste depåstopp som någonsin körts, av vilket lag och när).</p>
+                <p><strong>Lagstatistik (fliken Statistik):</strong> Varje lags historik totalt sett – lopp, vinster, pallplatser, poäng, poles och mästerskap – oavsett vilken division laget tävlar i just nu.</p>
+                <p><strong>Troféskåp (Lagsidan):</strong> Varje lags Lagsida – ditt eget och alla motståndares – har en egen underflik <strong>Troféer</strong> som listar exakt vilka mästerskap just det laget har vunnit, säsong för säsong, samt lagets samlade karriärstatistik.</p>
+                <p><strong>Achievements (fliken Statistik):</strong> Långsiktiga mål för ditt eget lag: Första segern (vinn ditt första race), Divisionsmästare (sluta 1:a i din division), Befordrad till Undercut Masters League, 10 raka pallplatser (minst en bil på pallen 10 race i rad), Signerade en 40-årsjubilar (värva en förare som är minst 39 år) och 100 race i karriären. Ett upplåst achievement loggas i Nyheter och Händelseloggen och markeras permanent under fliken Statistik → Achievements.</p>
+                <p><strong>Legends (fliken Statistik):</strong> Så fort en förare i ditt eget lag fyller 40 år och går i pension (se <a href="#man-pension">Pension & åldrande</a>) sparas hen som en Legend istället för att bara försvinna – med lopp, vinster, pallplatser, karriärpoäng och mästerskap bevarade för alltid under fliken Statistik → Legends.</p>
+            </div>
+        
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Om spelet</a> &nbsp;·&nbsp; <a href="manual.html">Manual</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Integritetspolicy</a> &nbsp;·&nbsp; <a href="./">Till spelet</a></footer>
+</body>
+</html>

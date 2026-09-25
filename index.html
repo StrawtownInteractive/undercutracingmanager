@@ -1637,6 +1637,9 @@
            till att locka nya besökare att skapa ett konto. Döljs på smala
            skärmar (se media query längre ner) så att den befintliga, noga
            avstämda mobil-layouten för inloggningskortet inte påverkas. */
+        .auth-infolankar { margin-top: 18px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 10px; font-size: 13px; color: var(--text-muted); }
+        .auth-infolankar a { color: var(--text-secondary); text-decoration: none; }
+        .auth-infolankar a:hover { color: var(--text); text-decoration: underline; }
         .auth-pitch {
             max-width: 360px;
             margin-right: 36px;
@@ -2272,7 +2275,12 @@
         .cc-modal-close {
             position: absolute;
             top: 14px; right: 14px;
+            width: auto;   /* annars ärvs width:100% från den globala button-stilen och knappen täcker rubriken */
+            margin: 0;
+            padding: 4px 10px;
+            line-height: 1.2;
         }
+        .cc-modal-close ~ h3 { padding-right: 44px; } /* rubriken ska inte hamna under stängknappen */
         .cc-modal-close-bottom {
             position: static;
             display: block;
@@ -2752,6 +2760,14 @@
                     </form>
                 </div>
             </div>
+            <!-- Öppna informationssidor (byggs av bygg-infosidor.py) – nåbara utan konto. -->
+            <nav class="auth-infolankar">
+                <a href="om.html" data-i18n="infoOmSpelet">Om spelet</a>
+                <span aria-hidden="true">·</span>
+                <a href="manual.html" data-i18n="appManual">Manual</a>
+                <span aria-hidden="true">·</span>
+                <a href="integritetspolicy.html" data-i18n="ccIntegritetspolicy">Integritetspolicy</a>
+            </nav>
         </div>
     </div>
 
@@ -19780,6 +19796,7 @@
                 visningslageValjRubrik: "Hur vill du visa sidan?",
                 visningslageValjText: "Du verkar använda en mobil. Välj vilken version av Undercut Racing Manager du vill använda – du kan ändra det när som helst under Mitt konto → Inställningar.",
                 visningslageTillMobil: "Mobilvy",
+                infoOmSpelet: "Om spelet",
                 kontoValutaRubrik: 'Valuta',
                 kontoValutaIntro: 'Välj vilken valuta belopp ska visas i. Spelets ekonomi är alltid densamma internt – detta styr bara hur siffrorna visas, till en fast växelkurs: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoCookiesRubrik: 'Cookies',
@@ -20590,6 +20607,7 @@
                 visningslageValjRubrik: "How do you want to view the site?",
                 visningslageValjText: "Looks like you are on a phone. Choose which version of Undercut Racing Manager you want to use – you can change this anytime under My account → Settings.",
                 visningslageTillMobil: "Mobile view",
+                infoOmSpelet: "About the game",
                 kontoValutaRubrik: 'Currency',
                 kontoValutaIntro: 'Choose which currency amounts should be displayed in. The game\'s economy is always the same internally – this only controls how the numbers are shown, at a fixed exchange rate: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoCookiesRubrik: 'Cookies',
@@ -21408,6 +21426,7 @@
                 visningslageValjRubrik: "Wie möchtest du die Seite anzeigen?",
                 visningslageValjText: "Du scheinst ein Handy zu benutzen. Wähle, welche Version von Undercut Racing Manager du nutzen möchtest – du kannst das jederzeit unter Mein Konto → Einstellungen ändern.",
                 visningslageTillMobil: "Mobilansicht",
+                infoOmSpelet: "Über das Spiel",
                 kontoValutaRubrik: "Währung",
                 kontoValutaIntro: "Wähle, in welcher Währung Beträge angezeigt werden sollen. Die Spielwirtschaft ist intern immer dieselbe – dies steuert nur, wie die Zahlen angezeigt werden, zu einem festen Wechselkurs: 10 SEK = 1 USD = 1 EUR = 1 GBP.",
                 kontoCookiesRubrik: "Cookies",
@@ -22177,6 +22196,7 @@
                 visningslageValjRubrik: "Comment veux-tu afficher le site ?",
                 visningslageValjText: "On dirait que tu utilises un téléphone. Choisis la version d'Undercut Racing Manager que tu veux utiliser – tu peux la changer à tout moment dans Mon compte → Paramètres.",
                 visningslageTillMobil: "Vue mobile",
+                infoOmSpelet: "À propos du jeu",
                 kontoValutaRubrik: "Devise",
                 kontoValutaIntro: "Choisissez la devise dans laquelle les montants doivent être affichés. L'économie du jeu reste toujours identique en interne – cela contrôle uniquement l'affichage des chiffres, à un taux de change fixe : 10 SEK = 1 USD = 1 EUR = 1 GBP.",
                 kontoCookiesRubrik: "Cookies",
@@ -22946,6 +22966,7 @@
                 visningslageValjRubrik: "¿Cómo quieres ver el sitio?",
                 visningslageValjText: "Parece que usas un móvil. Elige qué versión de Undercut Racing Manager quieres usar; puedes cambiarlo cuando quieras en Mi cuenta → Configuración.",
                 visningslageTillMobil: "Vista móvil",
+                infoOmSpelet: "Sobre el juego",
                 kontoValutaRubrik: "Moneda",
                 kontoValutaIntro: "Elige en qué moneda deben mostrarse los importes. La economía del juego es siempre la misma internamente – esto solo controla cómo se muestran las cifras, a un tipo de cambio fijo: 10 SEK = 1 USD = 1 EUR = 1 GBP.",
                 kontoCookiesRubrik: "Cookies",
@@ -23704,6 +23725,7 @@
                 visningslageValjRubrik: "Jak chcesz wyświetlać stronę?",
                 visningslageValjText: "Wygląda na to, że używasz telefonu. Wybierz wersję Undercut Racing Manager – możesz to zmienić w każdej chwili w Moje konto → Ustawienia.",
                 visningslageTillMobil: "Widok mobilny",
+                infoOmSpelet: "O grze",
                 kontoValutaRubrik: 'Waluta',
                 kontoValutaIntro: 'Wybierz walutę, w jakiej mają być wyświetlane kwoty. Ekonomia gry jest wewnętrznie zawsze taka sama – to ustawienie zmienia tylko sposób wyświetlania liczb, według stałego kursu: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoCookiesRubrik: 'Cookies',
@@ -24473,6 +24495,7 @@
                 visningslageValjRubrik: "Miten haluat näyttää sivun?",
                 visningslageValjText: "Näytät käyttävän puhelinta. Valitse, mitä Undercut Racing Managerin versiota haluat käyttää – voit vaihtaa sen milloin tahansa kohdassa Oma tili → Asetukset.",
                 visningslageTillMobil: "Mobiilinäkymä",
+                infoOmSpelet: "Tietoa pelistä",
                 kontoValutaRubrik: 'Valuutta',
                 kontoValutaIntro: 'Valitse, missä valuutassa summat näytetään. Pelin talous on sisäisesti aina sama – tämä säätää vain sitä, miten luvut näytetään, kiinteällä vaihtokurssilla: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoCookiesRubrik: 'Evästeet',
@@ -25242,6 +25265,7 @@
                 visningslageValjRubrik: "Hogyan szeretnéd megjeleníteni az oldalt?",
                 visningslageValjText: "Úgy tűnik, telefont használsz. Válaszd ki, melyik Undercut Racing Manager-verziót szeretnéd használni – bármikor módosíthatod a Fiókom → Beállítások alatt.",
                 visningslageTillMobil: "Mobil nézet",
+                infoOmSpelet: "A játékról",
                 kontoValutaRubrik: 'Pénznem',
                 kontoValutaIntro: 'Válaszd ki, milyen pénznemben jelenjenek meg az összegek. A játék gazdasága belsőleg mindig ugyanaz marad – ez csak azt szabályozza, hogyan jelennek meg a számok, fix árfolyamon: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoCookiesRubrik: 'Cookie-k',
@@ -26011,6 +26035,7 @@
                 visningslageValjRubrik: "どの表示で使いますか？",
                 visningslageValjText: "スマートフォンをお使いのようです。使用する Undercut Racing Manager のバージョンを選んでください。マイアカウント → 設定 からいつでも変更できます。",
                 visningslageTillMobil: "モバイル表示",
+                infoOmSpelet: "ゲームについて",
                 kontoValutaRubrik: '通貨',
                 kontoValutaIntro: '金額を表示する通貨を選択してください。ゲーム内部の経済は常に同じです――これは表示方法だけを、固定レート（10 SEK = 1 USD = 1 EUR = 1 GBP）で変更します。',
                 kontoCookiesRubrik: 'Cookie',
@@ -27357,10 +27382,10 @@
     <footer class="site-footer">
         &copy; 2026 Strawtown Interactive. All rights reserved.
         &nbsp;·&nbsp;
-        <!-- Platshållare: peka dessa mot de riktiga sidorna när de finns. -->
-        <a href="#" id="cc-link-privacy" onclick="CookieConsent.openPrivacyPolicy(); return false;" data-i18n="ccIntegritetspolicy">Integritetspolicy</a>
+        <!-- href = öppna sidor (för sökrobotar/nya flikar); klick i spelet öppnar modalen. -->
+        <a href="integritetspolicy.html" id="cc-link-privacy" onclick="CookieConsent.openPrivacyPolicy(); return false;" data-i18n="ccIntegritetspolicy">Integritetspolicy</a>
         &nbsp;·&nbsp;
-        <a href="#" id="cc-link-cookies" onclick="CookieConsent.openCookiePolicy(); return false;" data-i18n="ccCookiepolicy">Cookiepolicy</a>
+        <a href="integritetspolicy.html#cookies" id="cc-link-cookies" onclick="CookieConsent.openCookiePolicy(); return false;" data-i18n="ccCookiepolicy">Cookiepolicy</a>
     </footer>
 
     <!-- =====================================================================
