@@ -153,7 +153,13 @@
     const KOMPONENT_NYCKLAR = ['dack', 'motor', 'aero', 'vaxellada', 'chassi'];
     function prisPerPoang(tier) {
         const r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
-        return Math.round(r[1] * 0.005 / 100) * 100;
+        return avrundaPrispengar(r[1] * 0.015);
+    }
+    // Alla prispengar (kr) avrundas till närmaste 1 000 kr, men ett positivt
+    // belopp blir aldrig mindre än 1 000 kr. Samma regel som i b5_1-3.html.
+    function avrundaPrispengar(belopp) {
+        const kr = Math.round(belopp);
+        return kr > 0 ? Math.max(1000, Math.round(kr / 1000) * 1000) : 0;
     }
     // Säsongsprispengar – ekonomiskt träd: varje division har totalt
     // 20 000 000 kr. Division 1 (1 serie) har hela potten i sin enda serie;
@@ -164,7 +170,7 @@
     const PRIS_FORDELNING = [0.50, 0.20, 0.10, 0.07, 0.05, 0.03, 0.02, 0.015, 0.01, 0.005];
     function slutplaceringsBonus(tier, placering, antalLag) { // antalLag behålls för bakåtkompatibilitet
         const pottPerSerie = PRISPOTT_PER_DIVISION / Math.pow(2, Math.max(1, tier || 1) - 1);
-        return Math.round(pottPerSerie * (PRIS_FORDELNING[placering - 1] || 0));
+        return avrundaPrispengar(pottPerSerie * (PRIS_FORDELNING[placering - 1] || 0));
     }
     function tavlingsregelAttribut(sasong) {
         const n = KOMPONENT_NYCKLAR.length;

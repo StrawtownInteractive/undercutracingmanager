@@ -1135,7 +1135,13 @@ import { createClient } from "npm:@supabase/supabase-js@2";
     const KOMPONENT_NYCKLAR = ['dack', 'motor', 'aero', 'vaxellada', 'chassi'];
     function prisPerPoang(tier) {
         const r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
-        return Math.round(r[1] * 0.005 / 100) * 100;
+        return avrundaPrispengar(r[1] * 0.015);
+    }
+    // Alla prispengar (kr) avrundas till närmaste 1 000 kr, men ett positivt
+    // belopp blir aldrig mindre än 1 000 kr. Samma regel som i b5_1-3.html.
+    function avrundaPrispengar(belopp) {
+        const kr = Math.round(belopp);
+        return kr > 0 ? Math.max(1000, Math.round(kr / 1000) * 1000) : 0;
     }
     // Säsongsprispengar – ekonomiskt träd: varje division har totalt
     // 20 000 000 kr. Division 1 (1 serie) har hela potten i sin enda serie;
@@ -1146,7 +1152,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
     const PRIS_FORDELNING = [0.50, 0.20, 0.10, 0.07, 0.05, 0.03, 0.02, 0.015, 0.01, 0.005];
     function slutplaceringsBonus(tier, placering, antalLag) { // antalLag behålls för bakåtkompatibilitet
         const pottPerSerie = PRISPOTT_PER_DIVISION / Math.pow(2, Math.max(1, tier || 1) - 1);
-        return Math.round(pottPerSerie * (PRIS_FORDELNING[placering - 1] || 0));
+        return avrundaPrispengar(pottPerSerie * (PRIS_FORDELNING[placering - 1] || 0));
     }
     function tavlingsregelAttribut(sasong) {
         const n = KOMPONENT_NYCKLAR.length;
@@ -1566,13 +1572,33 @@ Deno.serve(async (req) => {
   // --- 1. Divisioner och lag -------------------------------------------
   const { data: divisioner, error: dErr } = await db.from("divisions").select("id, tier, kort, parent_id");
   if (dErr) return new Response("divisions: " + dErr.message, { status: 500 });
-  const { data: lag, error: tErr } = await db.from("teams").select("id, division_id, name, is_ai, slot, snapshot, user_id");
+  // Egress: lagens ögonblicksbilder är stora, så först hämtas bara en lätt
+  // lista (vilka lag som har en bild + bana/vakanser). Hela bilderna hämtas
+  // med laddaSnapshots() först när något i körningen faktiskt behöver dem
+  // (kval/lopp, vakanser, avslutad försäljning, nya AI-försäljningar).
+  const { data: lag, error: tErr } = await db.from("teams").select("id, division_id, name, is_ai, slot, user_id");
   if (tErr) return new Response("teams: " + tErr.message, { status: 500 });
+  const { data: snapInfo, error: siErr } = await db.from("teams")
+    .select("id, bana:snapshot->bana, vakanser:snapshot->vakanser").not("snapshot", "is", null);
+  if (siErr) return new Response("teams: " + siErr.message, { status: 500 });
+  const snapInfoPerLag = new Map<string, Rad>(((snapInfo as Rad[]) || []).map((r) => [r.id, r]));
+  (lag as Rad[]).forEach((t) => { t.harSnapshot = snapInfoPerLag.has(t.id); t.snapshot = null; });
+  let snapshotsLaddade = false;
+  async function laddaSnapshots() {
+    if (snapshotsLaddade) return;
+    const { data, error } = await db.from("teams").select("id, snapshot").not("snapshot", "is", null);
+    if (error) throw new Error("snapshots: " + error.message);
+    const per = new Map<string, Rad>(((data as Rad[]) || []).map((r) => [r.id, r.snapshot]));
+    (lag as Rad[]).forEach((t) => { if (!t.snapshot && per.has(t.id)) { t.snapshot = per.get(t.id); t.harSnapshot = true; } });
+    snapshotsLaddade = true;
+  }
+  const harBild = (t: Rad) => !!(t.snapshot || t.harSnapshot);
 
   const anvandaLagNamn = new Set<string>();
   const anvandaArenor = new Set<string>();
   (lag as Rad[]).forEach((t) => {
-    if (t.snapshot) { anvandaLagNamn.add(basNamn(t.name)); if (t.snapshot.bana) anvandaArenor.add(t.snapshot.bana); }
+    const info = snapInfoPerLag.get(t.id);
+    if (info) { anvandaLagNamn.add(basNamn(t.name)); if (info.bana) anvandaArenor.add(info.bana); }
   });
   const tierPerDiv = new Map((divisioner as Rad[]).map((d) => [d.id, d.tier]));
   const lagPerDiv = new Map<string, Rad[]>();
@@ -1583,21 +1609,22 @@ Deno.serve(async (req) => {
 
   for (const div of divisioner as Rad[]) {
     const rader = lagPerDiv.get(div.id) || [];
-    const nya = S.forberedAiLag(div, rader, anvandaLagNamn, anvandaArenor, () => crypto.randomUUID());
+    const nya = S.forberedAiLag(div, rader.map((r) => ({ id: r.id, slot: r.slot, is_ai: r.is_ai, snapshot: harBild(r) || null })),
+      anvandaLagNamn, anvandaArenor, () => crypto.randomUUID());
     for (const u of nya) {
       const { error } = await db.from("teams")
         .update({ name: u.name, snapshot: u.snapshot, snapshot_at: new Date().toISOString() })
         .eq("id", u.id).is("snapshot", null).eq("is_ai", true);
       if (error) { logg.push(`AI-lag ${u.id}: ${error.message}`); continue; }
       const r = rader.find((x) => x.id === u.id);
-      if (r) { r.name = u.name; r.snapshot = u.snapshot; }
+      if (r) { r.name = u.name; r.snapshot = u.snapshot; r.harSnapshot = true; }
     }
     if (nya.length) logg.push(`${div.id}: ${nya.length} AI-lag genererade`);
   }
 
   // --- 1b. Transfermarknaden ---------------------------------------------
   try {
-    await korMarknad(db, divisioner as Rad[], lag as Rad[], logg, nu);
+    await korMarknad(db, divisioner as Rad[], lag as Rad[], logg, nu, laddaSnapshots, snapInfoPerLag);
   } catch (e) {
     logg.push("marknad: " + (e instanceof Error ? e.message : String(e)));
   }
@@ -1612,10 +1639,15 @@ Deno.serve(async (req) => {
   // Mänskliga lags bil (komponenter, skador, köer) och personal ägs av servern
   // (lag_tillstand) och ersätter det i ögonblicksbilden när racen körs.
   // Läses efter marknaden, så att nyss sålda personer inte kör.
-  const { data: tillstand } = await db.rpc("tillstand_alla");
-  const tillstandPerLag = new Map<string, Rad>(((tillstand as Rad[]) || []).map((t) => [t.team_id, t]));
+  // Hämtas bara när ett kval/lopp faktiskt ska köras (se laddaTillstand()).
+  let tillstandPerLag: Map<string, Rad> | null = null;
+  async function laddaTillstand() {
+    if (tillstandPerLag) return;
+    const { data: tillstand } = await db.rpc("tillstand_alla");
+    tillstandPerLag = new Map<string, Rad>(((tillstand as Rad[]) || []).map((t) => [t.team_id, t]));
+  }
   function raceRad(t: Rad): Rad {
-    const ts = !t.is_ai ? tillstandPerLag.get(t.id) : null;
+    const ts = !t.is_ai ? tillstandPerLag!.get(t.id) : null;
     if (!ts) return t;
     return Object.assign({}, t, { snapshot: Object.assign({}, S.personalForRace(t.snapshot, ts.personal), ts.bil || {}) });
   }
@@ -1629,10 +1661,14 @@ Deno.serve(async (req) => {
   if (!forfallna.length) return Response.json({ ok: true, logg, race: "inget race att köra än" });
   const sasong = forfallna[0].sasong;
 
+  // Egress: kval/lopp (stora) hämtas inte här. lopp_at sätts alltid samtidigt
+  // som lopp, så "lopp: true" räcker som markering för ett kört lopp. Kvalet
+  // hämtas separat bara när loppet ska köras (se nedan).
   const { data: befintliga } = await db.from("race_resultat")
-    .select("division_id, race_nr, bana, kval, lopp").eq("sasong", sasong);
+    .select("division_id, race_nr, bana, lopp_at").eq("sasong", sasong);
   const resultat = new Map<string, Rad>();
-  (befintliga as Rad[] || []).forEach((r) => resultat.set(r.division_id + "|" + r.race_nr, r));
+  (befintliga as Rad[] || []).forEach((r) => resultat.set(r.division_id + "|" + r.race_nr,
+    { division_id: r.division_id, race_nr: r.race_nr, bana: r.bana, kval: undefined, lopp: r.lopp_at ? true : null }));
 
   // Säsongsschema per division (skapas första gången det behövs).
   const schemaCache = new Map<string, Rad[]>();
@@ -1650,15 +1686,23 @@ Deno.serve(async (req) => {
   }
 
   for (const k of forfallna) {
-    const { data: orderRader } = await db.from("lag_order").select("team_id, kval, lopp").eq("sasong", sasong).eq("race_nr", k.race_nr);
-    const order = new Map<string, Rad>((orderRader as Rad[] || []).map((o) => [o.team_id, o]));
+    let order: Map<string, Rad> | null = null;
     const loppDags = Date.parse(k.lopp_at) <= nu;
 
     for (const div of divisioner as Rad[]) {
-      const rader = (lagPerDiv.get(div.id) || []).filter((t) => t.snapshot).map(raceRad);
-      if (!rader.length) continue;
       const nyckel = div.id + "|" + k.race_nr;
       let rad = resultat.get(nyckel);
+      // Inget att göra för divisionen: hoppa över innan något tungt hämtas.
+      if (rad && !(loppDags && !rad.lopp)) continue;
+      if (!(lagPerDiv.get(div.id) || []).some(harBild)) continue;
+      await laddaSnapshots();
+      await laddaTillstand();
+      if (!order) {
+        const { data: orderRader } = await db.from("lag_order").select("team_id, kval, lopp").eq("sasong", sasong).eq("race_nr", k.race_nr);
+        order = new Map<string, Rad>((orderRader as Rad[] || []).map((o) => [o.team_id, o]));
+      }
+      const rader = (lagPerDiv.get(div.id) || []).filter((t) => t.snapshot).map(raceRad);
+      if (!rader.length) continue;
 
       if (!rad) {
         const { bana, kval } = S.korKval(div, sasong, k.race_nr, rader, order, await hamtaSchema(div));
@@ -1672,6 +1716,12 @@ Deno.serve(async (req) => {
       }
 
       if (loppDags && !rad.lopp) {
+        if (rad.kval === undefined) {
+          const { data: kv, error: kvErr } = await db.from("race_resultat").select("kval")
+            .eq("division_id", div.id).eq("sasong", sasong).eq("race_nr", k.race_nr).maybeSingle();
+          if (kvErr || !kv) { logg.push(`kval ${nyckel}: ${kvErr ? kvErr.message : "saknas"}`); continue; }
+          rad.kval = kv.kval;
+        }
         const lopp = S.korLopp(div, sasong, k.race_nr, rader, order, rad.bana, rad.kval);
         const skador = S.valjSkador(rader.map(S.lagFranRad), S.rngFor(div.id, sasong, k.race_nr, "skador"));
         const { data: uppdaterad, error } = await db.from("race_resultat")
@@ -1708,7 +1758,7 @@ Deno.serve(async (req) => {
   // --- 3. Säsongsskifte ---------------------------------------------------
   const sista = (kalender as Rad[]).reduce((m, k) => (k.race_nr > m.race_nr ? k : m), { race_nr: 0 } as Rad);
   if (sista.race_nr && Date.parse(sista.lopp_at) <= nu) {
-    const aktiva = (divisioner as Rad[]).filter((d) => (lagPerDiv.get(d.id) || []).some((t) => t.snapshot));
+    const aktiva = (divisioner as Rad[]).filter((d) => (lagPerDiv.get(d.id) || []).some(harBild));
     const allaKlara = aktiva.every((d) => { const r = resultat.get(d.id + "|" + sista.race_nr); return r && r.lopp; });
     if (allaKlara) {
       const { data: tabell, error: tabErr } = await db.from("serietabell").select("team_id, poang, poang_bil1, poang_bil2").eq("sasong", sasong);
@@ -1768,6 +1818,17 @@ async function korTraning(db: ReturnType<typeof createClient>, logg: string[]) {
   const { data: klocka, error: kErr } = await db.rpc("traning_klocka");
   if (kErr || !klocka) { logg.push("träning: " + (kErr ? kErr.message : "ingen klocka")); return; }
   const vecka = klocka.vecka as number, sasong = (klocka.sasong as number) || 1;
+  // Egress: kolla först med en lätt fråga om något lag har något att göra
+  // (åldrande, träningsrace eller söndagsuppdatering) innan hela tillståndet hämtas.
+  const { data: latt, error: lattErr } = await db.from("lag_tillstand")
+    .select("team_id, aldrad:traning->aldradSasong, senT:traning->senasteTraning, senU:traning->senasteUppdatering");
+  if (!lattErr) {
+    const naganAttGora = ((latt as Rad[]) || []).some((r) =>
+      typeof r.aldrad !== "number" || r.aldrad < sasong ||
+      (klocka.traning_dags && !(r.senT >= vecka)) ||
+      (klocka.uppdatering_dags && !(r.senU >= vecka)));
+    if (!naganAttGora) return;
+  }
   const { data: alla, error } = await db.rpc("tillstand_alla");
   if (error) { logg.push("träning: " + error.message); return; }
   for (const t of (alla as Rad[]) || []) {
@@ -1818,7 +1879,8 @@ async function korTraning(db: ReturnType<typeof createClient>, logg: string[]) {
   }
 }
 
-async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[], lag: Rad[], logg: string[], nu: number) {
+async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[], lag: Rad[], logg: string[], nu: number,
+  laddaSnapshots: () => Promise<void>, snapInfoPerLag: Map<string, Rad>) {
   const tierFor = new Map(divisioner.map((d) => [d.id, d.tier]));
   const lagPerId = new Map(lag.map((t) => [t.id, t]));
   const rng = S.rngFor("marknad", Math.floor(nu / 60000));
@@ -1826,6 +1888,8 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
   try {
     // Vakanser efter friköp i AI-lag fylls med nya personer.
     for (const t of lag) {
+      const vak = t.snapshot ? t.snapshot.vakanser : (snapInfoPerLag.get(t.id) || {}).vakanser;
+      if (t.is_ai && Array.isArray(vak) && vak.length) await laddaSnapshots();
       if (t.is_ai && t.snapshot && Array.isArray(t.snapshot.vakanser) && t.snapshot.vakanser.length) {
         const ny = V.medSlump(rng, () => M.fyllVakanser(t.snapshot, tierFor.get(t.division_id) || 4));
         await db.from("teams").update({ snapshot: ny }).eq("id", t.id);
@@ -1861,6 +1925,7 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
           await db.rpc("ekonomi_bokfor", { p_team: saljare.id, p_typ: "marknad", p_belopp: a.hogsta_bud, p_text: `Försäljning: ${a.person.namn}`, p_nyckel: `salj:${a.id}` });
           await db.from("leveranser").insert({ team_id: saljare.id, typ: "salt", auktion_id: a.id, kategori: a.kategori, person_id: a.person_id, belopp: a.hogsta_bud, motpart: kopare ? kopare.name : "Okänt lag" });
         }
+        if (saljare.harSnapshot && !saljare.snapshot) await laddaSnapshots();
         if (saljare.snapshot) {
           const ny = V.medSlump(rng, () => M.taBortPerson(saljare.snapshot, a.kategori, a.person_id, saljare.is_ai, tierFor.get(saljare.division_id) || 4));
           await db.from("teams").update({ snapshot: ny }).eq("id", saljare.id);
@@ -1872,7 +1937,7 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
 
     // Aktiva auktioner: AI-bud och nya AI-försäljningar.
     const { data: aktiva } = await db.from("marknad").select("id, person_id, saljare_team_id, hogsta_bud, hogsta_budare, antal_bud, manskliga_bud, deadline").eq("status", "aktiv");
-    const aiLag = lag.filter((t) => t.is_ai && t.snapshot);
+    const aiLag = lag.filter((t) => t.is_ai && (t.snapshot || t.harSnapshot));
     const aiIds = aiLag.map((t) => t.id);
     for (const a of (aktiva as Rad[]) || []) {
       const bud = M.aiBud(a, aiIds, rng, nu);
@@ -1883,6 +1948,9 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
     const aiSaljare = new Set(aiIds);
     const antalAiAktiva = ((aktiva as Rad[]) || []).filter((a) => aiSaljare.has(a.saljare_team_id)).length;
     const upptagna = new Set(((aktiva as Rad[]) || []).map((a) => a.person_id));
+    // Nya AI-försäljningar läser personerna ur AI-lagens bilder – hämta dem
+    // bara om taket för aktiva AI-försäljningar inte redan är nått.
+    if (aiLag.length && antalAiAktiva < M.MAX_AI_LISTNINGAR) await laddaSnapshots();
     const nya = V.medSlump(rng, () => M.nyaAiListningar(aiLag, upptagna, antalAiAktiva, rng, nu));
     if (nya.length) {
       const { error } = await db.from("marknad").insert(nya);
