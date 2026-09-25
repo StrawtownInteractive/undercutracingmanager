@@ -3919,7 +3919,7 @@
 
         <!-- FLIK: Transfermarknad -->
         <div id="tab-marknad" class="tab-content">
-            <img src="assets/marknad-header.png" alt="Transferförhandling i mötesrum med tavla över spelaraffärer och racerbana i bakgrunden" style="width:100%; max-height:280px; object-fit:cover; border-radius:10px; display:block; margin-bottom:14px;">
+            <img src="assets/marknad-header.png" alt="Handslag vid transferförhandling i mötesrum med tavla över transfermarknaden och racerbana i bakgrunden" style="width:100%; max-height:280px; object-fit:cover; border-radius:10px; display:block; margin-bottom:14px;">
             <div class="subnav-layout">
             <div id="mkt-pane-oversikt" class="ls-pane">
                 <div class="card">
@@ -4983,6 +4983,24 @@
             return (extra && extra[aktivtSprak]) ? extra[aktivtSprak] : en;
         }
 
+        // Ländernamn lagras alltid på svenska (NAMNPOOLER-nycklarna i spelmotorn,
+        // lag.land, person.nationalitet) – översätts bara vid visning.
+        var LAND_NAMN = {"Sverige": {"en": "Sweden", "de": "Schweden", "fr": "Suède", "es": "Suecia", "pl": "Szwecja", "fi": "Ruotsi", "hu": "Svédország", "ja": "スウェーデン"}, "Italien": {"en": "Italy", "de": "Italien", "fr": "Italie", "es": "Italia", "pl": "Włochy", "fi": "Italia", "hu": "Olaszország", "ja": "イタリア"}, "Tyskland": {"en": "Germany", "de": "Deutschland", "fr": "Allemagne", "es": "Alemania", "pl": "Niemcy", "fi": "Saksa", "hu": "Németország", "ja": "ドイツ"}, "Frankrike": {"en": "France", "de": "Frankreich", "fr": "France", "es": "Francia", "pl": "Francja", "fi": "Ranska", "hu": "Franciaország", "ja": "フランス"}, "Spanien": {"en": "Spain", "de": "Spanien", "fr": "Espagne", "es": "España", "pl": "Hiszpania", "fi": "Espanja", "hu": "Spanyolország", "ja": "スペイン"}, "Storbritannien": {"en": "United Kingdom", "de": "Großbritannien", "fr": "Royaume-Uni", "es": "Reino Unido", "pl": "Wielka Brytania", "fi": "Iso-Britannia", "hu": "Egyesült Királyság", "ja": "イギリス"}, "Nederländerna": {"en": "Netherlands", "de": "Niederlande", "fr": "Pays-Bas", "es": "Países Bajos", "pl": "Holandia", "fi": "Alankomaat", "hu": "Hollandia", "ja": "オランダ"}, "Finland": {"en": "Finland", "de": "Finnland", "fr": "Finlande", "es": "Finlandia", "pl": "Finlandia", "fi": "Suomi", "hu": "Finnország", "ja": "フィンランド"}, "Brasilien": {"en": "Brazil", "de": "Brasilien", "fr": "Brésil", "es": "Brasil", "pl": "Brazylia", "fi": "Brasilia", "hu": "Brazília", "ja": "ブラジル"}, "USA": {"en": "USA", "de": "USA", "fr": "États-Unis", "es": "Estados Unidos", "pl": "USA", "fi": "Yhdysvallat", "hu": "USA", "ja": "アメリカ"}, "Japan": {"en": "Japan", "de": "Japan", "fr": "Japon", "es": "Japón", "pl": "Japonia", "fi": "Japani", "hu": "Japán", "ja": "日本"}, "Australien": {"en": "Australia", "de": "Australien", "fr": "Australie", "es": "Australia", "pl": "Australia", "fi": "Australia", "hu": "Ausztrália", "ja": "オーストラリア"}, "Belgien": {"en": "Belgium", "de": "Belgien", "fr": "Belgique", "es": "Bélgica", "pl": "Belgia", "fi": "Belgia", "hu": "Belgium", "ja": "ベルギー"}, "Österrike": {"en": "Austria", "de": "Österreich", "fr": "Autriche", "es": "Austria", "pl": "Austria", "fi": "Itävalta", "hu": "Ausztria", "ja": "オーストリア"}, "Monaco": {"en": "Monaco", "de": "Monaco", "fr": "Monaco", "es": "Mónaco", "pl": "Monako", "fi": "Monaco", "hu": "Monaco", "ja": "モナコ"}, "Mexiko": {"en": "Mexico", "de": "Mexiko", "fr": "Mexique", "es": "México", "pl": "Meksyk", "fi": "Meksiko", "hu": "Mexikó", "ja": "メキシコ"}, "Kanada": {"en": "Canada", "de": "Kanada", "fr": "Canada", "es": "Canadá", "pl": "Kanada", "fi": "Kanada", "hu": "Kanada", "ja": "カナダ"}, "Danmark": {"en": "Denmark", "de": "Dänemark", "fr": "Danemark", "es": "Dinamarca", "pl": "Dania", "fi": "Tanska", "hu": "Dánia", "ja": "デンマーク"}, "Norge": {"en": "Norway", "de": "Norwegen", "fr": "Norvège", "es": "Noruega", "pl": "Norwegia", "fi": "Norja", "hu": "Norvégia", "ja": "ノルウェー"}, "Schweiz": {"en": "Switzerland", "de": "Schweiz", "fr": "Suisse", "es": "Suiza", "pl": "Szwajcaria", "fi": "Sveitsi", "hu": "Svájc", "ja": "スイス"}};
+        function landNamn(land) {
+            if (!land || typeof aktivtSprak === 'undefined' || aktivtSprak === 'sv') return land;
+            var r = LAND_NAMN[land];
+            return (r && r[aktivtSprak]) || land;
+        }
+
+        // Sponsornamn lagras som de är (servern validerar mot samma lista, se
+        // sponsor_teckna i supabase/schema.sql). Namn med svenska ord visas i en
+        // internationell variant på övriga språk.
+        var SPONSOR_NAMN_INTL = {"Starlight Försäkring": "Starlight Insurance", "Quantum Däck": "Quantum Tyres", "Ironclad Logistik": "Ironclad Logistics", "Solaris Bränsle": "Solaris Fuel", "Meridian Kapital": "Meridian Capital"};
+        function sponsorNamnVisa(namn) {
+            if (!namn || typeof aktivtSprak === 'undefined' || aktivtSprak === 'sv') return namn;
+            return SPONSOR_NAMN_INTL[namn] || namn;
+        }
+
         // Tillfällig tidig version av t() – precis som tt() ovan behövs den
         // redan här vid sidladdning (t.ex. av renderMarknadsPane() som kan
         // köras redan under den första renderingen), men den fullständiga
@@ -5084,9 +5102,9 @@
             nyPersonalAnstalld: (d) => {
                 let bilTextSv = d.bil === 'reserv' ? 'reserven' : ('Bil ' + d.bil);
                 let bilTextEn = d.bil === 'reserv' ? 'the reserve bench' : ('Car ' + d.bil);
-                return tt('Ny {typ} anställd: {namn} ({age} år, {nationalitet}) till {bilText}! Totalt: {antal}/10. (-{kostnad})', 'New {typ} hired: {namn} ({age} years, {nationalitet}) for {bilText}! Total: {antal}/10. (-{kostnad})').replaceAll('{typ}', tt(d.typ === 'mekaniker' ? 'mekaniker' : 'ingenjör', d.typ === 'mekaniker' ? 'mechanic' : 'engineer')).replaceAll('{namn}', d.namn).replaceAll('{age}', d.age).replaceAll('{nationalitet}', d.nationalitet).replaceAll('{bilText}', (d.bil === 'reserv' ? tt('reserven', 'the reserve bench') : (tt('Bil', 'Car') + ' ' + d.bil))).replaceAll('{antal}', d.antal).replaceAll('{kostnad}', formatBelopp(d.kostnad));
+                return tt('Ny {typ} anställd: {namn} ({age} år, {nationalitet}) till {bilText}! Totalt: {antal}/10. (-{kostnad})', 'New {typ} hired: {namn} ({age} years, {nationalitet}) for {bilText}! Total: {antal}/10. (-{kostnad})').replaceAll('{typ}', tt(d.typ === 'mekaniker' ? 'mekaniker' : 'ingenjör', d.typ === 'mekaniker' ? 'mechanic' : 'engineer')).replaceAll('{namn}', d.namn).replaceAll('{age}', d.age).replaceAll('{nationalitet}', landNamn(d.nationalitet)).replaceAll('{bilText}', (d.bil === 'reserv' ? tt('reserven', 'the reserve bench') : (tt('Bil', 'Car') + ' ' + d.bil))).replaceAll('{antal}', d.antal).replaceAll('{kostnad}', formatBelopp(d.kostnad));
             },
-            nyExtraPersonalAnstalld: (d) => tt('Ny extra {typ} anställd: {namn} ({age} år, {nationalitet}). Bidrar inte till raceprestanda men kostar lön, och är skyddad från utköpsklausuler. (-{kostnad})', 'New extra {typ} hired: {namn} ({age} years, {nationalitet}). Does not contribute to race performance but still costs a salary, and is protected from release clauses. (-{kostnad})').replaceAll('{typ}', tt(d.typ === 'mekaniker' ? 'mekaniker' : 'ingenjör', d.typ === 'mekaniker' ? 'mechanic' : 'engineer')).replaceAll('{namn}', d.namn).replaceAll('{age}', d.age).replaceAll('{nationalitet}', d.nationalitet).replaceAll('{kostnad}', formatBelopp(d.kostnad))
+            nyExtraPersonalAnstalld: (d) => tt('Ny extra {typ} anställd: {namn} ({age} år, {nationalitet}). Bidrar inte till raceprestanda men kostar lön, och är skyddad från utköpsklausuler. (-{kostnad})', 'New extra {typ} hired: {namn} ({age} years, {nationalitet}). Does not contribute to race performance but still costs a salary, and is protected from release clauses. (-{kostnad})').replaceAll('{typ}', tt(d.typ === 'mekaniker' ? 'mekaniker' : 'ingenjör', d.typ === 'mekaniker' ? 'mechanic' : 'engineer')).replaceAll('{namn}', d.namn).replaceAll('{age}', d.age).replaceAll('{nationalitet}', landNamn(d.nationalitet)).replaceAll('{kostnad}', formatBelopp(d.kostnad))
         };
 
         // =====================================================================
@@ -6232,7 +6250,7 @@
                 let f = forarForBil(lag, forsta.bil);
                 if (andra.placering < forsta.placering) {
                     f.contract.relation = Math.max(0, f.contract.relation - 3);
-                    return f.namn + ' är missnöjd – laget gynnade inte sin förstaförare i racet (relation -3).';
+                    return f.namn + tt(' är missnöjd – laget gynnade inte sin förstaförare i racet (relation -3).', ' is unhappy – the team did not favour its first driver in the race (relation -3).');
                 }
                 f.contract.relation = Math.min(100, f.contract.relation + 1);
                 return null;
@@ -8359,7 +8377,7 @@
                 belopp[r.typ] = r.belopp;
                 if (!r.belopp) return;
                 const text = r.typ === 'sponsor'
-                    ? (info.sponsorNamn ? tt('Sponsorintäkt ({sponsorNamn})', 'Sponsor income ({sponsorNamn})').replaceAll('{sponsorNamn}', info.sponsorNamn) : tt('Sponsorintäkt', 'Sponsor income'))
+                    ? (info.sponsorNamn ? tt('Sponsorintäkt ({sponsorNamn})', 'Sponsor income ({sponsorNamn})').replaceAll('{sponsorNamn}', sponsorNamnVisa(info.sponsorNamn)) : tt('Sponsorintäkt', 'Sponsor income'))
                     : (VECKO_ETIKETT[r.typ] ? VECKO_ETIKETT[r.typ]() : r.typ);
                 loggaTransaktion(text, r.belopp);
             });
@@ -9059,7 +9077,7 @@
             document.getElementById('tp-avatar').innerHTML = avatarHTML(p, 'principal', 'large', lag);
             document.getElementById('tp-namn').innerText = p.namn;
             document.getElementById('tp-age').innerText = p.age;
-            document.getElementById('tp-nat').innerText = p.nationalitet;
+            document.getElementById('tp-nat').innerText = landNamn(p.nationalitet);
 
             let statsHtml = '';
             PRINCIPAL_STAT_KEYS.forEach(k => {
@@ -9370,7 +9388,7 @@
                 <div class="marknad-stats-grid">
                     <div><span class="marknad-stat-label">Förmåga</span><span class="marknad-stat-value">${a.formaga}/100</span></div>
                     <div><span class="marknad-stat-label">Ålder</span><span class="marknad-stat-value">${a.age} år</span></div>
-                    <div><span class="marknad-stat-label">Nationalitet</span><span class="marknad-stat-value">${a.nationalitet}</span></div>
+                    <div><span class="marknad-stat-label">${tt('Nationalitet', 'Nationality')}</span><span class="marknad-stat-value">${landNamn(a.nationalitet)}</span></div>
                     <div><span class="marknad-stat-label">Popularitet</span><span class="marknad-stat-value">${a.popularitet}/100</span></div>
                 </div>
                 <p style="font-size:12px; color:var(--text-muted); margin:10px 0 12px;">${a.namn} har inget lag just nu, så någon fullständig profil kan inte visas.</p>
@@ -9401,7 +9419,7 @@
                 <div class="marknad-stats-grid">
                     <div><span class="marknad-stat-label">${tt('Förmåga', 'Ability')}</span><span class="marknad-stat-value">${j.formaga}/100</span></div>
                     <div><span class="marknad-stat-label">${tt('Ålder', 'Age')}</span><span class="marknad-stat-value">${j.age} ${tt('år', 'yrs')}</span></div>
-                    <div><span class="marknad-stat-label">${tt('Nationalitet', 'Nationality')}</span><span class="marknad-stat-value">${j.nationalitet}</span></div>
+                    <div><span class="marknad-stat-label">${tt('Nationalitet', 'Nationality')}</span><span class="marknad-stat-value">${landNamn(j.nationalitet)}</span></div>
                 </div>
                 <p style="font-size:12px; color:var(--text-muted); margin:10px 0 12px;">${redo
                     ? tt('Redo att skrivas till lagets reservbänk.', 'Ready to be signed to the team\'s reserve bench.')
@@ -9433,7 +9451,7 @@
                 <div class="marknad-stats-grid">
                     <div><span class="marknad-stat-label">${tt('Förmåga', 'Ability')}</span><span class="marknad-stat-value">${a.formaga}/100</span></div>
                     <div><span class="marknad-stat-label">${tt('Ålder', 'Age')}</span><span class="marknad-stat-value">${a.age} ${tt('år', 'yrs')}</span></div>
-                    <div><span class="marknad-stat-label">${tt('Nationalitet', 'Nationality')}</span><span class="marknad-stat-value">${a.nationalitet}</span></div>
+                    <div><span class="marknad-stat-label">${tt('Nationalitet', 'Nationality')}</span><span class="marknad-stat-value">${landNamn(a.nationalitet)}</span></div>
                     ${popRad}
                 </div>
                 <p style="font-size:12px; color:var(--text-muted); margin:10px 0 12px;">${tt('{namn} har inget lag just nu, så någon fullständig profil kan inte visas.', '{namn} has no team right now, so a full profile can\'t be shown.').replaceAll('{namn}', a.namn)}</p>
@@ -9927,11 +9945,11 @@
             let statusEl = document.getElementById('installningar-webbnotiser-status');
             if (!statusEl) return;
             if (!webbNotiserStodda()) {
-                statusEl.textContent = 'Webbläsarnotiser stöds inte i den här webbläsaren.';
+                statusEl.textContent = tt('Webbläsarnotiser stöds inte i den här webbläsaren.', 'Browser notifications are not supported in this browser.');
             } else if (Notification.permission === 'denied') {
-                statusEl.textContent = 'Tillstånd nekat – ändra i webbläsarens sidinställningar för att slå på.';
+                statusEl.textContent = tt('Tillstånd nekat – ändra i webbläsarens sidinställningar för att slå på.', 'Permission denied – change it in your browser\'s site settings to turn it on.');
             } else if (Notification.permission === 'granted' && webbNotiserAktiverade()) {
-                statusEl.textContent = 'Aktiverat.';
+                statusEl.textContent = tt('Aktiverat.', 'Enabled.');
             } else {
                 statusEl.textContent = '';
             }
@@ -11987,7 +12005,7 @@
                 wrap.innerHTML = `
                     <div class="card">
                         <h3>${tt('Aktivt sponsoravtal', 'Active sponsorship deal')}</h3>
-                        <p><strong>${avtal.sponsorNamn}</strong> &middot; ${avtal.veckorKvar} ${tt('av', 'of')} ${avtal.langdTotalt} ${tt('veckor kvar', 'weeks left')}</p>
+                        <p><strong>${sponsorNamnVisa(avtal.sponsorNamn)}</strong> &middot; ${avtal.veckorKvar} ${tt('av', 'of')} ${avtal.langdTotalt} ${tt('veckor kvar', 'weeks left')}</p>
                         <p>${tt('Grundbelopp:', 'Base amount:')} <strong>${formatBelopp(avtal.grundbelopp)}/${tt('vecka', 'week')}</strong> (${tt('ersätter den slumpade sponsorintäkten så länge avtalet löper', 'replaces the randomised sponsor income for as long as the deal runs')})</p>
                         <p style="font-size:12px; color:var(--text-muted);">${tt('Bonusklausuler:', 'Bonus clauses:')} +${formatBelopp(avtal.pallBonus)} ${tt('per pallplats', 'per podium')}, +${formatBelopp(avtal.vinstBonus)} ${tt('per vinst', 'per win')}, +${formatBelopp(avtal.mastarskapsBonus)} ${tt('vid mästerskapstitel', 'for a championship title')}.</p>
                         <p style="font-size:12px; color:var(--text-muted); margin-bottom:0;">${tt('Avtalet löper på till slut och kan inte sägas upp i förtid.', 'The deal runs its full course and cannot be cancelled early.')}</p>
@@ -11998,7 +12016,7 @@
             // Jämförelsetabell: samma radetiketter i samma ordning för alla
             // erbjudanden så de går att ställa sida vid sida, istället för
             // tre separata kort man måste scrolla mellan för att jämföra.
-            let kolRubriker = sponsorErbjudandenCache.map(e => `<th>${e.sponsorNamn}<br><span style="font-weight:normal; color:var(--text-muted);">${SPONSOR_PROFIL_LABEL[e.profil]}</span></th>`).join('');
+            let kolRubriker = sponsorErbjudandenCache.map(e => `<th>${sponsorNamnVisa(e.sponsorNamn)}<br><span style="font-weight:normal; color:var(--text-muted);">${SPONSOR_PROFIL_LABEL[e.profil]}</span></th>`).join('');
             let bastGrundbelopp = Math.max(...sponsorErbjudandenCache.map(e => e.grundbelopp));
             let rad = (etikett, cellFn) => `<tr><td style="color:var(--text-muted);">${etikett}</td>${sponsorErbjudandenCache.map(cellFn).join('')}</tr>`;
             let rader = rad(tt('Profil', 'Profile'), e => `<td style="font-size:11px; color:var(--text-muted);">${SPONSOR_PROFIL_BESKRIVNING[e.profil]}</td>`)
@@ -12396,7 +12414,7 @@
             let serieLabelHTML = def.label
                 ? `<span class="team-link" onclick="bytVisadSerie('${lsGroupId}'); bytFlik('serie'); bytSubflik('serie','tabell')">${def.label}</span>`
                 : '-';
-            let metaLine = `${tt('Nation', 'Nation')}: ${lag.land || '-'} &middot; ${serieLabelHTML} &middot; ${tt('Ledare', 'Manager')}: ${ledareHTML}`;
+            let metaLine = `${tt('Nation', 'Nation')}: ${lag.land ? landNamn(lag.land) : '-'} &middot; ${serieLabelHTML} &middot; ${tt('Ledare', 'Manager')}: ${ledareHTML}`;
             let banaLine = `${tt('Hemmabana', 'Home track')}: ${lag.bana || '-'} (${lag.banaLangd || '-'} km, ${lag.banaKurvor || '-'} ${tt('kurvor', 'corners')})`;
 
             let quoteHTML = (lag.presentation && lag.presentation.trim())
@@ -12579,7 +12597,7 @@
                 : personLankHTML(roll, p, lag);
             let ratingHTML = (p.formaga !== undefined && p.formaga !== null)
                 ? `<div class="player-card-meta">${tt('Rating', 'Rating')}: <strong>${p.formaga}/100</strong></div>`
-                : (p.nationalitet ? `<div class="player-card-meta">${p.nationalitet}</div>` : '');
+                : (p.nationalitet ? `<div class="player-card-meta">${landNamn(p.nationalitet)}</div>` : '');
             return `
                 <div class="hub-mini-card">
                     <div class="hub-mini-card-label">${titel}</div>
@@ -12837,7 +12855,7 @@
                 rad.innerHTML = `
                     <td>${personLankHTML(typ, p, lag, groupIdOverride)}${extraBadge}</td>
                     <td>${p.age}</td>
-                    <td>${p.nationalitet}</td>
+                    <td>${landNamn(p.nationalitet)}</td>
                     <td>${p.bil === 'reserv' ? tt('Reserv', 'Reserve') : tt('Bil', 'Car') + ' ' + p.bil}</td>
                     <td>${p.formaga} / 100</td>
                     <td>${new Date(p.rekryDatum).toLocaleDateString(lokalFor(aktivtSprak))}</td>
@@ -12971,7 +12989,7 @@
                 ? tt('Redo att skrivas till reservbänken', 'Ready to be signed to the reserve bench')
                 : tt('Väntar ({age} år kvar)', 'Waiting ({age} years left)').replaceAll('{age}', JUNIOR_DEBUTALDER - j.age);
             document.getElementById('pp-age').innerText = j.age;
-            document.getElementById('pp-nat').innerText = j.nationalitet;
+            document.getElementById('pp-nat').innerText = landNamn(j.nationalitet);
             document.getElementById('pp-formaga').innerText = j.formaga + ' / 100';
             document.getElementById('pp-rekry').innerText = j.scoutadDatum ? new Date(j.scoutadDatum).toLocaleDateString(lokalFor(aktivtSprak)) : tt('Okänt', 'Unknown');
 
@@ -13034,7 +13052,7 @@
             document.getElementById('pp-lag').innerText = lagText;
             document.getElementById('pp-bil').innerText = '-';
             document.getElementById('pp-age').innerText = entry.age;
-            document.getElementById('pp-nat').innerText = entry.nationalitet;
+            document.getElementById('pp-nat').innerText = landNamn(entry.nationalitet);
             document.getElementById('pp-formaga').innerText = entry.formaga + ' / 100';
             document.getElementById('pp-rekry').innerText = entry.rekryDatum ? new Date(entry.rekryDatum).toLocaleDateString(lokalFor(aktivtSprak)) : tt('Okänt', 'Unknown');
 
@@ -13163,7 +13181,7 @@
                 : (lag.namn + (lag.arSpelare ? ' (' + tt('Du', 'You') + ')' : ''));
             document.getElementById('pp-bil').innerText = bilLabel;
             document.getElementById('pp-age').innerText = p.age;
-            document.getElementById('pp-nat').innerText = p.nationalitet;
+            document.getElementById('pp-nat').innerText = landNamn(p.nationalitet);
             document.getElementById('pp-formaga').innerText = p.formaga + ' / 100';
             document.getElementById('pp-rekry').innerText = p.rekryDatum ? new Date(p.rekryDatum).toLocaleDateString(lokalFor(aktivtSprak)) : tt('Okänt', 'Unknown');
 
@@ -13937,7 +13955,7 @@
             let bilTextEn = nyPerson.bil === 'reserv' ? 'the reserve bench' : ('Car ' + nyPerson.bil);
             loggaTransaktion(tt('Anställde {roll}: {namn}', 'Hired {roll}: {namn}').replaceAll('{roll}', (typ === 'mekaniker' ? tt('mekaniker', 'mechanic') : tt('ingenjör', 'engineer'))).replaceAll('{namn}', nyPerson.namn), -kostnad);
             laggTillNyhet(
-                tt('Ny {typ} anställd: {namn} ({age} år, {nationalitet}) till {bilText}! Totalt: {antal}/10. (-{kostnad})', 'New {typ} hired: {namn} ({age} years, {nationalitet}) for {bilText}! Total: {antal}/10. (-{kostnad})').replaceAll('{typ}', (typ === 'mekaniker' ? tt('mekaniker', 'mechanic') : tt('ingenjör', 'engineer'))).replaceAll('{namn}', nyPerson.namn).replaceAll('{age}', nyPerson.age).replaceAll('{nationalitet}', nyPerson.nationalitet).replaceAll('{bilText}', (nyPerson.bil === 'reserv' ? tt('reserven', 'the reserve bench') : (tt('Bil', 'Car') + ' ' + nyPerson.bil))).replaceAll('{antal}', ickeExtraAntal(lista)).replaceAll('{kostnad}', formatBelopp(kostnad)),
+                tt('Ny {typ} anställd: {namn} ({age} år, {nationalitet}) till {bilText}! Totalt: {antal}/10. (-{kostnad})', 'New {typ} hired: {namn} ({age} years, {nationalitet}) for {bilText}! Total: {antal}/10. (-{kostnad})').replaceAll('{typ}', (typ === 'mekaniker' ? tt('mekaniker', 'mechanic') : tt('ingenjör', 'engineer'))).replaceAll('{namn}', nyPerson.namn).replaceAll('{age}', nyPerson.age).replaceAll('{nationalitet}', landNamn(nyPerson.nationalitet)).replaceAll('{bilText}', (nyPerson.bil === 'reserv' ? tt('reserven', 'the reserve bench') : (tt('Bil', 'Car') + ' ' + nyPerson.bil))).replaceAll('{antal}', ickeExtraAntal(lista)).replaceAll('{kostnad}', formatBelopp(kostnad)),
                 'nyPersonalAnstalld',
                 { typ: typ, namn: nyPerson.namn, age: nyPerson.age, nationalitet: nyPerson.nationalitet, bil: nyPerson.bil, antal: ickeExtraAntal(lista), kostnad: kostnad }
             );
@@ -13980,7 +13998,7 @@
             lista.push(nyPerson);
             loggaTransaktion(tt('Anställde extra {roll}: {namn}', 'Hired extra {roll}: {namn}').replaceAll('{roll}', (typ === 'mekaniker' ? tt('mekaniker', 'mechanic') : tt('ingenjör', 'engineer'))).replaceAll('{namn}', nyPerson.namn), -kostnad);
             laggTillNyhet(
-                tt('Ny extra {typ} anställd: {namn} ({age} år, {nationalitet}). Bidrar inte till raceprestanda men kostar lön, och är skyddad från utköpsklausuler. (-{kostnad})', 'New extra {typ} hired: {namn} ({age} years, {nationalitet}). Does not contribute to race performance but still costs a salary, and is protected from release clauses. (-{kostnad})').replaceAll('{typ}', (typ === 'mekaniker' ? tt('mekaniker', 'mechanic') : tt('ingenjör', 'engineer'))).replaceAll('{namn}', nyPerson.namn).replaceAll('{age}', nyPerson.age).replaceAll('{nationalitet}', nyPerson.nationalitet).replaceAll('{kostnad}', formatBelopp(kostnad)),
+                tt('Ny extra {typ} anställd: {namn} ({age} år, {nationalitet}). Bidrar inte till raceprestanda men kostar lön, och är skyddad från utköpsklausuler. (-{kostnad})', 'New extra {typ} hired: {namn} ({age} years, {nationalitet}). Does not contribute to race performance but still costs a salary, and is protected from release clauses. (-{kostnad})').replaceAll('{typ}', (typ === 'mekaniker' ? tt('mekaniker', 'mechanic') : tt('ingenjör', 'engineer'))).replaceAll('{namn}', nyPerson.namn).replaceAll('{age}', nyPerson.age).replaceAll('{nationalitet}', landNamn(nyPerson.nationalitet)).replaceAll('{kostnad}', formatBelopp(kostnad)),
                 'nyExtraPersonalAnstalld',
                 { typ: typ, namn: nyPerson.namn, age: nyPerson.age, nationalitet: nyPerson.nationalitet, kostnad: kostnad }
             );
@@ -14169,7 +14187,7 @@
             if (!Array.isArray(spelarData.juniorprogram)) spelarData.juniorprogram = [];
             spelarData.juniorprogram.push(junior);
             loggaTransaktion(tt('Scouting: nytt juniorprospekt', 'Scouting: new junior prospect'), -SCOUT_KOSTNAD);
-            loggaHandelse(tt('Scouterna hittade ett nytt juniorprospekt: {namn} ({age} år, {nationalitet}, Förmåga: {formaga}).', 'The scouts found a new junior prospect: {namn} ({age} years, {nationalitet}, Ability: {formaga}).').replaceAll('{namn}', junior.namn).replaceAll('{age}', junior.age).replaceAll('{nationalitet}', junior.nationalitet).replaceAll('{formaga}', junior.formaga));
+            loggaHandelse(tt('Scouterna hittade ett nytt juniorprospekt: {namn} ({age} år, {nationalitet}, Förmåga: {formaga}).', 'The scouts found a new junior prospect: {namn} ({age} years, {nationalitet}, Ability: {formaga}).').replaceAll('{namn}', junior.namn).replaceAll('{age}', junior.age).replaceAll('{nationalitet}', landNamn(junior.nationalitet)).replaceAll('{formaga}', junior.formaga));
             sparaOchUppdatera();
         }
 
@@ -14349,7 +14367,7 @@
                 rad.innerHTML = `
                     <td>${avatarHTML(j, 'forare', 22, null)}<span class="team-link" onclick="oppnaJuniorPersonPane('${j.id}')">${j.namn}</span></td>
                     <td>${j.age}</td>
-                    <td>${j.nationalitet}</td>
+                    <td>${landNamn(j.nationalitet)}</td>
                     <td>${j.style}</td>
                     <td>${j.formaga} / 100</td>
                     <td>${redo ? '<span style="color:var(--success);">' + tt('Redo att anställas', 'Ready to be hired') + '</span>' : tt('Väntar (', 'Waiting (') + (JUNIOR_DEBUTALDER - j.age) + tt(' år kvar)', ' years left)')}</td>
@@ -14981,8 +14999,8 @@
                 veckorKvar: val.langd, langdTotalt: val.langd
             };
             sponsorErbjudandenCache = null;
-            loggaHandelse(tt('Nytt sponsoravtal tecknat med {sponsorNamn}: {belopp}/vecka i {langd} veckor, plus bonusar för pallplatser, vinster och mästerskap.', 'New sponsorship deal signed with {sponsorNamn}: {belopp}/week for {langd} weeks, plus bonuses for podiums, wins and championships.').replaceAll('{sponsorNamn}', val.sponsorNamn).replaceAll('{belopp}', formatBelopp(val.grundbelopp)).replaceAll('{langd}', val.langd));
-            visaNotis('spelhandelse', tt('Sponsoravtal tecknat!', 'Sponsorship deal signed!'), tt('Du tecknade ett avtal med {sponsorNamn}: {belopp}/vecka i {langd} veckor.', 'You signed a deal with {sponsorNamn}: {belopp}/week for {langd} weeks.').replaceAll('{sponsorNamn}', val.sponsorNamn).replaceAll('{belopp}', formatBelopp(val.grundbelopp)).replaceAll('{langd}', val.langd));
+            loggaHandelse(tt('Nytt sponsoravtal tecknat med {sponsorNamn}: {belopp}/vecka i {langd} veckor, plus bonusar för pallplatser, vinster och mästerskap.', 'New sponsorship deal signed with {sponsorNamn}: {belopp}/week for {langd} weeks, plus bonuses for podiums, wins and championships.').replaceAll('{sponsorNamn}', sponsorNamnVisa(val.sponsorNamn)).replaceAll('{belopp}', formatBelopp(val.grundbelopp)).replaceAll('{langd}', val.langd));
+            visaNotis('spelhandelse', tt('Sponsoravtal tecknat!', 'Sponsorship deal signed!'), tt('Du tecknade ett avtal med {sponsorNamn}: {belopp}/vecka i {langd} veckor.', 'You signed a deal with {sponsorNamn}: {belopp}/week for {langd} weeks.').replaceAll('{sponsorNamn}', sponsorNamnVisa(val.sponsorNamn)).replaceAll('{belopp}', formatBelopp(val.grundbelopp)).replaceAll('{langd}', val.langd));
             sparaOchUppdatera();
         }
 
@@ -15072,15 +15090,15 @@
 
         function berakaEkonomiVarning() {
             if (spelarData.budget < 0) {
-                return { niva: 'fara', text: `Kassan är på minus (${formatBelopp(spelarData.budget)})! Löner och underhåll dras ändå varje vecka, och så länge budgeten är negativ kan du inte köpa/värva spelare eller personal, teckna nya kontrakt eller uppgradera/reparera bilen – sälj personal eller ta ett lån för att komma tillbaka över 0 kr.` };
+                return { niva: 'fara', text: tt(`Kassan är på minus (${formatBelopp(spelarData.budget)})! Löner och underhåll dras ändå varje vecka, och så länge budgeten är negativ kan du inte köpa/värva spelare eller personal, teckna nya kontrakt eller uppgradera/reparera bilen – sälj personal eller ta ett lån för att komma tillbaka över 0 kr.`, `The bank balance is negative (${formatBelopp(spelarData.budget)})! Wages and maintenance are still deducted every week, and as long as the budget is negative you cannot buy/sign drivers or staff, sign new contracts or upgrade/repair the car – sell staff or take a loan to get back above zero.`) };
             }
             let hist = spelarData.ekonomiHistorik || [];
             if (hist.length >= 3 && hist.slice(0, 3).every(e => e.netto < 0)) {
-                return { niva: 'varning', text: 'Underskott tre veckor i rad. Se över lönekostnaderna, teckna ett sponsoravtal eller ta ett kortfristigt lån innan kassan sinar.' };
+                return { niva: 'varning', text: tt('Underskott tre veckor i rad. Se över lönekostnaderna, teckna ett sponsoravtal eller ta ett kortfristigt lån innan kassan sinar.', 'Deficit three weeks in a row. Review your wage costs, sign a sponsorship deal or take a short-term loan before the money runs out.') };
             }
             let p = berakaEkonomiPrognos();
             if (p.netto < 0 && spelarData.budget + p.netto < 0) {
-                return { niva: 'varning', text: `Prognosen visar underskott (${formatBelopp(p.netto)}) som skulle göra kassan negativ vid nästa uppdatering.` };
+                return { niva: 'varning', text: tt(`Prognosen visar underskott (${formatBelopp(p.netto)}) som skulle göra kassan negativ vid nästa uppdatering.`, `The forecast shows a deficit (${formatBelopp(p.netto)}) that would make the balance negative at the next update.`) };
             }
             return null;
         }
@@ -15092,7 +15110,7 @@
         // ---------------------------------------------------------------
         function genereraBudgetLinjeSVG(historik) {
             let poster = (historik || []).slice(0, 20).slice().reverse();
-            if (poster.length < 2) return '<p style="color:var(--text-muted); font-size:12px;">Behöver minst två veckors historik för att rita ett diagram.</p>';
+            if (poster.length < 2) return '<p style="color:var(--text-muted); font-size:12px;">' + tt('Behöver minst två veckors historik för att rita ett diagram.', 'Needs at least two weeks of history to draw a chart.') + '</p>';
             let varden = poster.map(p => p.budgetEfter);
             let min = Math.min(...varden), max = Math.max(...varden);
             if (min === max) { min -= 1; max += 1; }
@@ -15121,7 +15139,7 @@
 
         function genereraIntaktKostnadSVG(historik) {
             let poster = (historik || []).slice(0, 10).slice().reverse();
-            if (!poster.length) return '<p style="color:var(--text-muted); font-size:12px;">Ingen historik ännu.</p>';
+            if (!poster.length) return '<p style="color:var(--text-muted); font-size:12px;">' + tt('Ingen historik ännu.', 'No history yet.') + '</p>';
             let w = 400, h = 150, padL = 8, padR = 8, padT = 10, padB = 22;
             let plotW = w - padL - padR, plotH = h - padT - padB;
             let grupW = plotW / poster.length;
@@ -15197,7 +15215,7 @@
 
             if (harSponsoravtal) spelarData.sponsoravtal.veckorKvar -= 1;
 
-            loggaTransaktion(harSponsoravtal ? tt('Sponsorintäkt ({sponsorNamn})', 'Sponsor income ({sponsorNamn})').replaceAll('{sponsorNamn}', spelarData.sponsoravtal.sponsorNamn) : tt('Sponsorintäkt', 'Sponsor income'), sponsor);
+            loggaTransaktion(harSponsoravtal ? tt('Sponsorintäkt ({sponsorNamn})', 'Sponsor income ({sponsorNamn})').replaceAll('{sponsorNamn}', sponsorNamnVisa(spelarData.sponsoravtal.sponsorNamn)) : tt('Sponsorintäkt', 'Sponsor income'), sponsor);
             loggaTransaktion(tt('Merchandiseförsäljning', 'Merchandise sales'), merch);
             loggaTransaktion(tt('Fabriksunderhåll', 'Factory maintenance'), -underhall);
             if (lonSpec.forarLon > 0) loggaTransaktion(tt('Förarlöner (kontrakt)', 'Driver wages (contract)'), -lonSpec.forarLon);
@@ -15230,7 +15248,7 @@
             loggaHandelse(tt('Ekonomiuppdatering (Säsong {sasongVal}, Vecka {vecka}): Sponsor +{sponsor}, Merchandise +{merch}, Biljetter +{biljett}{prispengarPart}{forsaljningPart}, Löner -{loner}, Underhåll -{underhall}{signOnPart}{ovrigtPart}{minusRantaPart}. Netto: {netto}.', 'Finance update (Season {sasongVal}, Week {vecka}): Sponsor +{sponsor}, Merchandise +{merch}, Tickets +{biljett}{prispengarPart}{forsaljningPart}, Wages -{loner}, Maintenance -{underhall}{signOnPart}{ovrigtPart}{minusRantaPart}. Net: {netto}.').replaceAll('{sasongVal}', sasongVal).replaceAll('{vecka}', vecka).replaceAll('{sponsor}', formatBelopp(sponsor)).replaceAll('{merch}', formatBelopp(merch)).replaceAll('{biljett}', formatBelopp(biljett)).replaceAll('{prispengarPart}', (prispengar > 0 ? (', ' + tt('Prispengar', 'Prize money') + ' +' + formatBelopp(prispengar)) : '')).replaceAll('{forsaljningPart}', (forsaljning > 0 ? (', ' + tt('Försäljningsintäkt', 'Sales income') + ' +' + formatBelopp(forsaljning)) : '')).replaceAll('{loner}', formatBelopp(totalLoner)).replaceAll('{underhall}', formatBelopp(underhall)).replaceAll('{signOnPart}', (signOnBonus > 0 ? (', ' + tt('Sign-on bonus', 'Sign-on bonus') + ' -' + formatBelopp(signOnBonus)) : '')).replaceAll('{ovrigtPart}', (ovrigt > 0 ? (', ' + tt('Övrigt', 'Other') + ' -' + formatBelopp(ovrigt)) : '')).replaceAll('{minusRantaPart}', (minusRanta > 0 ? (', ' + tt('Ränta på minussaldo', 'Interest on negative balance') + ' -' + formatBelopp(minusRanta)) : '')).replaceAll('{netto}', ((netto >= 0 ? '+' : '') + formatBelopp(netto))));
 
             if (harSponsoravtal && spelarData.sponsoravtal.veckorKvar <= 0) {
-                loggaHandelse(tt('Sponsoravtalet med {sponsorNamn} har gått ut.', 'The sponsorship deal with {sponsorNamn} has expired.').replaceAll('{sponsorNamn}', spelarData.sponsoravtal.sponsorNamn));
+                loggaHandelse(tt('Sponsoravtalet med {sponsorNamn} har gått ut.', 'The sponsorship deal with {sponsorNamn} has expired.').replaceAll('{sponsorNamn}', sponsorNamnVisa(spelarData.sponsoravtal.sponsorNamn)));
                 spelarData.sponsoravtal = null;
             }
 
@@ -15917,8 +15935,8 @@
                     if (r.placering === 1 && avtal.vinstBonus) { bonus += avtal.vinstBonus; rader.push(tt('vinst', 'win')); }
                     if (bonus > 0) {
                         medEkonomiTyp(onlineResultatFor(spelarData.raceNr) ? 'server' : 'sponsorbonus', () => { spelarData.budget += bonus; }); // online: bokförs av servern
-                        loggaTransaktion(tt('Sponsorbonus ({sponsorNamn})', 'Sponsor bonus ({sponsorNamn})').replaceAll('{sponsorNamn}', avtal.sponsorNamn), bonus);
-                        loggaHandelse(tt('{sponsorNamn} betalade ut {belopp} i sponsorbonus för Bil {bil} ({join}).', '{sponsorNamn} paid out {belopp} in sponsor bonus for Car {bil} ({join}).').replaceAll('{sponsorNamn}', avtal.sponsorNamn).replaceAll('{belopp}', formatBelopp(bonus)).replaceAll('{bil}', r.bil).replaceAll('{join}', rader.join(', ')));
+                        loggaTransaktion(tt('Sponsorbonus ({sponsorNamn})', 'Sponsor bonus ({sponsorNamn})').replaceAll('{sponsorNamn}', sponsorNamnVisa(avtal.sponsorNamn)), bonus);
+                        loggaHandelse(tt('{sponsorNamn} betalade ut {belopp} i sponsorbonus för Bil {bil} ({join}).', '{sponsorNamn} paid out {belopp} in sponsor bonus for Car {bil} ({join}).').replaceAll('{sponsorNamn}', sponsorNamnVisa(avtal.sponsorNamn)).replaceAll('{belopp}', formatBelopp(bonus)).replaceAll('{bil}', r.bil).replaceAll('{join}', rader.join(', ')));
                     }
                 });
             }
@@ -16217,8 +16235,8 @@
                     if (spelarData.sponsoravtal && spelarData.sponsoravtal.mastarskapsBonus) {
                         let mb = spelarData.sponsoravtal.mastarskapsBonus;
                         medEkonomiTyp(onlineForvantat() ? 'server' : 'sponsorbonus', () => { spelarData.budget += mb; }); // online: bokförs av servern
-                        loggaTransaktion(tt('Sponsorbonus – mästerskap ({sponsorNamn})', 'Sponsor bonus – championship ({sponsorNamn})').replaceAll('{sponsorNamn}', spelarData.sponsoravtal.sponsorNamn), mb);
-                        laggTillNyhet(tt('{sponsorNamn} betalade ut {belopp} i mästerskapsbonus!', '{sponsorNamn} paid out {belopp} in championship bonus!').replaceAll('{sponsorNamn}', spelarData.sponsoravtal.sponsorNamn).replaceAll('{belopp}', formatBelopp(mb)));
+                        loggaTransaktion(tt('Sponsorbonus – mästerskap ({sponsorNamn})', 'Sponsor bonus – championship ({sponsorNamn})').replaceAll('{sponsorNamn}', sponsorNamnVisa(spelarData.sponsoravtal.sponsorNamn)), mb);
+                        laggTillNyhet(tt('{sponsorNamn} betalade ut {belopp} i mästerskapsbonus!', '{sponsorNamn} paid out {belopp} in championship bonus!').replaceAll('{sponsorNamn}', sponsorNamnVisa(spelarData.sponsoravtal.sponsorNamn)).replaceAll('{belopp}', formatBelopp(mb)));
                     }
                 }
             });
@@ -16738,7 +16756,7 @@
             let card = document.getElementById('budmodal-card');
             card.innerHTML = `
                 <h3>${tt('Lägg bud', 'Place bid')} – ${a.namn}</h3>
-                <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">${rollLabel} · ${a.formaga}/100 · ${a.age} ${tt('år', 'years')} · ${a.nationalitet}</p>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:-6px;">${rollLabel} · ${a.formaga}/100 · ${a.age} ${tt('år', 'years')} · ${landNamn(a.nationalitet)}</p>
                 <div class="marknad-stats-grid" style="margin-bottom:10px;">
                     <div><span class="marknad-stat-label">${tt('Nuvarande bud', 'Current bid')}</span><span class="marknad-stat-value">${formatBelopp(a.hogstaBud)}</span></div>
                     <div><span class="marknad-stat-label">${tt('Tid kvar', 'Time left')}</span><span class="marknad-stat-value js-tidkvar" data-deadline="${a.deadline}" style="font-size:15px;">${tidKvarText(a.deadline)}</span></div>
@@ -19109,7 +19127,7 @@
                         ${avatarHTML(l, 'forare', 32, null)}
                         <div>
                             <div style="font-weight:700; font-size:14px;">${l.namn}</div>
-                            <div style="font-size:12px; color:var(--text-secondary);">${l.nationalitet} · ${tt('Pensionerad efter säsong', 'Retired after season')} ${l.pensionsSasong} (${tt('40 år', 'age 40')}) · ${tt('Sista lag:', 'Last team:')} ${l.sistaLagNamn}</div>
+                            <div style="font-size:12px; color:var(--text-secondary);">${landNamn(l.nationalitet)} · ${tt('Pensionerad efter säsong', 'Retired after season')} ${l.pensionsSasong} (${tt('40 år', 'age 40')}) · ${tt('Sista lag:', 'Last team:')} ${l.sistaLagNamn}</div>
                         </div>
                     </div>
                     <div style="font-size:12.5px; color:var(--text-secondary);">${l.karriar.lopp} ${tt('lopp', 'races')} · ${l.karriar.vinster} ${tt('vinster', 'wins')} · ${l.karriar.pallplatser} ${tt('pallplatser', 'podiums')} · ${l.karriar.poang} p ${tt('totalt', 'total')} · ${l.karriar.poles || 0} ${tt('poles', 'poles')} · ${l.karriar.snabbastaVarv || 0} ${tt('snabbaste varv', 'fastest laps')} · ${l.karriar.dnf || 0} DNF · ${l.karriar.mastarskap} ${tt('mästerskap', 'championships')}</div>
@@ -27041,7 +27059,13 @@
         (function fyllRegLandval() {
             let sel = document.getElementById('auth-reg-land');
             if (!sel) return;
-            sel.innerHTML = nationalitetPool.map(land => `<option value="${land}">${land}</option>`).join('');
+            let fyllLandAlternativ = () => {
+                let valt = sel.value;
+                sel.innerHTML = nationalitetPool.map(land => `<option value="${land}">${landNamn(land)}</option>`).join('');
+                if (valt) sel.value = valt;
+            };
+            fyllLandAlternativ();
+            document.addEventListener('apex-sprak-andrat', fyllLandAlternativ);
             // Valutan föreslås utifrån valt land (kan ändras i Valuta-väljaren
             // direkt under, och senare under Mitt konto → Inställningar).
             const LAND_VALUTA = { 'Sverige': 'SEK', 'Danmark': 'SEK', 'Norge': 'SEK', 'Storbritannien': 'GBP',
