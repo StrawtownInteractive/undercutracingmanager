@@ -4896,7 +4896,14 @@
                     <p><span data-i18n-html="kontoStartdatumLabel"><strong>Startdatum:</strong></span> <span id="admin-anvandare-detalj-startdatum">-</span></p>
                     <p><span data-i18n-html="kontoSenasteAktivitetLabel"><strong>Senaste aktivitet:</strong></span> <span id="admin-anvandare-detalj-aktivitet">-</span></p>
                     <p><span data-i18n-html="kontoStatusLabel"><strong>Status:</strong></span> <span id="admin-anvandare-detalj-status">-</span></p>
+                    <div id="admin-anvandare-detalj-namnbyte"></div>
+                    <div id="admin-anvandare-detalj-lag"></div>
                     <button class="btn-danger btn-small" id="admin-anvandare-detalj-avstang-btn" style="width:auto;" onclick="adminTogglaAvstangning()" data-i18n="kontoStangAvBtn">Stäng av</button>
+                </div>
+                <div class="card" id="admin-lag-kort">
+                    <h3 id="admin-lag-rubrik">Alla lag</h3>
+                    <input type="text" id="admin-lag-filter" autocomplete="off" oninput="renderAdminLagLista()" style="margin-bottom:8px;">
+                    <div id="admin-lag-lista" style="display:flex; flex-direction:column; gap:4px;">-</div>
                 </div>
             </div>
             </div>
@@ -7715,8 +7722,32 @@
                 if (error) throw error;
             } catch (e) { console.error('Kunde inte publicera laget till den gemensamma pyramiden:', e); }
         }
+        // Spelledningen kan byta namn på laget (admin_byt_lagnamn). Då räknas
+        // teams.namn_admin_nr upp; klienten tar över namnet, skickar med numret
+        // i ögonblicksbilden (adminNamnNr) och får ett meddelande i Inkorgen.
+        async function kollaAdminLagnamn() {
+            if (!window.supabaseClient || !pyramidLagId) return;
+            try {
+                const { data, error } = await window.supabaseClient.from('teams').select('name, namn_admin_nr').eq('id', pyramidLagId).maybeSingle();
+                if (error || !data) return;
+                let lag = hamtaSpelarLag();
+                let nr = Number(data.namn_admin_nr) || 0;
+                if (!lag || !data.name || nr <= (Number(lag.adminNamnNr) || 0)) return;
+                let gammalt = lag.namn;
+                lag.namn = data.name;
+                lag.adminNamnNr = nr;
+                if (gammalt !== data.name) {
+                    laggTillSystemMeddelande(
+                        tt('Ditt lag har fått ett nytt namn', 'Your team has been renamed'),
+                        tt('Spelledningen har bytt namn på ditt lag från "{gammalt}" till "{nytt}". Du kan välja ett annat lämpligt namn med knappen "Byt lagnamn" på din Lagsida.', 'The game staff has renamed your team from "{gammalt}" to "{nytt}". You can choose another suitable name with the "Rename team" button on your Team page.').replaceAll('{gammalt}', gammalt).replaceAll('{nytt}', data.name)
+                    );
+                }
+                sparaOchUppdatera();
+            } catch (e) { /* kolumnen finns inte ännu eller nätverksfel – försök igen senare */ }
+        }
         async function laddaOnlineDivision() {
             if (!window.supabaseClient || !pyramidLagId) return;
+            kollaAdminLagnamn();
             try {
                 const { data: egen, error: fel } = await window.supabaseClient.from('teams').select('division_id').eq('id', pyramidLagId).maybeSingle();
                 if (fel) throw fel;
@@ -8684,6 +8715,30 @@
         // Hämtar tillbaka logotypen från servern OM den saknas lokalt. Anropas
         // (fire-and-forget, inte inväntad) från startaApexSpel() vid varje
         // inloggning.
+        // Om spelledningen har bytt användarnamnet (admin_byt_anvandarnamn):
+        // visa det nya namnet direkt och meddela spelaren en gång i Inkorgen.
+        async function kollaEgetAnvandarnamn(user) {
+            if (!window.supabaseClient || !user || !user.id) return;
+            try {
+                const { data, error } = await window.supabaseClient.from('profiles').select('username, tidigare_username').eq('id', user.id).single();
+                if (error || !data || !data.username) return;
+                let visning = document.getElementById('auth-username-display');
+                if (visning && visning.textContent !== data.username) {
+                    visning.textContent = data.username;
+                    let avatar = document.getElementById('auth-user-avatar');
+                    if (avatar) avatar.textContent = data.username.charAt(0).toUpperCase();
+                }
+                if (data.tidigare_username && spelarData.meddelatAnvandarnamn !== data.username) {
+                    spelarData.meddelatAnvandarnamn = data.username;
+                    laggTillSystemMeddelande(
+                        tt('Ditt användarnamn har ändrats', 'Your username has been changed'),
+                        tt('Spelledningen har bytt ditt användarnamn från "{gammalt}" till "{nytt}". Logga in med "{nytt}" i fortsättningen. Ditt lag och all speldata finns kvar.', 'The game staff has changed your username from "{gammalt}" to "{nytt}". Log in with "{nytt}" from now on. Your team and all game data are unchanged.').replaceAll('{gammalt}', data.tidigare_username).replaceAll('{nytt}', data.username)
+                    );
+                    sparaOchUppdatera();
+                }
+            } catch (e) { /* kolumnen finns inte ännu eller nätverksfel */ }
+        }
+
         async function synkaLagoFranServer(user) {
             if (!window.supabaseClient || !user || !user.id) return;
             try {
@@ -8804,8 +8859,104 @@
                 if (error || !data) { listaEl.innerHTML = tt('Kunde inte hämta användarlistan (är du admin?).', 'Could not load the user list (are you an admin?).'); return; }
                 adminAnvandarlistaCache = data;
                 if (data.length === 0) { listaEl.innerHTML = tt('Inga användare hittades.', 'No users found.'); return; }
-                listaEl.innerHTML = data.map(u => `<span class="team-link" onclick="visaAdminAnvandare('${u.id}')">${escNamn(u.username)}${u.disabled ? ' <span class="tag-badge">' + tt('Avstängd', 'Disabled') + '</span>' : ''}</span>`).join('');
+                listaEl.innerHTML = adminAnvandarRaderHTML();
             } catch (e) { listaEl.innerHTML = tt('Kunde inte hämta användarlistan.', 'Could not load the user list.'); }
+            laddaAdminLagLista();
+        }
+
+        // En rad per användare: användarnamn – lagnamn (division).
+        function adminAnvandarRaderHTML() {
+            return adminAnvandarlistaCache.map(u => `<span class="team-link" onclick="visaAdminAnvandare('${u.id}')">${inkorgEscapeHtml(u.username)}`
+                + (u.team_name ? ` <span style="color:var(--text-muted);">– ${inkorgEscapeHtml(u.team_name)}${u.division ? ' (' + inkorgEscapeHtml(u.division) + ')' : ''}</span>` : ` <span style="color:var(--text-muted);">– ${tt('inget lag', 'no team')}</span>`)
+                + `${u.disabled ? ' <span class="tag-badge">' + tt('Avstängd', 'Disabled') + '</span>' : ''}</span>`).join('');
+        }
+
+        // Alla lag i pyramiden (admin_list_teams) med knapp för att byta namn.
+        let adminLagCache = [];
+        async function laddaAdminLagLista() {
+            let listaEl = document.getElementById('admin-lag-lista');
+            if (!listaEl || !window.supabaseClient) return;
+            let rubrik = document.getElementById('admin-lag-rubrik');
+            if (rubrik) rubrik.textContent = tt('Alla lag', 'All teams');
+            let filter = document.getElementById('admin-lag-filter');
+            if (filter) filter.placeholder = tt('Sök lag, användare eller division…', 'Search team, user or division…');
+            listaEl.innerHTML = tt('Laddar…', 'Loading…');
+            try {
+                const { data, error } = await window.supabaseClient.rpc('admin_list_teams');
+                if (error || !data) { listaEl.innerHTML = tt('Kunde inte hämta lagen.', 'Could not load the teams.'); return; }
+                adminLagCache = data;
+                renderAdminLagLista();
+            } catch (e) { listaEl.innerHTML = tt('Kunde inte hämta lagen.', 'Could not load the teams.'); }
+        }
+        function renderAdminLagLista() {
+            let listaEl = document.getElementById('admin-lag-lista');
+            if (!listaEl) return;
+            let sok = ((document.getElementById('admin-lag-filter') || {}).value || '').trim().toLowerCase();
+            let rader = adminLagCache.filter(t => !sok || [t.team_name, t.username, t.division].some(v => String(v || '').toLowerCase().includes(sok)));
+            if (!rader.length) { listaEl.innerHTML = tt('Inga lag hittades.', 'No teams found.'); return; }
+            listaEl.innerHTML = rader.map(t => `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; border-bottom:1px solid var(--border, #333); padding:4px 0;">`
+                + `<span><strong>${inkorgEscapeHtml(t.team_name)}</strong> <span style="color:var(--text-muted); font-size:12px;">${inkorgEscapeHtml(t.division || '')} · ${t.is_ai ? tt('AI', 'AI') : inkorgEscapeHtml(t.username || tt('Manager', 'Manager'))}</span></span>`
+                + `<button class="btn-secondary btn-small" style="width:auto;" onclick="adminBytLagnamn('${t.team_id}')">${tt('Byt namn', 'Rename')}</button></div>`).join('');
+        }
+
+        // Spelledningen byter ett olämpligt användarnamn (admin_byt_anvandarnamn,
+        // admin-koll på servern). Spelaren kan fortfarande logga in med det gamla
+        // namnet, får det nya med mail (Edge Function meddela-namnbyte) och ett
+        // meddelande i Inkorgen vid nästa inloggning.
+        async function adminBytAnvandarnamn(userId) {
+            let u = adminAnvandarlistaCache.find(x => x.id === userId);
+            if (!u || !window.supabaseClient) return;
+            let nytt = prompt(tt('Nytt användarnamn för "{namn}" (3–24 tecken: bokstäver, siffror, punkt eller understreck):', 'New username for "{namn}" (3–24 characters: letters, numbers, periods or underscores):').replaceAll('{namn}', u.username), u.username);
+            if (nytt === null) return;
+            nytt = nytt.trim().toLowerCase();
+            if (!nytt || nytt === u.username) return;
+            if (!/^[a-z0-9_.åäö]{3,24}$/.test(nytt)) { alert(tt('Användarnamnet måste vara 3–24 tecken: bokstäver, siffror, punkt eller understreck.', 'The username must be 3–24 characters: letters, numbers, periods or underscores.')); return; }
+            if (!confirm(tt('Byt användarnamn från "{gammalt}" till "{nytt}"? Spelaren loggar in med det nya namnet i fortsättningen och får ett mail om bytet.', 'Change the username from "{gammalt}" to "{nytt}"? The player will log in with the new name from now on and gets an email about the change.').replaceAll('{gammalt}', u.username).replaceAll('{nytt}', nytt))) return;
+            try {
+                const { data, error } = await window.supabaseClient.rpc('admin_byt_anvandarnamn', { p_user_id: userId, p_namn: nytt });
+                if (error) { alert(tt('Kunde inte byta användarnamn: ', 'Could not change the username: ') + error.message); return; }
+                u.tidigare_username = u.username;
+                u.username = data || nytt;
+                adminLagCache.forEach(t => { if (t.username === u.tidigare_username) t.username = u.username; });
+                let listaEl = document.getElementById('admin-anvandarlista');
+                if (listaEl) listaEl.innerHTML = adminAnvandarRaderHTML();
+                renderAdminLagLista();
+                visaAdminAnvandare(userId);
+                let mailOk = false;
+                try {
+                    const { error: mErr } = await window.supabaseClient.functions.invoke('meddela-namnbyte', { body: { user_id: userId } });
+                    mailOk = !mErr;
+                } catch (e) { /* mailet är inte viktigare än själva bytet */ }
+                alert(mailOk
+                    ? tt('Användarnamnet är bytt till "{namn}" och spelaren har fått ett mail.', 'The username is now "{namn}" and the player has been emailed.').replaceAll('{namn}', u.username)
+                    : tt('Användarnamnet är bytt till "{namn}", men mailet kunde inte skickas. Spelaren kan fortfarande logga in med det gamla namnet och får ett meddelande i Inkorgen.', 'The username is now "{namn}", but the email could not be sent. The player can still log in with the old name and gets a message in the Inbox.').replaceAll('{namn}', u.username));
+            } catch (e) { alert(tt('Kunde inte byta användarnamn.', 'Could not change the username.')); }
+        }
+
+        // Spelledningen byter namn på ett lag (admin_byt_lagnamn, admin-koll på servern).
+        async function adminBytLagnamn(teamId) {
+            if (!window.supabaseClient || !teamId) return;
+            let lag = adminLagCache.find(t => t.team_id === teamId);
+            let anv = adminAnvandarlistaCache.find(u => u.team_id === teamId);
+            let nuvarande = (lag && lag.team_name) || (anv && anv.team_name) || '';
+            let nytt = prompt(tt('Nytt lagnamn för "{namn}":', 'New team name for "{namn}":').replaceAll('{namn}', nuvarande), nuvarande);
+            if (nytt === null) return;
+            nytt = nytt.trim();
+            if (!nytt || nytt === nuvarande) return;
+            if (nytt.length > 60) { alert(tt('Lagnamnet får vara högst 60 tecken.', 'The team name can be at most 60 characters.')); return; }
+            try {
+                const { data, error } = await window.supabaseClient.rpc('admin_byt_lagnamn', { p_team_id: teamId, p_namn: nytt });
+                if (error) { alert(tt('Kunde inte byta lagnamn: ', 'Could not rename the team: ') + error.message); return; }
+                let namn = data || nytt;
+                if (lag) lag.team_name = namn;
+                adminAnvandarlistaCache.forEach(u => { if (u.team_id === teamId) u.team_name = namn; });
+                ALL_GROUP_IDS.forEach(gid => (spelarData.tabeller[gid] || []).forEach(l => { if (l.lagId === teamId && !l.arSpelare) l.namn = namn; }));
+                renderAdminLagLista();
+                let listaEl = document.getElementById('admin-anvandarlista');
+                if (listaEl) listaEl.innerHTML = adminAnvandarRaderHTML();
+                if (adminVisadAnvandareId) visaAdminAnvandare(adminVisadAnvandareId);
+                alert(tt('Lagnamnet är bytt till "{namn}". Managern får ett meddelande i Inkorgen nästa gång spelet synkar.', 'The team is now called "{namn}". The manager gets a message in the Inbox at the next sync.').replaceAll('{namn}', namn));
+            } catch (e) { alert(tt('Kunde inte byta lagnamn.', 'Could not rename the team.')); }
         }
 
         let adminVisadAnvandareId = null;
@@ -8823,6 +8974,14 @@
             document.getElementById('admin-anvandare-detalj-status').innerText = u.disabled ? tt('Avstängd', 'Disabled') : tt('Aktivt', 'Active');
             let avstangBtn = document.getElementById('admin-anvandare-detalj-avstang-btn');
             if (avstangBtn) avstangBtn.textContent = u.disabled ? tt('Aktivera konto', 'Enable account') : tt('Stäng av konto', 'Disable account');
+            let namnEl = document.getElementById('admin-anvandare-detalj-namnbyte');
+            if (namnEl) namnEl.innerHTML = `<p><strong>${tt('Användarnamn:', 'Username:')}</strong> ${inkorgEscapeHtml(u.username)}`
+                + (u.tidigare_username ? ` <span style="color:var(--text-muted);">(${tt('tidigare', 'previously')}: ${inkorgEscapeHtml(u.tidigare_username)})</span>` : '')
+                + ` <button class="btn-secondary btn-small" style="width:auto; margin-left:6px;" onclick="adminBytAnvandarnamn('${u.id}')">${tt('Byt användarnamn', 'Change username')}</button></p>`;
+            let lagEl = document.getElementById('admin-anvandare-detalj-lag');
+            if (lagEl) lagEl.innerHTML = `<p><strong>${tt('Lag:', 'Team:')}</strong> `
+                + (u.team_id ? `${inkorgEscapeHtml(u.team_name || '-')}${u.division ? ' (' + inkorgEscapeHtml(u.division) + ')' : ''} <button class="btn-secondary btn-small" style="width:auto; margin-left:6px;" onclick="adminBytLagnamn('${u.team_id}')">${tt('Byt lagnamn', 'Rename team')}</button>` : tt('Inget lag', 'No team'))
+                + '</p>';
         }
 
         // Stänger av/aktiverar det konto som just nu visas i Adminpanelens
@@ -8842,7 +9001,7 @@
                 u.disabled = nyttVarde;
                 visaAdminAnvandare(u.id);
                 let listaEl = document.getElementById('admin-anvandarlista');
-                if (listaEl) listaEl.innerHTML = adminAnvandarlistaCache.map(u2 => `<span class="team-link" onclick="visaAdminAnvandare('${u2.id}')">${escNamn(u2.username)}${u2.disabled ? ' <span class="tag-badge">' + tt('Avstängd', 'Disabled') + '</span>' : ''}</span>`).join('');
+                if (listaEl) listaEl.innerHTML = adminAnvandarRaderHTML();
             } catch (e) { alert(tt('Kunde inte ändra kontots status.', 'Could not change the account status.')); }
         }
 
@@ -19303,6 +19462,7 @@
             // forget – misslyckas det (inget nätverk/Supabase ej konfigurerat)
             // fortsätter spelet som vanligt utan logotyp.
             synkaLagoFranServer(user);
+            kollaEgetAnvandarnamn(user);
             synkaProfilFranServer(user);
             if (apexSpelHarStartat) return;
             apexSpelHarStartat = true;
