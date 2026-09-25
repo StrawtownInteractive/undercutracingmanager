@@ -3,6 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <script>
+        // VISNINGSLÄGE PÅ TELEFON: spelaren väljer (första besöket, eller under
+        // Mitt konto → Inställningar) mellan den mobilanpassade vyn och den vanliga
+        // webbsidan. Valet sparas i localStorage ('urmVisningslage' = 'mobil'|'dator').
+        // 'dator' byter viewport till en fast datorbredd, så att inga mobil-media
+        // queries slår till och iPhone visar den vanliga sidan utzoomad.
+        (function () {
+            var arTelefon = false, lage = null;
+            try {
+                arTelefon = window.matchMedia('(pointer: coarse)').matches &&
+                    Math.min(screen.width, screen.height) <= 600;
+            } catch (e) {}
+            try { lage = localStorage.getItem('urmVisningslage'); } catch (e) {}
+            window.URM_AR_TELEFON = arTelefon;
+            window.URM_VISNINGSLAGE = arTelefon ? (lage === 'dator' || lage === 'mobil' ? lage : null) : 'dator';
+            if (arTelefon && lage === 'dator') {
+                document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=1280, viewport-fit=cover');
+                document.documentElement.classList.add('urm-datorvy');
+            }
+        })();
+    </script>
+    <meta name="google-adsense-account" content="ca-pub-6674737196022137">
     <title>Undercut Racing Manager</title>
     <link rel="icon" type="image/png" href="assets/favicon.png">
 
@@ -2121,6 +2143,8 @@
             padding: 10px;
         }
         .ad-slot.ad-ready { display: flex; } /* sätts av loadAds() när en annons faktiskt finns att visa */
+        .ad-slot.ad-live { border: none; background: none; padding: 0; text-transform: none; letter-spacing: 0; }
+        .ad-slot.ad-live ins.adsbygoogle { display: block; width: 100%; }
         .ad-top { min-height: 60px; }
         .ad-bottom { min-height: 60px; margin-bottom: 4px; }
 
@@ -4636,6 +4660,15 @@
                         <option value="USD">USD ($)</option>
                         <option value="EUR">EUR (€)</option>
                         <option value="GBP">GBP (£)</option>
+                    </select>
+                </div>
+
+                <div class="card" id="installningar-visningslage-kort" style="display:none;">
+                    <h3 data-i18n="visningslageRubrik">Visningsläge</h3>
+                    <p style="font-size:13px; color:var(--text-muted); margin-top:0;" data-i18n="visningslageIntro">Välj om sidan ska visas mobilanpassad eller som den vanliga webbsidan (datorvyn) på din telefon.</p>
+                    <select id="installningar-visningslage-valjare" onchange="sattVisningslage(this.value)">
+                        <option value="mobil" data-i18n="visningslageMobil">Mobilanpassad</option>
+                        <option value="dator" data-i18n="visningslageDator">Vanliga webbsidan (datorvy)</option>
                     </select>
                 </div>
 
@@ -19740,6 +19773,13 @@
                 kontoMailAuktion: 'Mail när jag vinner en budgivning',
                 kontoMailKontrakt: 'Mail när ett kontrakt snart löper ut',
                 kontoMailPaminnelse: 'Påminnelse en gång i veckan om jag inte loggat in på en månad',
+                visningslageRubrik: "Visningsläge",
+                visningslageIntro: "Välj om sidan ska visas mobilanpassad eller som den vanliga webbsidan (datorvyn) på din telefon.",
+                visningslageMobil: "Mobilanpassad",
+                visningslageDator: "Vanliga webbsidan (datorvy)",
+                visningslageValjRubrik: "Hur vill du visa sidan?",
+                visningslageValjText: "Du verkar använda en mobil. Välj vilken version av Undercut Racing Manager du vill använda – du kan ändra det när som helst under Mitt konto → Inställningar.",
+                visningslageTillMobil: "Mobilvy",
                 kontoValutaRubrik: 'Valuta',
                 kontoValutaIntro: 'Välj vilken valuta belopp ska visas i. Spelets ekonomi är alltid densamma internt – detta styr bara hur siffrorna visas, till en fast växelkurs: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoCookiesRubrik: 'Cookies',
@@ -20543,6 +20583,13 @@
                 kontoMailAuktion: 'Email when I win an auction',
                 kontoMailKontrakt: 'Email when a contract is about to expire',
                 kontoMailPaminnelse: 'Weekly reminder if I haven\'t logged in for a month',
+                visningslageRubrik: "Display mode",
+                visningslageIntro: "Choose whether the site is shown mobile-optimised or as the regular website (desktop view) on your phone.",
+                visningslageMobil: "Mobile-optimised",
+                visningslageDator: "Regular website (desktop view)",
+                visningslageValjRubrik: "How do you want to view the site?",
+                visningslageValjText: "Looks like you are on a phone. Choose which version of Undercut Racing Manager you want to use – you can change this anytime under My account → Settings.",
+                visningslageTillMobil: "Mobile view",
                 kontoValutaRubrik: 'Currency',
                 kontoValutaIntro: 'Choose which currency amounts should be displayed in. The game\'s economy is always the same internally – this only controls how the numbers are shown, at a fixed exchange rate: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoCookiesRubrik: 'Cookies',
@@ -21354,6 +21401,13 @@
                 kontoMailRace: "E-Mail nach jedem Rennen",
                 kontoMailAuktion: "E-Mail, wenn ich eine Auktion gewinne",
                 kontoMailKontrakt: "E-Mail, wenn ein Vertrag bald ausläuft",
+                visningslageRubrik: "Anzeigemodus",
+                visningslageIntro: "Wähle, ob die Seite auf deinem Handy mobil optimiert oder als normale Webseite (Desktop-Ansicht) angezeigt wird.",
+                visningslageMobil: "Mobil optimiert",
+                visningslageDator: "Normale Webseite (Desktop-Ansicht)",
+                visningslageValjRubrik: "Wie möchtest du die Seite anzeigen?",
+                visningslageValjText: "Du scheinst ein Handy zu benutzen. Wähle, welche Version von Undercut Racing Manager du nutzen möchtest – du kannst das jederzeit unter Mein Konto → Einstellungen ändern.",
+                visningslageTillMobil: "Mobilansicht",
                 kontoValutaRubrik: "Währung",
                 kontoValutaIntro: "Wähle, in welcher Währung Beträge angezeigt werden sollen. Die Spielwirtschaft ist intern immer dieselbe – dies steuert nur, wie die Zahlen angezeigt werden, zu einem festen Wechselkurs: 10 SEK = 1 USD = 1 EUR = 1 GBP.",
                 kontoCookiesRubrik: "Cookies",
@@ -22116,6 +22170,13 @@
                 kontoMailRace: "E-mail après chaque course",
                 kontoMailAuktion: "E-mail lorsque je remporte une enchère",
                 kontoMailKontrakt: "E-mail lorsqu'un contrat arrive bientôt à expiration",
+                visningslageRubrik: "Mode d'affichage",
+                visningslageIntro: "Choisis si le site s'affiche en version mobile ou en version normale (vue ordinateur) sur ton téléphone.",
+                visningslageMobil: "Version mobile",
+                visningslageDator: "Site normal (vue ordinateur)",
+                visningslageValjRubrik: "Comment veux-tu afficher le site ?",
+                visningslageValjText: "On dirait que tu utilises un téléphone. Choisis la version d'Undercut Racing Manager que tu veux utiliser – tu peux la changer à tout moment dans Mon compte → Paramètres.",
+                visningslageTillMobil: "Vue mobile",
                 kontoValutaRubrik: "Devise",
                 kontoValutaIntro: "Choisissez la devise dans laquelle les montants doivent être affichés. L'économie du jeu reste toujours identique en interne – cela contrôle uniquement l'affichage des chiffres, à un taux de change fixe : 10 SEK = 1 USD = 1 EUR = 1 GBP.",
                 kontoCookiesRubrik: "Cookies",
@@ -22878,6 +22939,13 @@
                 kontoMailRace: "Correo tras cada carrera",
                 kontoMailAuktion: "Correo cuando gano una subasta",
                 kontoMailKontrakt: "Correo cuando un contrato está por vencer",
+                visningslageRubrik: "Modo de visualización",
+                visningslageIntro: "Elige si el sitio se muestra adaptado al móvil o como la web normal (vista de escritorio) en tu teléfono.",
+                visningslageMobil: "Adaptado al móvil",
+                visningslageDator: "Web normal (vista de escritorio)",
+                visningslageValjRubrik: "¿Cómo quieres ver el sitio?",
+                visningslageValjText: "Parece que usas un móvil. Elige qué versión de Undercut Racing Manager quieres usar; puedes cambiarlo cuando quieras en Mi cuenta → Configuración.",
+                visningslageTillMobil: "Vista móvil",
                 kontoValutaRubrik: "Moneda",
                 kontoValutaIntro: "Elige en qué moneda deben mostrarse los importes. La economía del juego es siempre la misma internamente – esto solo controla cómo se muestran las cifras, a un tipo de cambio fijo: 10 SEK = 1 USD = 1 EUR = 1 GBP.",
                 kontoCookiesRubrik: "Cookies",
@@ -23629,6 +23697,13 @@
                 kontoMailRace: 'E-mail po każdym wyścigu',
                 kontoMailAuktion: 'E-mail, gdy wygram licytację',
                 kontoMailKontrakt: 'E-mail, gdy kontrakt wkrótce wygaśnie',
+                visningslageRubrik: "Tryb wyświetlania",
+                visningslageIntro: "Wybierz, czy strona ma się wyświetlać w wersji mobilnej, czy jako zwykła strona (widok komputerowy) na telefonie.",
+                visningslageMobil: "Wersja mobilna",
+                visningslageDator: "Zwykła strona (widok komputerowy)",
+                visningslageValjRubrik: "Jak chcesz wyświetlać stronę?",
+                visningslageValjText: "Wygląda na to, że używasz telefonu. Wybierz wersję Undercut Racing Manager – możesz to zmienić w każdej chwili w Moje konto → Ustawienia.",
+                visningslageTillMobil: "Widok mobilny",
                 kontoValutaRubrik: 'Waluta',
                 kontoValutaIntro: 'Wybierz walutę, w jakiej mają być wyświetlane kwoty. Ekonomia gry jest wewnętrznie zawsze taka sama – to ustawienie zmienia tylko sposób wyświetlania liczb, według stałego kursu: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoCookiesRubrik: 'Cookies',
@@ -24391,6 +24466,13 @@
                 kontoMailRace: 'Sähköposti jokaisen kilpailun jälkeen',
                 kontoMailAuktion: 'Sähköposti kun voitan huutokaupan',
                 kontoMailKontrakt: 'Sähköposti kun sopimus on pian päättymässä',
+                visningslageRubrik: "Näkymä",
+                visningslageIntro: "Valitse, näytetäänkö sivu puhelimellasi mobiiliversiona vai tavallisena verkkosivuna (tietokonenäkymä).",
+                visningslageMobil: "Mobiiliversio",
+                visningslageDator: "Tavallinen verkkosivu (tietokonenäkymä)",
+                visningslageValjRubrik: "Miten haluat näyttää sivun?",
+                visningslageValjText: "Näytät käyttävän puhelinta. Valitse, mitä Undercut Racing Managerin versiota haluat käyttää – voit vaihtaa sen milloin tahansa kohdassa Oma tili → Asetukset.",
+                visningslageTillMobil: "Mobiilinäkymä",
                 kontoValutaRubrik: 'Valuutta',
                 kontoValutaIntro: 'Valitse, missä valuutassa summat näytetään. Pelin talous on sisäisesti aina sama – tämä säätää vain sitä, miten luvut näytetään, kiinteällä vaihtokurssilla: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoCookiesRubrik: 'Evästeet',
@@ -25153,6 +25235,13 @@
                 kontoMailRace: 'E-mail minden verseny után',
                 kontoMailAuktion: 'E-mail, ha megnyerek egy licitet',
                 kontoMailKontrakt: 'E-mail, ha egy szerződés hamarosan lejár',
+                visningslageRubrik: "Megjelenítési mód",
+                visningslageIntro: "Válaszd ki, hogy az oldal mobilra optimalizálva vagy normál weboldalként (asztali nézet) jelenjen meg a telefonodon.",
+                visningslageMobil: "Mobilra optimalizált",
+                visningslageDator: "Normál weboldal (asztali nézet)",
+                visningslageValjRubrik: "Hogyan szeretnéd megjeleníteni az oldalt?",
+                visningslageValjText: "Úgy tűnik, telefont használsz. Válaszd ki, melyik Undercut Racing Manager-verziót szeretnéd használni – bármikor módosíthatod a Fiókom → Beállítások alatt.",
+                visningslageTillMobil: "Mobil nézet",
                 kontoValutaRubrik: 'Pénznem',
                 kontoValutaIntro: 'Válaszd ki, milyen pénznemben jelenjenek meg az összegek. A játék gazdasága belsőleg mindig ugyanaz marad – ez csak azt szabályozza, hogyan jelennek meg a számok, fix árfolyamon: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoCookiesRubrik: 'Cookie-k',
@@ -25915,6 +26004,13 @@
                 kontoMailRace: '各レース後にメール',
                 kontoMailAuktion: 'オークションで落札したときにメール',
                 kontoMailKontrakt: '契約がまもなく満了するときにメール',
+                visningslageRubrik: "表示モード",
+                visningslageIntro: "スマートフォンでサイトをモバイル版で表示するか、通常のウェブサイト（PC表示）で表示するかを選択します。",
+                visningslageMobil: "モバイル版",
+                visningslageDator: "通常のウェブサイト（PC表示）",
+                visningslageValjRubrik: "どの表示で使いますか？",
+                visningslageValjText: "スマートフォンをお使いのようです。使用する Undercut Racing Manager のバージョンを選んでください。マイアカウント → 設定 からいつでも変更できます。",
+                visningslageTillMobil: "モバイル表示",
                 kontoValutaRubrik: '通貨',
                 kontoValutaIntro: '金額を表示する通貨を選択してください。ゲーム内部の経済は常に同じです――これは表示方法だけを、固定レート（10 SEK = 1 USD = 1 EUR = 1 GBP）で変更します。',
                 kontoCookiesRubrik: 'Cookie',
@@ -27524,19 +27620,45 @@
         // redo (ad-ready) utan att ladda något externt. Ingen riktig
         // annonsleverantör kopplas in här ännu.
         // ---------------------------------------------------------------
+        var ADSENSE_KLIENT = 'ca-pub-6674737196022137';
+        // data-ad-slot-nummer per annonsplats (tomt = platsen visas inte).
+        var ADSENSE_PLATSER = { 'ad-top': '', 'ad-bottom': '' };
+        var ADSENSE_LADDAD = false;
         function loadAds() {
             // Nödvändig dubbelkoll: kör aldrig utan samtycke, även om
             // funktionen av misstag skulle anropas för tidigt någon annanstans.
             if (!samtycke || !samtycke.ads) return;
 
             // ============================================================
-            // HÄR LADDAS FRAMTIDA ANNONSKOD (t.ex. Google AdSense/GAM-tagg,
-            // eller annan annonsleverantörs script/init-anrop). Just nu
-            // markeras platshållarna bara som "redo" så du ser var de sitter.
+            // GOOGLE ADSENSE – laddas bara efter samtycke till annonser.
+            // Scriptet aktiverar även Auto-annonser (om de är påslagna i
+            // AdSense-kontot). Topp-/bottenplatsen visas först när ett
+            // data-ad-slot-nummer är ifyllt i ADSENSE_PLATSER nedan (skapa
+            // annonsenheter under Annonser → Efter annonsenhet i AdSense).
             // ============================================================
-            ['ad-top', 'ad-bottom'].forEach(function (id) {
+            if (ADSENSE_LADDAD) return;
+            ADSENSE_LADDAD = true;
+            var s = document.createElement('script');
+            s.async = true;
+            s.crossOrigin = 'anonymous';
+            s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_KLIENT;
+            document.head.appendChild(s);
+
+            Object.keys(ADSENSE_PLATSER).forEach(function (id) {
+                var slot = ADSENSE_PLATSER[id];
                 var el = document.getElementById(id);
-                if (el) el.classList.add('ad-ready');
+                if (!el || !slot) return; // ingen annonsenhet ännu → platsen förblir dold
+                el.textContent = '';
+                var ins = document.createElement('ins');
+                ins.className = 'adsbygoogle';
+                ins.setAttribute('data-ad-client', ADSENSE_KLIENT);
+                ins.setAttribute('data-ad-slot', slot);
+                ins.setAttribute('data-ad-format', 'auto');
+                ins.setAttribute('data-full-width-responsive', 'true');
+                el.appendChild(ins);
+                el.classList.add('ad-ready', 'ad-live');
+                el.removeAttribute('aria-hidden');
+                try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
             });
         }
 
@@ -27596,6 +27718,57 @@
             tillampaSamtycke();
         }
     })();
+    </script>
+    <script>
+        // VISNINGSLÄGE PÅ TELEFON (se head-skriptet vid viewport-meta).
+        function sattVisningslage(lage) {
+            try { localStorage.setItem('urmVisningslage', lage); } catch (e) {}
+            var byt = (lage === 'dator') !== (window.URM_VISNINGSLAGE === 'dator');
+            window.URM_VISNINGSLAGE = lage;
+            if (byt) location.reload();
+        }
+        (function () {
+            if (!window.URM_AR_TELEFON) return;
+            var tx = function (k, f) { try { var v = t(k); return (v && v !== k) ? v : f; } catch (e) { return f; } };
+            var kort = document.getElementById('installningar-visningslage-kort');
+            if (kort) kort.style.display = '';
+            var valjare = document.getElementById('installningar-visningslage-valjare');
+            if (valjare) valjare.value = window.URM_VISNINGSLAGE || 'mobil';
+
+            if (window.URM_VISNINGSLAGE === 'dator') {
+                // Stor (i CSS-px) knapp, eftersom datorvyn visas utzoomad på telefonen.
+                var knapp = document.createElement('button');
+                knapp.type = 'button';
+                knapp.textContent = '📱 ' + tx('visningslageTillMobil', 'Mobilvy');
+                knapp.style.cssText = 'position:fixed; left:24px; bottom:24px; z-index:2147483000; width:auto; margin:0; padding:16px 28px; font-size:30px; opacity:.92; border-radius:999px; background:var(--accent); color:#fff; border:none; box-shadow:0 6px 24px rgba(0,0,0,.35);';
+                knapp.onclick = function () { sattVisningslage('mobil'); };
+                document.body.appendChild(knapp);
+                return;
+            }
+            if (window.URM_VISNINGSLAGE) return;
+
+            // Första besöket på telefon: låt spelaren välja.
+            var bak = document.createElement('div');
+            bak.id = 'visningslage-valj';
+            bak.style.cssText = 'position:fixed; inset:0; z-index:2147483001; background:rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; padding:16px;';
+            bak.innerHTML =
+                '<div class="card" style="max-width:360px; width:100%; margin:0; text-align:center;">' +
+                  '<h3 style="margin-top:0;"></h3><p style="font-size:14px; color:var(--text-muted);"></p>' +
+                  '<button type="button" data-lage="mobil" style="width:100%; margin:8px 0 0;"></button>' +
+                  '<button type="button" data-lage="dator" class="btn-secondary" style="width:100%; margin:10px 0 0;"></button>' +
+                '</div>';
+            bak.querySelector('h3').textContent = tx('visningslageValjRubrik', 'Hur vill du visa sidan?');
+            bak.querySelector('p').textContent = tx('visningslageValjText', 'Du verkar använda en mobil. Välj vilken version du vill använda – du kan ändra det när som helst under Mitt konto → Inställningar.');
+            bak.querySelector('[data-lage="mobil"]').textContent = '📱 ' + tx('visningslageMobil', 'Mobilanpassad');
+            bak.querySelector('[data-lage="dator"]').textContent = '🖥️ ' + tx('visningslageDator', 'Vanliga webbsidan (datorvy)');
+            bak.addEventListener('click', function (e) {
+                var lage = e.target.getAttribute && e.target.getAttribute('data-lage');
+                if (!lage) return;
+                bak.remove();
+                sattVisningslage(lage);
+            });
+            document.body.appendChild(bak);
+        })();
     </script>
 </body>
 </html>
