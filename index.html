@@ -9840,6 +9840,111 @@
         }
 
         // =====================================================================
+        // WEBBLÄSARENS TILLBAKA/FRAMÅT-KNAPP
+        // Spelet är en enda sida, så flikbyten hamnade aldrig i webbläsarens
+        // historik och Tillbaka lämnade spelet. Efter varje klick/val jämförs
+        // vyn (flik, underflik, visat lag/person/race/serie ...) med den som
+        // ligger i historiken – har den ändrats läggs ett nytt historiksteg till.
+        // Tillbaka/Framåt (popstate) återställer sedan vyn med de vanliga
+        // render-funktionerna. Rör inga spelregler eller sparad data.
+        // =====================================================================
+        let historikAterstaller = false;
+        function aktuellVy() {
+            if (typeof spelarData === 'undefined' || !spelarData || !spelarData.tabeller) return null;
+            let aktivEl = document.querySelector('.tab-content.active');
+            if (!aktivEl) return null;
+            let f = aktivEl.id.replace('tab-', '');
+            let v = {
+                f: f,
+                sub: Object.assign({}, subflikar),
+                ls: [lsGroupId, lsLagNamn],
+                lp: lsPersonKontext ? Object.assign({}, lsPersonKontext) : null,
+                lb: lsBilKontext ? Object.assign({}, lsBilKontext) : null,
+                ar: arenaDetaljLagId,
+                vs: spelarData.visadSerieId || null,
+                fg: foregaendeFlik
+            };
+            if (f === 'race') v.rd = visadRaceNr ? [visadRaceNr, visadRaceVisaTyp || null, visadTaktikFas || null] : null;
+            if (f === 'serie' && subflikar.serie === 'racerapport') v.gr = visadGruppRapport ? Object.assign({}, visadGruppRapport) : null;
+            if (f === 'forum') v.ft = forumAktivTradId || null;
+            return v;
+        }
+        function vyNyckel(v) { return v ? JSON.stringify(v) : ''; }
+        function historikVy() { return (history.state && history.state.urmVy) || null; }
+
+        // Före klicket: se till att historikens nuvarande steg motsvarar det som
+        // faktiskt visas (spelet kan ha bytt vy på egen hand, t.ex. vid inloggning).
+        function historikForeHandling() {
+            if (historikAterstaller) return;
+            let v = aktuellVy();
+            if (!v) return;
+            if (vyNyckel(v) !== vyNyckel(historikVy())) {
+                try { history.replaceState({ urmVy: v }, ''); } catch (e) {}
+            }
+        }
+        // Efter klicket: ny vy → nytt historiksteg.
+        function historikEfterHandling() {
+            if (historikAterstaller) return;
+            let v = aktuellVy();
+            if (!v) return;
+            let forra = historikVy();
+            if (!forra) { try { history.replaceState({ urmVy: v }, ''); } catch (e) {} return; }
+            if (vyNyckel(v) !== vyNyckel(forra)) {
+                try { history.pushState({ urmVy: v }, ''); } catch (e) {}
+            }
+        }
+        ['click', 'change'].forEach(typ => {
+            document.addEventListener(typ, historikForeHandling, true);
+            document.addEventListener(typ, () => {
+                // Vissa vyer öppnas först efter en kort hämtning – kolla igen strax efter.
+                setTimeout(historikEfterHandling, 0);
+                setTimeout(historikEfterHandling, 400);
+            }, false);
+        });
+
+        function aterstallVy(v) {
+            historikAterstaller = true;
+            try {
+                let f = v.f;
+                if (f === 'forhandling' && !aktivForhandling) f = 'team';
+                Object.keys(v.sub || {}).forEach(k => { subflikar[k] = v.sub[k]; });
+                lsGroupId = v.ls ? v.ls[0] : lsGroupId;
+                lsLagNamn = v.ls ? v.ls[1] : lsLagNamn;
+                lsPersonKontext = v.lp || null;
+                lsBilKontext = v.lb || null;
+                arenaDetaljLagId = v.ar || null;
+                if (v.vs && GROUP_DEFS[v.vs]) spelarData.visadSerieId = v.vs;
+                if (f === 'lagsida' && !hamtaVisatLag()) { lsGroupId = spelarData.serieId; lsLagNamn = hamtaSpelarLag().namn; subflikar.lagsida = 'oversikt'; }
+                if (f === 'race') {
+                    if (v.rd && v.rd[0]) visaRaceSida(v.rd[0], v.rd[1] || undefined, v.rd[2] || undefined);
+                    else visaRaceListan();
+                } else if (f === 'forum') {
+                    bytFlik('forum');
+                    if (v.ft) forumOppnaTrad(v.ft); else visaForumLista();
+                } else {
+                    bytFlik(f);
+                    if (f === 'serie') {
+                        if (subflikar.serie === 'racerapport') visadGruppRapport = v.gr || null;
+                        bytSubflik('serie', subflikar.serie);
+                    }
+                    if (f === 'marknad') bytSubflik('marknad', subflikar.marknad);
+                    if (f === 'konto') bytSubflik('kontakt', subflikar.kontakt);
+                    if (f === 'arena') bytArenaVy(subflikar.arena || 'oversikt');
+                    if (typeof window.aterrenderaAktivFlik === 'function') window.aterrenderaAktivFlik();
+                }
+                foregaendeFlik = v.fg || foregaendeFlik;
+            } catch (e) {
+                console.warn('Kunde inte återställa vyn', e);
+            } finally {
+                historikAterstaller = false;
+            }
+        }
+        window.addEventListener('popstate', e => {
+            let v = e.state && e.state.urmVy;
+            if (v && typeof spelarData !== 'undefined' && spelarData && spelarData.tabeller) aterstallVy(v);
+        });
+
+        // =====================================================================
         // MOBILANPASSNING: bottom navigation + "Mer"-meny. Ren UI-logik ovanpå
         // den befintliga navigeringen (bytFlik/visaLagsida/visaRaceListan) -
         // inga nya datafält eller spelregler läggs till här.
@@ -27274,6 +27379,7 @@
                 if (arkivOverlay && arkivOverlay.style.display === 'flex' && visadArkivId) visaRaceArkiv(visadArkivId);
             } catch (e) { /* om något saknas i det aktuella spelläget, strunta i det */ }
         }
+        window.aterrenderaAktivFlik = aterrenderaAktivFlik; // används även av tillbaka-knappen (se aterstallVy)
 
         // -----------------------------------------------------------------
         // Återanvändbar UI-komponent: dropdown för språkval.
