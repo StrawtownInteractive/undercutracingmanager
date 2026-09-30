@@ -234,8 +234,8 @@
     }
     function kopiaPersonal(personal) { return JSON.parse(JSON.stringify(personal || {})); }
 
-    // val: [{ id, kat, attribut }]. Förarna förbättras direkt, personalen
-    // får en väntande förbättring som slår igenom vid veckouppdateringen.
+    // val: [{ id, kat, attribut }]. Alla (förare, mekaniker och ingenjörer)
+    // förbättras direkt efter träningsracet.
     function traningsvecka(personal, val, rng) {
         const ny = kopiaPersonal(personal);
         const resultat = [];
@@ -245,21 +245,18 @@
             if (!p || !p.stats || v.attribut === 'erfarenhet' || statNycklar(v.kat).indexOf(v.attribut) < 0) return;
             const prest = R.simuleraForarPrestation(p, rng);
             const forbattring = Math.max(1, Math.min(5, Math.round(1 + prest.procent * 4)));
-            if (v.kat === 'forare') {
-                p.stats[v.attribut] = Math.min(100, (p.stats[v.attribut] || 0) + forbattring);
-                p.formaga = V.beraknaFormaga(p.stats, statNycklar(v.kat));
-            } else {
-                p.vantandeTraning = { attribut: v.attribut, forbattring: forbattring, procent: prest.procent };
-            }
+            p.stats[v.attribut] = Math.min(100, (p.stats[v.attribut] || 0) + forbattring);
+            p.formaga = V.beraknaFormaga(p.stats, statNycklar(v.kat));
             resultat.push({ id: p.id, namn: p.namn, typ: v.kat, attribut: v.attribut, procent: Math.round(prest.procent * 100),
-                procentExakt: prest.procent, forbattring: forbattring, vantande: v.kat !== 'forare', nyttVarde: p.stats[v.attribut] });
+                procentExakt: prest.procent, forbattring: forbattring, vantande: false, nyttVarde: p.stats[v.attribut] });
         });
         resultat.sort((a, b) => b.procent - a.procent);
         resultat.forEach((r, i) => { r.placering = i + 1; });
         return { personal: ny, resultat };
     }
 
-    // Söndagens uppdatering: personalens väntande träning slår igenom.
+    // Söndagens uppdatering. (Personalens träning gäller numera direkt i
+    // traningsvecka(); ev. äldre väntande träning tillämpas här en sista gång.)
     function veckouppdateringPersonal(personal) {
         const ny = kopiaPersonal(personal);
         let antal = 0;
