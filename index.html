@@ -149,7 +149,8 @@
             var min = tzOffsetMin(tz, Date.now());
             var tecken = min < 0 ? '-' : '+';
             min = Math.abs(min);
-            return 'UTC' + tecken + String(Math.floor(min / 60)).padStart(2, '0') + ':' + String(min % 60).padStart(2, '0');
+            if (min === 0) return 'GMT';
+            return 'GMT' + tecken + Math.floor(min / 60) + (min % 60 ? ':' + String(min % 60).padStart(2, '0') : '');
         }
 
         // Fyller Inställningar-väljaren (en gång) och markerar aktuellt val.
@@ -163,7 +164,7 @@
                 lista.filter(giltigTidszon).forEach(function (tz) {
                     var opt = document.createElement('option');
                     opt.value = tz;
-                    opt.textContent = tz.split('/').pop().replace(/_/g, ' ') + ' (' + tidszonOffsetText(tz) + ')';
+                    opt.textContent = '(' + tidszonOffsetText(tz) + ') ' + tz.split('/').pop().replace(/_/g, ' ');
                     valjare.appendChild(opt);
                 });
             }
@@ -3518,6 +3519,19 @@
                 <button class="btn-blue" onclick="stangRivaler()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
+            <div id="ls-pane-raceschema" class="ls-pane">
+                <div class="card">
+                    <h3 id="ls-raceschema-titel" data-i18n="appRaceschemaSida">Raceschema</h3>
+                    <div class="tabell-scroll">
+                    <table>
+                        <thead id="ls-raceschema-head"></thead>
+                        <tbody id="ls-raceschema-body"></tbody>
+                    </table>
+                    </div>
+                </div>
+                <button class="btn-blue" onclick="stangLagRaceschema()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+            </div>
+
             <div id="ls-pane-karriarshistorik" class="ls-pane">
                 <div class="card">
                     <h3 data-i18n="appKarriarhistorik">Karriärhistorik</h3>
@@ -3977,7 +3991,7 @@
                 <div class="card">
                     <h3><span data-i18n="appRaceschemaLabel">Raceschema (Säsong</span> <span id="schema-sasong-titel">1</span>) – <span id="schema-grupp-titel">-</span></h3>
                     <p id="schema-annan-grupp-info" style="font-size: 12px; color: var(--warning); margin-top:0; display:none;"></p>
-                    <p style="font-size: 12px; color: #aaa; margin-top:0;" data-i18n="appRaceschemaBeskrivning">Träningsracet körs automatiskt måndagar kl 20.00, kvalet till varje race körs automatiskt onsdagar kl 20.00, racet körs automatiskt fredagar kl 20.00, och ekonomin uppdateras automatiskt söndagar kl 20.00. Klicka på ett race för att se startuppställningen eller resultatet. Alla tider avser svensk tid (CET/CEST).</p>
+                    <p style="font-size: 12px; color: #aaa; margin-top:0;" data-i18n="appRaceschemaBeskrivning">Träningsracet körs automatiskt måndagar kl 20.00, kvalet till varje race körs automatiskt onsdagar kl 20.00, racet körs automatiskt fredagar kl 20.00, och ekonomin uppdateras automatiskt söndagar kl 20.00. Klicka på ett race för att se startuppställningen eller resultatet. Alla tider avser svensk tid (GMT+1, sommartid GMT+2).</p>
                     <div class="tabell-scroll">
                     <table>
                         <thead><tr><th data-i18n="appRace">Race</th><th data-i18n="appDatum">Datum</th><th data-i18n="appBanaVardlag">Bana / Värdlag</th><th data-i18n="appStatus">Status</th></tr></thead>
@@ -4468,7 +4482,7 @@
                     <li data-i18n-html="manIntroFre"><strong>Fredag 20.00</strong> – race</li>
                     <li data-i18n-html="manIntroSon"><strong>Söndag 20.00</strong> – ekonomin uppdateras</li>
                 </ul>
-                <p data-i18n-html="manIntroTidszon"><strong>Tidszon:</strong> Alla tider i spelet – race, kval, träning, ekonomiuppdatering och scoutsamtal – avser <strong>svensk tid</strong> (CET/CEST). Under <strong>Mitt konto → Inställningar → Tidszon</strong> kan du välja din egen tidszon. Då visas klockan uppe till höger och alla datum och klockslag i spelet (t.ex. kommande race och inkorgen) i din tid. Nedräkningarna på transfermarknaden stämmer alltid, oavsett tidszon. Själva händelserna sker fortfarande kl 20.00 svensk tid.</p>
+                <p data-i18n-html="manIntroTidszon"><strong>Tidszon:</strong> Alla tider i spelet – race, kval, träning, ekonomiuppdatering och scoutsamtal – avser <strong>svensk tid</strong> (GMT+1, sommartid GMT+2). Under <strong>Mitt konto → Inställningar → Tidszon</strong> kan du välja din egen tidszon. Då visas klockan uppe till höger och alla datum och klockslag i spelet (t.ex. kommande race och inkorgen) i din tid. Nedräkningarna på transfermarknaden stämmer alltid, oavsett tidszon. Själva händelserna sker fortfarande kl 20.00 svensk tid.</p>
                 <p><strong data-i18n="manIntroNavTitel">Så hittar du rätt i navigationen:</strong></p>
                 <ul style="margin:4px 0 0; padding-left:18px;">
                     <li data-i18n-html="manIntroNavHem"><strong>Hem</strong> – din arbetsyta: mästerskapsplacering och budget överst, en lista med det som kräver din uppmärksamhet just nu, samt lagstatus, personal, nästa tävling, Nyheter och Händelseloggen.</li>
@@ -4515,7 +4529,7 @@
                 <p data-i18n-html="manSerierP2"><strong>Serier & Seriepyramiden:</strong> Spelet har fem nivåer: <strong>Undercut Masters League</strong> (1 grupp, 10 lag), <strong>Division 2</strong> (2 grupper à 10 lag), <strong>Division 3</strong> (4 grupper à 10 lag), <strong>Division 4</strong> (8 grupper à 10 lag) och <strong>Division 5</strong> (16 grupper à 10 lag) – totalt 310 lag. Du tävlar mot andra människor – varje lag leds av en riktig manager. Du kan klicka på vilket lag som helst i tabellen för att inspektera deras Lagsida, bil för bil.</p>
                 <p data-i18n-html="manSerierP3"><strong>Upp- och nedflyttning:</strong> När en säsong på 10 race är färdig flyttas i varje grupp (utom Undercut Masters League) 1:an upp till divisionen ovanför. Dessutom går divisionens bästa 2:or upp – lika många som det finns grupper i divisionen ovanför (1 från Division 2, 2 från Division 3, 4 från Division 4 och 8 från Division 5). Tvåorna rankas efter poäng, och vid lika poäng avgör den bästa bilens poäng. I varje grupp (utom i Division 5, som är lägsta nivån) flyttas de 3 sämsta lagen ner till divisionen under, i första hand till de två grupper som är kopplade till just den gruppen. Det gör att antalet lag i varje grupp alltid förblir 10. Aktuell ställning för tvåorna ser du under Serie → Serietabell → Bästa 2:or.</p>
                 <p data-i18n-html="manSerierP4"><strong>Banor & Race:</strong> Varje säsong består av 10 race där lag i samma grupp turas om att vara värdar på sina hemmabanor. Banlängd och antal kurvor påverkar hur mycket varje komponent betyder i just det racet.</p>
-                <p data-i18n-html="manSerierP5"><strong>Veckoschema:</strong> Varje vecka följer samma cykel: <strong>måndag kl 20.00</strong> körs träningsracet, <strong>onsdag kl 20.00</strong> körs kvalet, <strong>fredag kl 20.00</strong> körs själva racet, och <strong>söndag kl 20.00</strong> uppdateras ekonomin. Allt sker automatiskt av spelet när klockan slår – det finns ingen knapp för att köra något av detta själv. Alla tider avser svensk tid (CET/CEST).</p>
+                <p data-i18n-html="manSerierP5"><strong>Veckoschema:</strong> Varje vecka följer samma cykel: <strong>måndag kl 20.00</strong> körs träningsracet, <strong>onsdag kl 20.00</strong> körs kvalet, <strong>fredag kl 20.00</strong> körs själva racet, och <strong>söndag kl 20.00</strong> uppdateras ekonomin. Allt sker automatiskt av spelet när klockan slår – det finns ingen knapp för att köra något av detta själv. Alla tider avser svensk tid (GMT+1, sommartid GMT+2).</p>
                 <p data-i18n-html="manSerierP6"><strong>Hemmabana & banrekord:</strong> Under fliken <strong>Arena</strong> kan du gratis konfigurera om din egen hemmabanas antal kurvor (5-20) och längd (2,0-8,0 km) samt döpa om den (100 000 kr) – ändringen gäller bara framtida, ännu inte kvalade race. Fler kurvor gynnar aerodynamik/däck/handling, en längre bana gynnar motorn men kräver mer bränsle. Varje arena har ett eget banrekord (snabbaste genomförda race på just den banan, oavsett vilket lag som körde det), synligt när du tittar på laget som är värd.</p>
                 <p data-i18n-html="manSerierP7"><strong>Transferhistorik:</strong> Under fliken <strong>Marknad</strong> hittar du en logg över alla genomförda köp och försäljningar i serierna (vem som såldes, från och till vilket lag, samt slutpriset) – det är den listan som avgörs av auktionerna beskrivna ovan.</p>
             </div>
@@ -4734,7 +4748,7 @@
                     <h3 data-i18n="kontoSerierFormatRubrik">Serier & format</h3>
                     <p data-i18n-html="kontoSerierFormatP1">Spelet har fem nivåer: <strong>Undercut Masters League</strong> (1 grupp, 10 lag), <strong>Division 2</strong> (2 grupper à 10 lag), <strong>Division 3</strong> (4 grupper à 10 lag), <strong>Division 4</strong> (8 grupper à 10 lag) och <strong>Division 5</strong> (16 grupper à 10 lag) – totalt 310 lag. En säsong består av 10 veckor (10 race).</p>
                     <p data-i18n-html="kontoSerierFormatP2"><strong>Upp- och nedflyttning:</strong> När säsongen är färdig flyttas i varje grupp (utom Undercut Masters League) 1:an upp till divisionen ovanför, tillsammans med divisionens bästa 2:or. I varje grupp (utom i Division 5) flyttas de 3 sämsta lagen ner till divisionen under. Antalet lag i varje grupp är alltid 10.</p>
-                    <p data-i18n-html="kontoSerierFormatP3"><strong>Veckoschema:</strong> Måndag kl 20.00 träningsrace, onsdag kl 20.00 kval, fredag kl 20.00 race, söndag kl 20.00 ekonomiuppdatering – allt sker automatiskt. Alla tider avser svensk tid (CET/CEST).</p>
+                    <p data-i18n-html="kontoSerierFormatP3"><strong>Veckoschema:</strong> Måndag kl 20.00 träningsrace, onsdag kl 20.00 kval, fredag kl 20.00 race, söndag kl 20.00 ekonomiuppdatering – allt sker automatiskt. Alla tider avser svensk tid (GMT+1, sommartid GMT+2).</p>
                 </div>
 
                 <div class="card">
@@ -4781,7 +4795,7 @@
                     <h3 data-i18n="kontoTidszonRubrik">Tidszon</h3>
                     <p style="font-size:13px; color:var(--text-muted); margin-top:0;" data-i18n="kontoTidszonIntro">Välj vilken tidszon klockan och spelets datum och klockslag ska visas i. Själva händelserna (race, kval, träning och ekonomiuppdatering) sker alltid kl 20.00 svensk tid – detta styr bara hur tiderna visas för dig.</p>
                     <select id="installningar-tidszon-valjare" onchange="sattTidszon(this.value)">
-                        <option value="Europe/Stockholm" data-i18n="tidszonSverige">Svensk tid (Stockholm)</option>
+                        <option value="Europe/Stockholm" data-i18n="tidszonSverige">Svensk tid – Stockholm (GMT+1, sommartid GMT+2)</option>
                         <option value="auto" data-i18n="tidszonAuto">Automatisk (din enhets tidszon)</option>
                     </select>
                 </div>
@@ -9297,6 +9311,74 @@
             renderLagsida();
         }
 
+        // "Raceschema" - lagets egna raceschema (säsongens alla omgångar med
+        // lagets kval- och raceplaceringar samt länkar till rapporterna).
+        // Egen undersida till Lagsidan, öppnas från headerns länkar.
+        function oppnaLagRaceschema() {
+            if (subflikar.lagsida !== 'raceschema') subflikar._lagsidaForeRaceschema = subflikar.lagsida;
+            subflikar.lagsida = 'raceschema';
+            renderLagsida();
+        }
+
+        function stangLagRaceschema() {
+            subflikar.lagsida = subflikar._lagsidaForeRaceschema || 'oversikt';
+            renderLagsida();
+        }
+
+        // Kval/race för en omgång i valfri serie: egna serien ur raceResultat
+        // (eller veckans redan körda kval), övriga serier via gruppRapportData().
+        function lagRaceData(gid, raceNr) {
+            if (gid === spelarData.serieId) {
+                let r = spelarData.raceResultat ? spelarData.raceResultat[raceNr] : null;
+                if (r) return { kval: r.kval || [], lopp: (r.lopp || []).map(l => ({ lagId: l.lagId, bil: l.bil, placering: l.placering, poang: l.poäng || 0, dnf: !!l.dnf })) };
+                if (spelarData.vantandeKval && spelarData.vantandeKval.raceNr === raceNr) return { kval: spelarData.vantandeKval.resultat || [], lopp: null };
+                return null;
+            }
+            return gruppRapportData(gid, raceNr);
+        }
+
+        function renderLagRaceschema(lag) {
+            let gid = lsGroupId || spelarData.serieId;
+            let egenSerie = gid === spelarData.serieId;
+            let head = document.getElementById('ls-raceschema-head');
+            let body = document.getElementById('ls-raceschema-body');
+            let titel = document.getElementById('ls-raceschema-titel');
+            if (!head || !body) return;
+            if (titel) titel.textContent = `${tt('Raceschema', 'Race schedule')} – ${lagnamnUtanDivisionssuffix(lag.namn)} (${tt('Säsong', 'Season')} ${spelarData.sasong})`;
+            if (!egenSerie && arOnline()) hamtaOnlineGruppData(gid);
+            let schema = (!egenSerie && arOnline() && onlineGruppData[gid] && onlineGruppData[gid].schema) || spelarData.scheman[gid] || [];
+            head.innerHTML = `<tr><th>${tt('Race', 'Race')}</th><th>${tt('Datum', 'Date')}</th><th>${tt('Bana', 'Track')}</th><th>${tt('Kval', 'Qualifying')}</th><th>${tt('Race', 'Race')}</th><th>${tt('Poäng', 'Points')}</th></tr>`;
+            if (!schema.length) {
+                body.innerHTML = `<tr><td colspan="6" style="color:var(--text-muted);">${tt('Inget raceschema hittades.', 'No race schedule found.')}</td></tr>`;
+                return;
+            }
+            let lank = (text, onclick) => `<span class="team-link" onclick="${onclick}">${text}</span>`;
+            body.innerHTML = schema.map(omgang => {
+                let nr = omgang.raceNr;
+                let data = lagRaceData(gid, nr);
+                let arNasta = nr === spelarData.raceNr;
+                let hemma = omgang.arrangorLagId && omgang.arrangorLagId === lag.lagId;
+                let banaHTML = `${omgang.arrangorLagId ? lank(escNamn(omgang.banaNamn), `visaArenaDetalj('${omgang.arrangorLagId}')`) : escNamn(omgang.banaNamn)}${hemma ? ` <span class="tag-badge">${tt('Hemma', 'Home')}</span>` : ''}`;
+                let kvalHTML, loppHTML, poangHTML = '–';
+                let egnaKval = data ? (data.kval || []).filter(k => k.lagId === lag.lagId).sort((a, b) => a.bil - b.bil) : [];
+                if (egnaKval.length) {
+                    let text = egnaKval.map(k => 'P' + k.startPos).join(' · ');
+                    kvalHTML = lank(text, egenSerie ? `visaRaceSida(${nr}, 'kval')` : `visaGruppRacerapport('${gid}', ${nr}, 'kval')`);
+                } else {
+                    kvalHTML = `<span style="color:${arNasta ? 'inherit' : '#666'};">${arNasta ? `<strong>${tt('Nästa', 'Next')}</strong>` : (nr < spelarData.raceNr ? '–' : tt('Kommande', 'Upcoming'))}</span>`;
+                }
+                let egnaLopp = (data && data.lopp) ? data.lopp.filter(l => l.lagId === lag.lagId).sort((a, b) => a.bil - b.bil) : [];
+                if (egnaLopp.length) {
+                    let text = egnaLopp.map(l => l.dnf ? 'DNF' : String(l.placering)).join(' · ');
+                    loppHTML = lank(text, egenSerie ? `visaRaceSida(${nr}, 'lopp')` : `visaGruppRacerapport('${gid}', ${nr})`);
+                    poangHTML = egnaLopp.reduce((sum, l) => sum + (l.poang || 0), 0) + ' p';
+                } else {
+                    loppHTML = egnaKval.length ? `<strong>${tt('Nästa', 'Next')}</strong>` : '<span style="color:#666;">–</span>';
+                }
+                return `<tr${arNasta ? ' class="schema-nasta-rad"' : ''}><td>${tt('Race', 'Race')} ${nr}</td><td>${formateraDatumKort(datumForRace(nr))}</td><td>${banaHTML}</td><td>${kvalHTML}</td><td>${loppHTML}</td><td>${poangHTML}</td></tr>`;
+            }).join('');
+        }
+
         // "Karriärhistorik" for det egna laget - sasong-for-sasong-placering, se
         // spelarData.spelarHistorik (skrivs i sparaSasongshistorik()). Samma
         // undersides-monster som Rivaler ovan, oppnas fran Oversikt-flikens
@@ -12040,22 +12122,28 @@
             let egenGrupp = visadGid === spelarData.serieId;
             let gruppTitelEl = document.getElementById('schema-grupp-titel');
             if (gruppTitelEl) gruppTitelEl.innerText = GROUP_DEFS[visadGid] ? GROUP_DEFS[visadGid].label : '';
+            // Onlineserien: andra seriers schema och resultat hämtas från servern.
+            let onlineGrupp = !egenGrupp && arOnline();
+            if (onlineGrupp) hamtaOnlineGruppData(visadGid);
             let infoEl = document.getElementById('schema-annan-grupp-info');
             if (infoEl) {
-                let saknarRapport = !egenGrupp && (spelarData.scheman[visadGid] || []).some(o => o.raceNr < spelarData.raceNr && !(spelarData.gruppResultat && spelarData.gruppResultat[visadGid] && spelarData.gruppResultat[visadGid][o.raceNr]));
+                let saknarRapport = !egenGrupp && !onlineGrupp && (spelarData.scheman[visadGid] || []).some(o => o.raceNr < spelarData.raceNr && !(spelarData.gruppResultat && spelarData.gruppResultat[visadGid] && spelarData.gruppResultat[visadGid][o.raceNr]));
                 infoEl.style.display = saknarRapport ? 'block' : 'none';
                 infoEl.innerText = tt('Race som kördes innan alla serier började simuleras saknar racerapport.', 'Races run before all series were simulated have no race report.');
             }
-            let aktuelltSchema = spelarData.scheman[visadGid];
+            let aktuelltSchema = (onlineGrupp && onlineGruppData[visadGid] && onlineGruppData[visadGid].schema) || spelarData.scheman[visadGid];
             if (!aktuelltSchema) return;
             aktuelltSchema.forEach((omgang) => {
                 let rad = document.createElement('tr');
                 let statusHTML;
                 let arNasta = omgang.raceNr === spelarData.raceNr;
                 let datumHTML = formateraDatumKort(datumForRace(omgang.raceNr));
-                let gruppRes = (!egenGrupp && spelarData.gruppResultat && spelarData.gruppResultat[visadGid]) ? spelarData.gruppResultat[visadGid][omgang.raceNr] : null;
+                let gruppRes = !egenGrupp ? gruppRapportData(visadGid, omgang.raceNr) : null;
                 if (!egenGrupp && gruppRes) {
-                    statusHTML = `<span class="team-link" onclick="visaGruppRacerapport('${visadGid}', ${omgang.raceNr})">${tt('Visa racerapport', 'View race report')}</span>`;
+                    let kvalLank = `<span class="team-link" onclick="visaGruppRacerapport('${visadGid}', ${omgang.raceNr}, 'kval')">${tt('Kval', 'Qualifying')}</span>`;
+                    statusHTML = gruppRes.lopp
+                        ? `<span class="team-link" onclick="visaGruppRacerapport('${visadGid}', ${omgang.raceNr})">${tt('Visa racerapport', 'View race report')}</span> · ${kvalLank}`
+                        : `${arNasta ? `<strong>${tt('Nästa', 'Next')}</strong> · ` : ''}${kvalLank}`;
                 } else if (!egenGrupp) {
                     statusHTML = omgang.raceNr < spelarData.raceNr
                         ? `<span style="color:var(--text-muted);">${tt('Genomfört – ingen rapport', 'Completed – no report')}</span>`
@@ -12532,7 +12620,7 @@
                 let btn = document.getElementById('ls-sub-' + s + '-btn');
                 if (btn) btn.classList.toggle('active', subflikar.lagsida === s);
             });
-            ['oversikt', 'forare', 'mekaniker', 'ingenjor', 'bilar', 'trofeer', 'h2h', 'statistik', 'traning', 'scouting', 'forberedelsetraning', 'kontrakt', 'bil', 'person', 'person-rekord', 'person-marknad', 'person-karriar', 'personal-karriar', 'personal-historik', 'rivaler', 'karriarshistorik', 'principal'].forEach(s => {
+            ['oversikt', 'forare', 'mekaniker', 'ingenjor', 'bilar', 'trofeer', 'h2h', 'statistik', 'traning', 'scouting', 'forberedelsetraning', 'kontrakt', 'bil', 'person', 'person-rekord', 'person-marknad', 'person-karriar', 'personal-karriar', 'personal-historik', 'rivaler', 'raceschema', 'karriarshistorik', 'principal'].forEach(s => {
                 let pane = document.getElementById('ls-pane-' + s);
                 if (pane) pane.classList.toggle('active', subflikar.lagsida === s);
             });
@@ -12557,6 +12645,7 @@
             else if (subflikar.lagsida === 'personal-karriar') renderPersonalKarriaroversikt();
             else if (subflikar.lagsida === 'personal-historik') renderPersonalKarriarhistorik();
             else if (subflikar.lagsida === 'rivaler') renderRivaler(lag);
+            else if (subflikar.lagsida === 'raceschema') renderLagRaceschema(lag);
             else if (subflikar.lagsida === 'karriarshistorik') renderKarriarshistorik(lag);
             else if (subflikar.lagsida === 'principal') renderPrincipalPane();
         }
@@ -12729,6 +12818,7 @@
                     <span class="team-link" onclick="bytSubflik('lagsida', 'trofeer')">${tt('Troféer', 'Trophies')}</span>
                     <span class="team-link" onclick="oppnaKarriarshistorik()">${tt('Karriärhistorik', 'Career history')}</span>
                     <span class="team-link" onclick="oppnaRivaler()">${tt('Rivaler', 'Rivals')}</span>
+                    <span class="team-link" onclick="oppnaLagRaceschema()">${tt('Raceschema', 'Race schedule')}</span>
                 </div>`;
 
             el.innerHTML = `
@@ -15952,6 +16042,7 @@
                 if (!spelarData.gruppResultat[gid]) spelarData.gruppResultat[gid] = {};
                 spelarData.gruppResultat[gid][raceNr] = {
                     banaNamn: rad.banaNamn, arrangorNamn: rad.arrangorNamn, banaLangd: rad.banaLangd, banaKurvor: rad.banaKurvor,
+                    kval: kval.map(k => ({ i: k.lag.lagId, b: k.bil, f: k.forare.namn, s: k.startPos, kp: Math.round(k.kvalPoang * 10) / 10 })),
                     referatData: extraheraReferatData(lopp, banaInfo),
                     lopp: lopp.map(r => ({ i: r.lag.lagId, b: r.bil, f: r.forarNamn, s: r.startPos, p: r.placering, po: r.poäng, d: r.dnf ? 1 : 0, v: r.snabbasteVarv ? 1 : 0 }))
                 };
@@ -15959,36 +16050,110 @@
         }
 
         // Racerapport för ett race i en annan serie (Serie → Raceschema).
+        // typ 'kval' visar kvalrapporten (startuppställningen), annars racet.
         let visadGruppRapport = null;
-        function visaGruppRacerapport(gid, raceNr) {
-            visadGruppRapport = { gid: gid, raceNr: raceNr };
+        function visaGruppRacerapport(gid, raceNr, typ) {
+            visadGruppRapport = { gid: gid, raceNr: raceNr, typ: typ === 'kval' ? 'kval' : 'lopp' };
             bytSubflik('serie', 'racerapport');
         }
+
+        // Onlineserien: andra seriers schema och kval-/raceresultat hämtas från
+        // servern (race_resultat/division_schema) när deras raceschema visas.
+        let onlineGruppData = {}; // gid -> { sasong, schema, resultat: { raceNr: rad }, hamtad }
+        async function hamtaOnlineGruppData(gid) {
+            if (!arOnline() || !window.supabaseClient || !onlineData) return;
+            let sasong = onlineData.sasong;
+            let c = onlineGruppData[gid];
+            if (c && c.sasong === sasong && (c.laddar || Date.now() - c.hamtad < 5 * 60000)) return;
+            onlineGruppData[gid] = Object.assign({ schema: null, resultat: {} }, (c && c.sasong === sasong) ? c : {}, { sasong: sasong, laddar: true });
+            try {
+                const sb = window.supabaseClient;
+                const [res, sch] = await Promise.all([
+                    sb.from('race_resultat').select('race_nr, bana, kval, lopp').eq('division_id', gid).eq('sasong', sasong),
+                    sb.from('division_schema').select('schema').eq('division_id', gid).eq('sasong', sasong).maybeSingle()
+                ]);
+                if (res.error) throw res.error;
+                if (sch.error) throw sch.error;
+                let resultat = {};
+                (res.data || []).forEach(r => { resultat[r.race_nr] = r; });
+                onlineGruppData[gid] = { sasong: sasong, schema: (sch.data && Array.isArray(sch.data.schema) && sch.data.schema.length) ? sch.data.schema : null, resultat: resultat, hamtad: Date.now() };
+            } catch (e) {
+                console.warn('Kunde inte hämta resultat för serie ' + gid, e);
+                onlineGruppData[gid] = Object.assign({}, onlineGruppData[gid], { laddar: false, hamtad: Date.now() });
+                return;
+            }
+            if ((spelarData.visadSerieId || spelarData.serieId) === gid) bytUtSchemaHTML();
+            if (visadGruppRapport && visadGruppRapport.gid === gid) renderGruppRacerapport();
+            if (subflikar.lagsida === 'raceschema' && lsGroupId === gid) renderLagsida();
+        }
+
+        // Gemensamt format för en annan series kval/race – lokalt (gruppResultat)
+        // eller online (serverns race_resultat). Null om kvalet inte körts ännu.
+        function gruppRapportData(gid, raceNr) {
+            if (arOnline()) {
+                let c = onlineGruppData[gid];
+                let r = c && c.resultat ? c.resultat[raceNr] : null;
+                if (!r || !Array.isArray(r.kval)) return null;
+                let b = r.bana || {};
+                return {
+                    banaNamn: b.banaNamn, arrangorNamn: b.arrangorNamn, banaLangd: b.banaLangd, banaKurvor: b.banaKurvor,
+                    kval: r.kval.map(k => ({ lagId: k.lagId, lagNamn: k.lagNamn, bil: k.bil, forarNamn: k.forarNamn, startPos: k.startPos, kvalPoang: k.kvalPoäng })),
+                    lopp: Array.isArray(r.lopp) ? r.lopp.map(l => ({ lagId: l.lagId, lagNamn: l.lagNamn, bil: l.bil, forarNamn: l.forarNamn, startPos: l.startPos, placering: l.placering, poang: l.poäng || 0, dnf: !!l.dnf, snabbast: !!l.snabbasteVarv })) : null,
+                    referatData: null
+                };
+            }
+            let res = spelarData.gruppResultat && spelarData.gruppResultat[gid] ? spelarData.gruppResultat[gid][raceNr] : null;
+            if (!res) return null;
+            let lopp = (res.lopp || []).map(r => ({ lagId: r.i, bil: r.b, forarNamn: r.f, startPos: r.s, placering: r.p, poang: r.po, dnf: !!r.d, snabbast: !!r.v }));
+            // Äldre rapporter saknar egen kvaldata – startuppställningen ur racet används då.
+            let kval = res.kval
+                ? res.kval.map(k => ({ lagId: k.i, bil: k.b, forarNamn: k.f, startPos: k.s, kvalPoang: k.kp }))
+                : lopp.map(l => ({ lagId: l.lagId, bil: l.bil, forarNamn: l.forarNamn, startPos: l.startPos, kvalPoang: null }));
+            kval.sort((a, b) => a.startPos - b.startPos);
+            return { banaNamn: res.banaNamn, arrangorNamn: res.arrangorNamn, banaLangd: res.banaLangd, banaKurvor: res.banaKurvor, kval: kval, lopp: lopp, referatData: res.referatData };
+        }
+
         function renderGruppRacerapport() {
             let el = document.getElementById('gruppracerapport-innehall');
             if (!el) return;
             let v = visadGruppRapport;
-            let res = v && spelarData.gruppResultat && spelarData.gruppResultat[v.gid] ? spelarData.gruppResultat[v.gid][v.raceNr] : null;
-            if (!res) { el.innerHTML = `<p style="color:var(--text-muted);">${tt('Racerapporten kunde inte hittas.', 'The race report could not be found.')}</p>`; return; }
+            let res = v ? gruppRapportData(v.gid, v.raceNr) : null;
+            if (v && arOnline() && !res) hamtaOnlineGruppData(v.gid);
+            let visaKval = v && (v.typ === 'kval' || (res && !res.lopp));
+            if (!res || (!visaKval && !res.lopp)) { el.innerHTML = `<p style="color:var(--text-muted);">${tt('Racerapporten kunde inte hittas.', 'The race report could not be found.')}</p>`; return; }
             let lagFor = id => (spelarData.tabeller[v.gid] || []).find(l => l.lagId === id) || (hittaLagOchGruppMedId(id) || {}).lag;
-            let rader = res.lopp.map(r => {
-                let lag = lagFor(r.i);
-                let namn = lag ? lag.namn.replace(/\s*\([^)]*\)\s*$/, '') : '–';
-                let lagCell = lag ? `<span class="team-link" onclick="visaLagsida('${v.gid}', '${escNamn(lag.namn)}', 'oversikt')">${namn}</span>` : namn;
-                let not = r.d ? ' <span style="color:var(--danger-soft);">DNF</span>' : (r.v ? ' <span title="' + tt('Snabbaste varv', 'Fastest lap') + '">⏱</span>' : '');
-                let cls = (!r.d && r.p <= 3) ? ' class="promotion-zone"' : '';
-                return `<tr><td${cls}>${r.d ? '–' : r.p}</td><td>${lagCell}</td><td>${tt('Bil', 'Car')} ${r.b}</td><td>${escNamn(r.f)}${not}</td><td>P${r.s}</td><td>${r.po} p</td></tr>`;
-            }).join('');
-            let rd = res.referatData;
-            let referat = rd ? byggReferatText(rd, []) : '';
+            let lagCellFor = (id, reservNamn) => {
+                let lag = lagFor(id);
+                if (!lag) return escNamn(reservNamn || '–');
+                let namn = lag.namn.replace(/\s*\([^)]*\)\s*$/, '');
+                return `<span class="team-link" onclick="visaLagsida('${v.gid}', '${escNamn(lag.namn)}', 'oversikt')">${namn}</span>`;
+            };
+            let bytLank = visaKval
+                ? (res.lopp ? `<span class="team-link" onclick="visaGruppRacerapport('${v.gid}', ${v.raceNr})">${tt('Visa racerapport', 'View race report')}</span>` : '')
+                : `<span class="team-link" onclick="visaGruppRacerapport('${v.gid}', ${v.raceNr}, 'kval')">${tt('Kval', 'Qualifying')}</span>`;
+            let tabell;
+            let referat = '';
+            if (visaKval) {
+                let rader = res.kval.map(k => {
+                    let cls = k.startPos <= 3 ? ' class="promotion-zone"' : '';
+                    let tid = (k.kvalPoang === null || k.kvalPoang === undefined) ? '–' : formateraKvaltid(k.kvalPoang, res.banaLangd);
+                    return `<tr><td${cls}>${k.startPos}</td><td>${lagCellFor(k.lagId, k.lagNamn)}</td><td>${tt('Bil', 'Car')} ${k.bil}</td><td>${escNamn(k.forarNamn)}</td><td>${tid}</td></tr>`;
+                }).join('');
+                tabell = `<thead><tr><th>${tt('Pos', 'Pos')}</th><th>${tt('Stall', 'Team')}</th><th>${tt('Bil', 'Car')}</th><th>${tt('Förare', 'Driver')}</th><th>${tt('Tid', 'Time')}</th></tr></thead><tbody>${rader}</tbody>`;
+            } else {
+                let rader = res.lopp.map(r => {
+                    let not = r.dnf ? ' <span style="color:var(--danger-soft);">DNF</span>' : (r.snabbast ? ' <span title="' + tt('Snabbaste varv', 'Fastest lap') + '">⏱</span>' : '');
+                    let cls = (!r.dnf && r.placering <= 3) ? ' class="promotion-zone"' : '';
+                    return `<tr><td${cls}>${r.dnf ? '–' : r.placering}</td><td>${lagCellFor(r.lagId, r.lagNamn)}</td><td>${tt('Bil', 'Car')} ${r.bil}</td><td>${escNamn(r.forarNamn)}${not}</td><td>P${r.startPos}</td><td>${r.poang} p</td></tr>`;
+                }).join('');
+                tabell = `<thead><tr><th>${tt('Pl', 'Pos')}</th><th>${tt('Stall', 'Team')}</th><th>${tt('Bil', 'Car')}</th><th>${tt('Förare', 'Driver')}</th><th>${tt('Start', 'Start')}</th><th>${tt('Poäng', 'Points')}</th></tr></thead><tbody>${rader}</tbody>`;
+                referat = res.referatData ? byggReferatText(res.referatData, []) : '';
+            }
             el.innerHTML = `
-                <h3 style="margin-top:0;">${GROUP_DEFS[v.gid].label} – ${tt('Race', 'Race')} ${v.raceNr}</h3>
-                <p style="font-size:13px; color:#aaa; margin-top:0;">${escNamn(res.banaNamn)} (${escNamn(res.arrangorNamn)}) – ${res.banaLangd} km, ${res.banaKurvor} ${tt('kurvor', 'corners')}</p>
+                <h3 style="margin-top:0;">${GROUP_DEFS[v.gid].label} – ${visaKval ? tt('Kval', 'Qualifying') : tt('Race', 'Race')} ${v.raceNr}</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">${escNamn(res.banaNamn)} (${escNamn(res.arrangorNamn)}) – ${res.banaLangd} km, ${res.banaKurvor} ${tt('kurvor', 'corners')}${bytLank ? ' · ' + bytLank : ''}</p>
                 ${referat ? `<p>${referat}</p>` : ''}
-                <div class="tabell-scroll"><table>
-                    <thead><tr><th>${tt('Pl', 'Pos')}</th><th>${tt('Stall', 'Team')}</th><th>${tt('Bil', 'Car')}</th><th>${tt('Förare', 'Driver')}</th><th>${tt('Start', 'Start')}</th><th>${tt('Poäng', 'Points')}</th></tr></thead>
-                    <tbody>${rader}</tbody>
-                </table></div>`;
+                <div class="tabell-scroll"><table>${tabell}</table></div>`;
         }
 
         // Säsongsslutet i den egna spelvärlden (kontrakt, åldrande, historik,
@@ -19591,7 +19756,8 @@
             if (tidEl && datumEl) {
                 let nu = new Date();
                 tidEl.textContent = nu.toLocaleTimeString('sv-SE', tzOpt({ hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-                datumEl.textContent = nu.toLocaleDateString('sv-SE', tzOpt({ day: 'numeric', month: 'short', year: 'numeric' }));
+                let visadTz = aktivTidszon === 'auto' ? Intl.DateTimeFormat().resolvedOptions().timeZone : aktivTidszon;
+                datumEl.textContent = nu.toLocaleDateString('sv-SE', tzOpt({ day: 'numeric', month: 'short', year: 'numeric' })) + ' · ' + tidszonOffsetText(visadTz);
             }
             uppdateraAuktionsNedrakningar();
         }
@@ -20039,7 +20205,7 @@
                 kontoSerierFormatRubrik: 'Serier & format',
                 kontoSerierFormatP1: 'Spelet har fem nivåer: <strong>Undercut Masters League</strong> (1 grupp, 10 lag), <strong>Division 2</strong> (2 grupper à 10 lag), <strong>Division 3</strong> (4 grupper à 10 lag), <strong>Division 4</strong> (8 grupper à 10 lag) och <strong>Division 5</strong> (16 grupper à 10 lag) – totalt 310 lag. En säsong består av 10 veckor (10 race).',
                 kontoSerierFormatP2: '<strong>Upp- och nedflyttning:</strong> När säsongen är färdig flyttas i varje grupp (utom Undercut Masters League) 1:an upp till divisionen ovanför, tillsammans med divisionens bästa 2:or. I varje grupp (utom i Division 5) flyttas de 3 sämsta lagen ner till divisionen under. Antalet lag i varje grupp är alltid 10.',
-                kontoSerierFormatP3: '<strong>Veckoschema:</strong> Måndag kl 20.00 träningsrace, onsdag kl 20.00 kval, fredag kl 20.00 race, söndag kl 20.00 ekonomiuppdatering – allt sker automatiskt. Alla tider avser svensk tid (CET/CEST).',
+                kontoSerierFormatP3: '<strong>Veckoschema:</strong> Måndag kl 20.00 träningsrace, onsdag kl 20.00 kval, fredag kl 20.00 race, söndag kl 20.00 ekonomiuppdatering – allt sker automatiskt. Alla tider avser svensk tid (GMT+1, sommartid GMT+2).',
                 kontoPoangTavlingRubrik: 'Poäng & tävling',
                 kontoPoangTavlingP1: 'Varje race tävlar alla bilar (två per lag) individuellt om placering. De 10 bästa bilarna får poäng enligt <strong>25-18-15-12-10-8-6-4-2-1</strong>. Lagets totalpoäng är summan av vad båda bilarna tar in. Poängen nollställs inför varje ny säsong.',
                 kontoPoangTavlingP2: '<strong>Tävlingsregler mellan säsonger:</strong> Efter varje avslutad säsong halveras en av bilens fem komponenter (Däck, Motor, Aerodynamik, Växellåda, Chassi – i den ordningen) för ALLA lag i spelet, i ett rullande 5-säsongersschema. Regeln träffar aldrig Säsong 1 och tillämpas exakt en gång per säsongsnummer.',
@@ -20074,7 +20240,7 @@
                 kontoValutaIntro: 'Välj vilken valuta belopp ska visas i. Spelets ekonomi är alltid densamma internt – detta styr bara hur siffrorna visas, till en fast växelkurs: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoTidszonRubrik: "Tidszon",
                 kontoTidszonIntro: "Välj vilken tidszon klockan och spelets datum och klockslag ska visas i. Själva händelserna (race, kval, träning och ekonomiuppdatering) sker alltid kl 20.00 svensk tid – detta styr bara hur tiderna visas för dig.",
-                tidszonSverige: "Svensk tid (Stockholm)",
+                tidszonSverige: "Svensk tid – Stockholm (GMT+1, sommartid GMT+2)",
                 tidszonAuto: "Automatisk (din enhets tidszon)",
                 kontoCookiesRubrik: 'Cookies',
                 kontoCookiesIntro: 'Hantera vilka cookies du tillåter (nödvändiga, statistik och personliga annonser).',
@@ -20378,7 +20544,7 @@
                 appTavlingsregelLabel: 'Tävlingsregel:',
                 appValjSerieBeskrivning: 'Välj vilken serie/grupp du vill se. 10 lag per grupp, vardera med två bilar.',
                 appRaceschemaLabel: 'Raceschema (Säsong',
-                appRaceschemaBeskrivning: 'Träningsracet körs automatiskt måndagar kl 20.00, kvalet till varje race körs automatiskt onsdagar kl 20.00, racet körs automatiskt fredagar kl 20.00, och ekonomin uppdateras automatiskt söndagar kl 20.00. Klicka på ett race för att se startuppställningen eller resultatet. Alla tider avser svensk tid (CET/CEST).',
+                appRaceschemaBeskrivning: 'Träningsracet körs automatiskt måndagar kl 20.00, kvalet till varje race körs automatiskt onsdagar kl 20.00, racet körs automatiskt fredagar kl 20.00, och ekonomin uppdateras automatiskt söndagar kl 20.00. Klicka på ett race för att se startuppställningen eller resultatet. Alla tider avser svensk tid (GMT+1, sommartid GMT+2).',
                 appRaceschemaSida: 'Raceschema',
                 appSeriestatistik: 'Seriestatistik',
                 appBastaTvaor: 'Bästa 2:or',
@@ -20528,7 +20694,7 @@
                 manIntroTitel: 'Kom igång: så funkar spelet & navigationen',
                 manIntroP1: 'Du leder ditt eget racinglag genom divisionerna och tävlar mot andra människor – riktiga managers från hela världen. Du anställer förare, mekaniker och ingenjörer, uppgraderar bilen, sätter din taktik inför tävling – och spelet sköter resten automatiskt varje vecka enligt schemat nedan.',
                 manIntroSchemaTitel: "Veckoschemat (sker helt automatiskt, svensk tid):",
-                manIntroTidszon: "<strong>Tidszon:</strong> Alla tider i spelet – race, kval, träning, ekonomiuppdatering och scoutsamtal – avser <strong>svensk tid</strong> (CET/CEST). Under <strong>Mitt konto → Inställningar → Tidszon</strong> kan du välja din egen tidszon. Då visas klockan uppe till höger och alla datum och klockslag i spelet (t.ex. kommande race och inkorgen) i din tid. Nedräkningarna på transfermarknaden stämmer alltid, oavsett tidszon. Själva händelserna sker fortfarande kl 20.00 svensk tid.",
+                manIntroTidszon: "<strong>Tidszon:</strong> Alla tider i spelet – race, kval, träning, ekonomiuppdatering och scoutsamtal – avser <strong>svensk tid</strong> (GMT+1, sommartid GMT+2). Under <strong>Mitt konto → Inställningar → Tidszon</strong> kan du välja din egen tidszon. Då visas klockan uppe till höger och alla datum och klockslag i spelet (t.ex. kommande race och inkorgen) i din tid. Nedräkningarna på transfermarknaden stämmer alltid, oavsett tidszon. Själva händelserna sker fortfarande kl 20.00 svensk tid.",
                 manIntroMan: '<strong>Måndag 20.00</strong> – träningsrace för anmälda förare',
                 manIntroOns: '<strong>Onsdag 20.00</strong> – kval',
                 manIntroFre: '<strong>Fredag 20.00</strong> – race',
@@ -20565,7 +20731,7 @@
                 manSerierP2: '<strong>Serier & Seriepyramiden:</strong> Spelet har fem nivåer: <strong>Undercut Masters League</strong> (1 grupp, 10 lag), <strong>Division 2</strong> (2 grupper à 10 lag), <strong>Division 3</strong> (4 grupper à 10 lag), <strong>Division 4</strong> (8 grupper à 10 lag) och <strong>Division 5</strong> (16 grupper à 10 lag) – totalt 310 lag. Du tävlar mot andra människor – varje lag leds av en riktig manager. Du kan klicka på vilket lag som helst i tabellen för att inspektera deras Lagsida, bil för bil.',
                 manSerierP3: '<strong>Upp- och nedflyttning:</strong> När en säsong på 10 race är färdig flyttas i varje grupp (utom Undercut Masters League) 1:an upp till divisionen ovanför. Dessutom går divisionens bästa 2:or upp – lika många som det finns grupper i divisionen ovanför (1 från Division 2, 2 från Division 3, 4 från Division 4 och 8 från Division 5). Tvåorna rankas efter poäng, och vid lika poäng avgör den bästa bilens poäng. I varje grupp (utom i Division 5, som är lägsta nivån) flyttas de 3 sämsta lagen ner till divisionen under, i första hand till de två grupper som är kopplade till just den gruppen. Det gör att antalet lag i varje grupp alltid förblir 10. Aktuell ställning för tvåorna ser du under Serie → Serietabell → Bästa 2:or.',
                 manSerierP4: '<strong>Banor & Race:</strong> Varje säsong består av 10 race där lag i samma grupp turas om att vara värdar på sina hemmabanor. Banlängd och antal kurvor påverkar hur mycket varje komponent betyder i just det racet.',
-                manSerierP5: '<strong>Veckoschema:</strong> Varje vecka följer samma cykel: <strong>måndag kl 20.00</strong> körs träningsracet, <strong>onsdag kl 20.00</strong> körs kvalet, <strong>fredag kl 20.00</strong> körs själva racet, och <strong>söndag kl 20.00</strong> uppdateras ekonomin. Allt sker automatiskt av spelet när klockan slår – det finns ingen knapp för att köra något av detta själv. Alla tider avser svensk tid (CET/CEST).',
+                manSerierP5: '<strong>Veckoschema:</strong> Varje vecka följer samma cykel: <strong>måndag kl 20.00</strong> körs träningsracet, <strong>onsdag kl 20.00</strong> körs kvalet, <strong>fredag kl 20.00</strong> körs själva racet, och <strong>söndag kl 20.00</strong> uppdateras ekonomin. Allt sker automatiskt av spelet när klockan slår – det finns ingen knapp för att köra något av detta själv. Alla tider avser svensk tid (GMT+1, sommartid GMT+2).',
                 manSerierP6: '<strong>Hemmabana & banrekord:</strong> Under fliken Arena kan du gratis konfigurera om din egen hemmabanas antal kurvor (5-20) och längd (2,0-8,0 km) samt döpa om den (100 000 kr) – ändringen gäller bara framtida, ännu inte kvalade race. Fler kurvor gynnar aerodynamik/däck/handling, en längre bana gynnar motorn men kräver mer bränsle. Varje arena har ett eget banrekord (snabbaste genomförda race på just den banan, oavsett vilket lag som körde det), synligt när du tittar på laget som är värd.',
                 manSerierP7: '<strong>Transferhistorik:</strong> Under fliken Marknad hittar du en logg över alla genomförda köp och försäljningar i serierna (vem som såldes, från och till vilket lag, samt slutpriset) – det är den listan som avgörs av auktionerna beskrivna ovan.',
                 manEgenskaperTitel: 'Egenskaper & träning',
@@ -20864,7 +21030,7 @@
                 kontoSerierFormatRubrik: 'Leagues & format',
                 kontoSerierFormatP1: 'The game has five tiers: <strong>the Top League</strong> (1 group, 10 teams), <strong>Division 2</strong> (2 groups of 10 teams), <strong>Division 3</strong> (4 groups of 10 teams), <strong>Division 4</strong> (8 groups of 10 teams) and <strong>Division 5</strong> (16 groups of 10 teams) – 310 teams in total. A season consists of 10 weeks (10 races).',
                 kontoSerierFormatP2: '<strong>Promotion and relegation:</strong> When the season ends, in every group (except the Top League) the group winner is promoted to the division above, together with the division’s best runners-up. In every group (except Division 5) the 3 worst teams are relegated to the division below. Every group always has 10 teams.',
-                kontoSerierFormatP3: '<strong>Weekly schedule:</strong> Monday 20:00 practice race, Wednesday 20:00 qualifying, Friday 20:00 race, Sunday 20:00 finance update – everything happens automatically. All times are Swedish time (CET/CEST).',
+                kontoSerierFormatP3: '<strong>Weekly schedule:</strong> Monday 20:00 practice race, Wednesday 20:00 qualifying, Friday 20:00 race, Sunday 20:00 finance update – everything happens automatically. All times are Swedish time (GMT+1, summer time GMT+2).',
                 kontoPoangTavlingRubrik: 'Points & competition',
                 kontoPoangTavlingP1: 'In every race all cars (two per team) compete individually for position. The top 10 cars score points according to <strong>25-18-15-12-10-8-6-4-2-1</strong>. The team\'s total score is the sum of what both cars bring in. Points reset before every new season.',
                 kontoPoangTavlingP2: '<strong>Rules between seasons:</strong> After every completed season, one of the car\'s five components (Tyres, Engine, Aerodynamics, Gearbox, Chassis – in that order) is halved for ALL teams in the game, on a rolling 5-season schedule. The rule never affects Season 1 and applies exactly once per season number.',
@@ -20899,7 +21065,7 @@
                 kontoValutaIntro: 'Choose which currency amounts should be displayed in. The game\'s economy is always the same internally – this only controls how the numbers are shown, at a fixed exchange rate: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoTidszonRubrik: "Time zone",
                 kontoTidszonIntro: "Choose which time zone the clock and the game’s dates and times are shown in. The events themselves (race, qualifying, training and finance update) always happen at 20:00 Swedish time – this only controls how times are shown to you.",
-                tidszonSverige: "Swedish time (Stockholm)",
+                tidszonSverige: "Swedish time – Stockholm (GMT+1, summer time GMT+2)",
                 tidszonAuto: "Automatic (your device’s time zone)",
                 kontoCookiesRubrik: 'Cookies',
                 kontoCookiesIntro: 'Manage which cookies you allow (necessary, statistics and personalized ads).',
@@ -21203,7 +21369,7 @@
                 appTavlingsregelLabel: 'Competition rule:',
                 appValjSerieBeskrivning: 'Choose which series/group to view. 10 teams per group, each with two cars.',
                 appRaceschemaLabel: 'Race schedule (Season',
-                appRaceschemaBeskrivning: 'The training race runs automatically on Mondays at 20:00, qualifying for each race runs automatically on Wednesdays at 20:00, the race itself runs automatically on Fridays at 20:00, and finances update automatically on Sundays at 20:00. Click a race to see the starting grid or the result. All times are Swedish time (CET/CEST).',
+                appRaceschemaBeskrivning: 'The training race runs automatically on Mondays at 20:00, qualifying for each race runs automatically on Wednesdays at 20:00, the race itself runs automatically on Fridays at 20:00, and finances update automatically on Sundays at 20:00. Click a race to see the starting grid or the result. All times are Swedish time (GMT+1, summer time GMT+2).',
                 appRaceschemaSida: 'Race schedule',
                 appSeriestatistik: 'Series statistics',
                 appBastaTvaor: 'Best runners-up',
@@ -21353,7 +21519,7 @@
                 manIntroTitel: 'Getting started: how the game & navigation work',
                 manIntroP1: 'You manage your own racing team through the divisions, competing against other people – real managers from all over the world. You hire drivers, mechanics and engineers, upgrade the car, set your tactics before competing – and the game handles the rest automatically every week according to the schedule below.',
                 manIntroSchemaTitel: "The weekly schedule (fully automatic, Swedish time):",
-                manIntroTidszon: "<strong>Time zone:</strong> All times in the game – races, qualifying, training, finance updates and scout calls – are in <strong>Swedish time</strong> (CET/CEST). Under <strong>My account → Settings → Time zone</strong> you can choose your own time zone. The clock in the top right and all dates and times in the game (e.g. upcoming races and the inbox) are then shown in your time. The countdowns on the transfer market are always correct, whatever your time zone. The events themselves still happen at 20:00 Swedish time.",
+                manIntroTidszon: "<strong>Time zone:</strong> All times in the game – races, qualifying, training, finance updates and scout calls – are in <strong>Swedish time</strong> (GMT+1, summer time GMT+2). Under <strong>My account → Settings → Time zone</strong> you can choose your own time zone. The clock in the top right and all dates and times in the game (e.g. upcoming races and the inbox) are then shown in your time. The countdowns on the transfer market are always correct, whatever your time zone. The events themselves still happen at 20:00 Swedish time.",
                 manIntroMan: '<strong>Monday 20:00</strong> – training race for registered drivers',
                 manIntroOns: '<strong>Wednesday 20:00</strong> – qualifying',
                 manIntroFre: '<strong>Friday 20:00</strong> – race',
@@ -21390,7 +21556,7 @@
                 manSerierP2: '<strong>Series & the series pyramid:</strong> The game has five levels: <strong>Undercut Masters League</strong> (1 group, 10 teams), <strong>Division 2</strong> (2 groups of 10 teams), <strong>Division 3</strong> (4 groups of 10 teams), <strong>Division 4</strong> (8 groups of 10 teams) and <strong>Division 5</strong> (16 groups of 10 teams) – 310 teams in total. You compete against other people – every team is run by a real manager. You can click any team in the table to inspect their Team page, car by car.',
                 manSerierP3: '<strong>Promotion and relegation:</strong> When a 10-race season is finished, in every group (except Undercut Masters League) the winner is promoted to the division above. In addition, the division’s best runners-up are promoted – as many as there are groups in the division above (1 from Division 2, 2 from Division 3, 4 from Division 4 and 8 from Division 5). Runners-up are ranked by points; on equal points, the best car’s points decide. In every group (except Division 5, the lowest level) the 3 worst teams are relegated to the division below, primarily to the two groups linked to that group. This keeps the number of teams in every group always at 10. You can see the current runners-up standings under League → League table → Best runners-up.',
                 manSerierP4: '<strong>Tracks & Races:</strong> Every season consists of 10 races where teams in the same group take turns hosting at their home tracks. Track length and number of corners affect how much each component matters in that particular race.',
-                manSerierP5: '<strong>Weekly schedule:</strong> Every week follows the same cycle: <strong>Monday at 20:00</strong> the training race runs, <strong>Wednesday at 20:00</strong> qualifying runs, <strong>Friday at 20:00</strong> the race itself runs, and <strong>Sunday at 20:00</strong> finances update. Everything happens automatically when the clock strikes – there is no button to run any of this yourself. All times are Swedish time (CET/CEST).',
+                manSerierP5: '<strong>Weekly schedule:</strong> Every week follows the same cycle: <strong>Monday at 20:00</strong> the training race runs, <strong>Wednesday at 20:00</strong> qualifying runs, <strong>Friday at 20:00</strong> the race itself runs, and <strong>Sunday at 20:00</strong> finances update. Everything happens automatically when the clock strikes – there is no button to run any of this yourself. All times are Swedish time (GMT+1, summer time GMT+2).',
                 manSerierP6: '<strong>Home track & track records:</strong> Under the Arena tab you can freely reconfigure your own home track\'s number of corners (5-20) and length (2.0-8.0 km), and rename it (100,000 kr) – the change only applies to future, not-yet-qualified races. More corners favour aero/tyres/handling, a longer track favours the engine but needs more fuel. Every arena has its own track record (fastest race ever run there, whichever team drove it), visible when you look at the hosting team.',
                 manSerierP7: '<strong>Transfer history:</strong> Under the Market tab you\'ll find a log of every completed purchase and sale in the series (who was sold, from and to which team, and the final price) – this is the list settled by the auctions described above.',
                 manEgenskaperTitel: 'Attributes & training',
@@ -21698,7 +21864,7 @@
                 kontoSerierFormatRubrik: "Ligen & Format",
                 kontoSerierFormatP1: "Das Spiel hat fünf Stufen: <strong>die Top-Liga</strong> (1 Gruppe, 10 Teams), <strong>Division 2</strong> (2 Gruppen à 10 Teams), <strong>Division 3</strong> (4 Gruppen à 10 Teams), <strong>Division 4</strong> (8 Gruppen à 10 Teams) und <strong>Division 5</strong> (16 Gruppen à 10 Teams) – insgesamt 310 Teams. Eine Saison besteht aus 10 Wochen (10 Rennen).",
                 kontoSerierFormatP2: "<strong>Auf- und Abstieg:</strong> Wenn die Saison endet, steigt in jeder Gruppe (außer der Top-Liga) der Gruppensieger zusammen mit den besten Zweitplatzierten der Division in die Division darüber auf. In jeder Gruppe (außer Division 5) steigen die 3 schlechtesten Teams in die Division darunter ab. Jede Gruppe hat immer 10 Teams.",
-                kontoSerierFormatP3: "<strong>Wochenplan:</strong> Montag 20:00 Uhr Trainingsrennen, Mittwoch 20:00 Uhr Qualifying, Freitag 20:00 Uhr Rennen, Sonntag 20:00 Uhr Finanzaktualisierung – alles geschieht automatisch. Alle Zeiten sind schwedische Zeit (MEZ/MESZ).",
+                kontoSerierFormatP3: "<strong>Wochenplan:</strong> Montag 20:00 Uhr Trainingsrennen, Mittwoch 20:00 Uhr Qualifying, Freitag 20:00 Uhr Rennen, Sonntag 20:00 Uhr Finanzaktualisierung – alles geschieht automatisch. Alle Zeiten sind schwedische Zeit (GMT+1, Sommerzeit GMT+2).",
                 kontoPoangTavlingRubrik: "Punkte & Wettbewerb",
                 kontoPoangTavlingP1: "In jedem Rennen treten alle Autos (zwei pro Team) einzeln um die Platzierung an. Die 10 besten Autos erhalten Punkte nach <strong>25-18-15-12-10-8-6-4-2-1</strong>. Die Gesamtpunktzahl des Teams ist die Summe beider Autos. Die Punkte werden vor jeder neuen Saison zurückgesetzt.",
                 kontoPoangTavlingP2: "<strong>Regeln zwischen den Saisons:</strong> Nach jeder abgeschlossenen Saison wird eine der fünf Fahrzeugkomponenten (Reifen, Motor, Aerodynamik, Getriebe, Chassis – in dieser Reihenfolge) für ALLE Teams im Spiel halbiert, nach einem rollierenden 5-Saison-Plan. Die Regel betrifft nie Saison 1 und gilt genau einmal pro Saisonnummer.",
@@ -21732,7 +21898,7 @@
                 kontoValutaIntro: "Wähle, in welcher Währung Beträge angezeigt werden sollen. Die Spielwirtschaft ist intern immer dieselbe – dies steuert nur, wie die Zahlen angezeigt werden, zu einem festen Wechselkurs: 10 SEK = 1 USD = 1 EUR = 1 GBP.",
                 kontoTidszonRubrik: "Zeitzone",
                 kontoTidszonIntro: "Wähle, in welcher Zeitzone die Uhr sowie die Daten und Uhrzeiten des Spiels angezeigt werden. Die Ereignisse selbst (Rennen, Qualifying, Training und Finanzaktualisierung) finden immer um 20:00 Uhr schwedischer Zeit statt – dies steuert nur, wie dir die Zeiten angezeigt werden.",
-                tidszonSverige: "Schwedische Zeit (Stockholm)",
+                tidszonSverige: "Schwedische Zeit – Stockholm (GMT+1, Sommerzeit GMT+2)",
                 tidszonAuto: "Automatisch (Zeitzone deines Geräts)",
                 kontoCookiesRubrik: "Cookies",
                 kontoCookiesIntro: "Verwalte, welche Cookies du zulässt (notwendige, Statistik und personalisierte Werbung).",
@@ -22034,7 +22200,7 @@
                 appTavlingsregelLabel: "Wettbewerbsregel:",
                 appValjSerieBeskrivning: "Wähle, welche Serie/Gruppe angezeigt werden soll. 10 Teams pro Gruppe, jeweils mit zwei Autos.",
                 appRaceschemaLabel: "Rennkalender (Saison",
-                appRaceschemaBeskrivning: "Das Trainingsrennen läuft automatisch montags um 20:00 Uhr, das Qualifying für jedes Rennen automatisch mittwochs um 20:00 Uhr, das Rennen selbst automatisch freitags um 20:00 Uhr, und die Finanzen aktualisieren sich automatisch sonntags um 20:00 Uhr. Klicke auf ein Rennen, um die Startaufstellung oder das Ergebnis zu sehen. Alle Zeiten sind schwedische Zeit (MEZ/MESZ).",
+                appRaceschemaBeskrivning: "Das Trainingsrennen läuft automatisch montags um 20:00 Uhr, das Qualifying für jedes Rennen automatisch mittwochs um 20:00 Uhr, das Rennen selbst automatisch freitags um 20:00 Uhr, und die Finanzen aktualisieren sich automatisch sonntags um 20:00 Uhr. Klicke auf ein Rennen, um die Startaufstellung oder das Ergebnis zu sehen. Alle Zeiten sind schwedische Zeit (GMT+1, Sommerzeit GMT+2).",
                 appForumLabel: "Forum –",
                 appForumBeskrivning: "Diskutiere mit den anderen Teams in der Serie, die du oben gerade ansiehst. Beiträge werden pro Serie als Chatverlauf gespeichert.",
                 appForumPlaceholder: "Nachricht schreiben...",
@@ -22153,7 +22319,7 @@
                 manIntroTitel: "Erste Schritte: Wie das Spiel & die Navigation funktionieren",
                 manIntroP1: "Du leitest dein eigenes Rennteam durch die Divisionen und trittst gegen andere Menschen an – echte Manager aus der ganzen Welt. Du stellst Fahrer, Mechaniker und Ingenieure ein, verbesserst das Auto, legst deine Taktik vor dem Wettbewerb fest – und das Spiel erledigt den Rest jede Woche automatisch gemäß dem folgenden Zeitplan.",
                 manIntroSchemaTitel: "Der Wochenplan (vollautomatisch, schwedische Zeit):",
-                manIntroTidszon: "<strong>Zeitzone:</strong> Alle Zeiten im Spiel – Rennen, Qualifying, Training, Finanzaktualisierung und Scout-Anrufe – beziehen sich auf die <strong>schwedische Zeit</strong> (MEZ/MESZ). Unter <strong>Mein Konto → Einstellungen → Zeitzone</strong> kannst du deine eigene Zeitzone wählen. Dann werden die Uhr oben rechts und alle Daten und Uhrzeiten im Spiel (z. B. kommende Rennen und der Posteingang) in deiner Zeit angezeigt. Die Countdowns auf dem Transfermarkt stimmen immer, unabhängig von der Zeitzone. Die Ereignisse selbst finden weiterhin um 20:00 Uhr schwedischer Zeit statt.",
+                manIntroTidszon: "<strong>Zeitzone:</strong> Alle Zeiten im Spiel – Rennen, Qualifying, Training, Finanzaktualisierung und Scout-Anrufe – beziehen sich auf die <strong>schwedische Zeit</strong> (GMT+1, Sommerzeit GMT+2). Unter <strong>Mein Konto → Einstellungen → Zeitzone</strong> kannst du deine eigene Zeitzone wählen. Dann werden die Uhr oben rechts und alle Daten und Uhrzeiten im Spiel (z. B. kommende Rennen und der Posteingang) in deiner Zeit angezeigt. Die Countdowns auf dem Transfermarkt stimmen immer, unabhängig von der Zeitzone. Die Ereignisse selbst finden weiterhin um 20:00 Uhr schwedischer Zeit statt.",
                 manIntroMan: "<strong>Montag 20:00 Uhr</strong> – Trainingsrennen für angemeldete Fahrer",
                 manIntroOns: "<strong>Mittwoch 20:00 Uhr</strong> – Qualifying",
                 manIntroFre: "<strong>Freitag 20:00 Uhr</strong> – Rennen",
@@ -22187,7 +22353,7 @@
                 manSerierP2: "<strong>Serien & die Serienpyramide:</strong> Das Spiel hat fünf Ebenen: <strong>Undercut Masters League</strong> (1 Gruppe, 10 Teams), <strong>Division 2</strong> (2 Gruppen mit je 10 Teams), <strong>Division 3</strong> (4 Gruppen mit je 10 Teams), <strong>Division 4</strong> (8 Gruppen mit je 10 Teams) und <strong>Division 5</strong> (16 Gruppen mit je 10 Teams) – insgesamt 310 Teams. Du trittst gegen andere Menschen an – jedes Team wird von einem echten Manager geführt. Du kannst auf jedes Team in der Tabelle klicken, um dessen Teamseite Auto für Auto anzusehen.",
                 manSerierP3: "<strong>Auf- und Abstieg:</strong> Wenn eine Saison mit 10 Rennen beendet ist, steigt in jeder Gruppe (außer der Undercut Masters League) der Sieger in die Division darüber auf. Zusätzlich steigen die besten Zweitplatzierten der Division auf – so viele, wie es Gruppen in der Division darüber gibt (1 aus Division 2, 2 aus Division 3, 4 aus Division 4 und 8 aus Division 5). Die Zweitplatzierten werden nach Punkten gereiht; bei Punktgleichheit entscheiden die Punkte des besten Autos. In jeder Gruppe (außer Division 5, der niedrigsten Ebene) steigen die 3 schlechtesten Teams in die Division darunter ab, vorrangig in die beiden mit dieser Gruppe verknüpften Gruppen. So bleibt die Anzahl der Teams in jeder Gruppe stets bei 10. Den aktuellen Stand der Zweitplatzierten findest du unter Liga → Tabelle → Beste Zweite.",
                 manSerierP4: "<strong>Strecken & Rennen:</strong> Jede Saison besteht aus 10 Rennen, bei denen die Teams derselben Gruppe abwechselnd auf ihren Heimstrecken gastgeben. Streckenlänge und Anzahl der Kurven beeinflussen, wie stark jede Komponente in diesem speziellen Rennen zählt.",
-                manSerierP5: "<strong>Wochenplan:</strong> Jede Woche folgt demselben Zyklus: <strong>Montag um 20:00 Uhr</strong> läuft das Trainingsrennen, <strong>Mittwoch um 20:00 Uhr</strong> läuft das Qualifying, <strong>Freitag um 20:00 Uhr</strong> läuft das eigentliche Rennen, und <strong>Sonntag um 20:00 Uhr</strong> aktualisieren sich die Finanzen. Alles geschieht automatisch, sobald die Uhrzeit erreicht ist – es gibt keine Schaltfläche, um irgendetwas davon selbst auszulösen. Alle Zeiten sind schwedische Zeit (MEZ/MESZ).",
+                manSerierP5: "<strong>Wochenplan:</strong> Jede Woche folgt demselben Zyklus: <strong>Montag um 20:00 Uhr</strong> läuft das Trainingsrennen, <strong>Mittwoch um 20:00 Uhr</strong> läuft das Qualifying, <strong>Freitag um 20:00 Uhr</strong> läuft das eigentliche Rennen, und <strong>Sonntag um 20:00 Uhr</strong> aktualisieren sich die Finanzen. Alles geschieht automatisch, sobald die Uhrzeit erreicht ist – es gibt keine Schaltfläche, um irgendetwas davon selbst auszulösen. Alle Zeiten sind schwedische Zeit (GMT+1, Sommerzeit GMT+2).",
                 manSerierP6: "<strong>Heimstrecke & Streckenrekorde:</strong> Unter dem Reiter Arena kannst du die Kurvenzahl (5-20) und Länge (2,0-8,0 km) deiner eigenen Heimstrecke frei anpassen und sie umbenennen (100.000 kr) – die Änderung gilt nur für zukünftige, noch nicht qualifizierte Rennen. Mehr Kurven begünstigen Aerodynamik/Reifen/Fahrverhalten, eine längere Strecke begünstigt den Motor, benötigt aber mehr Kraftstoff. Jede Arena hat ihren eigenen Streckenrekord (schnellstes je dort gefahrenes Rennen, unabhängig davon, welches Team ihn fuhr), sichtbar, wenn du dir das gastgebende Team ansiehst.",
                 manSerierP7: "<strong>Transferhistorie:</strong> Unter dem Reiter Markt findest du ein Protokoll aller abgeschlossenen Käufe und Verkäufe in der Serie (wer verkauft wurde, von welchem zu welchem Team und zu welchem Endpreis) – dies ist die Liste, die durch die oben beschriebenen Auktionen entsteht.",
                 manEgenskaperTitel: "Eigenschaften & Training",
@@ -22482,7 +22648,7 @@
                 kontoSerierFormatRubrik: "Championnats & format",
                 kontoSerierFormatP1: "Le jeu comporte cinq niveaux : <strong>la Ligue supérieure</strong> (1 groupe, 10 équipes), <strong>Division 2</strong> (2 groupes de 10 équipes), <strong>Division 3</strong> (4 groupes de 10 équipes), <strong>Division 4</strong> (8 groupes de 10 équipes) et <strong>Division 5</strong> (16 groupes de 10 équipes) – 310 équipes au total. Une saison compte 10 semaines (10 courses).",
                 kontoSerierFormatP2: "<strong>Montées et descentes :</strong> À la fin de la saison, dans chaque groupe (sauf la Ligue supérieure), le vainqueur du groupe monte dans la division supérieure, avec les meilleurs deuxièmes de la division. Dans chaque groupe (sauf Division 5), les 3 pires équipes descendent dans la division inférieure. Chaque groupe compte toujours 10 équipes.",
-                kontoSerierFormatP3: "<strong>Programme hebdomadaire :</strong> lundi 20h00 course d'entraînement, mercredi 20h00 qualifications, vendredi 20h00 course, dimanche 20h00 mise à jour financière – tout se déroule automatiquement. Toutes les heures sont en heure suédoise (CET/CEST).",
+                kontoSerierFormatP3: "<strong>Programme hebdomadaire :</strong> lundi 20h00 course d'entraînement, mercredi 20h00 qualifications, vendredi 20h00 course, dimanche 20h00 mise à jour financière – tout se déroule automatiquement. Toutes les heures sont en heure suédoise (GMT+1, heure d’été GMT+2).",
                 kontoPoangTavlingRubrik: "Points & compétition",
                 kontoPoangTavlingP1: "À chaque course, toutes les voitures (deux par équipe) concourent individuellement pour la position. Les 10 meilleures voitures marquent des points selon <strong>25-18-15-12-10-8-6-4-2-1</strong>. Le score total de l'équipe est la somme des deux voitures. Les points sont remis à zéro avant chaque nouvelle saison.",
                 kontoPoangTavlingP2: "<strong>Règles entre les saisons :</strong> Après chaque saison terminée, l'un des cinq composants de la voiture (pneus, moteur, aérodynamique, boîte de vitesses, châssis – dans cet ordre) est réduit de moitié pour TOUTES les équipes du jeu, selon un cycle de 5 saisons. La règle ne touche jamais la Saison 1 et s'applique exactement une fois par numéro de saison.",
@@ -22516,7 +22682,7 @@
                 kontoValutaIntro: "Choisissez la devise dans laquelle les montants doivent être affichés. L'économie du jeu reste toujours identique en interne – cela contrôle uniquement l'affichage des chiffres, à un taux de change fixe : 10 SEK = 1 USD = 1 EUR = 1 GBP.",
                 kontoTidszonRubrik: "Fuseau horaire",
                 kontoTidszonIntro: "Choisissez le fuseau horaire dans lequel l’horloge ainsi que les dates et heures du jeu sont affichées. Les événements eux-mêmes (course, qualifications, entraînement et mise à jour financière) ont toujours lieu à 20h00, heure suédoise – ce réglage ne modifie que l’affichage des heures.",
-                tidszonSverige: "Heure suédoise (Stockholm)",
+                tidszonSverige: "Heure suédoise – Stockholm (GMT+1, heure d’été GMT+2)",
                 tidszonAuto: "Automatique (fuseau horaire de votre appareil)",
                 kontoCookiesRubrik: "Cookies",
                 kontoCookiesIntro: "Gérez les cookies que vous autorisez (nécessaires, statistiques et publicités personnalisées).",
@@ -22818,7 +22984,7 @@
                 appTavlingsregelLabel: "Règle de compétition :",
                 appValjSerieBeskrivning: "Choisissez la série/le groupe à afficher. 10 équipes par groupe, chacune avec deux voitures.",
                 appRaceschemaLabel: "Calendrier des courses (Saison",
-                appRaceschemaBeskrivning: "La course d'entraînement se déroule automatiquement le lundi à 20h00, les qualifications de chaque course automatiquement le mercredi à 20h00, la course elle-même automatiquement le vendredi à 20h00, et les finances se mettent à jour automatiquement le dimanche à 20h00. Cliquez sur une course pour voir la grille de départ ou le résultat. Toutes les heures sont en heure suédoise (CET/CEST).",
+                appRaceschemaBeskrivning: "La course d'entraînement se déroule automatiquement le lundi à 20h00, les qualifications de chaque course automatiquement le mercredi à 20h00, la course elle-même automatiquement le vendredi à 20h00, et les finances se mettent à jour automatiquement le dimanche à 20h00. Cliquez sur une course pour voir la grille de départ ou le résultat. Toutes les heures sont en heure suédoise (GMT+1, heure d’été GMT+2).",
                 appForumLabel: "Forum –",
                 appForumBeskrivning: "Discutez avec les autres équipes de la série que vous consultez actuellement ci-dessus. Les messages sont enregistrés par série sous forme de journal de discussion.",
                 appForumPlaceholder: "Écrire un message...",
@@ -22937,7 +23103,7 @@
                 manIntroTitel: "Bien démarrer : comment fonctionnent le jeu et la navigation",
                 manIntroP1: "Vous dirigez votre propre écurie à travers les divisions, face à d'autres personnes – de vrais managers du monde entier. Vous recrutez des pilotes, des mécaniciens et des ingénieurs, améliorez la voiture, définissez votre tactique avant la compétition – et le jeu se charge automatiquement du reste chaque semaine selon le calendrier ci-dessous.",
                 manIntroSchemaTitel: "Le calendrier hebdomadaire (entièrement automatique, heure suédoise) :",
-                manIntroTidszon: "<strong>Fuseau horaire :</strong> Toutes les heures du jeu – courses, qualifications, entraînement, mise à jour financière et appels aux recruteurs – sont en <strong>heure suédoise</strong> (CET/CEST). Dans <strong>Mon compte → Paramètres → Fuseau horaire</strong>, vous pouvez choisir votre propre fuseau horaire. L’horloge en haut à droite ainsi que toutes les dates et heures du jeu (par ex. les prochaines courses et la boîte de réception) s’affichent alors dans votre heure. Les comptes à rebours du marché des transferts sont toujours exacts, quel que soit votre fuseau horaire. Les événements eux-mêmes ont toujours lieu à 20h00, heure suédoise.",
+                manIntroTidszon: "<strong>Fuseau horaire :</strong> Toutes les heures du jeu – courses, qualifications, entraînement, mise à jour financière et appels aux recruteurs – sont en <strong>heure suédoise</strong> (GMT+1, heure d’été GMT+2). Dans <strong>Mon compte → Paramètres → Fuseau horaire</strong>, vous pouvez choisir votre propre fuseau horaire. L’horloge en haut à droite ainsi que toutes les dates et heures du jeu (par ex. les prochaines courses et la boîte de réception) s’affichent alors dans votre heure. Les comptes à rebours du marché des transferts sont toujours exacts, quel que soit votre fuseau horaire. Les événements eux-mêmes ont toujours lieu à 20h00, heure suédoise.",
                 manIntroMan: "<strong>Lundi 20h00</strong> – course d'entraînement pour les pilotes inscrits",
                 manIntroOns: "<strong>Mercredi 20h00</strong> – qualifications",
                 manIntroFre: "<strong>Vendredi 20h00</strong> – course",
@@ -22971,7 +23137,7 @@
                 manSerierP2: "<strong>Séries & pyramide des séries :</strong> Le jeu compte cinq niveaux : <strong>Undercut Masters League</strong> (1 groupe, 10 équipes), <strong>Division 2</strong> (2 groupes de 10 équipes), <strong>Division 3</strong> (4 groupes de 10 équipes), <strong>Division 4</strong> (8 groupes de 10 équipes) et <strong>Division 5</strong> (16 groupes de 10 équipes) – 310 équipes au total. Vous affrontez d'autres personnes – chaque équipe est dirigée par un vrai manager. Vous pouvez cliquer sur n'importe quelle équipe du classement pour consulter sa page d'équipe, voiture par voiture.",
                 manSerierP3: "<strong>Promotion et relégation :</strong> Lorsqu’une saison de 10 courses se termine, dans chaque groupe (sauf l'Undercut Masters League), le vainqueur est promu dans la division supérieure. En outre, les meilleurs deuxièmes de la division montent – autant qu’il y a de groupes dans la division supérieure (1 de la Division 2, 2 de la Division 3, 4 de la Division 4 et 8 de la Division 5). Les deuxièmes sont classés aux points ; en cas d’égalité, les points de la meilleure voiture départagent. Dans chaque groupe (sauf la Division 5, le niveau le plus bas), les 3 pires équipes sont reléguées dans la division inférieure, en priorité dans les deux groupes liés à ce groupe. Cela permet de toujours garder 10 équipes dans chaque groupe. Le classement actuel des deuxièmes se trouve sous Championnat → Classement → Meilleurs deuxièmes.",
                 manSerierP4: "<strong>Circuits & Courses :</strong> Chaque saison compte 10 courses où les équipes du même groupe accueillent chacune leur tour sur leur circuit à domicile. La longueur du circuit et le nombre de virages déterminent l'importance de chaque composant pour cette course en particulier.",
-                manSerierP5: "<strong>Calendrier hebdomadaire :</strong> Chaque semaine suit le même cycle : <strong>le lundi à 20h00</strong>, la course d'entraînement se déroule, <strong>le mercredi à 20h00</strong>, les qualifications se déroulent, <strong>le vendredi à 20h00</strong>, la course elle-même se déroule, et <strong>le dimanche à 20h00</strong>, les finances se mettent à jour. Tout se passe automatiquement à l'heure dite – il n'y a aucun bouton pour déclencher vous-même l'un de ces événements. Toutes les heures sont en heure suédoise (CET/CEST).",
+                manSerierP5: "<strong>Calendrier hebdomadaire :</strong> Chaque semaine suit le même cycle : <strong>le lundi à 20h00</strong>, la course d'entraînement se déroule, <strong>le mercredi à 20h00</strong>, les qualifications se déroulent, <strong>le vendredi à 20h00</strong>, la course elle-même se déroule, et <strong>le dimanche à 20h00</strong>, les finances se mettent à jour. Tout se passe automatiquement à l'heure dite – il n'y a aucun bouton pour déclencher vous-même l'un de ces événements. Toutes les heures sont en heure suédoise (GMT+1, heure d’été GMT+2).",
                 manSerierP6: "<strong>Circuit à domicile & records de circuit :</strong> Sous l'onglet Arène, vous pouvez librement reconfigurer le nombre de virages (5-20) et la longueur (2,0-8,0 km) de votre propre circuit à domicile, et le renommer (100 000 kr) – le changement ne s'applique qu'aux courses futures, pas encore qualifiées. Plus de virages favorisent l'aéro/les pneus/la maniabilité, un circuit plus long favorise le moteur mais nécessite plus de carburant. Chaque arène possède son propre record de circuit (course la plus rapide jamais disputée là-bas, quelle que soit l'équipe qui l'a réalisée), visible en consultant l'équipe hôte.",
                 manSerierP7: "<strong>Historique des transferts :</strong> Sous l'onglet Marché, vous trouverez un journal de tous les achats et ventes conclus dans la série (qui a été vendu, de quelle équipe à quelle équipe, et le prix final) – il s'agit de la liste résultant des enchères décrites ci-dessus.",
                 manEgenskaperTitel: "Caractéristiques & entraînement",
@@ -23266,7 +23432,7 @@
                 kontoSerierFormatRubrik: "Ligas y formato",
                 kontoSerierFormatP1: "El juego tiene cinco niveles: <strong>la Liga superior</strong> (1 grupo, 10 equipos), <strong>División 2</strong> (2 grupos de 10 equipos), <strong>División 3</strong> (4 grupos de 10 equipos), <strong>División 4</strong> (8 grupos de 10 equipos) y <strong>División 5</strong> (16 grupos de 10 equipos) – 310 equipos en total. Una temporada consta de 10 semanas (10 carreras).",
                 kontoSerierFormatP2: "<strong>Ascensos y descensos:</strong> Al final de la temporada, en cada grupo (excepto la Liga superior) el ganador del grupo asciende a la división superior junto con los mejores segundos de la división. En cada grupo (excepto División 5) los 3 peores equipos descienden a la división inferior. Cada grupo tiene siempre 10 equipos.",
-                kontoSerierFormatP3: "<strong>Calendario semanal:</strong> lunes 20:00 carrera de entrenamiento, miércoles 20:00 clasificación, viernes 20:00 carrera, domingo 20:00 actualización financiera – todo ocurre automáticamente. Todas las horas son en hora sueca (CET/CEST).",
+                kontoSerierFormatP3: "<strong>Calendario semanal:</strong> lunes 20:00 carrera de entrenamiento, miércoles 20:00 clasificación, viernes 20:00 carrera, domingo 20:00 actualización financiera – todo ocurre automáticamente. Todas las horas son en hora sueca (GMT+1, horario de verano GMT+2).",
                 kontoPoangTavlingRubrik: "Puntos y competición",
                 kontoPoangTavlingP1: "En cada carrera, todos los coches (dos por equipo) compiten individualmente por la posición. Los 10 mejores coches puntúan según <strong>25-18-15-12-10-8-6-4-2-1</strong>. La puntuación total del equipo es la suma de ambos coches. Los puntos se reinician antes de cada nueva temporada.",
                 kontoPoangTavlingP2: "<strong>Reglas entre temporadas:</strong> Al finalizar cada temporada, uno de los cinco componentes del coche (Neumáticos, Motor, Aerodinámica, Caja de cambios, Chasis – en ese orden) se reduce a la mitad para TODOS los equipos del juego, en un ciclo rotativo de 5 temporadas. La regla nunca afecta a la Temporada 1 y se aplica exactamente una vez por número de temporada.",
@@ -23300,7 +23466,7 @@
                 kontoValutaIntro: "Elige en qué moneda deben mostrarse los importes. La economía del juego es siempre la misma internamente – esto solo controla cómo se muestran las cifras, a un tipo de cambio fijo: 10 SEK = 1 USD = 1 EUR = 1 GBP.",
                 kontoTidszonRubrik: "Zona horaria",
                 kontoTidszonIntro: "Elige en qué zona horaria se muestran el reloj y las fechas y horas del juego. Los eventos en sí (carrera, clasificación, entrenamiento y actualización financiera) siempre ocurren a las 20:00, hora sueca; esto solo cambia cómo se te muestran las horas.",
-                tidszonSverige: "Hora sueca (Estocolmo)",
+                tidszonSverige: "Hora sueca – Estocolmo (GMT+1, horario de verano GMT+2)",
                 tidszonAuto: "Automática (zona horaria de tu dispositivo)",
                 kontoCookiesRubrik: "Cookies",
                 kontoCookiesIntro: "Gestiona qué cookies permites (necesarias, estadísticas y anuncios personalizados).",
@@ -23602,7 +23768,7 @@
                 appTavlingsregelLabel: "Norma de competición:",
                 appValjSerieBeskrivning: "Elige qué serie/grupo ver. 10 equipos por grupo, cada uno con dos coches.",
                 appRaceschemaLabel: "Calendario de carreras (Temporada",
-                appRaceschemaBeskrivning: "La carrera de entrenamiento se disputa automáticamente los lunes a las 20:00, la clasificación de cada carrera automáticamente los miércoles a las 20:00, la carrera en sí automáticamente los viernes a las 20:00, y las finanzas se actualizan automáticamente los domingos a las 20:00. Haz clic en una carrera para ver la parrilla de salida o el resultado. Todas las horas son en hora sueca (CET/CEST).",
+                appRaceschemaBeskrivning: "La carrera de entrenamiento se disputa automáticamente los lunes a las 20:00, la clasificación de cada carrera automáticamente los miércoles a las 20:00, la carrera en sí automáticamente los viernes a las 20:00, y las finanzas se actualizan automáticamente los domingos a las 20:00. Haz clic en una carrera para ver la parrilla de salida o el resultado. Todas las horas son en hora sueca (GMT+1, horario de verano GMT+2).",
                 appForumLabel: "Foro –",
                 appForumBeskrivning: "Habla con los demás equipos de la serie que estás viendo arriba. Los mensajes se guardan por serie como un registro de chat.",
                 appForumPlaceholder: "Escribe un mensaje...",
@@ -23721,7 +23887,7 @@
                 manIntroTitel: "Primeros pasos: cómo funcionan el juego y la navegación",
                 manIntroP1: "Diriges tu propio equipo de carreras a través de las divisiones, compitiendo contra otras personas: mánagers reales de todo el mundo. Contratas pilotos, mecánicos e ingenieros, mejoras el coche, defines tu táctica antes de competir – y el juego se encarga automáticamente del resto cada semana según el calendario siguiente.",
                 manIntroSchemaTitel: "El calendario semanal (totalmente automático, hora sueca):",
-                manIntroTidszon: "<strong>Zona horaria:</strong> Todas las horas del juego – carreras, clasificación, entrenamiento, actualización financiera y llamadas a los ojeadores – están en <strong>hora sueca</strong> (CET/CEST). En <strong>Mi cuenta → Configuración → Zona horaria</strong> puedes elegir tu propia zona horaria. El reloj de arriba a la derecha y todas las fechas y horas del juego (p. ej. las próximas carreras y la bandeja de entrada) se mostrarán entonces en tu hora. Las cuentas atrás del mercado de fichajes siempre son correctas, sea cual sea tu zona horaria. Los eventos en sí siguen ocurriendo a las 20:00, hora sueca.",
+                manIntroTidszon: "<strong>Zona horaria:</strong> Todas las horas del juego – carreras, clasificación, entrenamiento, actualización financiera y llamadas a los ojeadores – están en <strong>hora sueca</strong> (GMT+1, horario de verano GMT+2). En <strong>Mi cuenta → Configuración → Zona horaria</strong> puedes elegir tu propia zona horaria. El reloj de arriba a la derecha y todas las fechas y horas del juego (p. ej. las próximas carreras y la bandeja de entrada) se mostrarán entonces en tu hora. Las cuentas atrás del mercado de fichajes siempre son correctas, sea cual sea tu zona horaria. Los eventos en sí siguen ocurriendo a las 20:00, hora sueca.",
                 manIntroMan: "<strong>Lunes 20:00</strong> – carrera de entrenamiento para los pilotos inscritos",
                 manIntroOns: "<strong>Miércoles 20:00</strong> – clasificación",
                 manIntroFre: "<strong>Viernes 20:00</strong> – carrera",
@@ -23755,7 +23921,7 @@
                 manSerierP2: "<strong>Series y la pirámide de series:</strong> El juego tiene cinco niveles: <strong>Undercut Masters League</strong> (1 grupo, 10 equipos), <strong>División 2</strong> (2 grupos de 10 equipos), <strong>División 3</strong> (4 grupos de 10 equipos), <strong>División 4</strong> (8 grupos de 10 equipos) y <strong>División 5</strong> (16 grupos de 10 equipos): 310 equipos en total. Compites contra otras personas: cada equipo lo dirige un mánager real. Puedes hacer clic en cualquier equipo de la clasificación para ver su página de equipo, coche por coche.",
                 manSerierP3: "<strong>Ascenso y descenso:</strong> Cuando termina una temporada de 10 carreras, en cada grupo (excepto la Undercut Masters League) el ganador asciende a la división superior. Además, ascienden los mejores segundos de la división – tantos como grupos hay en la división superior (1 de la División 2, 2 de la División 3, 4 de la División 4 y 8 de la División 5). Los segundos se clasifican por puntos; en caso de empate deciden los puntos del mejor coche. En cada grupo (excepto la División 5, el nivel más bajo), los 3 peores equipos descienden a la división inferior, preferentemente a los dos grupos vinculados a ese grupo. Así el número de equipos en cada grupo se mantiene siempre en 10. La clasificación actual de los segundos está en Liga → Clasificación → Mejores segundos.",
                 manSerierP4: "<strong>Circuitos y carreras:</strong> Cada temporada consta de 10 carreras en las que los equipos del mismo grupo se turnan como anfitriones en sus circuitos locales. La longitud del circuito y el número de curvas afectan a cuánto importa cada componente en esa carrera en concreto.",
-                manSerierP5: "<strong>Calendario semanal:</strong> Cada semana sigue el mismo ciclo: <strong>el lunes a las 20:00</strong> se disputa la carrera de entrenamiento, <strong>el miércoles a las 20:00</strong> se disputa la clasificación, <strong>el viernes a las 20:00</strong> se disputa la carrera en sí, y <strong>el domingo a las 20:00</strong> se actualizan las finanzas. Todo ocurre automáticamente cuando llega la hora – no hay ningún botón para ejecutar nada de esto tú mismo. Todas las horas son en hora sueca (CET/CEST).",
+                manSerierP5: "<strong>Calendario semanal:</strong> Cada semana sigue el mismo ciclo: <strong>el lunes a las 20:00</strong> se disputa la carrera de entrenamiento, <strong>el miércoles a las 20:00</strong> se disputa la clasificación, <strong>el viernes a las 20:00</strong> se disputa la carrera en sí, y <strong>el domingo a las 20:00</strong> se actualizan las finanzas. Todo ocurre automáticamente cuando llega la hora – no hay ningún botón para ejecutar nada de esto tú mismo. Todas las horas son en hora sueca (GMT+1, horario de verano GMT+2).",
                 manSerierP6: "<strong>Circuito local y récords de circuito:</strong> En la pestaña Arena puedes reconfigurar libremente el número de curvas (5-20) y la longitud (2,0-8,0 km) de tu propio circuito local, y renombrarlo (100.000 kr) – el cambio solo se aplica a carreras futuras aún no clasificadas. Más curvas favorecen la aerodinámica/los neumáticos/el manejo, un circuito más largo favorece al motor pero necesita más combustible. Cada arena tiene su propio récord de circuito (la carrera más rápida jamás disputada allí, sea cual sea el equipo que la logró), visible al consultar al equipo anfitrión.",
                 manSerierP7: "<strong>Historial de traspasos:</strong> En la pestaña Mercado encontrarás un registro de todas las compras y ventas completadas en la serie (quién fue vendido, de qué equipo a qué equipo, y el precio final) – esta es la lista resultante de las subastas descritas arriba.",
                 manEgenskaperTitel: "Atributos y entrenamiento",
@@ -24039,7 +24205,7 @@
                 kontoSerierFormatRubrik: 'Ligi i format',
                 kontoSerierFormatP1: 'Gra ma pięć poziomów: <strong>Najwyższą ligę</strong> (1 grupa, 10 zespołów), <strong>Dywizję 2</strong> (2 grupy po 10 zespołów), <strong>Dywizję 3</strong> (4 grupy po 10 zespołów), <strong>Dywizję 4</strong> (8 grup po 10 zespołów) i <strong>Dywizję 5</strong> (16 grup po 10 zespołów) – łącznie 310 zespołów. Sezon składa się z 10 tygodni (10 wyścigów).',
                 kontoSerierFormatP2: '<strong>Awanse i spadki:</strong> Po zakończeniu sezonu w każdej grupie (oprócz Najwyższej ligi) 1. miejsce awansuje do dywizji wyżej razem z najlepszymi drugimi miejscami dywizji. W każdej grupie (oprócz Dywizji 5) 3 najsłabsze zespoły spadają do dywizji niżej. Liczba zespołów w każdej grupie zawsze wynosi 10.',
-                kontoSerierFormatP3: '<strong>Harmonogram tygodniowy:</strong> poniedziałek godz. 20:00 wyścig treningowy, środa godz. 20:00 kwalifikacje, piątek godz. 20:00 wyścig, niedziela godz. 20:00 aktualizacja ekonomii – wszystko dzieje się automatycznie. Wszystkie godziny podano w czasie szwedzkim (CET/CEST).',
+                kontoSerierFormatP3: '<strong>Harmonogram tygodniowy:</strong> poniedziałek godz. 20:00 wyścig treningowy, środa godz. 20:00 kwalifikacje, piątek godz. 20:00 wyścig, niedziela godz. 20:00 aktualizacja ekonomii – wszystko dzieje się automatycznie. Wszystkie godziny podano w czasie szwedzkim (GMT+1, czas letni GMT+2).',
                 kontoPoangTavlingRubrik: 'Punkty i rywalizacja',
                 kontoPoangTavlingP1: 'W każdym wyścigu wszystkie bolidy (dwa na zespół) rywalizują indywidualnie o pozycję. 10 najlepszych bolidów otrzymuje punkty według systemu <strong>25-18-15-12-10-8-6-4-2-1</strong>. Suma punktów zespołu to suma punktów obu bolidów. Punkty są zerowane przed każdym nowym sezonem.',
                 kontoPoangTavlingP2: '<strong>Zasady rywalizacji między sezonami:</strong> Po zakończeniu każdego sezonu jeden z pięciu komponentów bolidu (Opony, Silnik, Aerodynamika, Skrzynia biegów, Podwozie – w tej kolejności) zostaje zredukowany o połowę dla WSZYSTKICH zespołów w grze, w rotacyjnym 5-sezonowym cyklu. Zasada nigdy nie dotyczy Sezonu 1 i jest stosowana dokładnie raz na każdy numer sezonu.',
@@ -24073,7 +24239,7 @@
                 kontoValutaIntro: 'Wybierz walutę, w jakiej mają być wyświetlane kwoty. Ekonomia gry jest wewnętrznie zawsze taka sama – to ustawienie zmienia tylko sposób wyświetlania liczb, według stałego kursu: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoTidszonRubrik: "Strefa czasowa",
                 kontoTidszonIntro: "Wybierz, w jakiej strefie czasowej mają być wyświetlane zegar oraz daty i godziny w grze. Same wydarzenia (wyścig, kwalifikacje, trening i aktualizacja finansów) zawsze odbywają się o 20:00 czasu szwedzkiego – to ustawienie zmienia tylko sposób wyświetlania godzin.",
-                tidszonSverige: "Czas szwedzki (Sztokholm)",
+                tidszonSverige: "Czas szwedzki – Sztokholm (GMT+1, czas letni GMT+2)",
                 tidszonAuto: "Automatycznie (strefa czasowa urządzenia)",
                 kontoCookiesRubrik: 'Cookies',
                 kontoCookiesIntro: 'Zarządzaj, na jakie pliki cookie się zgadzasz (niezbędne, statystyczne i spersonalizowane reklamy).',
@@ -24375,7 +24541,7 @@
                 appTavlingsregelLabel: 'Zasada rywalizacji:',
                 appValjSerieBeskrivning: 'Wybierz, którą ligę/grupę chcesz zobaczyć. 10 zespołów na grupę, każdy z dwoma bolidami.',
                 appRaceschemaLabel: 'Harmonogram wyścigów (Sezon',
-                appRaceschemaBeskrivning: 'Wyścig treningowy odbywa się automatycznie w poniedziałki o 20:00, kwalifikacje do każdego wyścigu odbywają się automatycznie w środy o 20:00, wyścig odbywa się automatycznie w piątki o 20:00, a ekonomia aktualizuje się automatycznie w niedziele o 20:00. Kliknij wyścig, aby zobaczyć ustawienie startowe lub wynik. Wszystkie godziny podano w czasie szwedzkim (CET/CEST).',
+                appRaceschemaBeskrivning: 'Wyścig treningowy odbywa się automatycznie w poniedziałki o 20:00, kwalifikacje do każdego wyścigu odbywają się automatycznie w środy o 20:00, wyścig odbywa się automatycznie w piątki o 20:00, a ekonomia aktualizuje się automatycznie w niedziele o 20:00. Kliknij wyścig, aby zobaczyć ustawienie startowe lub wynik. Wszystkie godziny podano w czasie szwedzkim (GMT+1, czas letni GMT+2).',
                 appForumLabel: 'Forum –',
                 appForumBeskrivning: 'Dyskutuj z innymi zespołami w lidze, którą właśnie oglądasz powyżej. Wpisy są zapisywane osobno dla każdej ligi jako dziennik czatu.',
                 appForumPlaceholder: 'Napisz wiadomość...',
@@ -24505,7 +24671,7 @@
                 manIntroTitel: 'Pierwsze kroki: jak działa gra i nawigacja',
                 manIntroP1: 'Prowadzisz własny zespół wyścigowy przez kolejne dywizje, rywalizując z innymi ludźmi – prawdziwymi menedżerami z całego świata. Zatrudniasz kierowców, mechaników i inżynierów, ulepszasz bolid, ustawiasz taktykę przed rywalizacją – a grą zajmuje się resztą automatycznie każdego tygodnia zgodnie z poniższym harmonogramem.',
                 manIntroSchemaTitel: "Harmonogram tygodniowy (dzieje się całkowicie automatycznie, czas szwedzki):",
-                manIntroTidszon: "<strong>Strefa czasowa:</strong> Wszystkie godziny w grze – wyścigi, kwalifikacje, trening, aktualizacja finansów i telefony do skautów – podane są w <strong>czasie szwedzkim</strong> (CET/CEST). W <strong>Moje konto → Ustawienia → Strefa czasowa</strong> możesz wybrać własną strefę czasową. Zegar w prawym górnym rogu oraz wszystkie daty i godziny w grze (np. nadchodzące wyścigi i skrzynka odbiorcza) będą wtedy pokazywane w Twoim czasie. Odliczania na rynku transferowym są zawsze prawidłowe, niezależnie od strefy czasowej. Same wydarzenia nadal odbywają się o 20:00 czasu szwedzkiego.",
+                manIntroTidszon: "<strong>Strefa czasowa:</strong> Wszystkie godziny w grze – wyścigi, kwalifikacje, trening, aktualizacja finansów i telefony do skautów – podane są w <strong>czasie szwedzkim</strong> (GMT+1, czas letni GMT+2). W <strong>Moje konto → Ustawienia → Strefa czasowa</strong> możesz wybrać własną strefę czasową. Zegar w prawym górnym rogu oraz wszystkie daty i godziny w grze (np. nadchodzące wyścigi i skrzynka odbiorcza) będą wtedy pokazywane w Twoim czasie. Odliczania na rynku transferowym są zawsze prawidłowe, niezależnie od strefy czasowej. Same wydarzenia nadal odbywają się o 20:00 czasu szwedzkiego.",
                 manIntroMan: '<strong>Poniedziałek 20:00</strong> – wyścig treningowy dla zgłoszonych kierowców',
                 manIntroOns: '<strong>Środa 20:00</strong> – kwalifikacje',
                 manIntroFre: '<strong>Piątek 20:00</strong> – wyścig',
@@ -24539,7 +24705,7 @@
                 manSerierP2: "<strong>Serie i piramida serii:</strong> Gra ma pięć poziomów: <strong>Undercut Masters League</strong> (1 grupa, 10 zespołów), <strong>Dywizja 2</strong> (2 grupy po 10 zespołów), <strong>Dywizja 3</strong> (4 grupy po 10 zespołów), <strong>Dywizja 4</strong> (8 grup po 10 zespołów) i <strong>Dywizja 5</strong> (16 grup po 10 zespołów) – łącznie 310 zespołów. Rywalizujesz z innymi ludźmi – każdym zespołem kieruje prawdziwy menedżer. Możesz kliknąć dowolny zespół w tabeli, aby obejrzeć jego stronę zespołu, bolid po bolidzie.",
                 manSerierP3: "<strong>Awanse i spadki:</strong> Gdy sezon liczący 10 wyścigów się kończy, w każdej grupie (oprócz Undercut Masters League) 1. miejsce awansuje do dywizji wyżej. Dodatkowo awansują najlepsze drugie miejsca dywizji – tyle, ile jest grup w dywizji wyżej (1 z Dywizji 2, 2 z Dywizji 3, 4 z Dywizji 4 i 8 z Dywizji 5). Drugie miejsca są uszeregowane według punktów; przy równej liczbie punktów decydują punkty najlepszego bolidu. W każdej grupie (oprócz Dywizji 5, będącej najniższym poziomem) 3 najsłabsze zespoły spadają do dywizji niżej, przede wszystkim do dwóch grup powiązanych z tą grupą. Dzięki temu liczba zespołów w każdej grupie zawsze wynosi 10. Aktualny ranking drugich miejsc znajdziesz w Liga → Tabela → Najlepsze drugie miejsca.",
                 manSerierP4: '<strong>Tory i wyścigi:</strong> Każdy sezon składa się z 10 wyścigów, w których zespoły z tej samej grupy na zmianę goszczą wyścigi na swoich torach domowych. Długość toru i liczba zakrętów wpływają na to, jak duże znaczenie ma każdy komponent w danym wyścigu.',
-                manSerierP5: '<strong>Harmonogram tygodniowy:</strong> Każdy tydzień przebiega według tego samego cyklu: <strong>poniedziałek o 20:00</strong> odbywa się wyścig treningowy, <strong>środa o 20:00</strong> odbywają się kwalifikacje, <strong>piątek o 20:00</strong> odbywa się sam wyścig, a <strong>niedziela o 20:00</strong> aktualizowana jest ekonomia. Wszystko dzieje się automatycznie w grze, gdy wybije godzina – nie ma przycisku, by cokolwiek z tego uruchomić samodzielnie. Wszystkie godziny podano w czasie szwedzkim (CET/CEST).',
+                manSerierP5: '<strong>Harmonogram tygodniowy:</strong> Każdy tydzień przebiega według tego samego cyklu: <strong>poniedziałek o 20:00</strong> odbywa się wyścig treningowy, <strong>środa o 20:00</strong> odbywają się kwalifikacje, <strong>piątek o 20:00</strong> odbywa się sam wyścig, a <strong>niedziela o 20:00</strong> aktualizowana jest ekonomia. Wszystko dzieje się automatycznie w grze, gdy wybije godzina – nie ma przycisku, by cokolwiek z tego uruchomić samodzielnie. Wszystkie godziny podano w czasie szwedzkim (GMT+1, czas letni GMT+2).',
                 manSerierP6: '<strong>Tor domowy i rekordy toru:</strong> W zakładce Arena możesz za darmo skonfigurować liczbę zakrętów (5-20) i długość (2,0-8,0 km) swojego toru domowego oraz nadać mu nazwę (100 000 kr) – zmiana dotyczy tylko przyszłych, jeszcze niekwalifikowanych wyścigów. Więcej zakrętów sprzyja aerodynamice/oponom/prowadzeniu, dłuższy tor sprzyja silnikowi, ale wymaga więcej paliwa. Każda arena ma własny rekord toru (najszybszy ukończony wyścig na tym torze, niezależnie od tego, który zespół go pojechał), widoczny podczas oglądania zespołu-gospodarza.',
                 manSerierP7: '<strong>Historia transferów:</strong> W zakładce Rynek znajdziesz dziennik wszystkich zrealizowanych zakupów i sprzedaży w ligach (kto został sprzedany, z jakiego i do jakiego zespołu oraz cena końcowa) – to ta lista jest rozstrzygana przez opisane powyżej aukcje.',
                 manEgenskaperTitel: 'Cechy i trening',
@@ -24823,7 +24989,7 @@
                 kontoSerierFormatRubrik: 'Sarjat ja formaatti',
                 kontoSerierFormatP1: 'Pelissä on viisi tasoa: <strong>Ylin sarja</strong> (1 lohko, 10 joukkuetta), <strong>Divisioona 2</strong> (2 lohkoa, 10 joukkuetta kukin), <strong>Divisioona 3</strong> (4 lohkoa, 10 joukkuetta kukin), <strong>Divisioona 4</strong> (8 lohkoa, 10 joukkuetta kukin) ja <strong>Divisioona 5</strong> (16 lohkoa, 10 joukkuetta kukin) – yhteensä 310 joukkuetta. Kausi koostuu 10 viikosta (10 kilpailua).',
                 kontoSerierFormatP2: '<strong>Nousu ja putoaminen:</strong> Kun kausi on ohi, jokaisesta lohkosta (paitsi Ylimmästä sarjasta) 1. sija nousee yllä olevaan divisioonaan yhdessä divisioonan parhaiden kakkosten kanssa. Jokaisesta lohkosta (paitsi Divisioonasta 5) 3 heikointa joukkuetta putoaa alla olevaan divisioonaan. Joukkueiden määrä lohkoa kohti on aina 10.',
-                kontoSerierFormatP3: '<strong>Viikko-ohjelma:</strong> maanantaisin klo 20.00 harjoituskilpailu, keskiviikkoisin klo 20.00 aika-ajo, perjantaisin klo 20.00 kilpailu, sunnuntaisin klo 20.00 talouspäivitys – kaikki tapahtuu automaattisesti. Kaikki ajat ovat Ruotsin aikaa (CET/CEST).',
+                kontoSerierFormatP3: '<strong>Viikko-ohjelma:</strong> maanantaisin klo 20.00 harjoituskilpailu, keskiviikkoisin klo 20.00 aika-ajo, perjantaisin klo 20.00 kilpailu, sunnuntaisin klo 20.00 talouspäivitys – kaikki tapahtuu automaattisesti. Kaikki ajat ovat Ruotsin aikaa (GMT+1, kesäaikaan GMT+2).',
                 kontoPoangTavlingRubrik: 'Pisteet ja kilpailu',
                 kontoPoangTavlingP1: 'Jokaisessa kilpailussa kaikki autot (kaksi per joukkue) kilpailevat yksilöllisesti sijoituksesta. 10 parasta autoa saa pisteitä järjestelmällä <strong>25-18-15-12-10-8-6-4-2-1</strong>. Joukkueen kokonaispisteet ovat molempien autojen tuoma summa. Pisteet nollataan ennen jokaista uutta kautta.',
                 kontoPoangTavlingP2: '<strong>Kausien väliset kilpailusäännöt:</strong> Jokaisen päättyneen kauden jälkeen yksi auton viidestä komponentista (Renkaat, Moottori, Aerodynamiikka, Vaihteisto, Alusta – tässä järjestyksessä) puolitetaan KAIKILTA pelin joukkueilta rullaavassa 5 kauden syklissä. Sääntö ei koskaan koske Kautta 1 ja sitä sovelletaan tarkalleen kerran jokaista kausinumeroa kohti.',
@@ -24857,7 +25023,7 @@
                 kontoValutaIntro: 'Valitse, missä valuutassa summat näytetään. Pelin talous on sisäisesti aina sama – tämä säätää vain sitä, miten luvut näytetään, kiinteällä vaihtokurssilla: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoTidszonRubrik: "Aikavyöhyke",
                 kontoTidszonIntro: "Valitse, missä aikavyöhykkeessä kello sekä pelin päivämäärät ja kellonajat näytetään. Itse tapahtumat (kilpailu, aika-ajo, harjoitus ja talouspäivitys) tapahtuvat aina klo 20.00 Ruotsin aikaa – tämä vaikuttaa vain siihen, miten ajat näytetään sinulle.",
-                tidszonSverige: "Ruotsin aika (Tukholma)",
+                tidszonSverige: "Ruotsin aika – Tukholma (GMT+1, kesäaikaan GMT+2)",
                 tidszonAuto: "Automaattinen (laitteesi aikavyöhyke)",
                 kontoCookiesRubrik: 'Evästeet',
                 kontoCookiesIntro: 'Hallitse, mitä evästeitä sallit (välttämättömät, tilastointi ja personoidut mainokset).',
@@ -25159,7 +25325,7 @@
                 appTavlingsregelLabel: 'Kilpailusääntö:',
                 appValjSerieBeskrivning: 'Valitse, mitä sarjaa/lohkoa haluat katsoa. 10 joukkuetta per lohko, kullakin kaksi autoa.',
                 appRaceschemaLabel: 'Kilpailuohjelma (Kausi',
-                appRaceschemaBeskrivning: 'Harjoituskilpailu ajetaan automaattisesti maanantaisin klo 20.00, kunkin kilpailun aika-ajo ajetaan automaattisesti keskiviikkoisin klo 20.00, kilpailu ajetaan automaattisesti perjantaisin klo 20.00, ja talous päivittyy automaattisesti sunnuntaisin klo 20.00. Napsauta kilpailua nähdäksesi lähtöasetelman tai tuloksen. Kaikki ajat ovat Ruotsin aikaa (CET/CEST).',
+                appRaceschemaBeskrivning: 'Harjoituskilpailu ajetaan automaattisesti maanantaisin klo 20.00, kunkin kilpailun aika-ajo ajetaan automaattisesti keskiviikkoisin klo 20.00, kilpailu ajetaan automaattisesti perjantaisin klo 20.00, ja talous päivittyy automaattisesti sunnuntaisin klo 20.00. Napsauta kilpailua nähdäksesi lähtöasetelman tai tuloksen. Kaikki ajat ovat Ruotsin aikaa (GMT+1, kesäaikaan GMT+2).',
                 appForumLabel: 'Foorumi –',
                 appForumBeskrivning: 'Keskustele muiden joukkueiden kanssa sarjassa, jota parhaillaan katsot yllä. Viestit tallennetaan sarjakohtaisesti keskusteluloggina.',
                 appForumPlaceholder: 'Kirjoita viesti...',
@@ -25289,7 +25455,7 @@
                 manIntroTitel: 'Aloittaminen: näin peli ja navigointi toimivat',
                 manIntroP1: 'Johdat omaa kilpa-autoilujoukkuettasi divisioonien läpi ja kilpailet muita ihmisiä vastaan – oikeita managereita ympäri maailmaa. Palkkaat kuljettajia, mekaanikoita ja insinöörejä, päivität autoa, asetat taktiikkasi ennen kilpailua – ja peli hoitaa loput automaattisesti joka viikko alla olevan aikataulun mukaan.',
                 manIntroSchemaTitel: "Viikko-ohjelma (tapahtuu täysin automaattisesti, Ruotsin aikaa):",
-                manIntroTidszon: "<strong>Aikavyöhyke:</strong> Kaikki pelin ajat – kilpailut, aika-ajot, harjoitukset, talouspäivitys ja kykyjenetsijöiden puhelut – ovat <strong>Ruotsin aikaa</strong> (CET/CEST). Kohdassa <strong>Oma tili → Asetukset → Aikavyöhyke</strong> voit valita oman aikavyöhykkeesi. Tällöin oikean yläkulman kello sekä kaikki pelin päivämäärät ja kellonajat (esim. tulevat kilpailut ja saapuneet viestit) näytetään sinun ajassasi. Siirtomarkkinoiden lähtölaskennat ovat aina oikein aikavyöhykkeestä riippumatta. Itse tapahtumat tapahtuvat edelleen klo 20.00 Ruotsin aikaa.",
+                manIntroTidszon: "<strong>Aikavyöhyke:</strong> Kaikki pelin ajat – kilpailut, aika-ajot, harjoitukset, talouspäivitys ja kykyjenetsijöiden puhelut – ovat <strong>Ruotsin aikaa</strong> (GMT+1, kesäaikaan GMT+2). Kohdassa <strong>Oma tili → Asetukset → Aikavyöhyke</strong> voit valita oman aikavyöhykkeesi. Tällöin oikean yläkulman kello sekä kaikki pelin päivämäärät ja kellonajat (esim. tulevat kilpailut ja saapuneet viestit) näytetään sinun ajassasi. Siirtomarkkinoiden lähtölaskennat ovat aina oikein aikavyöhykkeestä riippumatta. Itse tapahtumat tapahtuvat edelleen klo 20.00 Ruotsin aikaa.",
                 manIntroMan: '<strong>Maanantai 20.00</strong> – harjoituskilpailu ilmoittautuneille kuljettajille',
                 manIntroOns: '<strong>Keskiviikko 20.00</strong> – aika-ajo',
                 manIntroFre: '<strong>Perjantai 20.00</strong> – kilpailu',
@@ -25323,7 +25489,7 @@
                 manSerierP2: "<strong>Sarjat ja sarjapyramidi:</strong> Pelissä on viisi tasoa: <strong>Undercut Masters League</strong> (1 ryhmä, 10 joukkuetta), <strong>Divisioona 2</strong> (2 ryhmää, kussakin 10 joukkuetta), <strong>Divisioona 3</strong> (4 ryhmää, kussakin 10 joukkuetta), <strong>Divisioona 4</strong> (8 ryhmää, kussakin 10 joukkuetta) ja <strong>Divisioona 5</strong> (16 ryhmää, kussakin 10 joukkuetta) – yhteensä 310 joukkuetta. Kilpailet muita ihmisiä vastaan – jokaista joukkuetta johtaa oikea manageri. Voit napsauttaa mitä tahansa taulukon joukkuetta tarkastellaksesi sen joukkuesivua auto kerrallaan.",
                 manSerierP3: "<strong>Nousu ja putoaminen:</strong> Kun 10 kilpailun kausi on ohi, jokaisesta lohkosta (paitsi Undercut Masters Leaguesta) 1. sija nousee yllä olevaan divisioonaan. Lisäksi divisioonan parhaat kakkoset nousevat – yhtä monta kuin yllä olevassa divisioonassa on lohkoja (1 Divisioonasta 2, 2 Divisioonasta 3, 4 Divisioonasta 4 ja 8 Divisioonasta 5). Kakkoset järjestetään pisteiden mukaan; tasapisteissä ratkaisevat parhaan auton pisteet. Jokaisesta lohkosta (paitsi Divisioonasta 5, joka on alin taso) 3 heikointa joukkuetta putoaa alla olevaan divisioonaan, ensisijaisesti kahteen kyseiseen lohkoon liitettyyn lohkoon. Näin joukkueiden määrä lohkoa kohti pysyy aina 10:ssä. Kakkosten tämänhetkisen tilanteen näet kohdasta Sarja → Sarjataulukko → Parhaat kakkoset.",
                 manSerierP4: '<strong>Radat ja kilpailut:</strong> Jokainen kausi koostuu 10 kilpailusta, joissa saman lohkon joukkueet vuorottelevat isäntinä kotiradoillaan. Radan pituus ja mutkien määrä vaikuttavat siihen, kuinka paljon kukin komponentti merkitsee juuri siinä kilpailussa.',
-                manSerierP5: '<strong>Viikko-ohjelma:</strong> Jokainen viikko noudattaa samaa sykliä: <strong>maanantaina klo 20.00</strong> ajetaan harjoituskilpailu, <strong>keskiviikkona klo 20.00</strong> ajetaan aika-ajo, <strong>perjantaina klo 20.00</strong> ajetaan itse kilpailu, ja <strong>sunnuntaina klo 20.00</strong> talous päivitetään. Kaikki tapahtuu automaattisesti pelin toimesta kellonajan koittaessa – mitään näistä ei tarvitse käynnistää itse painikkeella. Kaikki ajat ovat Ruotsin aikaa (CET/CEST).',
+                manSerierP5: '<strong>Viikko-ohjelma:</strong> Jokainen viikko noudattaa samaa sykliä: <strong>maanantaina klo 20.00</strong> ajetaan harjoituskilpailu, <strong>keskiviikkona klo 20.00</strong> ajetaan aika-ajo, <strong>perjantaina klo 20.00</strong> ajetaan itse kilpailu, ja <strong>sunnuntaina klo 20.00</strong> talous päivitetään. Kaikki tapahtuu automaattisesti pelin toimesta kellonajan koittaessa – mitään näistä ei tarvitse käynnistää itse painikkeella. Kaikki ajat ovat Ruotsin aikaa (GMT+1, kesäaikaan GMT+2).',
                 manSerierP6: '<strong>Kotirata ja rataennätykset:</strong> Areena-välilehdellä voit ilmaiseksi muuttaa oman kotiratasi mutkien määrää (5-20) ja pituutta (2,0-8,0 km) sekä nimetä sen uudelleen (100 000 kr) – muutos koskee vain tulevia, vielä aika-ajamattomia kilpailuja. Useammat mutkat suosivat aerodynamiikkaa/renkaita/ajettavuutta, pidempi rata suosii moottoria mutta vaatii enemmän polttoainetta. Jokaisella areenalla on oma rataennätyksensä (nopein sillä radalla ajettu kilpailu, riippumatta siitä, mikä joukkue sen ajoi), näkyvissä kun katsot isäntäjoukkuetta.',
                 manSerierP7: '<strong>Siirtohistoria:</strong> Markkinat-välilehdeltä löydät lokin kaikista sarjoissa toteutuneista osto- ja myyntitapahtumista (kuka myytiin, mistä ja mihin joukkueeseen sekä lopullinen hinta) – tämän listan ratkaisevat edellä kuvatut huutokaupat.',
                 manEgenskaperTitel: 'Ominaisuudet ja harjoittelu',
@@ -25607,7 +25773,7 @@
                 kontoSerierFormatRubrik: 'Ligák és formátum',
                 kontoSerierFormatP1: 'A játéknak öt szintje van: <strong>Legfelső liga</strong> (1 csoport, 10 csapat), <strong>2. divízió</strong> (2 csoport, csoportonként 10 csapat), <strong>3. divízió</strong> (4 csoport, csoportonként 10 csapat), <strong>4. divízió</strong> (8 csoport, csoportonként 10 csapat) és <strong>5. divízió</strong> (16 csoport, csoportonként 10 csapat) – összesen 310 csapat. Egy szezon 10 hétből (10 versenyből) áll.',
                 kontoSerierFormatP2: '<strong>Fel- és kiesés:</strong> A szezon végén minden csoportból (kivéve a Legfelső ligát) az 1. helyezett a divízió legjobb második helyezettjeivel együtt feljebb kerül a fölötte lévő divízióba. Minden csoportból (kivéve az 5. divíziót) a 3 leggyengébb csapat lekerül az alatta lévő divízióba. A csapatok száma csoportonként mindig 10.',
-                kontoSerierFormatP3: '<strong>Heti menetrend:</strong> hétfőn 20:00-kor edzőverseny, szerdán 20:00-kor időmérő, pénteken 20:00-kor verseny, vasárnap 20:00-kor gazdasági frissítés – minden automatikusan történik. Minden időpont svéd idő szerint értendő (CET/CEST).',
+                kontoSerierFormatP3: '<strong>Heti menetrend:</strong> hétfőn 20:00-kor edzőverseny, szerdán 20:00-kor időmérő, pénteken 20:00-kor verseny, vasárnap 20:00-kor gazdasági frissítés – minden automatikusan történik. Minden időpont svéd idő szerint értendő (GMT+1, nyári időszámítás idején GMT+2).',
                 kontoPoangTavlingRubrik: 'Pontok és verseny',
                 kontoPoangTavlingP1: 'Minden versenyen az összes autó (csapatonként kettő) egyénileg versenyez a helyezésért. A 10 legjobb autó pontot kap a <strong>25-18-15-12-10-8-6-4-2-1</strong> rendszer szerint. A csapat összpontszáma a két autó pontjainak összege. A pontok minden új szezon előtt nullázódnak.',
                 kontoPoangTavlingP2: '<strong>Szezonok közötti versenyszabály:</strong> Minden lezárt szezon után az autó öt komponensének egyike (Gumi, Motor, Aerodinamika, Váltó, Alváz – ebben a sorrendben) megfeleződik a játék MINDEN csapatánál, egy forgó, 5 szezonos ütemtervben. A szabály sosem érinti az 1. szezont, és pontosan egyszer alkalmazandó minden szezonszámra.',
@@ -25641,7 +25807,7 @@
                 kontoValutaIntro: 'Válaszd ki, milyen pénznemben jelenjenek meg az összegek. A játék gazdasága belsőleg mindig ugyanaz marad – ez csak azt szabályozza, hogyan jelennek meg a számok, fix árfolyamon: 10 SEK = 1 USD = 1 EUR = 1 GBP.',
                 kontoTidszonRubrik: "Időzóna",
                 kontoTidszonIntro: "Válaszd ki, melyik időzónában jelenjen meg az óra, valamint a játék dátumai és időpontjai. Maguk az események (futam, időmérő, edzés és pénzügyi frissítés) mindig svéd idő szerint 20:00-kor történnek – ez csak azt szabályozza, hogyan látod az időpontokat.",
-                tidszonSverige: "Svéd idő (Stockholm)",
+                tidszonSverige: "Svéd idő – Stockholm (GMT+1, nyári időszámítás idején GMT+2)",
                 tidszonAuto: "Automatikus (az eszközöd időzónája)",
                 kontoCookiesRubrik: 'Cookie-k',
                 kontoCookiesIntro: 'Kezeld, mely cookie-kat engedélyezed (szükséges, statisztikai és személyre szabott hirdetési).',
@@ -25943,7 +26109,7 @@
                 appTavlingsregelLabel: 'Versenyszabály:',
                 appValjSerieBeskrivning: 'Válaszd ki, melyik ligát/csoportot szeretnéd látni. Csoportonként 10 csapat, mindegyik két autóval.',
                 appRaceschemaLabel: 'Versenymenetrend (Szezon',
-                appRaceschemaBeskrivning: 'Az edzőverseny automatikusan hétfőnként 20:00-kor zajlik, minden verseny időmérője automatikusan szerdánként 20:00-kor zajlik, a verseny automatikusan péntekenként 20:00-kor zajlik, és a gazdaság automatikusan vasárnaponként 20:00-kor frissül. Kattints egy versenyre a rajtsorrend vagy az eredmény megtekintéséhez. Minden időpont svéd idő szerint értendő (CET/CEST).',
+                appRaceschemaBeskrivning: 'Az edzőverseny automatikusan hétfőnként 20:00-kor zajlik, minden verseny időmérője automatikusan szerdánként 20:00-kor zajlik, a verseny automatikusan péntekenként 20:00-kor zajlik, és a gazdaság automatikusan vasárnaponként 20:00-kor frissül. Kattints egy versenyre a rajtsorrend vagy az eredmény megtekintéséhez. Minden időpont svéd idő szerint értendő (GMT+1, nyári időszámítás idején GMT+2).',
                 appForumLabel: 'Fórum –',
                 appForumBeskrivning: 'Beszélgess a többi csapattal abban a ligában, amelyet éppen fent nézel. A bejegyzések ligánként külön chatnaplóként mentődnek.',
                 appForumPlaceholder: 'Írj egy üzenetet...',
@@ -26073,7 +26239,7 @@
                 manIntroTitel: 'Kezdő lépések: így működik a játék és a navigáció',
                 manIntroP1: 'Saját versenycsapatodat vezeted végig a divíziókon, más emberek – valódi menedzserek – ellen a világ minden tájáról. Versenyzőket, szerelőket és mérnököket szerződtetsz, fejleszted az autót, beállítod a taktikádat a versenyek előtt – a játék pedig a többit automatikusan intézi minden héten az alábbi menetrend szerint.',
                 manIntroSchemaTitel: "A heti menetrend (teljesen automatikusan zajlik, svéd idő szerint):",
-                manIntroTidszon: "<strong>Időzóna:</strong> A játék minden időpontja – futamok, időmérő, edzés, pénzügyi frissítés és a megfigyelők hívása – <strong>svéd idő</strong> szerint értendő (CET/CEST). A <strong>Fiókom → Beállítások → Időzóna</strong> alatt kiválaszthatod a saját időzónádat. Ekkor a jobb felső sarokban lévő óra és a játék összes dátuma és időpontja (pl. a következő futamok és a beérkezett üzenetek) a te idődben jelenik meg. Az átigazolási piac visszaszámlálói időzónától függetlenül mindig pontosak. Maguk az események továbbra is svéd idő szerint 20:00-kor történnek.",
+                manIntroTidszon: "<strong>Időzóna:</strong> A játék minden időpontja – futamok, időmérő, edzés, pénzügyi frissítés és a megfigyelők hívása – <strong>svéd idő</strong> szerint értendő (GMT+1, nyári időszámítás idején GMT+2). A <strong>Fiókom → Beállítások → Időzóna</strong> alatt kiválaszthatod a saját időzónádat. Ekkor a jobb felső sarokban lévő óra és a játék összes dátuma és időpontja (pl. a következő futamok és a beérkezett üzenetek) a te idődben jelenik meg. Az átigazolási piac visszaszámlálói időzónától függetlenül mindig pontosak. Maguk az események továbbra is svéd idő szerint 20:00-kor történnek.",
                 manIntroMan: '<strong>Hétfő 20:00</strong> – edzőverseny a nevezett versenyzőknek',
                 manIntroOns: '<strong>Szerda 20:00</strong> – időmérő',
                 manIntroFre: '<strong>Péntek 20:00</strong> – verseny',
@@ -26107,7 +26273,7 @@
                 manSerierP2: "<strong>Sorozatok és a sorozatpiramis:</strong> A játéknak öt szintje van: <strong>Undercut Masters League</strong> (1 csoport, 10 csapat), <strong>2. divízió</strong> (2 csoport, egyenként 10 csapattal), <strong>3. divízió</strong> (4 csoport, egyenként 10 csapattal), <strong>4. divízió</strong> (8 csoport, egyenként 10 csapattal) és <strong>5. divízió</strong> (16 csoport, egyenként 10 csapattal) – összesen 310 csapat. Más emberek ellen versenyzel – minden csapatot egy valódi menedzser irányít. A tabellán bármelyik csapatra kattintva megnézheted a csapatoldalát, autóról autóra.",
                 manSerierP3: "<strong>Fel- és kiesés:</strong> Amikor egy 10 versenyes szezon véget ér, minden csoportból (kivéve az Undercut Masters League-et) az 1. helyezett feljut a fölötte lévő divízióba. Emellett feljutnak a divízió legjobb második helyezettjei is – annyian, ahány csoport van a fölötte lévő divízióban (1 a 2. divízióból, 2 a 3. divízióból, 4 a 4. divízióból és 8 az 5. divízióból). A második helyezetteket pontszám alapján rangsoroljuk; pontegyenlőség esetén a legjobb autó pontjai döntenek. Minden csoportból (kivéve az 5. divíziót, amely a legalsó szint) a 3 leggyengébb csapat kiesik az alatta lévő divízióba, elsősorban a csoporthoz kapcsolódó két csoportba. Ennek eredményeként a csapatok száma csoportonként mindig 10 marad. A második helyezettek aktuális állását a Bajnokság → Tabella → Legjobb másodikok alatt látod.",
                 manSerierP4: '<strong>Pályák és versenyek:</strong> Minden szezon 10 versenyből áll, amelyekben az azonos csoportba tartozó csapatok felváltva rendezik a versenyt a hazai pályájukon. A pálya hossza és a kanyarok száma befolyásolja, hogy az adott versenyen mennyire számít az egyes komponensek.',
-                manSerierP5: '<strong>Heti menetrend:</strong> Minden hét ugyanazt a ciklust követi: <strong>hétfőn 20:00-kor</strong> zajlik az edzőverseny, <strong>szerdán 20:00-kor</strong> zajlik az időmérő, <strong>pénteken 20:00-kor</strong> zajlik maga a verseny, és <strong>vasárnap 20:00-kor</strong> frissül a gazdaság. Minden automatikusan zajlik a játékban, amikor eljön az idő – nincs gomb, amivel ezeket egyénileg futtathatnád. Minden időpont svéd idő szerint értendő (CET/CEST).',
+                manSerierP5: '<strong>Heti menetrend:</strong> Minden hét ugyanazt a ciklust követi: <strong>hétfőn 20:00-kor</strong> zajlik az edzőverseny, <strong>szerdán 20:00-kor</strong> zajlik az időmérő, <strong>pénteken 20:00-kor</strong> zajlik maga a verseny, és <strong>vasárnap 20:00-kor</strong> frissül a gazdaság. Minden automatikusan zajlik a játékban, amikor eljön az idő – nincs gomb, amivel ezeket egyénileg futtathatnád. Minden időpont svéd idő szerint értendő (GMT+1, nyári időszámítás idején GMT+2).',
                 manSerierP6: '<strong>Hazai pálya és pályarekordok:</strong> Az Aréna fülön ingyen átalakíthatod saját hazai pályád kanyarjainak számát (5-20) és hosszát (2,0-8,0 km), valamint átnevezheted (100 000 kr) – a változás csak a jövőbeli, még nem időmért versenyekre vonatkozik. Több kanyar az aerodinamikának/gumiknak/kezelhetőségnek kedvez, a hosszabb pálya a motornak kedvez, de több üzemanyagot igényel. Minden arénának saját pályarekordja van (a legjobb ott lefutott verseny, függetlenül attól, melyik csapat futotta), amely látható a házigazda csapat megtekintésekor.',
                 manSerierP7: '<strong>Átigazolási történet:</strong> A Piac fülön találsz egy naplót az összes lezajlott vásárlásról és eladásról a ligákban (ki lett eladva, melyik csapattól melyikhez, és a végleges ár) – ezt a listát a fent leírt árverések döntik el.',
                 manEgenskaperTitel: 'Tulajdonságok és edzés',
@@ -26391,7 +26557,7 @@
                 kontoSerierFormatRubrik: 'シリーズ＆フォーマット',
                 kontoSerierFormatP1: 'ゲームには5つの階層があります：<strong>ハイエストリーグ</strong>（1グループ、10チーム）、<strong>ディビジョン2</strong>（2グループ×10チーム）、<strong>ディビジョン3</strong>（4グループ×10チーム）、<strong>ディビジョン4</strong>（8グループ×10チーム）、<strong>ディビジョン5</strong>（16グループ×10チーム）――合計310チーム。1シーズンは10週間（10レース）で構成されます。',
                 kontoSerierFormatP2: '<strong>昇格と降格：</strong>シーズンが終わると、各グループ（ハイエストリーグを除く）の1位チームが、ディビジョン内の成績上位の2位チームと共に1つ上のディビジョンに昇格します。各グループ（ディビジョン5を除く）で下位3チームが1つ下のディビジョンに降格します。各グループのチーム数は常に10です。',
-                kontoSerierFormatP3: '<strong>週間スケジュール：</strong>月曜20:00にトレーニングレース、水曜20:00に予選、金曜20:00にレース、日曜20:00に経済更新――すべて自動で行われます。すべての時刻はスウェーデン時間（CET/CEST）です。',
+                kontoSerierFormatP3: '<strong>週間スケジュール：</strong>月曜20:00にトレーニングレース、水曜20:00に予選、金曜20:00にレース、日曜20:00に経済更新――すべて自動で行われます。すべての時刻はスウェーデン時間（GMT+1、夏時間はGMT+2）です。',
                 kontoPoangTavlingRubrik: 'ポイント＆競技',
                 kontoPoangTavlingP1: '各レースでは、すべての車（1チームにつき2台）が個別に順位を争います。上位10台の車には<strong>25-18-15-12-10-8-6-4-2-1</strong>のポイントが与えられます。チームの合計ポイントは両方の車が獲得したポイントの合計です。ポイントは新シーズンの開始前にリセットされます。',
                 kontoPoangTavlingP2: '<strong>シーズン間の競技ルール：</strong>各シーズンの終了後、車の5つのコンポーネント（タイヤ、エンジン、空力性能、ギアボックス、シャシー――この順で）のうち1つが、ゲーム内の全チームで半減します。これは5シーズン周期のローテーションで繰り返されます。このルールがシーズン1に適用されることは決してなく、各シーズン番号につき正確に1回だけ適用されます。',
@@ -26425,7 +26591,7 @@
                 kontoValutaIntro: '金額を表示する通貨を選択してください。ゲーム内部の経済は常に同じです――これは表示方法だけを、固定レート（10 SEK = 1 USD = 1 EUR = 1 GBP）で変更します。',
                 kontoTidszonRubrik: "タイムゾーン",
                 kontoTidszonIntro: "時計とゲーム内の日付・時刻を表示するタイムゾーンを選んでください。イベント自体（レース、予選、トレーニング、経済更新）は常にスウェーデン時間の20:00に行われます。この設定は時刻の表示方法だけを変更します。",
-                tidszonSverige: "スウェーデン時間（ストックホルム）",
+                tidszonSverige: "スウェーデン時間 – ストックホルム（GMT+1、夏時間はGMT+2）",
                 tidszonAuto: "自動（デバイスのタイムゾーン）",
                 kontoCookiesRubrik: 'Cookie',
                 kontoCookiesIntro: '許可するCookie（必須、統計、パーソナライズ広告）を管理します。',
@@ -26729,7 +26895,7 @@
                 appTavlingsregelLabel: '競技ルール：',
                 appValjSerieBeskrivning: '表示したいシリーズ/グループを選んでください。1グループ10チーム、各チーム車2台です。',
                 appRaceschemaLabel: 'レーススケジュール（シーズン',
-                appRaceschemaBeskrivning: 'トレーニングレースは毎週月曜20:00に、各レースの予選は毎週水曜20:00に、レース本番は毎週金曜20:00に、そして経済更新は毎週日曜20:00に、すべて自動で行われます。レースをクリックすると、スターティンググリッドまたは結果が表示されます。すべての時刻はスウェーデン時間（CET/CEST）です。',
+                appRaceschemaBeskrivning: 'トレーニングレースは毎週月曜20:00に、各レースの予選は毎週水曜20:00に、レース本番は毎週金曜20:00に、そして経済更新は毎週日曜20:00に、すべて自動で行われます。レースをクリックすると、スターティンググリッドまたは結果が表示されます。すべての時刻はスウェーデン時間（GMT+1、夏時間はGMT+2）です。',
                 appForumLabel: 'フォーラム –',
                 appForumBeskrivning: '上で現在表示しているシリーズの他チームと議論できます。投稿はシリーズごとにチャットログとして保存されます。',
                 appForumPlaceholder: 'メッセージを入力...',
@@ -26859,7 +27025,7 @@
                 manIntroTitel: 'はじめに：ゲームとナビゲーションの仕組み',
                 manIntroP1: 'あなたは自分のレーシングチームを率いてディビジョンを勝ち上がり、世界中の本物のマネージャーたちと対戦します。ドライバー・メカニック・エンジニアを雇用し、車をアップグレードし、レースに向けて戦術を設定します――あとは以下のスケジュールに従って、ゲームが毎週自動的に処理してくれます。',
                 manIntroSchemaTitel: "週間スケジュール（完全自動・スウェーデン時間）：",
-                manIntroTidszon: "<strong>タイムゾーン：</strong>ゲーム内のすべての時刻（レース、予選、トレーニング、経済更新、スカウトへの電話）は<strong>スウェーデン時間</strong>（CET/CEST）です。<strong>マイアカウント → 設定 → タイムゾーン</strong>で自分のタイムゾーンを選べます。選ぶと、右上の時計とゲーム内のすべての日付・時刻（今後のレースや受信箱など）があなたの時間で表示されます。移籍市場のカウントダウンはタイムゾーンに関係なく常に正確です。イベント自体は引き続きスウェーデン時間の20:00に行われます。",
+                manIntroTidszon: "<strong>タイムゾーン：</strong>ゲーム内のすべての時刻（レース、予選、トレーニング、経済更新、スカウトへの電話）は<strong>スウェーデン時間</strong>（GMT+1、夏時間はGMT+2）です。<strong>マイアカウント → 設定 → タイムゾーン</strong>で自分のタイムゾーンを選べます。選ぶと、右上の時計とゲーム内のすべての日付・時刻（今後のレースや受信箱など）があなたの時間で表示されます。移籍市場のカウントダウンはタイムゾーンに関係なく常に正確です。イベント自体は引き続きスウェーデン時間の20:00に行われます。",
                 manIntroMan: '<strong>月曜20:00</strong> – 登録済みドライバーのトレーニングレース',
                 manIntroOns: '<strong>水曜20:00</strong> – 予選',
                 manIntroFre: '<strong>金曜20:00</strong> – レース',
@@ -26893,7 +27059,7 @@
                 manSerierP2: "<strong>シリーズとシリーズピラミッド：</strong>ゲームには5つのレベルがあります：<strong>Undercut Masters League</strong>（1グループ、10チーム）、<strong>ディビジョン2</strong>（10チームずつ2グループ）、<strong>ディビジョン3</strong>（10チームずつ4グループ）、<strong>ディビジョン4</strong>（10チームずつ8グループ）、<strong>ディビジョン5</strong>（10チームずつ16グループ）――合計310チームです。対戦相手はほかのプレイヤーで、各チームは本物のマネージャーが率いています。順位表のどのチームをクリックしても、そのチームページを車ごとに確認できます。",
                 manSerierP3: "<strong>昇格と降格：</strong>10レースのシーズンが終わると、各グループ（Undercut Masters Leagueを除く）の1位チームが1つ上のディビジョンに昇格します。さらに、ディビジョン内の成績上位の2位チームも昇格します。その数は1つ上のディビジョンのグループ数と同じです（ディビジョン2から1チーム、ディビジョン3から2チーム、ディビジョン4から4チーム、ディビジョン5から8チーム）。2位チームはポイント順に並べられ、同点の場合は最も成績の良いマシンのポイントで決まります。各グループ（最下層のディビジョン5を除く）では下位3チームが1つ下のディビジョンに降格し、原則としてそのグループに紐づく2つのグループに振り分けられます。これにより各グループのチーム数は常に10のままになります。2位チームの現在の順位は「シリーズ → 順位表 → 成績上位の2位」で確認できます。",
                 manSerierP4: '<strong>コース＆レース：</strong>1シーズンは10レースで構成され、同じグループのチームが交代でホームコースの主催者を務めます。コース長とコーナー数は、そのレースで各コンポーネントがどれだけ重要になるかに影響します。',
-                manSerierP5: '<strong>週間スケジュール：</strong>毎週同じサイクルが繰り返されます：<strong>月曜20:00</strong>にトレーニングレース、<strong>水曜20:00</strong>に予選、<strong>金曜20:00</strong>にレース本番、<strong>日曜20:00</strong>に経済更新。すべてゲームによって時刻が来ると自動的に行われます――自分でこれらを実行するボタンはありません。すべての時刻はスウェーデン時間（CET/CEST）です。',
+                manSerierP5: '<strong>週間スケジュール：</strong>毎週同じサイクルが繰り返されます：<strong>月曜20:00</strong>にトレーニングレース、<strong>水曜20:00</strong>に予選、<strong>金曜20:00</strong>にレース本番、<strong>日曜20:00</strong>に経済更新。すべてゲームによって時刻が来ると自動的に行われます――自分でこれらを実行するボタンはありません。すべての時刻はスウェーデン時間（GMT+1、夏時間はGMT+2）です。',
                 manSerierP6: '<strong>ホームコース＆コース記録：</strong>アリーナタブでは、自分のホームコースのコーナー数（5～20）とコース長（2.0～8.0km）を無料で変更でき、名前も変更できます（100,000 kr）――変更が適用されるのは今後の、まだ予選が行われていないレースのみです。コーナーが多いほど空力性能/タイヤ/ハンドリングが有利になり、コースが長いほどエンジンが有利になりますがより多くの燃料が必要です。各アリーナには独自のコース記録（どのチームが記録したかにかかわらず、そのコースで達成された最速のレース）があり、主催チームを見ているときに表示されます。',
                 manSerierP7: '<strong>移籍履歴：</strong>マーケットタブには、シリーズ内で行われたすべての売買（誰が、どのチームからどのチームへ、いくらで売却されたか）のログがあります――これは上記のオークションによって決まるリストです。',
                 manEgenskaperTitel: '能力＆トレーニング',
