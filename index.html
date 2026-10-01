@@ -5027,6 +5027,11 @@
         <div class="card modal-card" id="budmodal-card"></div>
     </div>
 
+    <!-- Budhistorik för en pågående auktion – fylls av oppnaBudhistorik() -->
+    <div id="budhistorikmodal-overlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) stangBudhistorik()">
+        <div class="card modal-card" id="budhistorikmodal-card" style="max-width:480px;"></div>
+    </div>
+
 
     <div id="racearkivmodal-overlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) stangRaceArkiv()">
         <div class="card modal-card" id="racearkivmodal-card" style="max-width:560px;"></div>
@@ -8243,7 +8248,7 @@
         // En egen person till servermarknaden (försäljning eller sparkad/fri).
         function personForServer(auktion) {
             let p = Object.assign({}, auktion);
-            ['id', 'saljare', 'utropspris', 'hogstaBud', 'hogstaBudare', 'antalBud', 'dinaBud', 'skapad', 'deadline', 'online'].forEach(k => delete p[k]);
+            ['id', 'saljare', 'utropspris', 'hogstaBud', 'hogstaBudare', 'antalBud', 'dinaBud', 'skapad', 'deadline', 'online', 'budHistorik'].forEach(k => delete p[k]);
             return p;
         }
         async function onlineLaggUt(auktion) {
@@ -9454,7 +9459,7 @@
                             ? `<span class="team-link" onclick="visaLagsida('${auktion.hogstaBudareGroupId}', '${escNamn(auktion.hogstaBudareLagNamn)}', 'oversikt')">${auktion.hogstaBudare}</span>`
                             : auktion.hogstaBudare)
                         : tt('Utrop', 'Starting bid');
-                    document.getElementById('tp-auktion-bud').innerHTML = formatBelopp(auktion.hogstaBud) + ' (' + budareHtml + ')';
+                    document.getElementById('tp-auktion-bud').innerHTML = formatBelopp(auktion.hogstaBud) + ' (' + budareHtml + ') · ' + budhistorikLankHTML(auktion.id);
                     document.getElementById('tp-auktion-deadline').innerText = formateraDatum(auktion.deadline);
                 } else {
                     auktionCard.style.display = 'none';
@@ -9851,6 +9856,11 @@
         let historikAterstaller = false;
         function aktuellVy() {
             if (typeof spelarData === 'undefined' || !spelarData || !spelarData.tabeller) return null;
+            // Inte inloggad än (inloggningssidan visas) – rör inte historiken,
+            // annars skrivs den sparade vyn över innan den hunnit återställas.
+            let authEl = document.getElementById('auth-screen');
+            let appEl = document.getElementById('app-container');
+            if ((authEl && !authEl.hidden) || (appEl && appEl.style.display === 'none')) return null;
             let aktivEl = document.querySelector('.tab-content.active');
             if (!aktivEl) return null;
             let f = aktivEl.id.replace('tab-', '');
@@ -9871,6 +9881,16 @@
         }
         function vyNyckel(v) { return v ? JSON.stringify(v) : ''; }
         function historikVy() { return (history.state && history.state.urmVy) || null; }
+        // Vyn sparas även i sessionStorage (per flik) så att den finns kvar när
+        // sidan laddas om – se aterstallVyEfterOmladdning() nedan.
+        const VY_SESSION_KEY = 'urmSenasteVy';
+        function sparaVyForOmladdning(v) {
+            try { sessionStorage.setItem(VY_SESSION_KEY, JSON.stringify(v)); } catch (e) {}
+        }
+        function historikSatt(v, ny) {
+            try { if (ny) history.pushState({ urmVy: v }, ''); else history.replaceState({ urmVy: v }, ''); } catch (e) {}
+            sparaVyForOmladdning(v);
+        }
 
         // Före klicket: se till att historikens nuvarande steg motsvarar det som
         // faktiskt visas (spelet kan ha bytt vy på egen hand, t.ex. vid inloggning).
@@ -9878,9 +9898,7 @@
             if (historikAterstaller) return;
             let v = aktuellVy();
             if (!v) return;
-            if (vyNyckel(v) !== vyNyckel(historikVy())) {
-                try { history.replaceState({ urmVy: v }, ''); } catch (e) {}
-            }
+            if (vyNyckel(v) !== vyNyckel(historikVy())) historikSatt(v, false);
         }
         // Efter klicket: ny vy → nytt historiksteg.
         function historikEfterHandling() {
@@ -9888,10 +9906,8 @@
             let v = aktuellVy();
             if (!v) return;
             let forra = historikVy();
-            if (!forra) { try { history.replaceState({ urmVy: v }, ''); } catch (e) {} return; }
-            if (vyNyckel(v) !== vyNyckel(forra)) {
-                try { history.pushState({ urmVy: v }, ''); } catch (e) {}
-            }
+            if (!forra) { historikSatt(v, false); return; }
+            if (vyNyckel(v) !== vyNyckel(forra)) historikSatt(v, true);
         }
         ['click', 'change'].forEach(typ => {
             document.addEventListener(typ, historikForeHandling, true);
@@ -9941,8 +9957,22 @@
         }
         window.addEventListener('popstate', e => {
             let v = e.state && e.state.urmVy;
-            if (v && typeof spelarData !== 'undefined' && spelarData && spelarData.tabeller) aterstallVy(v);
+            if (v && typeof spelarData !== 'undefined' && spelarData && spelarData.tabeller) { aterstallVy(v); sparaVyForOmladdning(v); }
         });
+
+        // Vid omladdning (F5/dra-för-att-uppdatera): öppna samma vy som innan i
+        // stället för Hem. Körs en gång när spelet startat (startaApexSpel).
+        let vyAterstalldEfterOmladdning = false;
+        function aterstallVyEfterOmladdning() {
+            if (vyAterstalldEfterOmladdning) return;
+            vyAterstalldEfterOmladdning = true;
+            let v = historikVy();
+            if (!v) { try { v = JSON.parse(sessionStorage.getItem(VY_SESSION_KEY) || 'null'); } catch (e) { v = null; } }
+            if (!v || !v.f || v.f === 'team') return;
+            aterstallVy(v);
+            let nu = aktuellVy();
+            if (nu) historikSatt(nu, false);
+        }
 
         // =====================================================================
         // MOBILANPASSNING: bottom navigation + "Mer"-meny. Ren UI-logik ovanpå
@@ -13583,7 +13613,7 @@
                         ? `<span class="team-link" onclick="visaLagsida('${auktion.hogstaBudareGroupId}', '${escNamn(auktion.hogstaBudareLagNamn)}', 'oversikt')">${auktion.hogstaBudare}</span>`
                         : auktion.hogstaBudare)
                     : tt('Utrop', 'Starting bid');
-                document.getElementById('pp-auktion-bud').innerHTML = formatBelopp(auktion.hogstaBud) + ' (' + budareHtml + ')';
+                document.getElementById('pp-auktion-bud').innerHTML = formatBelopp(auktion.hogstaBud) + ' (' + budareHtml + ') · ' + budhistorikLankHTML(auktion.id);
                 document.getElementById('pp-auktion-deadline').innerText = formateraDatum(auktion.deadline);
                 budBtn.style.display = 'block';
                 budBtn.innerText = tt('LÄGG BUD', 'PLACE BID');
@@ -13711,7 +13741,7 @@
                         ? `<span class="team-link" onclick="visaLagsida('${auktion.hogstaBudareGroupId}', '${escNamn(auktion.hogstaBudareLagNamn)}', 'oversikt')">${auktion.hogstaBudare}</span>`
                         : auktion.hogstaBudare)
                     : tt('Utrop', 'Starting bid');
-                document.getElementById('pp-auktion-bud').innerHTML = formatBelopp(auktion.hogstaBud) + ' (' + budareHtml + ')';
+                document.getElementById('pp-auktion-bud').innerHTML = formatBelopp(auktion.hogstaBud) + ' (' + budareHtml + ') · ' + budhistorikLankHTML(auktion.id);
                 document.getElementById('pp-auktion-deadline').innerText = formateraDatum(auktion.deadline);
             } else {
                 auktionCard.style.display = 'none';
@@ -17292,6 +17322,7 @@
                 <p id="budmodal-fel" style="color:var(--danger-soft); font-size:12.5px; font-weight:600; min-height:16px; margin:0 0 8px;"></p>
                 <button class="btn-green" onclick="bekraftaBud('${auktionId}')">${tt('LÄGG BUD', 'PLACE BID')}</button>
                 <button class="btn-small btn-secondary" style="width:100%;" onclick="stangBudPanel()">${tt('Avbryt', 'Cancel')}</button>
+                <p style="text-align:center; margin:8px 0 0; font-size:13px;"><span class="team-link" onclick="oppnaBudhistorik('${auktionId}')">${tt('Budhistorik', 'Bid history')}</span></p>
             `;
             document.getElementById('budmodal-overlay').style.display = 'flex';
             uppdateraBudPreview(auktionId);
@@ -17311,6 +17342,74 @@
 
         function stangBudPanel() {
             document.getElementById('budmodal-overlay').style.display = 'none';
+        }
+
+        // =====================================================================
+        // Budhistorik för en pågående auktion. Lokalt sparas buden i
+        // a.budHistorik; i onlinemarknaden läses de ur serverns marknad_budlogg
+        // (fas 3b-13) – där loggas både managers och datorstyrda lags bud.
+        // =====================================================================
+        const BUDHISTORIK_MAX = 50;
+        function loggaLokaltBud(a, budare, groupId, lagNamn, belopp) {
+            if (!Array.isArray(a.budHistorik)) a.budHistorik = [];
+            a.budHistorik.push({ t: new Date().toISOString(), budare: budare, groupId: groupId || null, lagNamn: lagNamn || null, belopp: belopp });
+            if (a.budHistorik.length > BUDHISTORIK_MAX) a.budHistorik.splice(0, a.budHistorik.length - BUDHISTORIK_MAX);
+        }
+        function budhistorikLankHTML(auktionId) {
+            return `<span class="team-link" onclick="oppnaBudhistorik('${auktionId}')">${tt('Budhistorik', 'Bid history')}</span>`;
+        }
+        let visadBudhistorikId = null;
+        function stangBudhistorik() {
+            visadBudhistorikId = null;
+            let o = document.getElementById('budhistorikmodal-overlay');
+            if (o) o.style.display = 'none';
+        }
+        async function oppnaBudhistorik(auktionId) {
+            let a = (spelarData.marknad || []).find(x => x.id === auktionId);
+            let card = document.getElementById('budhistorikmodal-card');
+            let overlay = document.getElementById('budhistorikmodal-overlay');
+            if (!card || !overlay) return;
+            visadBudhistorikId = auktionId;
+            let stangKnapp = `<button class="btn-small btn-secondary" style="width:100%; margin-top:10px;" onclick="stangBudhistorik()">${tt('Stäng', 'Close')}</button>`;
+            if (!a) {
+                card.innerHTML = `<h3>${tt('Budhistorik', 'Bid history')}</h3><p>${tt('Auktionen kunde inte hittas – den kan redan ha avslutats.', 'The auction could not be found – it may already have ended.')}</p>${stangKnapp}`;
+                overlay.style.display = 'flex';
+                return;
+            }
+            let rubrik = `<h3>${tt('Budhistorik', 'Bid history')} – ${escNamn(a.namn)}</h3>
+                <p style="font-size:12.5px; color:var(--text-muted); margin-top:-6px;">${a.antalBud || 0} ${tt('bud', 'bids')} · ${tt('Högsta bud', 'Highest bid')}: ${formatBelopp(a.hogstaBud)} · <span class="js-tidkvar" data-deadline="${a.deadline}">${tidKvarText(a.deadline)}</span></p>`;
+            card.innerHTML = rubrik + `<p style="color:var(--text-muted);">${tt('Hämtar …', 'Loading …')}</p>` + stangKnapp;
+            overlay.style.display = 'flex';
+
+            let rader = [];
+            let fel = null;
+            if (a.online && window.supabaseClient) {
+                try {
+                    const { data, error } = await window.supabaseClient.from('marknad_budlogg').select('team_id, belopp, lagt').eq('auktion_id', a.id).order('lagt', { ascending: false }).limit(BUDHISTORIK_MAX);
+                    if (error) throw error;
+                    rader = (data || []).map(r => {
+                        let info = r.team_id && r.team_id !== onlineData.lagId ? onlineLagInfo(r.team_id) : null;
+                        return { t: r.lagt, belopp: r.belopp, du: r.team_id === onlineData.lagId, groupId: info ? info.groupId : null, lagNamn: info ? info.lagNamn : null, text: info ? info.lagNamn : tt('Annat lag', 'Other team') };
+                    });
+                } catch (e) {
+                    console.warn('Kunde inte hämta budhistoriken', e);
+                    fel = tt('Budhistoriken kunde inte hämtas just nu.', 'The bid history could not be loaded right now.');
+                }
+            } else {
+                rader = (a.budHistorik || []).slice().reverse().map(b => ({ t: b.t, belopp: b.belopp, du: b.budare === 'Du', groupId: b.groupId, lagNamn: b.lagNamn, text: b.lagNamn || b.budare }));
+            }
+            if (visadBudhistorikId !== auktionId) return; // stängd/bytt under hämtningen
+
+            let lagCell = r => r.du ? `<strong>${tt('Du', 'You')}</strong>`
+                : (r.groupId && r.lagNamn ? `<span class="team-link" onclick="stangBudhistorik(); visaLagsida('${r.groupId}', '${escNamn(r.lagNamn)}', 'oversikt')">${escNamn(r.text)}</span>` : escNamn(r.text || '–'));
+            let tabellRader = rader.map((r, i) => `<tr${i === 0 ? ' style="font-weight:700;"' : ''}><td>${inkorgFormatteraTid(r.t)}</td><td>${lagCell(r)}</td><td>${formatBelopp(r.belopp)}</td></tr>`).join('');
+            tabellRader += `<tr style="color:var(--text-muted);"><td>${a.skapad ? inkorgFormatteraTid(a.skapad) : '–'}</td><td>${tt('Utropspris', 'Starting price')}</td><td>${formatBelopp(a.utropspris || 0)}</td></tr>`;
+            let saknas = Math.max(0, (a.antalBud || 0) - rader.length);
+            let not = saknas > 0 && !fel ? `<p style="font-size:12px; color:var(--text-muted);">${tt('{antal} tidigare bud lades innan budhistoriken började sparas och visas inte.', '{antal} earlier bids were placed before bid history was recorded and are not shown.').replaceAll('{antal}', saknas)}</p>` : '';
+            card.innerHTML = rubrik
+                + (fel ? `<p style="color:var(--danger-soft);">${fel}</p>` : '')
+                + `<div class="tabell-scroll"><table><thead><tr><th>${tt('Tid', 'Time')}</th><th>${tt('Lag', 'Team')}</th><th>${tt('Bud', 'Bid')}</th></tr></thead><tbody>${tabellRader}</tbody></table></div>`
+                + not + stangKnapp;
         }
 
         function bekraftaBud(auktionId) {
@@ -17352,6 +17451,7 @@
             a.hogstaBudareGroupId = null;
             a.hogstaBudareLagNamn = null;
             a.antalBud = (a.antalBud || 0) + 1;
+            loggaLokaltBud(a, "Du", null, null, bud);
             a.dinaBud = bud;
             let forlangd = forlangOmSnart(a);
             loggaHandelse(tt('Du la ett bud på {namn}: {belopp}.', 'You placed a bid on {namn}: {belopp}.').replaceAll('{namn}', a.namn).replaceAll('{belopp}', formatBelopp(bud)) + (forlangd ? tt(' Auktionen förlängdes med 3 minuter eftersom budet lades i slutskedet.', ' The auction was extended by 3 minutes since the bid was placed near the end.') : ''));
@@ -17741,6 +17841,7 @@
                 a.hogstaBudareLagNamn = null;
             }
             a.antalBud = (a.antalBud || 0) + 1;
+            loggaLokaltBud(a, a.hogstaBudare, a.hogstaBudareGroupId, a.hogstaBudareLagNamn, a.hogstaBud);
             if (duVarLedande) {
                 laggTillNyhet(tt('Du blev överbjuden på {namn}: nytt högsta bud {belopp} ({hogstaBudare}).', 'You were outbid on {namn}: new highest bid {belopp} ({hogstaBudare}).').replaceAll('{namn}', a.namn).replaceAll('{belopp}', formatBelopp(a.hogstaBud)).replaceAll('{hogstaBudare}', a.hogstaBudare));
             } else if (arBevakad(a.kategori, a.personId)) {
@@ -18070,6 +18171,7 @@
                     </div>
                     <div class="player-card-actions">
                         ${actionsHTML}
+                        <button class="btn-small btn-secondary" onclick="oppnaBudhistorik('${a.id}')">${tt('Budhistorik', 'Bid history')}</button>
                         <button class="btn-small player-card-watch ${bevakad ? 'is-watching' : ''}" onclick="vaxlaBevakning('${a.kategori}', '${a.personId}', '${escNamn(a.namn)}')">${bevakad ? '★ ' + tt('Bevakas', 'Watching') : '☆ ' + tt('Bevaka', 'Watch')}</button>
                     </div>
                 </div>`;
@@ -19827,6 +19929,7 @@
             await hamtaMolnSparning(user);
             laddaSpelarDataForAnvandare(user, nyttLagNamn, nyttArenaNamn, nyttLand);
             uppdateraUI();
+            aterstallVyEfterOmladdning();
             anslutPyramiden(user);
             // Lag-logotyp: om den saknas lokalt (t.ex. första inloggningen på en
             // ny webbläsare/enhet) hämtas den tillbaka från Supabase (sparades dit
