@@ -3958,6 +3958,7 @@
                     <h3 data-i18n="appSeriestatistik">Seriestatistik</h3>
                     <p style="font-size: 12px; color: #aaa; margin-top:0;" data-i18n="appSeriestatistikBeskrivning">All-time-statistik för serien/gruppen du tittar på just nu, genom alla säsonger.</p>
                     <p style="font-size: 13px; color: #aaa;"><strong data-i18n="appSerie2">Serie:</strong> <span id="seriestatistik-namn">-</span></p>
+                    <p style="margin-bottom:0;"><span class="team-link" id="seriestatistik-forarstatistik-lank" onclick="bytSubflik('serie', 'forarstatistik')">Förarstatistik</span></p>
                 </div>
                 <div class="card">
                     <h3 data-i18n="appFlestMasterskap">Flest mästerskap</h3>
@@ -3977,6 +3978,11 @@
                     </table>
                     </div>
                 </div>
+            </div>
+
+            <!-- Förarstatistik: undersida till Seriestatistik, ritas helt av renderForarstatistik() -->
+            <div id="serie-pane-forarstatistik" class="ls-pane">
+                <div class="card" id="forarstatistik-wrap"></div>
             </div>
 
             <div id="serie-pane-bytserie" class="ls-pane">
@@ -5098,6 +5104,12 @@
             for (var k in TT_KOMPLETTERING) {
                 TT_EXTRA[k] = Object.assign({}, TT_EXTRA[k] || {}, TT_KOMPLETTERING[k]);
             }
+        })();
+
+        // Förarstatistik (Serie → Seriestatistik → Förarstatistik, se renderForarstatistik()).
+        (function () {
+            var TT_FORARSTATISTIK = {"Förarstatistik": {"de": "Fahrerstatistik", "fr": "Statistiques des pilotes", "es": "Estadísticas de pilotos", "pl": "Statystyki kierowców", "fi": "Kuljettajatilastot", "hu": "Versenyzői statisztika", "ja": "ドライバー統計"}, "Karriärstatistik för förarna i serien/gruppen du tittar på just nu. Klicka på en kolumnrubrik för att sortera.": {"de": "Karrierestatistik der Fahrer in der Serie/Gruppe, die du gerade ansiehst. Klicke auf eine Spaltenüberschrift, um zu sortieren.", "fr": "Statistiques de carrière des pilotes de la série/du groupe que vous consultez. Cliquez sur un en-tête de colonne pour trier.", "es": "Estadísticas de carrera de los pilotos de la serie/grupo que estás viendo. Haz clic en un encabezado de columna para ordenar.", "pl": "Statystyki kariery kierowców w serii/grupie, którą właśnie przeglądasz. Kliknij nagłówek kolumny, aby posortować.", "fi": "Parhaillaan katsomasi sarjan/ryhmän kuljettajien uratilastot. Lajittele napsauttamalla sarakeotsikkoa.", "hu": "Az éppen megtekintett sorozat/csoport versenyzőinek karrierstatisztikája. Rendezéshez kattints egy oszlopfejlécre.", "ja": "現在表示中のシリーズ／グループのドライバーの通算成績です。列見出しをクリックすると並べ替えできます。"}, "← Seriestatistik": {"de": "← Serienstatistik", "fr": "← Statistiques de la série", "es": "← Estadísticas de la serie", "pl": "← Statystyki serii", "fi": "← Sarjatilastot", "hu": "← Sorozatstatisztika", "ja": "← シリーズ統計"}, "Inga förare i den här serien än.": {"de": "Noch keine Fahrer in dieser Serie.", "fr": "Aucun pilote dans cette série pour le moment.", "es": "Aún no hay pilotos en esta serie.", "pl": "W tej serii nie ma jeszcze kierowców.", "fi": "Tässä sarjassa ei ole vielä kuljettajia.", "hu": "Ebben a sorozatban még nincsenek versenyzők.", "ja": "このシリーズにはまだドライバーがいません。"}, "DNF": {"de": "Ausfälle", "fr": "Abandons", "es": "Abandonos", "pl": "DNF", "fi": "Keskeytykset", "hu": "Kiesések", "ja": "リタイア"}};
+            for (var k in TT_FORARSTATISTIK) TT_EXTRA[k] = Object.assign({}, TT_EXTRA[k] || {}, TT_FORARSTATISTIK[k]);
         })();
 
         // Inkorgsnotis om bilskada (se INKORG_DYNAMISK_TEXT.bilSkadad).
@@ -6953,8 +6965,11 @@
         function forarForBilIRacet(lag, bilNr) {
             let f = forarForBil(lag, bilNr);
             if (f && arForareSkadad(f)) {
-                let reserv = forarReserver(lag).find(r => !arForareSkadad(r));
-                if (reserv) return reserv;
+                let lediga = forarReserver(lag).filter(r => !arForareSkadad(r));
+                // Är båda ordinarie förarna skadade tar bil 1 den första friska
+                // reserven och bil 2 nästa – samma reserv kan inte köra båda bilarna.
+                if (Number(bilNr) === 2 && arForareSkadad(forarForBil(lag, 1))) lediga = lediga.slice(1);
+                if (lediga.length) return lediga[0];
             }
             return f;
         }
@@ -8380,8 +8395,9 @@
                     if (!lag[partsKey]) lag[partsKey] = nyborjarParts();
                     const nuvarande = lag[partsKey][sk.komponent];
                     lag[partsKey][sk.komponent] = Math.max(0, Math.round(nuvarande * (1 - sk.andelSkada)));
-                    const f = forarForBil(lag, sk.bilNr);
-                    if (f) f.skadadTillRace = spelarData.sasong + '-' + (spelarData.raceNr + 1);
+                    // Föraren som körde bilen (sk.forarId, kan vara en reserv) skadas.
+                    const f = (lag.forare || []).find(x => x.id === sk.forarId) || forarForBil(lag, sk.bilNr);
+                    if (f) f.skadadTillRace = URMRace.nastaRaceNyckel(spelarData.sasong, spelarData.raceNr);
                 }
                 return { lagNamn: sk.lagNamn, arSpelare: !!(lag && lag.arSpelare), bilNr: sk.bilNr, komponent: sk.komponent, andelSkada: sk.andelSkada, nyttVarde: sk.nyttVarde, forareNamn: sk.forareNamn };
             });
@@ -9193,7 +9209,7 @@
                 renderMarknadTab();
             }
             if (sektion === 'serie') {
-                ['tabell', 'statistik', 'seriestatistik', 'bytserie', 'raceschema', 'gamlatabeller', 'bastatvaor', 'racerapport'].forEach(x => {
+                ['tabell', 'statistik', 'seriestatistik', 'forarstatistik', 'bytserie', 'raceschema', 'gamlatabeller', 'bastatvaor', 'racerapport'].forEach(x => {
                     let btn = document.getElementById('serie-sub-' + x + '-btn');
                     if (btn) btn.classList.toggle('active', x === val);
                     let pane = document.getElementById('serie-pane-' + x);
@@ -9201,6 +9217,7 @@
                 });
                 if (val === 'statistik') renderHistoriaTab();
                 if (val === 'seriestatistik') renderSeriestatistik();
+                if (val === 'forarstatistik') renderForarstatistik();
                 if (val === 'bytserie') renderBytSerie();
                 if (val === 'gamlatabeller') renderGamlaSerietabeller();
                 if (val === 'bastatvaor') renderBastaTvaor();
@@ -11387,6 +11404,8 @@
             let gid = spelarData.visadSerieId;
             let namnEl = document.getElementById('seriestatistik-namn');
             if (namnEl) namnEl.innerText = GROUP_DEFS[gid] ? GROUP_DEFS[gid].label : '-';
+            let forarLank = document.getElementById('seriestatistik-forarstatistik-lank');
+            if (forarLank) forarLank.innerText = tt('Förarstatistik', 'Driver statistics') + ' →';
 
             let raknare = {};
             spelarData.historik.forEach(h => {
@@ -11417,6 +11436,67 @@
                     ? bästaLista.map((r, idx) => `<tr><td>${idx + 1}</td><td>${tt('Säsong', 'Season')} ${r.sasong}</td><td>${r.lagNamn}${r.arSpelare ? ' <span class="tag-badge">' + tt('Du', 'You') + '</span>' : ''}</td><td>${r.poäng} p</td></tr>`).join('')
                     : `<tr><td colspan="4">${tt('Ingen säsong är avslutad än i den här serien.', 'No season has finished yet in this series.')}</td></tr>`;
             }
+        }
+
+        // =====================================================================
+        // "Förarstatistik" (undersida till Seriestatistik): karriärstatistik för
+        // alla förare i lagen i serien/gruppen som just nu visas
+        // (spelarData.visadSerieId). Källan är f.karriar (se tomKarriar() och
+        // korLoppet()). Kolumnrubrikerna sorterar tabellen (fallande).
+        // =====================================================================
+        var forarstatistikSortering = 'poang';
+        function sorteraForarstatistik(nyckel) {
+            forarstatistikSortering = nyckel;
+            renderForarstatistik();
+        }
+        function renderForarstatistik() {
+            let wrap = document.getElementById('forarstatistik-wrap');
+            if (!wrap) return;
+            let gid = spelarData.visadSerieId;
+            let rader = [];
+            (spelarData.tabeller[gid] || []).forEach(lag => {
+                (lag.forare || []).forEach(f => {
+                    let k = f.karriar || {};
+                    rader.push({
+                        f: f, lag: lag,
+                        lopp: k.lopp || 0, poang: k.poang || 0, vinster: k.vinster || 0, pallplatser: k.pallplatser || 0,
+                        poles: k.poles || 0, snabbastaVarv: k.snabbastaVarv || 0, dnf: k.dnf || 0, mastarskap: k.mastarskap || 0
+                    });
+                });
+            });
+            let kolumner = [
+                ['lopp', tt('Lopp', 'Races')], ['poang', tt('Poäng', 'Points')], ['vinster', tt('Vinster', 'Wins')],
+                ['pallplatser', tt('Pallplatser', 'Podiums')], ['poles', tt('Poles', 'Poles')],
+                ['snabbastaVarv', tt('Snabbaste varv', 'Fastest laps')], ['dnf', tt('DNF', 'DNF')], ['mastarskap', tt('Mästerskap', 'Championships')]
+            ];
+            let sort = kolumner.some(k => k[0] === forarstatistikSortering) ? forarstatistikSortering : 'poang';
+            rader.sort((a, b) => (b[sort] - a[sort]) || (b.poang - a.poang) || (b.vinster - a.vinster) || (b.pallplatser - a.pallplatser) || String(a.f.namn).localeCompare(String(b.f.namn)));
+            let rubriker = kolumner.map(k => `<th style="cursor:pointer; white-space:nowrap;${k[0] === sort ? ' color:var(--accent);' : ''}" onclick="sorteraForarstatistik('${k[0]}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();sorteraForarstatistik('${k[0]}');}">${k[1]}${k[0] === sort ? ' ▼' : ''}</th>`).join('');
+            let kropp = rader.length
+                ? rader.map((r, idx) => `<tr>
+                        <td>${idx + 1}</td>
+                        <td><span class="team-link" onclick="visaPersonGlobal('forare','${r.f.id}','${gid}','${escNamn(r.lag.namn)}')">${inkorgEscapeHtml(r.f.namn)}</span>${r.f.roll === 'reserv' ? ' <span class="tag-badge">' + tt('Reserv', 'Reserve') + '</span>' : ''}</td>
+                        <td>${inkorgEscapeHtml(r.lag.namn)}${r.lag.arSpelare ? ' <span class="tag-badge">' + tt('Du', 'You') + '</span>' : ''}</td>
+                        ${kolumner.map(k => `<td${k[0] === sort ? ' style="font-weight:700;"' : ''}>${r[k[0]]}</td>`).join('')}
+                    </tr>`).join('')
+                : `<tr><td colspan="${kolumner.length + 3}">${tt('Inga förare i den här serien än.', 'No drivers in this series yet.')}</td></tr>`;
+            wrap.innerHTML = `
+                <div class="hub-header-card" style="margin-bottom:10px;">
+                    <div class="hub-header-info">
+                        <h3 style="margin:0 0 4px 0;">${tt('Förarstatistik', 'Driver statistics')}</h3>
+                        <p style="font-size:12px; color:#aaa; margin:0;">${tt('Karriärstatistik för förarna i serien/gruppen du tittar på just nu. Klicka på en kolumnrubrik för att sortera.', 'Career statistics for the drivers in the series/group you are currently viewing. Click a column heading to sort.')}</p>
+                        <p style="font-size:13px; color:#aaa; margin:8px 0 0;"><strong>${t('appSerie2')}</strong> ${GROUP_DEFS[gid] ? GROUP_DEFS[gid].label : '-'}</p>
+                    </div>
+                    <div class="hub-header-links">
+                        <span class="team-link" onclick="bytSubflik('serie', 'seriestatistik')">${tt('← Seriestatistik', '← Series statistics')}</span>
+                    </div>
+                </div>
+                <div class="tabell-scroll">
+                <table>
+                    <thead><tr><th>#</th><th>${tt('Förare', 'Driver')}</th><th>${tt('Lag', 'Team')}</th>${rubriker}</tr></thead>
+                    <tbody>${kropp}</tbody>
+                </table>
+                </div>`;
         }
 
         // =====================================================================
@@ -15272,9 +15352,11 @@
             // Bilar som gick i mål på pallen (P1–P3) undantas – en bil som
             // skadats under racet kan inte rimligen ha vunnit det. Samma regel
             // som valjSkador() i spelmotor/server.js.
-            let paPallen = (lag, bilNr) => (loppResultat || []).some(r => r.lag === lag && r.bil === bilNr && !r.dnf && r.placering <= 3);
+            // Bara bilar som faktiskt körde loppet kan skadas.
+            let radFor = (lag, bilNr) => (loppResultat || []).find(r => r.lag === lag && r.bil === bilNr) || null;
+            let kanSkadas = (lag, bilNr) => { if (!loppResultat) return true; let r = radFor(lag, bilNr); return !!r && (!!r.dnf || r.placering > 3); };
             let kandidater = [];
-            grupp.forEach(lag => { [1, 2].forEach(bilNr => { if (!paPallen(lag, bilNr)) kandidater.push({ lag: lag, bilNr: bilNr }); }); });
+            grupp.forEach(lag => { [1, 2].forEach(bilNr => { if (kanSkadas(lag, bilNr)) kandidater.push({ lag: lag, bilNr: bilNr }); }); });
             let valda = viktadSkadeUrval(kandidater, Math.min(antal, kandidater.length));
             let meddelanden = [];
             valda.forEach(v => {
@@ -15290,9 +15372,12 @@
                 // omgång (se arForareSkadad()/forarForBilIRacet()) – oavsett om
                 // spelaren senare byter in någon annan på platsen (då slår det
                 // bytet igenom som vanligt och skadeflaggan blir aldrig relevant).
-                let forare = forarForBil(v.lag, v.bilNr);
+                // Körde en reserv bilen är det reserven som skadas. Efter säsongens
+                // sista race gäller skadan nästa säsongs första (nastaRaceNyckel).
+                let rad = radFor(v.lag, v.bilNr);
+                let forare = (rad && (v.lag.forare || []).find(f => f.id === rad.forarId)) || forarForBil(v.lag, v.bilNr);
                 if (forare) {
-                    forare.skadadTillRace = spelarData.sasong + '-' + (spelarData.raceNr + 1);
+                    forare.skadadTillRace = URMRace.nastaRaceNyckel(spelarData.sasong, spelarData.raceNr);
                 }
                 // Sparas som RÅDATA, inte färdig text – se byggSkadaText() nedan,
                 // som bygger meddelandet i spelarens AKTUELLA språk. Samma mönster
@@ -27567,7 +27652,7 @@
                 else if (flik === 'marknad') { renderMarknadTab(); }
                 else if (flik === 'forhandling') { renderForhandling(); }
                 else if (flik === 'konto') { renderKontosida(); }
-                else if (flik === 'serie') { renderSerieValjare(); bytUtTabellHTML(); bytUtSchemaHTML(); renderForumTab(); if (subflikar.serie === 'statistik') renderHistoriaTab(); if (subflikar.serie === 'seriestatistik') renderSeriestatistik(); if (subflikar.serie === 'bytserie') renderBytSerie(); if (subflikar.serie === 'gamlatabeller') renderGamlaSerietabeller(); if (subflikar.serie === 'bastatvaor') renderBastaTvaor(); if (subflikar.serie === 'racerapport') renderGruppRacerapport(); }
+                else if (flik === 'serie') { renderSerieValjare(); bytUtTabellHTML(); bytUtSchemaHTML(); renderForumTab(); if (subflikar.serie === 'statistik') renderHistoriaTab(); if (subflikar.serie === 'seriestatistik') renderSeriestatistik(); if (subflikar.serie === 'forarstatistik') renderForarstatistik(); if (subflikar.serie === 'bytserie') renderBytSerie(); if (subflikar.serie === 'gamlatabeller') renderGamlaSerietabeller(); if (subflikar.serie === 'bastatvaor') renderBastaTvaor(); if (subflikar.serie === 'racerapport') renderGruppRacerapport(); }
                 else if (flik === 'forum') { forumAterrendera(); }
                 var arkivOverlay = document.getElementById('racearkivmodal-overlay');
                 if (arkivOverlay && arkivOverlay.style.display === 'flex' && visadArkivId) visaRaceArkiv(visadArkivId);
