@@ -3782,9 +3782,10 @@
                 <p style="font-size:12px; color:#aaa; margin-top:0;" data-i18n="appForumBeskrivning">Diskutera med de andra lagen i den serie du just nu tittar på ovan. Inläggen sparas per serie som en chattlogg.</p>
                 <div id="forum-logg" style="background:#0f0f0f; border-radius:6px; padding:10px; max-height:260px; overflow-y:auto; display:flex; flex-direction:column-reverse;"></div>
                 <div style="display:flex; gap:6px; margin-top:8px;">
-                    <input type="text" id="forum-input" placeholder="Skriv ett meddelande..." data-i18n-placeholder="appForumPlaceholder" style="flex:1; background:#2c2c2c; color:#e0e0e0; border:1px solid #444; border-radius:6px; padding:8px; font-family:var(--font-main); font-size:13px;" onkeydown="if(event.key==='Enter'){skickaForumMeddelande();}">
+                    <input type="text" id="forum-input" placeholder="Skriv ett meddelande..." data-i18n-placeholder="appForumPlaceholder" style="flex:1; background:#2c2c2c; color:#e0e0e0; border:1px solid #444; border-radius:6px; padding:8px; font-family:var(--font-main); font-size:13px;" maxlength="500" onkeydown="if(event.key==='Enter'){skickaForumMeddelande();}">
                     <button class="btn-blue" style="width:auto;" onclick="skickaForumMeddelande()" data-i18n="appSkicka">Skicka</button>
                 </div>
+                <p class="auth-field-error" id="forum-fel"></p>
             </div>
             </div>
 
@@ -11613,36 +11614,96 @@
             if (spelarData.forum[groupId].length > 100) spelarData.forum[groupId] = spelarData.forum[groupId].slice(-100);
         }
 
-        function skickaForumMeddelande() {
+        // Seriechatten (Serie → Forum). Online är den delad mellan alla inloggade
+        // spelare: inläggen ligger i public.serie_chatt och skapas via RPC:n
+        // serie_chatt_skicka() (se supabase/fas3b16.sql), som själv sätter
+        // användarnamn och lagnamn. Offline/testläge finns bara spelarens egna
+        // lokala inlägg (spelarData.forum). Datorstyrda lag skriver inte längre.
+        var serieChattCache = {};   // division-id -> inlägg (äldst först)
+        var serieChattHamtad = {};  // division-id -> tidpunkt för senaste hämtning
+        var serieChattSkickar = false;
+        async function laddaSerieChatt(gid, tvinga) {
+            if (!onlineForvantat() || !gid) return;
+            if (!tvinga && serieChattHamtad[gid] && Date.now() - serieChattHamtad[gid] < 30000) return;
+            serieChattHamtad[gid] = Date.now();
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('serie_chatt')
+                    .select('id, username, lag_namn, brodtext, skapad')
+                    .eq('division_id', gid)
+                    .order('skapad', { ascending: false })
+                    .limit(100);
+                if (error || !Array.isArray(data)) return;
+                serieChattCache[gid] = data.slice().reverse();
+                if (spelarData.visadSerieId === gid) renderForumTab(true);
+            } catch (e) {
+                // Tyst – ett nytt försök görs vid nästa omritning.
+            }
+        }
+
+        async function skickaForumMeddelande() {
             let input = document.getElementById('forum-input');
             if (!input) return;
             let text = (input.value || '').trim();
             if (!text) return;
+            let felEl = document.getElementById('forum-fel');
+            if (felEl) felEl.textContent = '';
+            if (onlineForvantat()) {
+                if (serieChattSkickar) return;
+                serieChattSkickar = true;
+                let gid = spelarData.visadSerieId;
+                try {
+                    const { error } = await window.supabaseClient.rpc('serie_chatt_skicka', { p_division: gid, p_text: text.slice(0, 500) });
+                    if (error) {
+                        if (felEl) felEl.textContent = tt('Kunde inte skicka meddelandet just nu. Försök igen senare.', 'Could not send the message right now. Try again later.');
+                        return;
+                    }
+                    input.value = '';
+                    await laddaSerieChatt(gid, true);
+                } catch (e) {
+                    if (felEl) felEl.textContent = tt('Kunde inte skicka meddelandet just nu. Försök igen senare.', 'Could not send the message right now. Try again later.');
+                } finally {
+                    serieChattSkickar = false;
+                }
+                return;
+            }
             let spelarLag = hamtaSpelarLag();
             forumPost(spelarData.visadSerieId, spelarLag.namn + ' (' + tt('Du', 'You') + ')', text, false);
             input.value = '';
             sparaOchUppdatera();
         }
 
-        function renderForumTab() {
+        // utanHamtning = true när anropet kommer från laddaSerieChatt() själv.
+        function renderForumTab(utanHamtning) {
             let logg = document.getElementById('forum-logg');
             if (!logg) return;
+            let gid = spelarData.visadSerieId;
             let grupplabelEl = document.getElementById('forum-grupplabel');
-            if (grupplabelEl) grupplabelEl.innerText = GROUP_DEFS[spelarData.visadSerieId] ? GROUP_DEFS[spelarData.visadSerieId].label : '-';
-            let inlagg = (spelarData.forum && spelarData.forum[spelarData.visadSerieId]) || [];
+            if (grupplabelEl) grupplabelEl.innerText = GROUP_DEFS[gid] ? GROUP_DEFS[gid].label : '-';
+            let online = onlineForvantat();
+            if (online && utanHamtning !== true) laddaSerieChatt(gid);
+            // Äldre, automatgenererade AI-inlägg (m.ai) visas inte längre.
+            let inlagg = online
+                ? (serieChattCache[gid] || []).map(m => ({ namn: m.username, lag: m.lag_namn, text: m.brodtext, tid: m.skapad, profil: true }))
+                : ((spelarData.forum && spelarData.forum[gid]) || []).filter(m => !m.ai);
             if (inlagg.length === 0) {
-                logg.innerHTML = '<p style="color:var(--text-muted); font-size:12px;">' + tt('Inga inlägg ännu – bli först med att skriva något!', 'No posts yet – be the first to write something!') + '</p>';
+                let tomText = (online && !serieChattCache[gid]) ? tt('Laddar...', 'Loading...') : tt('Inga inlägg ännu – bli först med att skriva något!', 'No posts yet – be the first to write something!');
+                logg.innerHTML = '<p style="color:var(--text-muted); font-size:12px;">' + tomText + '</p>';
                 return;
             }
             let html = '';
             for (let i = inlagg.length - 1; i >= 0; i--) {
                 let m = inlagg[i];
-                html += `<p style="margin:4px 0; font-size:13px;"><strong style="color:${m.ai ? '#ccc' : 'var(--blue)'};">${m.namn}:</strong> ${m.text} <span style="color:#666; font-size:11px;">(${formateraDatum(m.tid)})</span></p>`;
+                let namnHtml = m.profil
+                    ? `<span class="team-link" data-username="${inkorgEscapeHtml(m.namn).replace(/"/g, '&quot;')}" onclick="visaForumAnvandarprofil(this.dataset.username)">${inkorgEscapeHtml(m.namn)}</span>${m.lag ? ' (' + inkorgEscapeHtml(m.lag) + ')' : ''}`
+                    : inkorgEscapeHtml(m.namn);
+                html += `<p style="margin:4px 0; font-size:13px;"><strong style="color:var(--blue);">${namnHtml}:</strong> ${inkorgEscapeHtml(m.text)} <span style="color:#666; font-size:11px;">(${formateraDatum(m.tid)})</span></p>`;
             }
             logg.innerHTML = html;
         }
 
-        // Efter varje race pratar några AI-lag i spelarens serie lite i forumet.
+        // ANVÄNDS INTE LÄNGRE (2026-10-02): seriechatten är bara för mänskliga
+        // spelare, se laddaSerieChatt()/skickaForumMeddelande() ovan.
         function genereraForumChatterEfterRace(grupp, loppResultat, vinnareLag) {
             if (!grupp || !loppResultat || loppResultat.length === 0) return;
             let aiLag = grupp.filter(l => !l.arSpelare);
@@ -16680,7 +16741,7 @@
             let skadeMeddelanden = (serverRes && serverRes.lopp) ? tillampaServerSkador(grupp, serverRes.skador) : tillampaSkador(grupp, loppResultat);
             skadeMeddelanden.forEach(sk => { if (sk && sk.arSpelare) meddelaBilSkada(sk); });
 
-            genereraForumChatterEfterRace(grupp, loppResultat, loppResultat[0] ? loppResultat[0].lag : null);
+            // (AI-lagen skriver inte längre i seriechatten – den är bara för mänskliga spelare.)
 
             let körtRaceNr = spelarData.raceNr;
             let referatData = extraheraReferatData(loppResultat, banaInfo);
