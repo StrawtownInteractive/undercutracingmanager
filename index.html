@@ -8457,9 +8457,24 @@
         const PERSONAL_SYNK_FALT = ['id', 'namn', 'nationalitet', 'age', 'style', 'roll', 'bil', 'extra', 'stats', 'contract', 'traningsval', 'popularitet'];
         const PERSONAL_SERVER_FALT = ['age', 'stats', 'formaga', 'contract', 'skadadTillRace', 'vantandeTraning', 'popularitet'];
         let personalSynk = null, personalSenast = { json: null, tid: 0 };
+        // Fas 3b-17: servern äger truppen. spelarData.personalKanda är id:na på de
+        // personer servern hade i laget vid senaste synken. En person tas bara
+        // bort på servern om hen fanns där då men saknas lokalt nu (borttagnaIds)
+        // – dvs. den här spelvärlden har själv tagit bort hen. Saknas hen av
+        // något annat skäl (fel/gammal spelvärld, ny enhet) behåller servern
+        // personen och klienten lägger till hen lokalt (tillampaServerPersonal).
+        function personalLokalaIds(lag) {
+            let ids = new Set();
+            ['forare', 'mekanikerLista', 'ingenjorLista'].forEach(k => (lag[k] || []).forEach(p => { if (p && p.id) ids.add(p.id); }));
+            if (lag.teamPrincipal && lag.teamPrincipal.id) ids.add(lag.teamPrincipal.id);
+            return ids;
+        }
         function personalForSynk(lag) {
             const slim = p => { const o = {}; PERSONAL_SYNK_FALT.forEach(k => { if (p[k] !== undefined) o[k] = p[k]; }); return o; };
+            const lokala = personalLokalaIds(lag);
             return {
+                agarId: spelarData.agarAnvandarId || null,
+                borttagnaIds: (Array.isArray(spelarData.personalKanda) ? spelarData.personalKanda : []).filter(id => !lokala.has(id)),
                 forare: (lag.forare || []).map(slim),
                 mekanikerLista: (lag.mekanikerLista || []).map(slim),
                 ingenjorLista: (lag.ingenjorLista || []).map(slim),
@@ -8513,8 +8528,70 @@
                 kvar.forEach(p => synka(p, serverPerId.get(p.id)));
             });
             if (lag.teamPrincipal && personal.teamPrincipal && personal.teamPrincipal.id === lag.teamPrincipal.id) synka(lag.teamPrincipal, personal.teamPrincipal);
+            // Fas 3b-17: personer som servern har i laget men som saknas lokalt
+            // läggs till här. Undantag: de som fanns på servern redan vid förra
+            // synken (personalKanda) – saknas de lokalt har den här spelvärlden
+            // själv tagit bort dem, och det meddelas servern vid nästa synk.
+            const kanda = new Set(Array.isArray(spelarData.personalKanda) ? spelarData.personalKanda : []);
+            const lokala = personalLokalaIds(lag);
+            [['forare', 'forare'], ['mekanikerLista', 'mekaniker'], ['ingenjorLista', 'ingenjor']].forEach(par => {
+                (Array.isArray(personal[par[0]]) ? personal[par[0]] : []).forEach(sp => {
+                    if (!sp || !sp.id || lokala.has(sp.id) || kanda.has(sp.id)) return;
+                    if (!Array.isArray(lag[par[0]])) lag[par[0]] = [];
+                    lag[par[0]].push(nyLokalPersonFranServer(sp, par[1], lag));
+                    lokala.add(sp.id);
+                    loggaHandelse(tt('{namn} har återförts till laget från spelservern.', '{namn} has been restored to the team from the game server.').replaceAll('{namn}', sp.namn || ''));
+                    andrat = true;
+                });
+            });
+            let stp = personal.teamPrincipal;
+            if (stp && stp.id && !lag.teamPrincipal && !kanda.has(stp.id)) {
+                lag.teamPrincipal = nyLokalPersonFranServer(stp, 'principal', lag);
+                loggaHandelse(tt('{namn} har återförts till laget från spelservern.', '{namn} has been restored to the team from the game server.').replaceAll('{namn}', stp.namn || ''));
+                andrat = true;
+            }
+            let serverIds = [];
+            ['forare', 'mekanikerLista', 'ingenjorLista'].forEach(k => (Array.isArray(personal[k]) ? personal[k] : []).forEach(sp => { if (sp && sp.id) serverIds.push(sp.id); }));
+            if (stp && stp.id) serverIds.push(stp.id);
+            if (JSON.stringify(serverIds) !== JSON.stringify(spelarData.personalKanda || null)) { spelarData.personalKanda = serverIds; andrat = true; }
             if (tillampaServerJuniorer(personal.juniorprogram)) andrat = true;
             return andrat;
+        }
+        // Bygger en lokal person av serverns kopia (förmågor, ålder, kontrakt och
+        // för förare roll, stil, popularitet och skada). Det som bara finns
+        // lokalt skapas på nytt: porträttet, och förarens karriärstatistik som
+        // räknas fram ur säsongens redan körda race.
+        function nyLokalPersonFranServer(sp, kat, lag) {
+            let p = JSON.parse(JSON.stringify(sp));
+            ['_s', '_v0', '_anv'].forEach(k => { delete p[k]; });
+            p.rekryDatum = p.rekryDatum || new Date().toISOString();
+            if (p.traningsval === undefined) p.traningsval = null;
+            if (kat === 'forare') {
+                if (['bil1', 'bil2'].includes(p.roll) && (lag.forare || []).some(f => f.roll === p.roll)) p.roll = 'reserv';
+                if (!['bil1', 'bil2', 'reserv'].includes(p.roll)) p.roll = 'reserv';
+                let k = tomKarriar();
+                Object.keys(spelarData.raceResultat || {}).forEach(nr => {
+                    ((spelarData.raceResultat[nr] || {}).lopp || []).forEach(r => {
+                        if (r.forarId !== p.id) return;
+                        k.lopp += 1; k.poang += r['poäng'] || 0;
+                        if (r.startPos === 1) k.poles += 1;
+                        if (r.snabbasteVarv) k.snabbastaVarv += 1;
+                        if (r.dnf) k.dnf += 1;
+                        else { if (r.placering === 1) k.vinster += 1; if (r.placering <= 3) k.pallplatser += 1; }
+                    });
+                });
+                p.karriar = k;
+                p.karriarHistorik = [];
+                p.foregaendeAgareLag = null;
+            } else if (kat !== 'principal') {
+                p.personalKarriar = tomPersonalKarriar();
+                p.personalHistorik = [];
+            }
+            try {
+                AvatarSystem.createAvatar(p, kat, { age: p.age, forcedGender: 'maskulin' });
+                AvatarSystem.updateTeamClothing(p, lag);
+            } catch (e) { /* porträttet skapas vid behov av visningen */ }
+            return p;
         }
         async function synkaPersonal(tvinga) {
             if (!arOnline()) return;
@@ -8522,6 +8599,12 @@
             personalSynk = (async () => {
                 const lag = hamtaSpelarLag();
                 if (!lag) return;
+                // Efter ett kontobyte kan en annan spelvärld ligga kvar i minnet en
+                // kort stund – den får aldrig skickas som det inloggade kontots trupp.
+                if (spelarData.agarAnvandarId && molnAnvandarId && spelarData.agarAnvandarId !== molnAnvandarId) {
+                    console.warn('Truppen synkas inte: spelvärlden tillhör ett annat konto än det inloggade.');
+                    return;
+                }
                 const data = personalForSynk(lag);
                 const json = JSON.stringify(data);
                 if (!tvinga && json === personalSenast.json && Date.now() - personalSenast.tid < 10 * 60 * 1000) return;
@@ -20212,8 +20295,15 @@
         // att byta ut den anonyma spelvärlden mot det inloggade kontots egen –
         // se apexStorageKeyForAnvandare/laddaSpelarDataForAnvandare ovan.
         // =====================================================================
-        let apexSpelHarStartat = false;
+        let apexSpelHarStartat = false, apexStartadForKonto = null;
         async function startaApexSpel(user, nyttLagNamn, nyttArenaNamn, nyttLand) {
+            // Kontobyte i samma flik: spelet har redan startat för ett annat konto.
+            // Då laddas sidan om (sessionen ligger kvar), så att inga timrar,
+            // onlinedata eller väntande sparningar från det förra kontot kan
+            // blandas ihop med det nya – det tömde en trupp 2026-10-02.
+            let kontoNyckel = (user && (user.id || user.email)) || null;
+            if (apexStartadForKonto && kontoNyckel && apexStartadForKonto !== kontoNyckel && !nyttLagNamn) { location.reload(); return; }
+            apexStartadForKonto = kontoNyckel || apexStartadForKonto;
             await hamtaMolnSparning(user);
             laddaSpelarDataForAnvandare(user, nyttLagNamn, nyttArenaNamn, nyttLand);
             uppdateraUI();
@@ -28400,6 +28490,9 @@
             if (supabaseClient) { await supabaseClient.auth.signOut(); }
             document.getElementById('auth-login-form').reset();
             visaInloggning();
+            // Laddar om sidan efter utloggning, så att nästa inloggning (kanske
+            // med ett annat konto) börjar från ett helt rent läge.
+            location.reload();
         });
 
         // ---------------------------------------------------------------
