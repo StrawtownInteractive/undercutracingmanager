@@ -19005,11 +19005,16 @@
                 if (körtRaceNr) {
                     // Resultatet är redan avgjort (som tidigare), men vi portionerar ut
                     // avslöjandet över 30 minuter – se renderLiveRace() m.fl. ovan.
-                    spelarData.liveReveal = {
+                    // Rapporten utgår från racets riktiga starttid (raceTid), inte från
+                    // när resultatet råkade hämtas: loggar man in mitt under racet
+                    // hamnar man mitt i rapporten, och har hela rapporttiden redan
+                    // passerat visas slutresultatet direkt utan liverapport.
+                    let liveStart = isNaN(raceTid.getTime()) ? nu : raceTid;
+                    spelarData.liveReveal = ((nu - liveStart) / 1000 < LIVE_RACE_SEK) ? {
                         raceNr: körtRaceNr,
-                        startTid: nu.toISOString(),
+                        startTid: liveStart.toISOString(),
                         varaktighetSek: LIVE_RACE_SEK
-                    };
+                    } : null;
                     let körtResultat = spelarData.raceResultat[körtRaceNr];
                     if (körtResultat) {
                         let egnaBilar = körtResultat.lopp.filter(r => r.arSpelare).map(r => ({ bil: r.bil, forarNamn: r.forarNamn, placering: r.placering, poang: r.poäng, dnf: r.dnf }));

@@ -80,10 +80,19 @@
     function forarForBilIRacet(lag, bilNr, skadeNyckel) {
         let f = forarForBil(lag, bilNr);
         if (f && arForareSkadad(f, skadeNyckel)) {
-            let reserv = forarReserver(lag).find(r => !arForareSkadad(r, skadeNyckel));
-            if (reserv) return reserv;
+            let lediga = forarReserver(lag).filter(r => !arForareSkadad(r, skadeNyckel));
+            // Är båda ordinarie förarna skadade tar bil 1 den första friska
+            // reserven och bil 2 nästa – samma reserv kan inte köra båda bilarna.
+            if (Number(bilNr) === 2 && arForareSkadad(forarForBil(lag, 1), skadeNyckel)) lediga = lediga.slice(1);
+            if (lediga.length) return lediga[0];
         }
         return f;
+    }
+    // Nyckeln (säsong-raceNr, samma format som f.skadadTillRace) för omgången
+    // EFTER ett race. Efter säsongens sista race är det nästa säsongs första.
+    const RACE_PER_SASONG = 10;
+    function nastaRaceNyckel(sasong, raceNr) {
+        return Number(raceNr) >= RACE_PER_SASONG ? (Number(sasong) + 1) + '-1' : sasong + '-' + (Number(raceNr) + 1);
     }
     function bilParts(lag, bilNr) {
         return lag['parts' + bilNr] || STANDARD_PARTS;
@@ -319,7 +328,7 @@
         BRANSLE_LITER_PER_KM, BRANSLE_LITER_PER_KURVA, BRANSLE_MIN_REKOMMENDATION,
         BRANSLE_OVERVIKT_FAKTOR, BRANSLE_SPARKORNING_FAKTOR, BRANSLE_DNF_FAKTOR,
         DACK_ALTERNATIV, DACK_EFFEKT, POANGSTABELL, STRATEGIER, SKADE_VIKT_STIL,
-        forarForBil, forarReserver, arForareSkadad, forarForBilIRacet, bilParts,
+        forarForBil, forarReserver, arForareSkadad, forarForBilIRacet, nastaRaceNyckel, bilParts,
         snittFormagaMedChef, personalFormagaForBil,
         beraknaRekommenderatBransle, hamtaBransleForLag, beraknaBransleEffekt,
         komponentBidrag, standardTaktik, beraknaTaktikBidrag, slumpaTaktikVarden,

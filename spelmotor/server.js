@@ -177,10 +177,18 @@
         return KOMPONENT_NYCKLAR[((sasong - 1) % n + n) % n];
     }
     // 0–3 bilar skadas per race, aggressiva förare oftare (som tillampaSkador).
-    function valjSkador(lagLista, rng) {
+    // Bilar som gick i mål på pallen (P1–P3) undantas – en bil som skadats under
+    // racet kan inte rimligen ha vunnit det. lopp: resultatet från korLopp().
+    function valjSkador(lagLista, rng, lopp) {
         const antal = Math.floor(rng() * 4);
+        const pall = new Set((lopp || []).filter(r => !r.dnf && r.placering <= 3).map(r => r.lagId + '|' + r.bil));
+        // Bara bilar som faktiskt körde loppet kan skadas.
+        const iLoppet = lopp ? new Set(lopp.map(r => r.lagId + '|' + r.bil)) : null;
         const pool = [];
-        lagLista.forEach(lag => [1, 2].forEach(bilNr => { if (R.forarForBil(lag, bilNr)) pool.push({ lag, bilNr }); }));
+        lagLista.forEach(lag => [1, 2].forEach(bilNr => {
+            const nyckel = lag.lagId + '|' + bilNr;
+            if (R.forarForBil(lag, bilNr) && !pall.has(nyckel) && (!iLoppet || iLoppet.has(nyckel))) pool.push({ lag, bilNr });
+        }));
         const valda = [];
         for (let n = 0; n < antal && pool.length > 0; n++) {
             const vikter = pool.map(k => { const f = R.forarForBil(k.lag, k.bilNr); return (f && R.SKADE_VIKT_STIL[f.style]) || 1; });
@@ -195,7 +203,9 @@
             const komponent = KOMPONENT_NYCKLAR[Math.floor(rng() * KOMPONENT_NYCKLAR.length)];
             const andelSkada = 0.10 + rng() * 0.60;
             const nuvarande = (R.bilParts(v.lag, v.bilNr) || {})[komponent] || 0;
-            const f = R.forarForBil(v.lag, v.bilNr);
+            // Föraren som faktiskt körde bilen (kan vara en reserv) är den som skadas.
+            const rad = (lopp || []).find(r => r.lagId === v.lag.lagId && r.bil === v.bilNr);
+            const f = (rad && (v.lag.forare || []).find(x => x.id === rad.forarId)) || R.forarForBil(v.lag, v.bilNr);
             return { lagId: v.lag.lagId, lagNamn: v.lag.namn, bilNr: v.bilNr, komponent, andelSkada,
                 nyttVarde: Math.max(0, Math.round(nuvarande * (1 - andelSkada))), forareNamn: f ? f.namn : null, forarId: f ? f.id : null };
         });
@@ -383,6 +393,6 @@
     }
 
     root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
-        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, personalForRace,
+        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, nastaRaceNyckel: R.nastaRaceNyckel, personalForRace,
         traningsvecka, veckouppdateringPersonal, aldrasPersonal, veckoekonomi });
 })(typeof globalThis !== 'undefined' ? globalThis : this);

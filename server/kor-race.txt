@@ -82,10 +82,19 @@ import { createClient } from "npm:@supabase/supabase-js@2";
     function forarForBilIRacet(lag, bilNr, skadeNyckel) {
         let f = forarForBil(lag, bilNr);
         if (f && arForareSkadad(f, skadeNyckel)) {
-            let reserv = forarReserver(lag).find(r => !arForareSkadad(r, skadeNyckel));
-            if (reserv) return reserv;
+            let lediga = forarReserver(lag).filter(r => !arForareSkadad(r, skadeNyckel));
+            // Är båda ordinarie förarna skadade tar bil 1 den första friska
+            // reserven och bil 2 nästa – samma reserv kan inte köra båda bilarna.
+            if (Number(bilNr) === 2 && arForareSkadad(forarForBil(lag, 1), skadeNyckel)) lediga = lediga.slice(1);
+            if (lediga.length) return lediga[0];
         }
         return f;
+    }
+    // Nyckeln (säsong-raceNr, samma format som f.skadadTillRace) för omgången
+    // EFTER ett race. Efter säsongens sista race är det nästa säsongs första.
+    const RACE_PER_SASONG = 10;
+    function nastaRaceNyckel(sasong, raceNr) {
+        return Number(raceNr) >= RACE_PER_SASONG ? (Number(sasong) + 1) + '-1' : sasong + '-' + (Number(raceNr) + 1);
     }
     function bilParts(lag, bilNr) {
         return lag['parts' + bilNr] || STANDARD_PARTS;
@@ -321,7 +330,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
         BRANSLE_LITER_PER_KM, BRANSLE_LITER_PER_KURVA, BRANSLE_MIN_REKOMMENDATION,
         BRANSLE_OVERVIKT_FAKTOR, BRANSLE_SPARKORNING_FAKTOR, BRANSLE_DNF_FAKTOR,
         DACK_ALTERNATIV, DACK_EFFEKT, POANGSTABELL, STRATEGIER, SKADE_VIKT_STIL,
-        forarForBil, forarReserver, arForareSkadad, forarForBilIRacet, bilParts,
+        forarForBil, forarReserver, arForareSkadad, forarForBilIRacet, nastaRaceNyckel, bilParts,
         snittFormagaMedChef, personalFormagaForBil,
         beraknaRekommenderatBransle, hamtaBransleForLag, beraknaBransleEffekt,
         komponentBidrag, standardTaktik, beraknaTaktikBidrag, slumpaTaktikVarden,
@@ -1159,10 +1168,18 @@ import { createClient } from "npm:@supabase/supabase-js@2";
         return KOMPONENT_NYCKLAR[((sasong - 1) % n + n) % n];
     }
     // 0–3 bilar skadas per race, aggressiva förare oftare (som tillampaSkador).
-    function valjSkador(lagLista, rng) {
+    // Bilar som gick i mål på pallen (P1–P3) undantas – en bil som skadats under
+    // racet kan inte rimligen ha vunnit det. lopp: resultatet från korLopp().
+    function valjSkador(lagLista, rng, lopp) {
         const antal = Math.floor(rng() * 4);
+        const pall = new Set((lopp || []).filter(r => !r.dnf && r.placering <= 3).map(r => r.lagId + '|' + r.bil));
+        // Bara bilar som faktiskt körde loppet kan skadas.
+        const iLoppet = lopp ? new Set(lopp.map(r => r.lagId + '|' + r.bil)) : null;
         const pool = [];
-        lagLista.forEach(lag => [1, 2].forEach(bilNr => { if (R.forarForBil(lag, bilNr)) pool.push({ lag, bilNr }); }));
+        lagLista.forEach(lag => [1, 2].forEach(bilNr => {
+            const nyckel = lag.lagId + '|' + bilNr;
+            if (R.forarForBil(lag, bilNr) && !pall.has(nyckel) && (!iLoppet || iLoppet.has(nyckel))) pool.push({ lag, bilNr });
+        }));
         const valda = [];
         for (let n = 0; n < antal && pool.length > 0; n++) {
             const vikter = pool.map(k => { const f = R.forarForBil(k.lag, k.bilNr); return (f && R.SKADE_VIKT_STIL[f.style]) || 1; });
@@ -1177,7 +1194,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
             const komponent = KOMPONENT_NYCKLAR[Math.floor(rng() * KOMPONENT_NYCKLAR.length)];
             const andelSkada = 0.10 + rng() * 0.60;
             const nuvarande = (R.bilParts(v.lag, v.bilNr) || {})[komponent] || 0;
-            const f = R.forarForBil(v.lag, v.bilNr);
+            // Föraren som faktiskt körde bilen (kan vara en reserv) är den som skadas.
+            const rad = (lopp || []).find(r => r.lagId === v.lag.lagId && r.bil === v.bilNr);
+            const f = (rad && (v.lag.forare || []).find(x => x.id === rad.forarId)) || R.forarForBil(v.lag, v.bilNr);
             return { lagId: v.lag.lagId, lagNamn: v.lag.namn, bilNr: v.bilNr, komponent, andelSkada,
                 nyttVarde: Math.max(0, Math.round(nuvarande * (1 - andelSkada))), forareNamn: f ? f.namn : null, forarId: f ? f.id : null };
         });
@@ -1216,8 +1235,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
     }
     function kopiaPersonal(personal) { return JSON.parse(JSON.stringify(personal || {})); }
 
-    // val: [{ id, kat, attribut }]. Förarna förbättras direkt, personalen
-    // får en väntande förbättring som slår igenom vid veckouppdateringen.
+    // val: [{ id, kat, attribut }]. Alla (förare, mekaniker och ingenjörer)
+    // förbättras direkt efter träningsracet.
     function traningsvecka(personal, val, rng) {
         const ny = kopiaPersonal(personal);
         const resultat = [];
@@ -1227,21 +1246,18 @@ import { createClient } from "npm:@supabase/supabase-js@2";
             if (!p || !p.stats || v.attribut === 'erfarenhet' || statNycklar(v.kat).indexOf(v.attribut) < 0) return;
             const prest = R.simuleraForarPrestation(p, rng);
             const forbattring = Math.max(1, Math.min(5, Math.round(1 + prest.procent * 4)));
-            if (v.kat === 'forare') {
-                p.stats[v.attribut] = Math.min(100, (p.stats[v.attribut] || 0) + forbattring);
-                p.formaga = V.beraknaFormaga(p.stats, statNycklar(v.kat));
-            } else {
-                p.vantandeTraning = { attribut: v.attribut, forbattring: forbattring, procent: prest.procent };
-            }
+            p.stats[v.attribut] = Math.min(100, (p.stats[v.attribut] || 0) + forbattring);
+            p.formaga = V.beraknaFormaga(p.stats, statNycklar(v.kat));
             resultat.push({ id: p.id, namn: p.namn, typ: v.kat, attribut: v.attribut, procent: Math.round(prest.procent * 100),
-                procentExakt: prest.procent, forbattring: forbattring, vantande: v.kat !== 'forare', nyttVarde: p.stats[v.attribut] });
+                procentExakt: prest.procent, forbattring: forbattring, vantande: false, nyttVarde: p.stats[v.attribut] });
         });
         resultat.sort((a, b) => b.procent - a.procent);
         resultat.forEach((r, i) => { r.placering = i + 1; });
         return { personal: ny, resultat };
     }
 
-    // Söndagens uppdatering: personalens väntande träning slår igenom.
+    // Söndagens uppdatering. (Personalens träning gäller numera direkt i
+    // traningsvecka(); ev. äldre väntande träning tillämpas här en sista gång.)
     function veckouppdateringPersonal(personal) {
         const ny = kopiaPersonal(personal);
         let antal = 0;
@@ -1368,7 +1384,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
     }
 
     root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
-        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, personalForRace,
+        prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, nastaRaceNyckel: R.nastaRaceNyckel, personalForRace,
         traningsvecka, veckouppdateringPersonal, aldrasPersonal, veckoekonomi });
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 // =====================================================================
@@ -1723,7 +1739,7 @@ Deno.serve(async (req) => {
           rad.kval = kv.kval;
         }
         const lopp = S.korLopp(div, sasong, k.race_nr, rader, order, rad.bana, rad.kval);
-        const skador = S.valjSkador(rader.map(S.lagFranRad), S.rngFor(div.id, sasong, k.race_nr, "skador"));
+        const skador = S.valjSkador(rader.map(S.lagFranRad), S.rngFor(div.id, sasong, k.race_nr, "skador"), lopp);
         const { data: uppdaterad, error } = await db.from("race_resultat")
           .update({ lopp, skador, lopp_at: new Date().toISOString() })
           .eq("division_id", div.id).eq("sasong", sasong).eq("race_nr", k.race_nr).is("lopp", null).select("race_nr");
@@ -1736,7 +1752,7 @@ Deno.serve(async (req) => {
         for (const sk of skador) {
           if (!manniskor.has(sk.lagId)) continue;
           await db.rpc("bil_skada", { p_team: sk.lagId, p_bil: sk.bilNr, p_del: sk.komponent, p_andel: sk.andelSkada });
-          await db.rpc("forare_skada", { p_team: sk.lagId, p_bil: sk.bilNr, p_skada: `${sasong}-${k.race_nr + 1}` });
+          await db.rpc("forare_skada", { p_team: sk.lagId, p_bil: sk.bilNr, p_skada: S.nastaRaceNyckel(sasong, k.race_nr), p_forare: sk.forarId || null });
         }
         const perPoang = S.prisPerPoang(tierPerDiv.get(div.id) || 4);
         const poang = new Map<string, number>();
@@ -1942,8 +1958,13 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
     for (const a of (aktiva as Rad[]) || []) {
       const bud = M.aiBud(a, aiIds, rng, nu);
       if (!bud) continue;
-      await db.from("marknad").update({ hogsta_bud: bud.hogsta_bud, hogsta_budare: bud.hogsta_budare, antal_bud: a.antal_bud + 1 })
-        .eq("id", a.id).eq("status", "aktiv").eq("hogsta_bud", a.hogsta_bud).eq("manskliga_bud", 0);
+      const { data: budUppd } = await db.from("marknad").update({ hogsta_bud: bud.hogsta_bud, hogsta_budare: bud.hogsta_budare, antal_bud: a.antal_bud + 1 })
+        .eq("id", a.id).eq("status", "aktiv").eq("hogsta_bud", a.hogsta_bud).eq("manskliga_bud", 0).select("id");
+      // Budhistorik (fas 3b-13). Misslyckas loggningen (t.ex. tabellen saknas) påverkas inte själva budet.
+      if (budUppd && (budUppd as Rad[]).length) {
+        const { error: loggFel } = await db.from("marknad_budlogg").insert({ auktion_id: a.id, team_id: bud.hogsta_budare, belopp: bud.hogsta_bud });
+        if (loggFel) logg.push(`budlogg: ${loggFel.message}`);
+      }
     }
     const aiSaljare = new Set(aiIds);
     const antalAiAktiva = ((aktiva as Rad[]) || []).filter((a) => aiSaljare.has(a.saljare_team_id)).length;
