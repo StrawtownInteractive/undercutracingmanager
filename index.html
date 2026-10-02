@@ -10702,8 +10702,29 @@
                     </p>
                     <p style="margin:4px 0 0; font-weight:600;">${inkorgEscapeHtml(m.amne || tt('(Inget ämne)', '(No subject)'))}</p>
                     ${uppklickad ? `<p style="margin:4px 0 0; font-size:13.5px; white-space:pre-wrap;">${inkorgEscapeHtml(m.brodtext || '')}</p>` : ''}
+                    ${uppklickad && m.typ === 'mottaget' ? `<button class="btn-blue" style="margin-top:10px; width:auto; padding:6px 14px; font-size:13px;" onclick="event.stopPropagation(); svaraPaMeddelande('${m.id}')">${tt('Svara', 'Reply')}</button>` : ''}
                 </div>`;
             }).join('');
+        }
+
+        // "Svara" på ett mottaget meddelande: fyller i formuläret "Skicka
+        // meddelande" längre ner (mottagare + "Re: ämne") och flyttar fokus dit –
+        // själva utskicket sköts som vanligt av skickaMeddelande().
+        function svaraPaMeddelande(id) {
+            let m = (senasteInkorgFranServer || []).find(x => String(x.id) === String(id));
+            let mottagareFalt = document.getElementById('inkorg-ny-mottagare');
+            let amneFalt = document.getElementById('inkorg-ny-amne');
+            let textFalt = document.getElementById('inkorg-ny-text');
+            if (!m || !mottagareFalt || !amneFalt || !textFalt) return;
+            let amne = (m.amne || '').trim();
+            mottagareFalt.value = m.fran_username || '';
+            amneFalt.value = amne ? (/^re:/i.test(amne) ? amne : 'Re: ' + amne) : '';
+            let felEl = document.getElementById('inkorg-ny-fel');
+            let bekraftEl = document.getElementById('inkorg-ny-bekraftelse');
+            if (felEl) felEl.textContent = '';
+            if (bekraftEl) bekraftEl.style.display = 'none';
+            textFalt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            textFalt.focus({ preventScroll: true });
         }
 
         // Klickar upp/ihop ett meddelande i inkorgen så att man kan läsa hela
