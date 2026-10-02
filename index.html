@@ -7777,11 +7777,37 @@
                 }
                 skrivMolnMeta(jobb.uid, { version: Number(data), osynkad: !!molnVantande });
             } catch (e) {
+                // Nekad som utloggad (inloggningen har gått ut eller avslutats i en
+                // annan flik): försök INTE igen var 30:e sekund. Finns ingen session
+                // kvar loggas klienten ut lokalt, vilket visar inloggningsskärmen och
+                // stoppar alla serverskrivningar (se molnStoppaUtanSession()).
+                // Ändringarna ligger kvar lokalt och laddas upp efter nästa inloggning.
+                if (e && (e.code === '42501' || /permission denied|JWT/i.test(String(e.message || '')))) {
+                    let harSession = true;
+                    try { const { data: s } = await window.supabaseClient.auth.getSession(); harSession = !!(s && s.session); } catch (e2) { /* okänt – behandla som inloggad */ }
+                    if (!harSession) {
+                        console.warn('Inloggningen har gått ut – sparar inte till servern förrän du loggat in igen.');
+                        molnStoppaUtanSession();
+                        try { await window.supabaseClient.auth.signOut({ scope: 'local' }); } catch (e3) { /* best effort */ }
+                        return;
+                    }
+                }
                 console.error('Kunde inte spara spelvärlden till servern (försöker igen):', e);
                 if (!molnVantande) molnVantande = jobb;
                 if (!molnTimer) molnTimer = setTimeout(molnSparaNu, 30000);
             }
         }
+        // Sessionen är borta utan att "Logga ut" använts (SIGNED_OUT från Supabase:
+        // utgången inloggning eller utloggning i en annan flik). Till skillnad från
+        // molnAvsluta() görs inga sista sparförsök – de skulle bara nekas – utan
+        // alla schemalagda serverskrivningar och onlinesynken stängs av direkt.
+        function molnStoppaUtanSession() {
+            clearTimeout(molnTimer); molnTimer = null;
+            molnVantande = null; molnAnvandarId = null;
+            clearTimeout(pyramidTimer); pyramidTimer = null;
+            pyramidLagId = null; pyramidDivision = null;
+        }
+        window.molnStoppaUtanSession = molnStoppaUtanSession;
         // Hämtar kontots sparfil från servern till localStorage om den är nyare
         // än den lokala. Anropas av startaApexSpel() INNAN spelvärlden laddas.
         async function hamtaMolnSparning(user) {
@@ -7940,6 +7966,7 @@
         // ekonomin, träningen och marknaden körs fortfarande lokalt (Fas 3).
         // ---------------------------------------------------------------------
         let onlineData = null, onlineSynk = null, onlineSenasteSynk = 0;
+        let onlineLagHamtadPerDiv = {}; // division-id -> när seriens lagdata senast hämtades
         function arOnline() {
             return !!(onlineData && onlineData.lagId && typeof spelarData !== 'undefined' && !spelarData.arTestlage);
         }
@@ -7997,12 +8024,14 @@
 
         // Ersätter de lokala tabellerna med serverns pyramid. Det egna laget
         // (spelarens lokala lagobjekt) placeras på sin plats på servern.
-        function byggOnlineTabeller(rader, egen) {
+        // delvis = true: rader innehåller bara enstaka serier (halvtimmesuppdateringen,
+        // se synkaOnlineVarld). Övriga serier lämnas orörda och visad serie byts inte.
+        function byggOnlineTabeller(rader, egen, delvis) {
             let egetLag = hamtaSpelarLag();
             if (!egetLag) return false;
             let perDiv = {};
             rader.forEach(t => { (perDiv[t.division_id] = perDiv[t.division_id] || []).push(t); });
-            if (!perDiv[egen.division_id]) return false;
+            if (!delvis && !perDiv[egen.division_id]) return false;
             Object.keys(perDiv).forEach(gid => {
                 if (!GROUP_DEFS[gid]) return;
                 let signaturer = new Set();
@@ -8016,6 +8045,7 @@
                     return importeraOnlineLag(t, signaturer);
                 });
             });
+            if (delvis) return true;
             spelarData.serieId = egen.division_id;
             spelarData.visadSerieId = egen.division_id;
             return true;
@@ -8086,16 +8116,27 @@
                     // den nya säsongens pyramid.
                     const ikapp = !!(spelarData.onlineTillampat && spelarData.sasong < serverSasong);
                     const sasong = ikapp ? spelarData.sasong : serverSasong;
-                    // Alla lag (med ögonblicksbilder) hämtas vid inloggning, vid divisionsbyte
-                    // och därefter var 30:e minut, så att andra managers förändringar syns.
-                    const behoverLag = !ikapp && (fullImport || !onlineData || onlineData.divisionId !== egen.division_id || onlineData.sasong !== sasong || (Date.now() - (onlineData.lagHamtade || 0) > 30 * 60000));
+                    // Alla lag (med ögonblicksbilder, ca 3 MB) hämtas bara vid inloggning,
+                    // divisionsbyte och säsongsbyte. Därefter uppdateras var 30:e minut
+                    // bara den egna serien och den serie som visas just nu (delDiv), så
+                    // att andra managers förändringar syns utan att hela pyramiden laddas om.
+                    const fullLag = !ikapp && (fullImport || !onlineData || onlineData.divisionId !== egen.division_id || onlineData.sasong !== sasong);
+                    let delDiv = [];
+                    if (!ikapp && !fullLag) {
+                        [egen.division_id, spelarData.visadSerieId].forEach(g => {
+                            if (g && GROUP_DEFS[g] && !delDiv.includes(g) && Date.now() - (onlineLagHamtadPerDiv[g] || 0) > 30 * 60000) delDiv.push(g);
+                        });
+                    }
+                    const behoverLag = fullLag || delDiv.length > 0;
                     const [res, tab, sch, lagRader] = await Promise.all([
                         ikapp
                             ? sb.from('race_resultat').select('race_nr, bana, kval, lopp, skador').eq('sasong', sasong).contains('kval', [{ lagId: egen.id }])
                             : sb.from('race_resultat').select('race_nr, bana, kval, lopp, skador').eq('division_id', egen.division_id).eq('sasong', sasong),
                         sb.from('serietabell').select('team_id, poang, poang_bil1, poang_bil2').eq('sasong', sasong),
                         sb.from('division_schema').select('schema').eq('division_id', ikapp ? spelarData.serieId : egen.division_id).eq('sasong', sasong).maybeSingle(),
-                        behoverLag ? sb.from('teams').select('id, division_id, name, is_ai, slot, snapshot') : Promise.resolve({ data: null, error: null })
+                        fullLag ? sb.from('teams').select('id, division_id, name, is_ai, slot, snapshot')
+                            : behoverLag ? sb.from('teams').select('id, division_id, name, is_ai, slot, snapshot').in('division_id', delDiv)
+                            : Promise.resolve({ data: null, error: null })
                     ]);
                     [res, tab, sch, lagRader].forEach(x => { if (x.error) throw x.error; });
                     let resultat = {};
@@ -8105,7 +8146,8 @@
                         ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(r => ({ sasong: sasong, race_nr: r, kval_at: new Date(Date.now() - (12 - r) * 60000).toISOString(), lopp_at: new Date(Date.now() - (11.5 - r) * 60000).toISOString() }))
                         : (kal.data || []);
                     onlineData = { lagId: egen.id, divisionId: ikapp ? spelarData.serieId : egen.division_id, sasong: sasong, ikapp: ikapp, kalender: kalender, resultat: resultat, lagHamtade: lagRader.data ? Date.now() : (onlineData && onlineData.lagHamtade) || 0 };
-                    if (lagRader.data && !byggOnlineTabeller(lagRader.data, egen)) { onlineData = null; return; }
+                    if (lagRader.data && !byggOnlineTabeller(lagRader.data, egen, !fullLag)) { onlineData = null; return; }
+                    if (lagRader.data) { let hamtadNu = Date.now(); (fullLag ? ALL_GROUP_IDS : delDiv).forEach(g => { onlineLagHamtadPerDiv[g] = hamtadNu; }); }
                     if (ikapp) {
                         // Omgångar där laget inte deltog (t.ex. saknade förare) hoppas över.
                         for (let r = 1; r <= 10; r++) if (!resultat[r]) spelarData.onlineTillampat[onlineNyckel(sasong, r)] = true;
@@ -8943,6 +8985,7 @@
         // fortfarande anvands just nu.
         async function uppdateraSenasteAktivitet(user) {
             if (!window.supabaseClient || !user || !user.id) return;
+            if (molnAnvandarId !== user.id) return; // utloggad (se molnStoppaUtanSession) – skulle bara nekas
             try { await window.supabaseClient.from('profiles').update({ last_active: new Date().toISOString() }).eq('id', user.id); } catch (e) { /* strunta i det */ }
         }
 
@@ -11329,6 +11372,9 @@
         function bytVisadSerie(groupId) {
             spelarData.visadSerieId = groupId;
             sparaOchUppdatera();
+            // Online: en annan series lagdata hämtas när den visas, om den är äldre
+            // än 30 minuter (synkaOnlineVarld tar med spelarData.visadSerieId).
+            if (arOnline() && Date.now() - (onlineLagHamtadPerDiv[groupId] || 0) > 30 * 60000) synkaOnlineVarld(false);
         }
 
         // =====================================================================
@@ -28371,6 +28417,9 @@
                     authScreen.hidden = false;
                     appContainer.style.display = 'none';
                 } else if (event === 'SIGNED_OUT') {
+                    // Stoppar spelets serverskrivningar – annars fortsätter den öppna
+                    // fliken att försöka spara som utloggad och nekas varje gång.
+                    if (typeof window.molnStoppaUtanSession === 'function') window.molnStoppaUtanSession();
                     visaInloggning();
                 }
             });
