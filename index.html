@@ -6646,6 +6646,19 @@
             T5O: { tier: 5, label: "Division 5O",     kort: "Div 5O",      parent: "T4H",  children: [] },
             T5P: { tier: 5, label: "Division 5P",     kort: "Div 5P",      parent: "T4H",  children: [] }
         };
+        // Divisionsnamnen ("Division 4D", "Division 5") visas på aktivt språk
+        // (t.ex. "División 4D" på spanska). Gäller ENBART label, som bara
+        // används för visning – "kort" ("Div 4D") ingår i sparade lagnamn och
+        // jämförs i spellogiken, och lämnas därför orört.
+        const DIVISION_ORD = { es: 'División ', pl: 'Dywizja ', fi: 'Divisioona ', hu: 'Divízió ', ja: 'ディビジョン' };
+        function lokalDivision(text) {
+            let ord = (typeof aktivtSprak !== 'undefined') ? DIVISION_ORD[aktivtSprak] : null;
+            return ord ? String(text).replace(/^Division /, ord) : text;
+        }
+        Object.keys(GROUP_DEFS).forEach(gid => {
+            let svLabel = GROUP_DEFS[gid].label;
+            Object.defineProperty(GROUP_DEFS[gid], 'label', { get: () => lokalDivision(svLabel), enumerable: true, configurable: true });
+        });
         const ALL_GROUP_IDS = Object.keys(GROUP_DEFS);
         // Nya spelare tar alltid över ett datorstyrt lags serieplats i
         // STARTDIVISION (Division 4). Finns inget datorstyrt lag där används
@@ -12458,8 +12471,22 @@
         function senasteFormForLag(lagNamn) {
             if (spelarData.visadSerieId !== spelarData.serieId) {
                 let gid = spelarData.visadSerieId;
-                let res = (spelarData.gruppResultat || {})[gid];
                 let lag = (spelarData.tabeller[gid] || []).find(l => l.namn === lagNamn);
+                // Onlineserien: andra seriers race ligger på servern (onlineGruppData),
+                // inte i den lokala gruppResultat.
+                if (arOnline()) {
+                    if (!lag) return [];
+                    let form = [];
+                    onlineGruppKordaRace(gid).sort((a, b) => b.raceNr - a.raceNr).forEach(o => {
+                        if (form.length >= 5) return;
+                        let bilar = o.lopp.filter(r => r.lagId === lag.lagId);
+                        if (!bilar.length) return;
+                        let bast = bilar.reduce((b, r) => (b === null || (r.placering || 999) < (b.placering || 999)) ? r : b, null);
+                        form.push({ raceNr: o.raceNr, placering: bast.placering, dnf: bilar.every(r => r.dnf) });
+                    });
+                    return form.reverse();
+                }
+                let res = (spelarData.gruppResultat || {})[gid];
                 if (!res || !lag) return [];
                 let form = [];
                 Object.keys(res).map(Number).sort((a, b) => b - a).forEach(raceNr => {
@@ -12487,11 +12514,24 @@
         }
 
         // Antal genomförda race för ett lag i den visade serien (samma källor som formen).
+        // Onlineserien: körda race (med loppresultat) i en annan serie, ur serverdatan.
+        function onlineGruppKordaRace(gid) {
+            let c = onlineGruppData[gid];
+            if (!c || !c.resultat) return [];
+            return Object.keys(c.resultat).map(Number)
+                .filter(nr => Array.isArray(c.resultat[nr].lopp))
+                .map(nr => ({ raceNr: nr, lopp: c.resultat[nr].lopp }));
+        }
+
         function antalRaceForLag(lagNamn) {
             if (spelarData.visadSerieId !== spelarData.serieId) {
                 let gid = spelarData.visadSerieId;
-                let res = (spelarData.gruppResultat || {})[gid];
                 let lag = (spelarData.tabeller[gid] || []).find(l => l.namn === lagNamn);
+                if (arOnline()) {
+                    if (!lag) return 0;
+                    return onlineGruppKordaRace(gid).filter(o => o.lopp.some(r => r.lagId === lag.lagId)).length;
+                }
+                let res = (spelarData.gruppResultat || {})[gid];
                 if (!res || !lag) return 0;
                 return Object.keys(res).filter(k => (res[k].lopp || []).some(r => r.i === lag.lagId)).length;
             }
@@ -12515,6 +12555,7 @@
             let aktuellTabell = spelarData.tabeller[spelarData.visadSerieId];
             if (!aktuellTabell) return;
             aktuellTabell.sort((a, b) => b.poäng - a.poäng);
+            if (spelarData.visadSerieId !== spelarData.serieId && arOnline()) hamtaOnlineGruppData(spelarData.visadSerieId);
 
             let def = GROUP_DEFS[spelarData.visadSerieId];
             let uppText = def.parent
@@ -16583,7 +16624,7 @@
                 onlineGruppData[gid] = Object.assign({}, onlineGruppData[gid], { laddar: false, hamtad: Date.now() });
                 return;
             }
-            if ((spelarData.visadSerieId || spelarData.serieId) === gid) bytUtSchemaHTML();
+            if ((spelarData.visadSerieId || spelarData.serieId) === gid) { bytUtTabellHTML(); bytUtSchemaHTML(); }
             if (visadGruppRapport && visadGruppRapport.gid === gid) renderGruppRacerapport();
             if (subflikar.lagsida === 'raceschema' && lsGroupId === gid) renderLagsida();
         }
@@ -17172,7 +17213,7 @@
         const ANTAL_NEDFLYTTADE = 3;
         function gruppSortering(a, b) { return b.poäng - a.poäng; }
         function gruppIdForTier(tier) { return ALL_GROUP_IDS.filter(g => GROUP_DEFS[g].tier === tier); }
-        function divisionsNamn(tier) { return tier === 1 ? GROUP_DEFS.T1.label : 'Division ' + tier; }
+        function divisionsNamn(tier) { return tier === 1 ? GROUP_DEFS.T1.label : lokalDivision('Division ' + tier); }
         function antalBastaTvaorSomGarUpp(tier) { return tier > 1 ? gruppIdForTier(tier - 1).length : 0; }
         // Alla grupptvåor i en division, rankade: poäng, sedan bästa bilens poäng.
         function beraknaBastaTvaor(tier) {
@@ -27829,6 +27870,17 @@
             try { localStorage.setItem(SPRAK_KEY, kod); } catch (e) { /* strunta i det om det inte går att spara */ }
             applyOversattningar(document);
             document.dispatchEvent(new CustomEvent('apex-sprak-andrat', { detail: { sprak: kod } }));
+            aterrenderaAllaFlikar();
+        }
+
+        // Vid språkbyte måste ALLA flikar ritas om, inte bara den synliga:
+        // bytFlik() renderar inte om innehållet, så annars låg tt()-texterna i
+        // övriga flikar (t.ex. Ekonomi → "Ekonomi, per vecka") kvar på det
+        // gamla språket tills nästa uppdateraUI() råkade köras.
+        function aterrenderaAllaFlikar() {
+            try {
+                if (typeof spelarData !== 'undefined' && spelarData && spelarData.tabeller && typeof uppdateraUI === 'function') uppdateraUI();
+            } catch (e) { /* spelet har inte startat än (inloggningssidan) */ }
             aterrenderaAktivFlik();
         }
 
@@ -27962,6 +28014,7 @@
                     renderaKnapp();
                     if (!meny.hidden) renderaMeny();
                     applyOversattningar(document);
+                    aterrenderaAllaFlikar();
                 }
             });
 
