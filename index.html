@@ -3764,6 +3764,7 @@
                         <span class="team-link" onclick="bytSubflik('serie', 'seriestatistik')" data-i18n="appSeriestatistik">Seriestatistik</span>
                         <span class="team-link" onclick="bytSubflik('serie', 'raceschema')" data-i18n="appRaceschemaSida">Raceschema</span>
                         <span class="team-link" id="serie-bastatvaor-lank" onclick="bytSubflik('serie', 'bastatvaor')" data-i18n="appBastaTvaor">Bästa 2:or</span>
+                        <span class="team-link" id="serie-forarstatistik-lank" onclick="bytSubflik('serie', 'forarstatistik')">Förarstatistik</span>
                     </div>
                 </div>
                 <p style="font-size: 12px; color: #aaa;" id="serie-uppflyttning-text">-</p>
@@ -3959,7 +3960,6 @@
                     <h3 data-i18n="appSeriestatistik">Seriestatistik</h3>
                     <p style="font-size: 12px; color: #aaa; margin-top:0;" data-i18n="appSeriestatistikBeskrivning">All-time-statistik för serien/gruppen du tittar på just nu, genom alla säsonger.</p>
                     <p style="font-size: 13px; color: #aaa;"><strong data-i18n="appSerie2">Serie:</strong> <span id="seriestatistik-namn">-</span></p>
-                    <p style="margin-bottom:0;"><span class="team-link" id="seriestatistik-forarstatistik-lank" onclick="bytSubflik('serie', 'forarstatistik')">Förarstatistik</span></p>
                 </div>
                 <div class="card">
                     <h3 data-i18n="appFlestMasterskap">Flest mästerskap</h3>
@@ -4264,7 +4264,7 @@
                 <p><strong data-i18n="appBanforutsattningar">Banförutsättningar:</strong> <span id="race-langd">-</span> <span data-i18n="raceKmComma">km,</span> <span id="race-kurvor">-</span> <span data-i18n="arenaKurvorSuffix">kurvor</span></p>
                 <p><strong data-i18n="appSvarighetsgrad">Svårighetsgrad:</strong> <span id="race-svarighet">-</span> / 10</p>
                 <p id="race-referat-text" style="font-style: italic; color: #ccc; margin-top: 8px;"></p>
-                <p id="race-skador-text" style="font-size: 12px; color: #ff9999;"></p>
+                <div id="race-skador-text" style="font-size: 12px; color: #ff9999;"></div>
                 <div id="race-ej-kort" style="display:none;">
                     <p id="race-ej-kort-text" style="color:#aaa; font-size: 13px;">-</p>
                 </div>
@@ -11709,7 +11709,7 @@
                         <p style="font-size:13px; color:#aaa; margin:8px 0 0;"><strong>${t('appSerie2')}</strong> ${GROUP_DEFS[gid] ? GROUP_DEFS[gid].label : '-'}</p>
                     </div>
                     <div class="hub-header-links">
-                        <span class="team-link" onclick="bytSubflik('serie', 'seriestatistik')">${tt('← Seriestatistik', '← Series statistics')}</span>
+                        <span class="team-link" onclick="bytSubflik('serie', 'tabell')">${t('appTillbakaSerietabell')}</span>
                     </div>
                 </div>
                 <div class="tabell-scroll">
@@ -12647,6 +12647,8 @@
                 : tt("Lägsta nivån – ingen nedflyttning.", "Lowest level – no relegation.");
             let bastaTvaorLank = document.getElementById('serie-bastatvaor-lank');
             if (bastaTvaorLank) bastaTvaorLank.style.display = def.parent ? '' : 'none';
+            let forarstatistikLank = document.getElementById('serie-forarstatistik-lank');
+            if (forarstatistikLank) forarstatistikLank.innerText = tt('Förarstatistik', 'Driver statistics');
             let kvalTvaor = def.parent ? new Set(beraknaBastaTvaor(def.tier).slice(0, antalBastaTvaorSomGarUpp(def.tier)).map(x => x.lag)) : new Set();
             document.getElementById('serie-uppflyttning-text').innerText = uppText + " " + nedText;
 
@@ -19969,7 +19971,24 @@
             // Under live-racet ska varken referat eller skador avslöja utfallet.
             let liveRacePagar = !!(spelarData.liveReveal && spelarData.liveReveal.raceNr === raceNr);
             document.getElementById('race-referat-text').innerText = (resultat && (resultat.referat || resultat.referatData) && visaLoppInnehall && !liveRacePagar) ? renderReferatText(resultat) : '';
-            document.getElementById('race-skador-text').innerText = (resultat && resultat.skador && resultat.skador.length && visaLoppInnehall && !liveRacePagar) ? (tt('Skador:', 'Damage:') + ' ' + renderSkadeText(resultat.skador)) : '';
+            // Skadorna visas som en punktlista (en punkt per skada). Byggs med
+            // textContent så att lag-/förarnamn aldrig tolkas som HTML.
+            let skadorEl = document.getElementById('race-skador-text');
+            skadorEl.textContent = '';
+            if (resultat && resultat.skador && resultat.skador.length && visaLoppInnehall && !liveRacePagar) {
+                let rubrik = document.createElement('strong');
+                rubrik.textContent = tt('Skador:', 'Damage:');
+                let lista = document.createElement('ul');
+                lista.style.cssText = 'margin: 4px 0 0; padding-left: 18px;';
+                resultat.skador.forEach(d => {
+                    let li = document.createElement('li');
+                    li.style.marginBottom = '2px';
+                    li.textContent = byggSkadaText(d);
+                    lista.appendChild(li);
+                });
+                skadorEl.appendChild(rubrik);
+                skadorEl.appendChild(lista);
+            }
 
             let ejKortDiv = document.getElementById('race-ej-kort');
             let ejKortText = document.getElementById('race-ej-kort-text');
@@ -28715,6 +28734,10 @@
             if (supabaseClient && typeof window.sparaLagoVidUtloggning === 'function') { await window.sparaLagoVidUtloggning(); }
             if (supabaseClient) { await supabaseClient.auth.signOut(); }
             document.getElementById('auth-login-form').reset();
+            // Glömmer senast visade vy (se aterstallVyEfterOmladdning), så att
+            // nästa inloggning alltid börjar på Hem i stället för den gamla vyn.
+            try { sessionStorage.removeItem('urmSenasteVy'); } catch (e) {}
+            try { history.replaceState(null, ''); } catch (e) {}
             visaInloggning();
             // Laddar om sidan efter utloggning, så att nästa inloggning (kanske
             // med ett annat konto) börjar från ett helt rent läge.
