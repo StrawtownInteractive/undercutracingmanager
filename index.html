@@ -5017,7 +5017,13 @@
                     <p><span data-i18n-html="kontoStatusLabel"><strong>Status:</strong></span> <span id="admin-anvandare-detalj-status">-</span></p>
                     <div id="admin-anvandare-detalj-namnbyte"></div>
                     <div id="admin-anvandare-detalj-lag"></div>
+                    <div id="admin-anvandare-detalj-enheter"></div>
                     <button class="btn-danger btn-small" id="admin-anvandare-detalj-avstang-btn" style="width:auto;" onclick="adminTogglaAvstangning()" data-i18n="kontoStangAvBtn">Stäng av</button>
+                </div>
+                <div class="card" id="admin-flera-konton-kort">
+                    <h3>Flera konton</h3>
+                    <p style="font-size:13px; color:var(--text-muted); margin-top:0;">Enheter och IP-adresser som har använts av mer än ett konto de senaste 90 dagarna. Samma enhet betyder samma webbläsare på samma dator/mobil. Samma IP-adress kan också vara samma hushåll, skola eller mobiloperatör.</p>
+                    <div id="admin-flera-konton">-</div>
                 </div>
                 <div class="card" id="admin-lag-kort">
                     <h3 id="admin-lag-rubrik">Alla lag</h3>
@@ -9144,6 +9150,61 @@
                 listaEl.innerHTML = adminAnvandarRaderHTML();
             } catch (e) { listaEl.innerHTML = tt('Kunde inte hämta användarlistan.', 'Could not load the user list.'); }
             laddaAdminLagLista();
+            laddaAdminEnheter();
+        }
+
+        // Enheter och IP-adresser per inloggning (admin_inloggning_enheter, se
+        // fas3b19.sql). Kortet "Flera konton" visar enhets-ID:n och IP-adresser
+        // som använts av mer än ett konto; detaljkortet visar en användares egna.
+        let adminEnheterCache = [];
+        async function laddaAdminEnheter() {
+            let el = document.getElementById('admin-flera-konton');
+            if (!el || !window.supabaseClient) return;
+            el.innerHTML = tt('Laddar…', 'Loading…');
+            try {
+                const { data, error } = await window.supabaseClient.rpc('admin_inloggning_enheter');
+                if (error || !data) { el.innerHTML = tt('Kunde inte hämta inloggningarna.', 'Could not load the logins.'); return; }
+                adminEnheterCache = data;
+                renderAdminFleraKonton();
+                if (adminVisadAnvandareId) renderAdminAnvandareEnheter(adminVisadAnvandareId);
+            } catch (e) { el.innerHTML = tt('Kunde inte hämta inloggningarna.', 'Could not load the logins.'); }
+        }
+        function adminDeladeGrupper(falt) {
+            let grupper = {};
+            adminEnheterCache.forEach(r => {
+                let v = r[falt];
+                if (!v) return;
+                let g = grupper[v] || (grupper[v] = { varde: v, konton: {}, texter: {}, senast: r.senast_sedd });
+                g.konton[r.user_id] = r.username;
+                if (r.enhet_text) g.texter[r.enhet_text] = true;
+                if (r.senast_sedd > g.senast) g.senast = r.senast_sedd;
+            });
+            return Object.values(grupper).filter(g => Object.keys(g.konton).length > 1).sort((a, b) => (a.senast < b.senast ? 1 : -1));
+        }
+        function renderAdminFleraKonton() {
+            let el = document.getElementById('admin-flera-konton');
+            if (!el) return;
+            let kontoLankar = g => Object.entries(g.konton).map(([id, namn]) => `<span class="team-link" onclick="visaAdminAnvandare('${id}')">${inkorgEscapeHtml(namn || '-')}</span>`).join(', ');
+            let rad = (rubrik, g) => `<div style="border-bottom:1px solid var(--border, #333); padding:4px 0;"><strong>${rubrik}</strong> ${kontoLankar(g)}`
+                + `<br><span style="color:var(--text-muted); font-size:12px;">${inkorgEscapeHtml(Object.keys(g.texter).join(', ') || '-')} · ${tt('senast', 'last')} ${formateraDatum(g.senast)}</span></div>`;
+            let enheter = adminDeladeGrupper('enhet_id'), ipn = adminDeladeGrupper('ip');
+            el.innerHTML = `<h4 style="margin:8px 0 4px;">${tt('Samma enhet', 'Same device')} (${enheter.length})</h4>`
+                + (enheter.length ? enheter.map(g => rad(tt('Enhet', 'Device') + ' ' + inkorgEscapeHtml(g.varde.slice(0, 8)) + ':', g)).join('') : `<p style="color:var(--text-muted); margin:0;">${tt('Inga enheter delas av flera konton.', 'No devices are shared by several accounts.')}</p>`)
+                + `<h4 style="margin:12px 0 4px;">${tt('Samma IP-adress', 'Same IP address')} (${ipn.length})</h4>`
+                + (ipn.length ? ipn.map(g => rad(inkorgEscapeHtml(g.varde) + ':', g)).join('') : `<p style="color:var(--text-muted); margin:0;">${tt('Inga IP-adresser delas av flera konton.', 'No IP addresses are shared by several accounts.')}</p>`);
+        }
+        function renderAdminAnvandareEnheter(id) {
+            let el = document.getElementById('admin-anvandare-detalj-enheter');
+            if (!el) return;
+            let rader = adminEnheterCache.filter(r => r.user_id === id);
+            if (!rader.length) { el.innerHTML = `<p><strong>${tt('Inloggningar:', 'Logins:')}</strong> <span style="color:var(--text-muted);">${tt('Inga registrerade ännu.', 'None recorded yet.')}</span></p>`; return; }
+            let delas = (falt, v) => v && adminEnheterCache.some(r => r[falt] === v && r.user_id !== id);
+            let varning = ` <span class="tag-badge">${tt('delas', 'shared')}</span>`;
+            el.innerHTML = `<p style="margin-bottom:4px;"><strong>${tt('Inloggningar (senaste 90 dagarna):', 'Logins (last 90 days):')}</strong></p>`
+                + rader.map(r => `<div style="font-size:13px; border-bottom:1px solid var(--border, #333); padding:3px 0;">${inkorgEscapeHtml(r.enhet_text || tt('Okänd enhet', 'Unknown device'))}`
+                    + ` · ${tt('enhet', 'device')} ${inkorgEscapeHtml((r.enhet_id || '-').slice(0, 8))}${delas('enhet_id', r.enhet_id) ? varning : ''}`
+                    + ` · IP ${inkorgEscapeHtml(r.ip || '-')}${delas('ip', r.ip) ? varning : ''}`
+                    + `<br><span style="color:var(--text-muted); font-size:12px;">${r.antal} ${tt('gånger', 'times')}, ${tt('senast', 'last')} ${formateraDatum(r.senast_sedd)}</span></div>`).join('');
         }
 
         // En rad per användare: användarnamn – lagnamn (division).
@@ -9260,6 +9321,7 @@
             if (namnEl) namnEl.innerHTML = `<p><strong>${tt('Användarnamn:', 'Username:')}</strong> ${inkorgEscapeHtml(u.username)}`
                 + (u.tidigare_username ? ` <span style="color:var(--text-muted);">(${tt('tidigare', 'previously')}: ${inkorgEscapeHtml(u.tidigare_username)})</span>` : '')
                 + ` <button class="btn-secondary btn-small" style="width:auto; margin-left:6px;" onclick="adminBytAnvandarnamn('${u.id}')">${tt('Byt användarnamn', 'Change username')}</button></p>`;
+            renderAdminAnvandareEnheter(id);
             let lagEl = document.getElementById('admin-anvandare-detalj-lag');
             if (lagEl) lagEl.innerHTML = `<p><strong>${tt('Lag:', 'Team:')}</strong> `
                 + (u.team_id ? `${inkorgEscapeHtml(u.team_name || '-')}${u.division ? ' (' + inkorgEscapeHtml(u.division) + ')' : ''} <button class="btn-secondary btn-small" style="width:auto; margin-left:6px;" onclick="adminBytLagnamn('${u.team_id}')">${tt('Byt lagnamn', 'Rename team')}</button>` : tt('Inget lag', 'No team'))
@@ -20872,7 +20934,7 @@
                 ccPersonligaAnnonser: 'Personliga/relevanta annonser',
                 ccPersonligaAnnonserDesc: 'Låter oss visa mer relevanta annonser istället för generiska. Laddas endast om du tillåter det.',
                 ccSparaVal: 'Spara val',
-                ccIntegritetspolicyInnehall: '<p><strong>Vem är ansvarig?</strong><br>Undercut Racing Manager drivs av Strawtown Interactive.</p><p><strong>Vilken data samlar vi in?</strong><br>När du skapar ett konto sparar vi din e-postadress, ditt valda lagnamn och ditt sparade spelläge (lag, förare, personal, ekonomi, resultat med mera), enbart för att driva spelet. Vi säljer aldrig din data vidare till tredje part.</p><p><strong>Var lagras datan?</strong><br>Kontouppgifter och sparat spelläge lagras hos vår databasleverantör. Vissa inställningar, t.ex. ditt cookieval och valt språk, sparas lokalt i din webbläsare.</p><p><strong>Cookies</strong><br>Se vår <a href="#" onclick="CookieConsent.openCookiePolicy(); return false;">cookiepolicy</a> för vilka cookies vi använder – du väljer själv vilka du tillåter under Mitt konto → Inställningar → Cookies.</p><p><strong>Dina rättigheter</strong><br>Du kan när som helst nollställa ditt sparade spelläge under Mitt konto → Inställningar, eller höra av dig under Mitt konto → Kontakt om du vill ha din data raderad eller har andra frågor om hur den hanteras.</p>',
+                ccIntegritetspolicyInnehall: '<p><strong>Vem är ansvarig?</strong><br>Undercut Racing Manager drivs av Strawtown Interactive.</p><p><strong>Vilken data samlar vi in?</strong><br>När du skapar ett konto sparar vi din e-postadress, ditt valda lagnamn och ditt sparade spelläge (lag, förare, personal, ekonomi, resultat med mera), enbart för att driva spelet. Vi säljer aldrig din data vidare till tredje part.</p><p><strong>Inloggningar och fusk</strong><br>När du loggar in sparar vi din IP-adress, ett slumpat enhets-ID som lagras i din webbläsare och vilken typ av webbläsare och enhet du använder (t.ex. ”Safari på iPhone”). Uppgifterna används enbart för att upptäcka om samma person spelar med flera konton, kan bara ses av spelets administratör och raderas automatiskt efter 90 dagar.</p><p><strong>Var lagras datan?</strong><br>Kontouppgifter och sparat spelläge lagras hos vår databasleverantör. Vissa inställningar, t.ex. ditt cookieval och valt språk, sparas lokalt i din webbläsare.</p><p><strong>Cookies</strong><br>Se vår <a href="#" onclick="CookieConsent.openCookiePolicy(); return false;">cookiepolicy</a> för vilka cookies vi använder – du väljer själv vilka du tillåter under Mitt konto → Inställningar → Cookies.</p><p><strong>Dina rättigheter</strong><br>Du kan när som helst nollställa ditt sparade spelläge under Mitt konto → Inställningar, eller höra av dig under Mitt konto → Kontakt om du vill ha din data raderad eller har andra frågor om hur den hanteras.</p>',
                 ccCookiepolicyInnehall: '<p>Vi använder tre kategorier av cookies/lokal lagring:</p><p><strong>Nödvändiga</strong> – krävs för att spelet ska fungera (t.ex. inloggning, sparat spelläge och ditt cookieval). Kan inte stängas av.</p><p><strong>Statistik/analytics</strong> – hjälper oss förstå hur spelet används, för att kunna förbättra det. Laddas bara om du tillåter det.</p><p><strong>Personliga/relevanta annonser</strong> – låter oss visa mer relevanta annonser. Laddas bara om du tillåter det.</p><p>Du väljer själv vilka du tillåter, och kan ändra dig när som helst via knappen "Cookie-inställningar" (visas längst ner efter ditt första val) eller under Mitt konto → Inställningar → Cookies.</p>',
                 kontoNollstallIntro: 'Nollställer allt sparat spelläge och startar om från början. Går inte att ångra.',
                 kontoNamnExempelPlaceholder: 'namn@exempel.se',
@@ -21697,7 +21759,7 @@
                 ccPersonligaAnnonser: 'Personal/relevant ads',
                 ccPersonligaAnnonserDesc: 'Lets us show more relevant ads instead of generic ones. Only loaded if you allow it.',
                 ccSparaVal: 'Save choices',
-                ccIntegritetspolicyInnehall: '<p><strong>Who is responsible?</strong><br>Undercut Racing Manager is run by Strawtown Interactive.</p><p><strong>What data do we collect?</strong><br>When you create an account, we store your email address, your chosen team name, and your saved game state (team, drivers, staff, finances, results and so on), solely to run the game. We never sell your data to third parties.</p><p><strong>Where is the data stored?</strong><br>Account details and saved game state are stored with our database provider. Some settings, such as your cookie choice and selected language, are stored locally in your browser.</p><p><strong>Cookies</strong><br>See our <a href="#" onclick="CookieConsent.openCookiePolicy(); return false;">cookie policy</a> for which cookies we use – you choose which ones you allow under My account → Settings → Cookies.</p><p><strong>Your rights</strong><br>You can reset your saved game state at any time under My account → Settings, or reach out under My account → Contact if you want your data deleted or have other questions about how it is handled.</p>',
+                ccIntegritetspolicyInnehall: '<p><strong>Who is responsible?</strong><br>Undercut Racing Manager is run by Strawtown Interactive.</p><p><strong>What data do we collect?</strong><br>When you create an account, we store your email address, your chosen team name, and your saved game state (team, drivers, staff, finances, results and so on), solely to run the game. We never sell your data to third parties.</p><p><strong>Logins and cheating</strong><br>When you log in, we store your IP address, a random device ID kept in your browser, and the type of browser and device you use (e.g. “Safari on iPhone”). This is used only to detect whether the same person is playing with several accounts, can only be seen by the game’s administrator and is deleted automatically after 90 days.</p><p><strong>Where is the data stored?</strong><br>Account details and saved game state are stored with our database provider. Some settings, such as your cookie choice and selected language, are stored locally in your browser.</p><p><strong>Cookies</strong><br>See our <a href="#" onclick="CookieConsent.openCookiePolicy(); return false;">cookie policy</a> for which cookies we use – you choose which ones you allow under My account → Settings → Cookies.</p><p><strong>Your rights</strong><br>You can reset your saved game state at any time under My account → Settings, or reach out under My account → Contact if you want your data deleted or have other questions about how it is handled.</p>',
                 ccCookiepolicyInnehall: '<p>We use three categories of cookies/local storage:</p><p><strong>Necessary</strong> – required for the game to work (e.g. login, saved game state and your cookie choice itself). Cannot be turned off.</p><p><strong>Statistics/analytics</strong> – helps us understand how the game is used, so we can improve it. Only loaded if you allow it.</p><p><strong>Personalized/relevant ads</strong> – lets us show more relevant ads. Only loaded if you allow it.</p><p>You choose which ones you allow, and can change your mind at any time via the "Cookie settings" button (shown at the bottom after your first choice) or under My account → Settings → Cookies.</p>',
                 kontoNollstallIntro: 'Resets all saved game state and starts over from the beginning. Cannot be undone.',
                 kontoNamnExempelPlaceholder: 'name@example.com',
@@ -28543,6 +28605,31 @@
         // ---------------------------------------------------------------
         // Session – logga in / logga ut / visa spelet
         // ---------------------------------------------------------------
+        // Slumpat ID för den här webbläsaren (överlever utloggning och kontobyte),
+        // skickas med vid inloggning för att upptäcka flera konton per person.
+        function inloggningEnhetsId() {
+            try {
+                let id = localStorage.getItem('urm_enhet_id');
+                if (!id) {
+                    id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+                        : 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+                    localStorage.setItem('urm_enhet_id', id);
+                }
+                return id;
+            } catch (e) { return null; }
+        }
+        // Kort beskrivning av webbläsare och enhet, t.ex. "Safari på iPhone".
+        function inloggningEnhetText() {
+            try {
+                const ua = navigator.userAgent || '';
+                const enhet = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? (/Mobile/.test(ua) ? 'Android-mobil' : 'Android-surfplatta')
+                    : /Macintosh|Mac OS X/.test(ua) ? ((navigator.maxTouchPoints || 0) > 1 ? 'iPad' : 'Mac') : /Windows/.test(ua) ? 'Windows' : /CrOS/.test(ua) ? 'Chromebook' : /Linux/.test(ua) ? 'Linux' : 'Okänd enhet';
+                const webblasare = /Edg\//.test(ua) ? 'Edge' : /OPR\/|Opera/.test(ua) ? 'Opera' : /SamsungBrowser/.test(ua) ? 'Samsung Internet'
+                    : /Firefox\/|FxiOS/.test(ua) ? 'Firefox' : /Chrome\/|CriOS/.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'Okänd webbläsare';
+                return webblasare + ' på ' + enhet;
+            } catch (e) { return null; }
+        }
+
         function visaSpelet(user, nyttLagNamn, nyttArenaNamn, nyttLand) {
             authScreen.hidden = true;
             appContainer.style.display = '';
@@ -28563,7 +28650,9 @@
                 // Promise.resolve(...) gör om den till ett riktigt Promise där .catch()
                 // alltid fungerar, och try/catch skyddar mot att rpc() själv kastar.
                 try {
-                    Promise.resolve(window.supabaseClient.rpc('stampa_inloggning')).catch(function () { /* strunta i det, inte kritiskt för sessionen */ });
+                    // Enhets-ID + enhetsbeskrivning (servern lägger till IP-adressen) –
+                    // så att admin kan se konton som delar enhet/IP, se fas3b19.sql.
+                    Promise.resolve(window.supabaseClient.rpc('stampa_inloggning', { p_enhet_id: inloggningEnhetsId(), p_enhet_text: inloggningEnhetText() })).catch(function () { /* strunta i det, inte kritiskt för sessionen */ });
                 } catch (e) { /* strunta i det, inte kritiskt för sessionen */ }
             }
             if (typeof window.startaApexSpel === 'function') window.startaApexSpel(user, nyttLagNamn, nyttArenaNamn, nyttLand);
