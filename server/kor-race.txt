@@ -1294,6 +1294,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
     // sponsor (avtal eller slump), merchandise (slump × förarnas popularitet),
     // löner, underhåll och ränta på minussaldo. (Inga biljett-/publikintäkter.)
     // ---------------------------------------------------------------------
+    // Merchandise: dubbel intäkt (2026-10-09), samma som MERCH_INTAKT_MULTIPLIER i b5_1-3.html.
+    const MERCH_MULTIPLIER = 2;
     const DIVISION_INTAKT = { 1: [600000, 1000000], 2: [350000, 700000], 3: [150000, 400000], 4: [50000, 200000], 5: [25000, 120000] };
     function slumpaIntakt(tier, rng) {
         const r = DIVISION_INTAKT[tier] || DIVISION_INTAKT[4];
@@ -1314,6 +1316,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
             const snittPop = bilForare.reduce((sum, f) => sum + (typeof f.popularitet === 'number' ? f.popularitet : 50), 0) / bilForare.length;
             merch = Math.min(1000000, Math.round(merch * (0.4 + (snittPop / 100) * 0.8)));
         }
+        merch = Math.round(merch * MERCH_MULTIPLIER);
         const summa = lista => (lista || []).reduce((sum, x) => sum + veckoLon(x), 0);
         const forarLon = summa(p.forare), mekLon = summa(p.mekanikerLista), ingLon = summa(p.ingenjorLista);
         const principalLon = p.teamPrincipal ? veckoLon(p.teamPrincipal) : 0;
@@ -1652,6 +1655,13 @@ Deno.serve(async (req) => {
     logg.push("träning: " + (e instanceof Error ? e.message : String(e)));
   }
 
+  // --- 1d. Utbetalningar för körda lopp ------------------------------------
+  try {
+    await korUtbetalningar(db, lag as Rad[], tierPerDiv, logg, nu);
+  } catch (e) {
+    logg.push("utbetalning: " + (e instanceof Error ? e.message : String(e)));
+  }
+
   // Mänskliga lags bil (komponenter, skador, köer) och personal ägs av servern
   // (lag_tillstand) och ersätter det i ögonblicksbilden när racen körs.
   // Läses efter marknaden, så att nyss sålda personer inte kör.
@@ -1747,27 +1757,15 @@ Deno.serve(async (req) => {
         rad.lopp = lopp;
         if (!uppdaterad || !(uppdaterad as Rad[]).length) continue; // en annan körning hann före
         logg.push(`lopp ${nyckel} klart`);
-        // Bilskador och prispengar för mänskliga lag (servern äger deras bil och budget).
+        // Bilskador för mänskliga lag (servern äger deras bil).
         const manniskor = new Set(rader.filter((t) => !t.is_ai).map((t) => t.id));
         for (const sk of skador) {
           if (!manniskor.has(sk.lagId)) continue;
           await db.rpc("bil_skada", { p_team: sk.lagId, p_bil: sk.bilNr, p_del: sk.komponent, p_andel: sk.andelSkada });
           await db.rpc("forare_skada", { p_team: sk.lagId, p_bil: sk.bilNr, p_skada: S.nastaRaceNyckel(sasong, k.race_nr), p_forare: sk.forarId || null });
         }
-        const perPoang = S.prisPerPoang(tierPerDiv.get(div.id) || 4);
-        const poang = new Map<string, number>();
-        (lopp as Rad[]).forEach((r) => { if (manniskor.has(r.lagId)) poang.set(r.lagId, (poang.get(r.lagId) || 0) + (r["poäng"] || 0)); });
-        for (const [lagId, p] of poang) {
-          if (p > 0) await db.rpc("ekonomi_bokfor", { p_team: lagId, p_typ: "prispengar", p_belopp: p * perPoang, p_text: `Prispengar Race ${k.race_nr} (${p}p)`, p_nyckel: `pris:${sasong}:${k.race_nr}` });
-        }
-        // Kontrakts- och sponsorbonusar samt förarnas popularitet (Fas 3b-4).
-        for (const lagId of manniskor) {
-          const rader = (lopp as Rad[]).filter((r) => r.lagId === lagId)
-            .map((r) => ({ forarId: r.forarId, bil: r.bil, placering: r.placering, poang: r["poäng"] || 0, dnf: !!r.dnf }));
-          if (!rader.length) continue;
-          const { error: bErr } = await db.rpc("race_bonusar", { p_team: lagId, p_sasong: sasong, p_race: k.race_nr, p_rader: rader });
-          if (bErr) logg.push(`bonusar ${lagId}: ${bErr.message}`);
-        }
+        // Prispengar och kontrakts-/sponsorbonusar bokas först när liverapporten
+        // är slut – se korUtbetalningar() (steg 1d).
       }
     }
   }
@@ -1995,5 +1993,56 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
     }
   } finally {
     V.sattIdFunktion(null);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Utbetalningar efter liverapporten
+// ---------------------------------------------------------------------------
+// Spelet visar varje lopp som en liverapport i 30 minuter (LIVE_RACE_SEK i
+// b5_1-3.html). Prispengar samt kontrakts- och sponsorbonusar bokas därför
+// först när rapporten är slut, räknat från när loppet kördes (lopp_at), så att
+// budget och kontoutdrag inte avslöjar resultatet i förväg. utbetalt_at
+// markerar ett utbetalt lopp; allt som bokas är idempotent (nycklar), så ett
+// lopp vars utbetalning avbröts tas bara om vid nästa körning.
+const RAPPORT_MS = 30 * 60 * 1000;
+async function korUtbetalningar(
+  // deno-lint-ignore no-explicit-any
+  db: any, lag: Rad[], tierPerDiv: Map<string, number>, logg: string[], nu: number,
+) {
+  const { data: vantande, error } = await db.from("race_resultat")
+    .select("division_id, sasong, race_nr, lopp_at").is("utbetalt_at", null).not("lopp_at", "is", null);
+  if (error) { logg.push("utbetalning: " + error.message); return; }
+  const forfallna = ((vantande as Rad[]) || []).filter((r) => Date.parse(r.lopp_at) + RAPPORT_MS <= nu);
+  if (!forfallna.length) return;
+  const manniskor = new Set(lag.filter((t) => !t.is_ai).map((t) => t.id));
+  for (const r of forfallna) {
+    const nyckel = r.division_id + "|" + r.race_nr;
+    const { data: rad, error: lErr } = await db.from("race_resultat").select("lopp")
+      .eq("division_id", r.division_id).eq("sasong", r.sasong).eq("race_nr", r.race_nr).maybeSingle();
+    if (lErr || !rad || !rad.lopp) { logg.push(`utbetalning ${nyckel}: ${lErr ? lErr.message : "lopp saknas"}`); continue; }
+    const lopp = rad.lopp as Rad[];
+    let fel = false;
+    const perPoang = S.prisPerPoang(tierPerDiv.get(r.division_id) || 4);
+    const poang = new Map<string, number>();
+    lopp.forEach((x) => { if (manniskor.has(x.lagId)) poang.set(x.lagId, (poang.get(x.lagId) || 0) + (x["poäng"] || 0)); });
+    for (const [lagId, p] of poang) {
+      if (p <= 0) continue;
+      const { error: pErr } = await db.rpc("ekonomi_bokfor", { p_team: lagId, p_typ: "prispengar", p_belopp: p * perPoang, p_text: `Prispengar Race ${r.race_nr} (${p}p)`, p_nyckel: `pris:${r.sasong}:${r.race_nr}` });
+      if (pErr) { fel = true; logg.push(`prispengar ${lagId}: ${pErr.message}`); }
+    }
+    // Kontrakts- och sponsorbonusar samt förarnas popularitet (Fas 3b-4).
+    for (const lagId of manniskor) {
+      const rader = lopp.filter((x) => x.lagId === lagId)
+        .map((x) => ({ forarId: x.forarId, bil: x.bil, placering: x.placering, poang: x["poäng"] || 0, dnf: !!x.dnf }));
+      if (!rader.length) continue;
+      const { error: bErr } = await db.rpc("race_bonusar", { p_team: lagId, p_sasong: r.sasong, p_race: r.race_nr, p_rader: rader });
+      if (bErr) { fel = true; logg.push(`bonusar ${lagId}: ${bErr.message}`); }
+    }
+    if (fel) continue;
+    const { error: uErr } = await db.from("race_resultat").update({ utbetalt_at: new Date().toISOString() })
+      .eq("division_id", r.division_id).eq("sasong", r.sasong).eq("race_nr", r.race_nr);
+    if (uErr) logg.push(`utbetalning ${nyckel}: ${uErr.message}`);
+    else logg.push(`utbetalning ${nyckel} klar`);
   }
 }

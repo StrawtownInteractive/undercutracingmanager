@@ -303,6 +303,8 @@
     // sponsor (avtal eller slump), merchandise (slump × förarnas popularitet),
     // löner, underhåll och ränta på minussaldo. (Inga biljett-/publikintäkter.)
     // ---------------------------------------------------------------------
+    // Merchandise: dubbel intäkt (2026-10-09), samma som MERCH_INTAKT_MULTIPLIER i b5_1-3.html.
+    const MERCH_MULTIPLIER = 2;
     const DIVISION_INTAKT = { 1: [600000, 1000000], 2: [350000, 700000], 3: [150000, 400000], 4: [50000, 200000], 5: [25000, 120000] };
     function slumpaIntakt(tier, rng) {
         const r = DIVISION_INTAKT[tier] || DIVISION_INTAKT[4];
@@ -323,6 +325,7 @@
             const snittPop = bilForare.reduce((sum, f) => sum + (typeof f.popularitet === 'number' ? f.popularitet : 50), 0) / bilForare.length;
             merch = Math.min(1000000, Math.round(merch * (0.4 + (snittPop / 100) * 0.8)));
         }
+        merch = Math.round(merch * MERCH_MULTIPLIER);
         const summa = lista => (lista || []).reduce((sum, x) => sum + veckoLon(x), 0);
         const forarLon = summa(p.forare), mekLon = summa(p.mekanikerLista), ingLon = summa(p.ingenjorLista);
         const principalLon = p.teamPrincipal ? veckoLon(p.teamPrincipal) : 0;

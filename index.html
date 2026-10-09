@@ -7986,9 +7986,9 @@
                 pyramidLagId = lagId;
                 await publiceraLag();
                 await laddaOnlineDivision();
-                await synkaOnlineVarld(true);
+                await synkaOnlineVarld('start');
                 kontrolleraSchemalagtRace();
-                if (!pyramidIntervall) pyramidIntervall = setInterval(laddaOnlineDivision, 5 * 60 * 1000);
+                if (!pyramidIntervall) pyramidIntervall = setInterval(() => { if (!sidanDold()) laddaOnlineDivision(); }, 5 * 60 * 1000);
             } catch (e) { console.error('Kunde inte ansluta till den gemensamma pyramiden:', e); }
         }
 
@@ -8125,6 +8125,33 @@
             if (Array.isArray(schema) && schema.length) spelarData.scheman[spelarData.serieId] = schema;
         }
 
+        // Egress: periodiska serverhämtningar görs inte medan fliken är dold
+        // (bakgrundsflik, mobilen i fickan). När fliken visas igen hämtas allt
+        // direkt (se visibilitychange i startaApexSpel()).
+        function sidanDold() { return document.visibilityState === 'hidden'; }
+
+        // Egress ("mellanvägen"): hela pyramiden (alla lag med ögonblicksbilder,
+        // ca 3 MB) hämtas högst en gång per dygn. Vid sidladdning räcker de
+        // lokalt sparade tabellerna om de kommer från en full hämtning för samma
+        // lag, division och säsong för mindre än 24 timmar sedan, och alla
+        // serier är kompletta. Annars (ny enhet utan sparning, gammal sparning,
+        // divisions- eller säsongsbyte) görs en full hämtning som vanligt.
+        const PYRAMID_FULL_MAX_ALDER_MS = 24 * 3600000;
+        function lokalPyramidFarsk(egen, sasong) {
+            let m = spelarData.onlinePyramidHamtad;
+            if (!m || m.lagId !== egen.id || m.divisionId !== egen.division_id || m.sasong !== sasong) return false;
+            let alder = Date.now() - Number(m.tid);
+            if (!(alder >= 0 && alder < PYRAMID_FULL_MAX_ALDER_MS)) return false;
+            if (spelarData.serieId !== egen.division_id || spelarData.sasong !== sasong || !spelarData.tabeller) return false;
+            let komplett = ALL_GROUP_IDS.every(g => {
+                let t = spelarData.tabeller[g];
+                return Array.isArray(t) && t.length > 0 && t.every(l => l && l.lagId);
+            });
+            return komplett && spelarData.tabeller[egen.division_id].some(l => l.lagId === egen.id);
+        }
+
+        // fullImport: true = hämta alltid hela pyramiden; 'start' = sidladdning
+        // (hela pyramiden bara om den lokala är äldre än ett dygn, se ovan).
         async function synkaOnlineVarld(fullImport) {
             if (onlineSynk) return onlineSynk;
             // Tidsstämpeln sätts direkt, så att ett misslyckat eller tidigt
@@ -8155,9 +8182,14 @@
                     // divisionsbyte och säsongsbyte. Därefter uppdateras var 30:e minut
                     // bara den egna serien och den serie som visas just nu (delDiv), så
                     // att andra managers förändringar syns utan att hela pyramiden laddas om.
-                    const fullLag = !ikapp && (fullImport || !onlineData || onlineData.divisionId !== egen.division_id || onlineData.sasong !== sasong);
+                    const franLokal = fullImport === 'start' && !ikapp && lokalPyramidFarsk(egen, sasong);
+                    const fullLag = !ikapp && !franLokal && (fullImport || !onlineData || onlineData.divisionId !== egen.division_id || onlineData.sasong !== sasong);
                     let delDiv = [];
-                    if (!ikapp && !fullLag) {
+                    if (franLokal) {
+                        // Övriga serier visas från den lokala sparningen; en annan serie
+                        // hämtas färsk när den öppnas (se bytVisadSerie).
+                        [egen.division_id, spelarData.visadSerieId].forEach(g => { if (g && GROUP_DEFS[g] && !delDiv.includes(g)) delDiv.push(g); });
+                    } else if (!ikapp && !fullLag) {
                         [egen.division_id, spelarData.visadSerieId].forEach(g => {
                             if (g && GROUP_DEFS[g] && !delDiv.includes(g) && Date.now() - (onlineLagHamtadPerDiv[g] || 0) > 30 * 60000) delDiv.push(g);
                         });
@@ -8183,6 +8215,7 @@
                     onlineData = { lagId: egen.id, divisionId: ikapp ? spelarData.serieId : egen.division_id, sasong: sasong, ikapp: ikapp, kalender: kalender, resultat: resultat, lagHamtade: lagRader.data ? Date.now() : (onlineData && onlineData.lagHamtade) || 0 };
                     if (lagRader.data && !byggOnlineTabeller(lagRader.data, egen, !fullLag)) { onlineData = null; return; }
                     if (lagRader.data) { let hamtadNu = Date.now(); (fullLag ? ALL_GROUP_IDS : delDiv).forEach(g => { onlineLagHamtadPerDiv[g] = hamtadNu; }); }
+                    if (fullLag && lagRader.data) spelarData.onlinePyramidHamtad = { tid: Date.now(), lagId: egen.id, divisionId: egen.division_id, sasong: sasong };
                     if (ikapp) {
                         // Omgångar där laget inte deltog (t.ex. saknade förare) hoppas över.
                         for (let r = 1; r <= 10; r++) if (!resultat[r]) spelarData.onlineTillampat[onlineNyckel(sasong, r)] = true;
@@ -19281,7 +19314,7 @@
                 }
             }
             if (online && nu >= raceTid && !(onlineRes && onlineRes.lopp)) onlineVantar = true;
-            if (online && (Date.now() - onlineSenasteSynk > (onlineVantar ? 60000 : 5 * 60000))) {
+            if (online && !sidanDold() && (Date.now() - onlineSenasteSynk > (onlineVantar ? 60000 : 5 * 60000))) {
                 synkaOnlineVarld(false).then(() => kontrolleraSchemalagtRace());
             }
             if (nu >= raceTid && (!spelarData.raceResultat || !spelarData.raceResultat[spelarData.raceNr]) && (!online || (onlineRes && onlineRes.lopp))) {
@@ -20534,10 +20567,17 @@
             // start och pollar sedan periodiskt så nya meddelanden från andra
             // spelare syns utan att sidan behöver laddas om.
             laddaInkorg();
-            setInterval(laddaInkorg, 60000);
+            setInterval(function () { if (!sidanDold()) laddaInkorg(); }, 60000);
             // Managerlicens: "Värva en annan användare" – se kontrolleraVarvning().
             kontrolleraVarvning();
-            setInterval(kontrolleraVarvning, 60000);
+            setInterval(function () { if (!sidanDold()) kontrolleraVarvning(); }, 60000);
+            // Egress: när fliken visas igen efter att ha varit dold hämtas det
+            // som pausats (serversynk, inkorg) direkt i stället för att vänta.
+            document.addEventListener('visibilitychange', function () {
+                if (sidanDold()) return;
+                kontrolleraSchemalagtRace();
+                laddaInkorg();
+            });
         }
         window.startaApexSpel = startaApexSpel;
 
