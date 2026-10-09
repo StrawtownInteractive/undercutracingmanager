@@ -8078,6 +8078,7 @@
                 l.poäng = p ? p.poang : 0;
                 l.poängBil1 = p ? p.poang_bil1 : 0;
                 l.poängBil2 = p ? p.poang_bil2 : 0;
+                l.antalRaceServer = p ? (Number(p.antal_race) || 0) : 0; // körda race enligt servern (Serietabellen)
             }));
             // Första synken: omgångar som redan var körda innan laget kom med
             // räknas som avklarade (laget deltog inte i dem).
@@ -8145,7 +8146,7 @@
                         ikapp
                             ? sb.from('race_resultat').select('race_nr, bana, kval, lopp, skador').eq('sasong', sasong).contains('kval', [{ lagId: egen.id }])
                             : sb.from('race_resultat').select('race_nr, bana, kval, lopp, skador').eq('division_id', egen.division_id).eq('sasong', sasong),
-                        sb.from('serietabell').select('team_id, poang, poang_bil1, poang_bil2').eq('sasong', sasong),
+                        sb.from('serietabell').select('team_id, antal_race, poang, poang_bil1, poang_bil2').eq('sasong', sasong),
                         sb.from('division_schema').select('schema').eq('division_id', ikapp ? spelarData.serieId : egen.division_id).eq('sasong', sasong).maybeSingle(),
                         fullLag ? sb.from('teams').select('id, division_id, name, is_ai, slot, snapshot')
                             : behoverLag ? sb.from('teams').select('id, division_id, name, is_ai, slot, snapshot').in('division_id', delDiv)
@@ -12529,6 +12530,9 @@
                 let lag = (spelarData.tabeller[gid] || []).find(l => l.namn === lagNamn);
                 if (arOnline()) {
                     if (!lag) return 0;
+                    // Serverns räkning följer med poängen i varje synk och kräver
+                    // inte att seriens racerapporter hunnit hämtas.
+                    if (typeof lag.antalRaceServer === 'number') return lag.antalRaceServer;
                     return onlineGruppKordaRace(gid).filter(o => o.lopp.some(r => r.lagId === lag.lagId)).length;
                 }
                 let res = (spelarData.gruppResultat || {})[gid];
@@ -19822,8 +19826,10 @@
             // Referat och skadetext beskriver LOPPETS utfall – döljs alltså i en
             // ren kvalrapport (visaLoppInnehall false), annars skulle de avslöja
             // huvudracets resultat trots att loppresultatkortet är dolt.
-            document.getElementById('race-referat-text').innerText = (resultat && (resultat.referat || resultat.referatData) && visaLoppInnehall) ? renderReferatText(resultat) : '';
-            document.getElementById('race-skador-text').innerText = (resultat && resultat.skador && resultat.skador.length && visaLoppInnehall) ? (tt('Skador:', 'Damage:') + ' ' + renderSkadeText(resultat.skador)) : '';
+            // Under live-racet ska varken referat eller skador avslöja utfallet.
+            let liveRacePagar = !!(spelarData.liveReveal && spelarData.liveReveal.raceNr === raceNr);
+            document.getElementById('race-referat-text').innerText = (resultat && (resultat.referat || resultat.referatData) && visaLoppInnehall && !liveRacePagar) ? renderReferatText(resultat) : '';
+            document.getElementById('race-skador-text').innerText = (resultat && resultat.skador && resultat.skador.length && visaLoppInnehall && !liveRacePagar) ? (tt('Skador:', 'Damage:') + ' ' + renderSkadeText(resultat.skador)) : '';
 
             let ejKortDiv = document.getElementById('race-ej-kort');
             let ejKortText = document.getElementById('race-ej-kort-text');
