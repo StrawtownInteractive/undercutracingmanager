@@ -6133,8 +6133,18 @@
                 }
             }
 
+            // Porträttets URL för en person (eller bara ett person-ID, t.ex. en
+            // förare i ett gammalt raceresultat som inte längre finns i laget):
+            // personens avatarSeed om den finns, annars samma seed som
+            // createAvatar() skulle ge för ID:t.
+            function portrattUrl(roll, person, personId) {
+                let seed = person && person.avatarSeed != null ? person.avatarSeed : (personId != null ? avatarSeedFor(personId) : null);
+                return portrattUrlFor(roll, seed);
+            }
+
             return {
                 AVATAR_VERSION: AVATAR_VERSION,
+                portrattUrl: portrattUrl,
                 generateTraits: generateTraits,
                 createAvatar: createAvatar,
                 migrateIfOutdated: migrateIfOutdated,
@@ -13902,7 +13912,7 @@
             html += `<div class="c-row"><span>${tt('Friköpsklausul', 'Release clause')}</span><strong>${c.releaseClause ? kr(c.releaseClause) : '–'}</strong></div>`;
             html += `<div class="c-row" style="border-bottom:none;"><span>${tt('Relation till laget', 'Relationship with the team')}</span><strong>${c.relation}/100</strong></div>`;
             if (c.aiInterest) {
-                html += `<div class="c-row" style="border-bottom:none; color:#F59E0B;"><span>${tt('Annat lags intresse', 'Interest from another team')}</span><strong>${c.aiInterest.lagNamn} – ${krV(c.aiInterest.lon)}/${tt('säsong', 'season')}</strong></div>`;
+                html += `<div class="c-row" style="border-bottom:none; color:#F59E0B;"><span>${tt('Annat lags intresse', 'Interest from another team')}</span><strong>${c.aiInterest.lagNamn} – ${krV(c.aiInterest.lon)}/${tt('vecka', 'week')}</strong></div>`;
             }
             html += '</div>';
 
@@ -19754,11 +19764,24 @@
             let kort = pall.map((r, i) => {
                 let namnHTML = (r.forarId && r.lagId) ? `<span class="team-link" onclick="visaForarProfil('${r.forarId}','${r.lagId}')">${escNamn(r.forarNamn)}</span>` : escNamn(r.forarNamn);
                 let lagHTML = r.lagId ? `<span class="team-link" onclick="visaLagsidaForLagId('${r.lagId}')">${escNamn(r.lagNamn)}</span>` : escNamn(r.lagNamn);
+                // Förarens porträtt bredvid namn och lag (samma bild som på profilsidan).
+                let avatarHTML = '';
+                try {
+                    let hit = (r.lagId && r.forarId) ? hittaLagOchGruppMedId(r.lagId) : null;
+                    let forare = hit ? forarById(hit.lag, r.forarId) : null;
+                    let url = r.forarId ? AvatarSystem.portrattUrl('forare', forare, r.forarId) : null;
+                    if (url) avatarHTML = `<img src="${url}" alt="" style="width:44px; height:44px; border-radius:50%; object-fit:cover; flex-shrink:0; border:1px solid var(--border);"${r.lagId ? ` class="team-link" onclick="visaForarProfil('${r.forarId}','${r.lagId}')"` : ''}>`;
+                } catch (e) { avatarHTML = ''; }
                 return `
                     <div style="flex:1; min-width:150px; text-align:center; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 8px;">
                         <img src="${PALL_BILD[i]}" alt="P${i + 1}" style="display:block; width:100%; max-width:320px; aspect-ratio:61/33; object-fit:contain; margin:0 auto 6px;">
-                        <div style="font-weight:600; font-size:13px;">${namnHTML}</div>
-                        <div style="font-size:12px; color:var(--text-muted);">${lagHTML}</div>
+                        <div style="display:flex; align-items:center; justify-content:center; gap:8px; text-align:left;">
+                            ${avatarHTML}
+                            <div style="min-width:0;">
+                                <div style="font-weight:600; font-size:13px;">${namnHTML}</div>
+                                <div style="font-size:12px; color:var(--text-muted);">${lagHTML}</div>
+                            </div>
+                        </div>
                     </div>`;
             }).join('');
             let rubrik = falt === 'startPos' ? tt('Kvaltoppen', 'Qualifying top 3') : tt('Pallen', 'Podium');
