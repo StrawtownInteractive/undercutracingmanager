@@ -12808,7 +12808,7 @@
                     let r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
                     let andel = v => Math.max(0, Math.min(100, r[1] > r[0] ? Math.round(((v - r[0]) / (r[1] - r[0])) * 100) : 100));
                     senasteEl.innerHTML = `${tt('Senaste uppdatering', 'Latest update')} (${tt('Säsong', 'Season')} ${senaste.sasong}, ${tt('Vecka', 'Week')} ${senaste.vecka}): ${tt('Sponsor', 'Sponsor')} <span style="color:var(--success);">+${formatBelopp(senaste.sponsor)}</span>, ${tt('Merch', 'Merch')} <span style="color:var(--success);">+${formatBelopp(senaste.merch)}</span>${senaste.prispengar ? `, ${tt('Prispengar', 'Prize money')} <span style="color:var(--success);">+${formatBelopp(senaste.prispengar)}</span>` : ''}${senaste.forsaljning ? `, ${tt('Försäljningsintäkt', 'Sales income')} <span style="color:var(--success);">+${formatBelopp(senaste.forsaljning)}</span>` : ''}, ${tt('Löner', 'Wages')} <span style="color:var(--danger-soft);">-${formatBelopp(senaste.loner)}</span>, ${tt('Underhåll', 'Maintenance')} <span style="color:var(--danger-soft);">-${formatBelopp(senaste.underhall)}</span>${senaste.signOnBonus ? `, ${tt('Sign-on bonus', 'Sign-on bonus')} <span style="color:var(--danger-soft);">-${formatBelopp(senaste.signOnBonus)}</span>` : ''}${senaste.ovrigt ? `, ${tt('Övrigt', 'Other')} <span style="color:var(--danger-soft);">-${formatBelopp(senaste.ovrigt)}</span>` : ''}${senaste.minusRanta ? `, ${tt('Ränta på minussaldo', 'Interest on negative balance')} <span style="color:var(--danger-soft);">-${formatBelopp(senaste.minusRanta)}</span>` : ''}. ${tt('Netto', 'Net')}: <strong style="color:${senaste.netto >= 0 ? 'var(--success)' : 'var(--danger-soft)'};">${senaste.netto >= 0 ? '+' : ''}${formatBelopp(senaste.netto)}</strong>
-                        <br><span style="font-size:11px; color:var(--text-muted);">${tt('Din divisions intervall för sponsor/merch är', "Your division's sponsor/merch range is")} ${formatBelopp(r[0])}–${formatBelopp(r[1])}/${tt('vecka', 'week')}. ${tt('Sponsor låg', 'Sponsor was at')} ${andel(senaste.sponsor)}% ${tt('mot toppen, merch', 'of the top, merch')} ${andel(senaste.merch)}%.</span>`;
+                        <br><span style="font-size:11px; color:var(--text-muted);">${tt('Din divisions intervall för sponsor/merch är', "Your division's sponsor/merch range is")} ${formatBelopp(r[0])}–${formatBelopp(r[1])}/${tt('vecka', 'week')}. ${tt('Sponsor låg', 'Sponsor was at')} ${andel(senaste.sponsor)}% ${tt('mot toppen, merch', 'of the top, merch')} ${andel(senaste.merch / MERCH_INTAKT_MULTIPLIER)}%.</span>`;
                 } else {
                     senasteEl.innerHTML = tt('Ingen ekonomiuppdatering har körts ännu.', 'No finance update has run yet.');
                 }
@@ -15816,6 +15816,9 @@
         // grundbelopp/bonusar) utan att påverka merch, biljetter eller prispengar,
         // som delar samma DIVISION_INTAKT_RANGES.
         const SPONSOR_INTAKT_MULTIPLIER = 1.3;
+        // Merchandise: dubbel intäkt (2026-10-09). Samma faktor i spelmotor/server.js
+        // (MERCH_MULTIPLIER), som räknar veckoekonomin online.
+        const MERCH_INTAKT_MULTIPLIER = 2;
         function slumpaDivisionsintakt(tier) {
             let r = DIVISION_INTAKT_RANGES[tier] || DIVISION_INTAKT_RANGES[4];
             let varde = Math.round((r[0] + Math.random() * (r[1] - r[0])) / 1000) * 1000;
@@ -15973,6 +15976,7 @@
                 let snittPop = popDrivare.reduce((s, f) => s + (f.popularitet !== undefined ? f.popularitet : 50), 0) / popDrivare.length;
                 merch = Math.round(merch * (0.4 + (snittPop / 100) * 0.8));
             }
+            merch = Math.round(merch * MERCH_INTAKT_MULTIPLIER);
             let biljett = 0; // Publikintäkter borttagna
             let lonSpec = ContractManager.veckoLonForLag(spelarLag);
             let underhall = 30000;
@@ -16112,6 +16116,7 @@
                 let popFaktor = 0.4 + (snittPop / 100) * 0.8;
                 merch = Math.min(1000000, Math.round(merch * popFaktor));
             }
+            merch = Math.round(merch * MERCH_INTAKT_MULTIPLIER);
             let biljett = 0; // Publikintäkter borttagna
             let lonSpec = ContractManager.veckoLonForLag(spelarLag);
             let totalLoner = lonSpec.total;
