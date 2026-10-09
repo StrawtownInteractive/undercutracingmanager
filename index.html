@@ -7764,7 +7764,7 @@
         // Versionsnumret (apexMolnMeta_<uid>) hindrar två enheter från att
         // tyst skriva över varandra.
         // ---------------------------------------------------------------------
-        const MOLN_FORDROJNING_MS = 4000;
+        const MOLN_FORDROJNING_MS = 30000; // skickas ändå direkt när fliken döljs/stängs
         const MOLN_HAMTA_TIMEOUT_MS = 8000;
         let molnAnvandarId = null, molnTimer = null, molnVantande = null, molnKonflikt = false, molnKo = Promise.resolve();
         function lasMolnMeta(uid) {
@@ -7892,7 +7892,7 @@
         // managers som delar division. Racen körs än så länge lokalt; serverns
         // racemotor som använder ögonblicksbilderna är nästa steg.
         // ---------------------------------------------------------------------
-        const PYRAMID_FORDROJNING_MS = 10000;
+        const PYRAMID_FORDROJNING_MS = 60000; // publiceras ändå direkt när fliken döljs
         let pyramidTimer = null, pyramidLagId = null, pyramidDivision = null, pyramidIntervall = null;
         // Publik kopia av laget: taktik, order och logotyp hålls privata.
         function lagSnapshot(lag) {
@@ -7985,10 +7985,12 @@
                 if (!lagId) return;
                 pyramidLagId = lagId;
                 await publiceraLag();
-                await laddaOnlineDivision();
+                // Rutan "Din onlinedivision" (laddaOnlineDivision) är borttagen från
+                // startsidan; bara kollen av spelledningens namnbyte behövs.
+                kollaAdminLagnamn();
                 await synkaOnlineVarld('start');
                 kontrolleraSchemalagtRace();
-                if (!pyramidIntervall) pyramidIntervall = setInterval(() => { if (!sidanDold()) laddaOnlineDivision(); }, 5 * 60 * 1000);
+                if (!pyramidIntervall) pyramidIntervall = setInterval(() => { if (!sidanDold()) kollaAdminLagnamn(); }, 15 * 60 * 1000);
             } catch (e) { console.error('Kunde inte ansluta till den gemensamma pyramiden:', e); }
         }
 
@@ -8802,7 +8804,11 @@
             } catch (e) { console.error('Kunde inte skicka ordern till servern:', e); }
         }
 
-        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && molnVantande) molnSparaNu(); });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState !== 'hidden') return;
+            if (molnVantande) molnSparaNu();
+            if (pyramidTimer) publiceraLag();
+        });
 
         // Nyckeln som spelarData just nu är laddad/sparad under (se sparaOchUppdatera).
         // 'apexSpelData' (utan suffix) är den gamla, delade nyckeln från innan
@@ -10408,7 +10414,7 @@
                 let pane = document.getElementById('konto-pane-' + s);
                 if (pane) pane.classList.toggle('active', subflikar.konto === s);
             });
-            if (subflikar.konto === 'managerlicens') renderManagerlicens();
+            if (subflikar.konto === 'managerlicens') { renderManagerlicens(); kontrolleraVarvning(); }
             if (subflikar.konto === 'inkorg') laddaInkorg();
             if (subflikar.konto === 'admin') renderAdminPanel();
             if (subflikar.konto === 'notiser') renderNyheter();
@@ -10879,17 +10885,32 @@
         // avsändare eller mottagare) och ritar om inkorgen. Körs när Inkorg-
         // fliken öppnas samt periodiskt (se startaApexSpel) så att nya
         // meddelanden och olästa-badgen dyker upp utan omladdning.
-        async function laddaInkorg() {
+        // baraNya = true (den periodiska uppdateringen): hämtar bara meddelanden
+        // skickade från och med det senaste kända (minskar egress). Meddelanden
+        // tas aldrig bort på servern; läst-markeringar gjorda på en annan enhet
+        // syns vid nästa fulla hämtning (sidladdning, Inkorg-fliken, när fliken
+        // visas igen, efter att man skickat ett meddelande).
+        async function laddaInkorg(baraNya) {
             renderInkorg();
             if (!window.supabaseClient) return;
             try {
-                const { data, error } = await window.supabaseClient
-                    .from('meddelanden')
-                    .select('*')
-                    .order('skickat', { ascending: false })
-                    .limit(100);
+                let senast = null;
+                if (baraNya) (senasteInkorgFranServer || []).forEach(m => {
+                    if (m && m.skickat && (!senast || new Date(m.skickat) > new Date(senast))) senast = m.skickat;
+                });
+                let fraga = window.supabaseClient.from('meddelanden').select('*');
+                if (senast) fraga = fraga.gte('skickat', senast);
+                const { data, error } = await fraga.order('skickat', { ascending: false }).limit(100);
                 if (!error && Array.isArray(data)) {
-                    senasteInkorgFranServer = data;
+                    if (senast) {
+                        let kanda = new Set(senasteInkorgFranServer.map(m => String(m.id)));
+                        let nya = data.filter(m => !kanda.has(String(m.id)));
+                        if (!nya.length) return;
+                        senasteInkorgFranServer = nya.concat(senasteInkorgFranServer)
+                            .sort((a, b) => new Date(b.skickat) - new Date(a.skickat)).slice(0, 100);
+                    } else {
+                        senasteInkorgFranServer = data;
+                    }
                     renderInkorg();
                 }
             } catch (e) {
@@ -10898,8 +10919,8 @@
             }
         }
 
-        // Managerlicens: "Värva en annan användare" – pollas periodiskt (samma
-        // 60-sekunderscadence som laddaInkorg, se startaApexSpel()) och frågar
+        // Managerlicens: "Värva en annan användare" – kollas vid start, när
+        // Managerlicens-fliken öppnas och var 15:e minut (se startaApexSpel()) och frågar
         // bara efter EGNA skickade inbjudningar (RLS begränsar redan till
         // referrer_id = auth.uid()) som blivit inlösta (installos_referral(),
         // körs vid registrering – se SQL-blocket i <head>). Sätter en lokal
@@ -19314,7 +19335,7 @@
                 }
             }
             if (online && nu >= raceTid && !(onlineRes && onlineRes.lopp)) onlineVantar = true;
-            if (online && !sidanDold() && (Date.now() - onlineSenasteSynk > (onlineVantar ? 60000 : 5 * 60000))) {
+            if (online && !sidanDold() && (Date.now() - onlineSenasteSynk > (onlineVantar ? 60000 : 10 * 60000))) {
                 synkaOnlineVarld(false).then(() => kontrolleraSchemalagtRace());
             }
             if (nu >= raceTid && (!spelarData.raceResultat || !spelarData.raceResultat[spelarData.raceNr]) && (!online || (onlineRes && onlineRes.lopp))) {
@@ -20567,10 +20588,13 @@
             // start och pollar sedan periodiskt så nya meddelanden från andra
             // spelare syns utan att sidan behöver laddas om.
             laddaInkorg();
-            setInterval(function () { if (!sidanDold()) laddaInkorg(); }, 60000);
+            // Var 2:a minut, bara nya meddelanden (egress och loggvolym).
+            setInterval(function () { if (!sidanDold()) laddaInkorg(true); }, 2 * 60000);
             // Managerlicens: "Värva en annan användare" – se kontrolleraVarvning().
+            // Kollas vid start, när Managerlicens-fliken öppnas och var 15:e minut
+            // (förr varje minut, vilket gav en logg-/API-rad per minut och flik).
             kontrolleraVarvning();
-            setInterval(function () { if (!sidanDold()) kontrolleraVarvning(); }, 60000);
+            setInterval(function () { if (!sidanDold()) kontrolleraVarvning(); }, 15 * 60000);
             // Egress: när fliken visas igen efter att ha varit dold hämtas det
             // som pausats (serversynk, inkorg) direkt i stället för att vänta.
             document.addEventListener('visibilitychange', function () {
