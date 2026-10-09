@@ -5269,9 +5269,13 @@
         // spelarData.nyheter så listan överlever en omladdning av sidan.
         // sprakNyckel/sprakData (valfria): se NYHET_DYNAMISK_TEXT ovan.
         // =====================================================================
+        // Satt medan ett schemalagt lopp körs (se kontrolleraSchemalagtRace):
+        // nyheter som skapas då märks med racenumret och döljs i renderNyheter()
+        // tills liverapporten för det racet är slut, så de inte avslöjar utfallet.
+        let nyhetLiveRaceNr = null;
         function laggTillNyhet(text, sprakNyckel, sprakData) {
             if (!Array.isArray(spelarData.nyheter)) spelarData.nyheter = [];
-            spelarData.nyheter.unshift({ text: text, sasong: spelarData.sasong, raceNr: spelarData.raceNr, sprakNyckel: sprakNyckel || null, sprakData: sprakData || null });
+            spelarData.nyheter.unshift({ text: text, sasong: spelarData.sasong, raceNr: spelarData.raceNr, sprakNyckel: sprakNyckel || null, sprakData: sprakData || null, liveRaceNr: nyhetLiveRaceNr });
             if (spelarData.nyheter.length > 30) spelarData.nyheter.length = 30;
             loggaHandelse(text);
             renderNyheter();
@@ -5281,7 +5285,8 @@
             // Bygg om texten i spelarens NUVARANDE språk för poster som stöder det
             // (se NYHET_DYNAMISK_TEXT) – annars visas den fastfrusna texten som
             // sparades när nyheten skapades, som vanligt.
-            let lista = (spelarData.nyheter || []).map(n => {
+            let lr = spelarData.liveReveal;
+            let lista = (spelarData.nyheter || []).filter(n => !(lr && n.liveRaceNr && n.liveRaceNr === lr.raceNr)).map(n => {
                 if (n.sprakNyckel && NYHET_DYNAMISK_TEXT[n.sprakNyckel]) {
                     return Object.assign({}, n, { text: NYHET_DYNAMISK_TEXT[n.sprakNyckel](n.sprakData || {}) });
                 }
@@ -12618,12 +12623,13 @@
             if (!body) return;
             body.innerHTML = "";
             let knapp = document.getElementById('transaktioner-visa-fler-btn');
-            if (!spelarData.transaktioner || spelarData.transaktioner.length === 0) {
+            let lr = spelarData.liveReveal;
+            let alla = (spelarData.transaktioner || []).filter(t => !(lr && t.liveRaceNr && t.liveRaceNr === lr.raceNr));
+            if (alla.length === 0) {
                 body.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);">' + tt('Inga transaktioner ännu.', 'No transactions yet.') + '</td></tr>';
                 if (knapp) knapp.style.display = 'none';
                 return;
             }
-            let alla = spelarData.transaktioner;
             let synliga = transaktionerVisaAlla ? alla : alla.slice(0, TRANSAKTIONER_SIDA_STORLEK);
             synliga.forEach(t => {
                 let rad = document.createElement('tr');
@@ -15416,8 +15422,33 @@
             return nagotAndrat;
         }
 
+        // Prispengar och race-bonusar (se korLoppet) läggs inte på budgeten förrän
+        // liverapporten för racet är slut – samma som servern (kor-race, steg 1d),
+        // så att saldot inte avslöjar resultatet. Väntande belopp sparas i
+        // spelarData och betalas ut av betalaUtVantandeRace().
+        function raceUtbetalning(typ, delta) {
+            if (nyhetLiveRaceNr) {
+                if (!Array.isArray(spelarData.vantandeUtbetalningar)) spelarData.vantandeUtbetalningar = [];
+                spelarData.vantandeUtbetalningar.push({ raceNr: nyhetLiveRaceNr, typ: typ, delta: delta });
+                return;
+            }
+            medEkonomiTyp(typ, () => { spelarData.budget += delta; });
+        }
+        function betalaUtVantandeRace() {
+            let lista = spelarData.vantandeUtbetalningar;
+            if (!Array.isArray(lista) || !lista.length) return;
+            let lr = spelarData.liveReveal;
+            let kvar = [];
+            lista.forEach(u => {
+                if (lr && u.raceNr === lr.raceNr) kvar.push(u);
+                else medEkonomiTyp(u.typ, () => { spelarData.budget += u.delta; });
+            });
+            spelarData.vantandeUtbetalningar = kvar;
+        }
+
         function loggaTransaktion(text, belopp) {
-            spelarData.transaktioner.unshift({ text: text, belopp: belopp, sasong: spelarData.sasong, vecka: spelarData.raceNr });
+            // liveRaceNr: se nyhetLiveRaceNr – döljs i kontoutdraget under liverapporten.
+            spelarData.transaktioner.unshift({ text: text, belopp: belopp, sasong: spelarData.sasong, vecka: spelarData.raceNr, liveRaceNr: nyhetLiveRaceNr });
             if (spelarData.transaktioner.length > 25) spelarData.transaktioner.length = 25;
         }
 
@@ -16871,7 +16902,7 @@
                 let bonusInfo = ContractManager.racebonusForBil(förare, r.placering, r.poäng);
                 if (bonusInfo.summa > 0) {
                     // Bonusen betalas ut TILL föraren – det är en kostnad för laget.
-                    medEkonomiTyp(onlineResultatFor(spelarData.raceNr) ? 'server' : null, () => { spelarData.budget -= bonusInfo.summa; }); // online: bokförs av servern
+                    raceUtbetalning(onlineResultatFor(spelarData.raceNr) ? 'server' : null, -bonusInfo.summa); // online: bokförs av servern
                     spelarData.veckoOvrigt = (spelarData.veckoOvrigt || 0) + bonusInfo.summa;
                     loggaTransaktion(tt('Kontraktsbonus: {namn}', 'Contract bonus: {namn}').replaceAll('{namn}', förare.namn), -bonusInfo.summa);
                     loggaHandelse(tt('{namn} löste ut {belopp} i kontraktsbonus ({join}).', '{namn} earned {belopp} in contract bonuses ({join}).').replaceAll('{namn}', förare.namn).replaceAll('{belopp}', formatBelopp(bonusInfo.summa)).replaceAll('{join}', bonusInfo.rader.join(', ')));
@@ -16883,7 +16914,7 @@
             if (racePoangSpelare > 0) {
                 let perPoang = berakaRacePrisPerPoang(GROUP_DEFS[spelarData.serieId].tier);
                 let racePris = racePoangSpelare * perPoang;
-                medEkonomiTyp(onlineResultatFor(spelarData.raceNr) ? 'server' : null, () => { spelarData.budget += racePris; }); // online: bokförs av servern
+                raceUtbetalning(onlineResultatFor(spelarData.raceNr) ? 'server' : null, racePris); // online: bokförs av servern
                 spelarData.veckoPrispengar = (spelarData.veckoPrispengar || 0) + racePris;
                 loggaTransaktion(tt('Prispengar Race {raceNr} ({poang}p)', 'Prize money Race {raceNr} ({poang}p)').replaceAll('{raceNr}', spelarData.raceNr).replaceAll('{poang}', racePoangSpelare), racePris);
                 loggaHandelse(tt('Laget tog {poang} poäng i Race {raceNr} och fick {belopp} i prispengar ({perPoang}/poäng).', 'The team scored {poang} points in Race {raceNr} and received {belopp} in prize money ({perPoang}/point).').replaceAll('{poang}', racePoangSpelare).replaceAll('{raceNr}', spelarData.raceNr).replaceAll('{belopp}', formatBelopp(racePris)).replaceAll('{perPoang}', formatBelopp(perPoang)));
@@ -16898,7 +16929,7 @@
                     if (r.placering <= 3 && avtal.pallBonus) { bonus += avtal.pallBonus; rader.push(tt('pallplats', 'podium')); }
                     if (r.placering === 1 && avtal.vinstBonus) { bonus += avtal.vinstBonus; rader.push(tt('vinst', 'win')); }
                     if (bonus > 0) {
-                        medEkonomiTyp(onlineResultatFor(spelarData.raceNr) ? 'server' : 'sponsorbonus', () => { spelarData.budget += bonus; }); // online: bokförs av servern
+                        raceUtbetalning(onlineResultatFor(spelarData.raceNr) ? 'server' : 'sponsorbonus', bonus); // online: bokförs av servern
                         loggaTransaktion(tt('Sponsorbonus ({sponsorNamn})', 'Sponsor bonus ({sponsorNamn})').replaceAll('{sponsorNamn}', sponsorNamnVisa(avtal.sponsorNamn)), bonus);
                         loggaHandelse(tt('{sponsorNamn} betalade ut {belopp} i sponsorbonus för Bil {bil} ({join}).', '{sponsorNamn} paid out {belopp} in sponsor bonus for Car {bil} ({join}).').replaceAll('{sponsorNamn}', sponsorNamnVisa(avtal.sponsorNamn)).replaceAll('{belopp}', formatBelopp(bonus)).replaceAll('{bil}', r.bil).replaceAll('{join}', rader.join(', ')));
                     }
@@ -19175,7 +19206,9 @@
                 synkaOnlineVarld(false).then(() => kontrolleraSchemalagtRace());
             }
             if (nu >= raceTid && (!spelarData.raceResultat || !spelarData.raceResultat[spelarData.raceNr]) && (!online || (onlineRes && onlineRes.lopp))) {
-                let körtRaceNr = korLoppet();
+                let körtRaceNr;
+                nyhetLiveRaceNr = spelarData.raceNr;
+                try { körtRaceNr = korLoppet(); } finally { nyhetLiveRaceNr = null; }
                 if (körtRaceNr) {
                     // Resultatet är redan avgjort (som tidigare), men vi portionerar ut
                     // avslöjandet över 30 minuter – se renderLiveRace() m.fl. ovan.
@@ -19189,6 +19222,9 @@
                         startTid: liveStart.toISOString(),
                         varaktighetSek: LIVE_RACE_SEK
                     } : null;
+                    betalaUtVantandeRace();
+                    renderNyheter();
+                    bytUtTransaktionerHTML();
                     let körtResultat = spelarData.raceResultat[körtRaceNr];
                     if (körtResultat) {
                         let egnaBilar = körtResultat.lopp.filter(r => r.arSpelare).map(r => ({ bil: r.bil, forarNamn: r.forarNamn, placering: r.placering, poang: r.poäng, dnf: r.dnf }));
@@ -19701,12 +19737,15 @@
         function renderLiveRace() {
             let card = document.getElementById('race-live-card');
             let lr = spelarData.liveReveal;
+            // Avsluta rapporten när tiden gått ut även om race-sidan inte visas,
+            // annars ligger nyheter/transaktioner/utbetalningar kvar dolda.
+            if (lr && (new Date() - new Date(lr.startTid)) / 1000 >= lr.varaktighetSek) { avslutaLiveRace(); return; }
             if (!lr || !visadRaceNr || lr.raceNr !== visadRaceNr) {
                 if (card) card.style.display = "none";
                 return;
             }
             let resultat = spelarData.raceResultat ? spelarData.raceResultat[lr.raceNr] : null;
-            if (!resultat) { spelarData.liveReveal = null; if (card) card.style.display = "none"; return; }
+            if (!resultat) { spelarData.liveReveal = null; betalaUtVantandeRace(); if (card) card.style.display = "none"; return; }
             if (!lr.handelser) lr.handelser = genereraLiveHandelser(lr.raceNr, resultat);
 
             let elapsed = (new Date() - new Date(lr.startTid)) / 1000;
@@ -19768,6 +19807,7 @@
         function avslutaLiveRace() {
             let lr = spelarData.liveReveal;
             spelarData.liveReveal = null;
+            betalaUtVantandeRace();
             sparaOchUppdatera();
             if (lr && visadRaceNr === lr.raceNr) visaRaceSida(lr.raceNr, undefined, visadTaktikFas);
         }
@@ -19805,6 +19845,16 @@
         // taktikFas: 'kval' = taktikgenomgång inför kvalet (bara kvalordern kan
         // ändras), 'lopp' = inför racet (bara race-ordern). Utelämnad: kval om
         // kvalet inte körts än, annars lopp.
+        // Placeringar vunna/tappade från kvalpositionen (startPos) till målgång,
+        // visas i Start-kolumnen i loppresultatet. DNF får ingen pil.
+        function placeringsForandringHTML(r) {
+            if (r.dnf || !r.startPos || !r.placering) return '';
+            let diff = r.startPos - r.placering;
+            if (diff > 0) return ` <span style="color:var(--success); font-weight:bold;" title="${tt('Klättrade {n} placeringar', 'Gained {n} places').replaceAll('{n}', diff)}">▲${diff}</span>`;
+            if (diff < 0) return ` <span style="color:var(--danger-soft); font-weight:bold;" title="${tt('Tappade {n} placeringar', 'Lost {n} places').replaceAll('{n}', -diff)}">▼${-diff}</span>`;
+            return ` <span style="color:var(--text-muted);" title="${tt('Samma placering som start', 'Same position as start')}">–</span>`;
+        }
+
         function visaRaceSida(raceNr, visaTyp, taktikFas) {
             let aktuelltSchema = spelarData.scheman[spelarData.serieId];
             let banaInfo = (aktuelltSchema && aktuelltSchema[raceNr - 1]) ? aktuelltSchema[raceNr - 1] : null;
@@ -19875,7 +19925,7 @@
                         <td${klass}>${r.lagId ? `<span class="team-link" onclick="visaLagsidaForLagId('${r.lagId}')">${r.lagNamn}</span>` : r.lagNamn} ${r.arSpelare ? '(' + tt('Du', 'You') + ')' : ''}</td>
                         <td${klass}>${tt('Bil', 'Car')} ${r.bil}</td>
                         <td${klass}>${r.forarId && r.lagId ? `<span class="team-link" onclick="visaForarProfil('${r.forarId}','${r.lagId}')">${r.forarNamn}</span>` : r.forarNamn}${r.snabbasteVarv ? '' : ''}</td>
-                        <td${klass}>P${r.startPos}</td>
+                        <td${klass}>P${r.startPos}${placeringsForandringHTML(r)}</td>
                         <td${klass}>${r.poäng} p</td>
                         <td${klass}>${r.procent}%</td>
                         <td${klass}>${r.strategi || '-'}</td>
