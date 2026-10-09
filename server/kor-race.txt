@@ -1096,6 +1096,32 @@ import { createClient } from "npm:@supabase/supabase-js@2";
         }));
     }
 
+    // Karriärstatistik för ett AI-lag efter ett lopp. Mänskliga lag räknar sin
+    // egen statistik i webbläsaren, men AI-lagen har ingen webbläsare – därför
+    // räknar servern åt dem. Samma regler som korLoppet() i b5_1-3.html:
+    // lopp/poäng/poles/DNF på lag + förare, vinster/pall bara utan DNF,
+    // snabbaste varv bara på föraren. lopp: korLopp()-raderna för divisionen.
+    // Returnerar en NY ögonblicksbild, eller null om laget inte körde.
+    function uppdateraKarriar(snapshot, lagId, lopp) {
+        const egna = (lopp || []).filter(r => r.lagId === lagId);
+        if (!snapshot || !egna.length) return null;
+        const ny = JSON.parse(JSON.stringify(snapshot));
+        ny.karriar = Object.assign(V.tomKarriar(), ny.karriar || {});
+        egna.forEach(r => {
+            const f = r.forarId ? (ny.forare || []).find(x => x.id === r.forarId) : null;
+            const k = f ? (f.karriar = Object.assign(V.tomKarriar(), f.karriar || {})) : null;
+            [ny.karriar, k].forEach(m => {
+                if (!m) return;
+                m.lopp += 1; m.poang += r['poäng'] || 0;
+                if (r.startPos === 1) m.poles += 1;
+                if (r.dnf) m.dnf += 1;
+                else { if (r.placering === 1) m.vinster += 1; if (r.placering <= 3) m.pallplatser += 1; }
+            });
+            if (k && r.snabbasteVarv) k.snabbastaVarv += 1;
+        });
+        return ny;
+    }
+
     // Säsongsskifte. divisioner: [{ id, tier, parent_id }], lagRader: teams-rader
     // (id, division_id, slot, name, is_ai), tabell: serietabell-rader för
     // säsongen (team_id, poang, poang_bil1, poang_bil2). Returnerar nya platser
@@ -1388,7 +1414,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
     root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
         prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, nastaRaceNyckel: R.nastaRaceNyckel, personalForRace,
-        traningsvecka, veckouppdateringPersonal, aldrasPersonal, veckoekonomi });
+        traningsvecka, veckouppdateringPersonal, aldrasPersonal, veckoekonomi, uppdateraKarriar });
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 // =====================================================================
 // UNDERCUT RACING MANAGER – GEMENSAM TRANSFERMARKNAD (serverlogik)
@@ -1757,6 +1783,17 @@ Deno.serve(async (req) => {
         rad.lopp = lopp;
         if (!uppdaterad || !(uppdaterad as Rad[]).length) continue; // en annan körning hann före
         logg.push(`lopp ${nyckel} klart`);
+        // Karriärstatistik för AI-lagen (mänskliga lag räknar sin egen i
+        // webbläsaren). Körs bara av den körning som faktiskt sparade loppet
+        // (se .is("lopp", null) ovan), så inget räknas dubbelt.
+        for (const t of (lagPerDiv.get(div.id) || [])) {
+          if (!t.is_ai || !t.snapshot) continue;
+          const ny = S.uppdateraKarriar(t.snapshot, t.id, lopp);
+          if (!ny) continue;
+          const { error: kErr } = await db.from("teams").update({ snapshot: ny }).eq("id", t.id).eq("is_ai", true);
+          if (kErr) { logg.push(`karriär ${t.id}: ${kErr.message}`); continue; }
+          t.snapshot = ny;
+        }
         // Bilskador för mänskliga lag (servern äger deras bil).
         const manniskor = new Set(rader.filter((t) => !t.is_ai).map((t) => t.id));
         for (const sk of skador) {

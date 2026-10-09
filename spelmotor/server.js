@@ -105,6 +105,32 @@
         }));
     }
 
+    // Karriärstatistik för ett AI-lag efter ett lopp. Mänskliga lag räknar sin
+    // egen statistik i webbläsaren, men AI-lagen har ingen webbläsare – därför
+    // räknar servern åt dem. Samma regler som korLoppet() i b5_1-3.html:
+    // lopp/poäng/poles/DNF på lag + förare, vinster/pall bara utan DNF,
+    // snabbaste varv bara på föraren. lopp: korLopp()-raderna för divisionen.
+    // Returnerar en NY ögonblicksbild, eller null om laget inte körde.
+    function uppdateraKarriar(snapshot, lagId, lopp) {
+        const egna = (lopp || []).filter(r => r.lagId === lagId);
+        if (!snapshot || !egna.length) return null;
+        const ny = JSON.parse(JSON.stringify(snapshot));
+        ny.karriar = Object.assign(V.tomKarriar(), ny.karriar || {});
+        egna.forEach(r => {
+            const f = r.forarId ? (ny.forare || []).find(x => x.id === r.forarId) : null;
+            const k = f ? (f.karriar = Object.assign(V.tomKarriar(), f.karriar || {})) : null;
+            [ny.karriar, k].forEach(m => {
+                if (!m) return;
+                m.lopp += 1; m.poang += r['poäng'] || 0;
+                if (r.startPos === 1) m.poles += 1;
+                if (r.dnf) m.dnf += 1;
+                else { if (r.placering === 1) m.vinster += 1; if (r.placering <= 3) m.pallplatser += 1; }
+            });
+            if (k && r.snabbasteVarv) k.snabbastaVarv += 1;
+        });
+        return ny;
+    }
+
     // Säsongsskifte. divisioner: [{ id, tier, parent_id }], lagRader: teams-rader
     // (id, division_id, slot, name, is_ai), tabell: serietabell-rader för
     // säsongen (team_id, poang, poang_bil1, poang_bil2). Returnerar nya platser
@@ -397,5 +423,5 @@
 
     root.URMServer = Object.freeze({ rngFor, lagFranRad, forberedAiLag, byggSchema, banaFor, korKval, korLopp, sasongsskifte,
         prisPerPoang, slutplaceringsBonus, tavlingsregelAttribut, valjSkador, nastaRaceNyckel: R.nastaRaceNyckel, personalForRace,
-        traningsvecka, veckouppdateringPersonal, aldrasPersonal, veckoekonomi });
+        traningsvecka, veckouppdateringPersonal, aldrasPersonal, veckoekonomi, uppdateraKarriar });
 })(typeof globalThis !== 'undefined' ? globalThis : this);

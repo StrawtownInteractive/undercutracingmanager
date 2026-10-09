@@ -16477,7 +16477,7 @@
 
             // Pole position: krediteras föraren som kvalar P1, oavsett lag.
             let poleEntry = entries.find(e => e.startPos === 1);
-            if (poleEntry) {
+            if (poleEntry && !(arOnline() && !poleEntry.arSpelare)) { // online: andra lags poles kommer via ögonblicksbilden (se korLoppet)
                 let poleLag = grupp.find(l => l.namn === poleEntry.lagNamn);
                 let poleForare = poleLag ? forarForBil(poleLag, poleEntry.bil) : null;
                 if (poleForare) {
@@ -16982,13 +16982,17 @@
             // Uppdatering), och sin karriärstatistik (lopp/vinster/pallplatser/poäng/
             // poles/snabbaste varv/DNF) uppräknad på både föraren och laget – detta
             // nollställs ALDRIG av säsongsskiftet, se Statistik-fliken.
+            // Online räknas bara det EGNA lagets karriär här – andra mänskliga lag
+            // räknar sin själva och AI-lagens räknas av servern (kor-race), och
+            // båda kommer in via lagens ögonblicksbilder (importeraOnlineLag).
             loppResultat.forEach(r => {
                 let f = forarById(r.lag, r.forarId);
+                if (f) uppdateraPopularitet(f, r.placering);
+                if (arOnline() && !r.lag.arSpelare) return;
                 if (!r.lag.karriar) r.lag.karriar = tomKarriar();
                 r.lag.karriar.lopp += 1;
                 r.lag.karriar.poang += r.poäng;
                 if (f) {
-                    uppdateraPopularitet(f, r.placering);
                     if (!f.karriar) f.karriar = tomKarriar();
                     f.karriar.lopp += 1;
                     f.karriar.poang += r.poäng;
@@ -17491,7 +17495,7 @@
                 return `<tr${radCls}>
                     <td${cls}>${i + 1}</td>
                     <td${cls}>${avatarHTML(x.lag.teamPrincipal, 'principal', 20, x.lag)}<span class="team-link" onclick="visaLagsida('${x.gid}', '${escNamn(x.lag.namn)}', 'oversikt')">${namn}</span>${egen}</td>
-                    <td>${GROUP_DEFS[x.gid].kort}</td>
+                    <td><span class="team-link" onclick="bytVisadSerie('${x.gid}'); bytSubflik('serie','tabell')">${GROUP_DEFS[x.gid].kort}</span></td>
                     <td${cls}>${x.lag.poäng} p</td>
                     <td${cls}>${garUpp ? '▲ ' + tt('Går upp', 'Promoted') : '–'}</td>
                 </tr>`;
@@ -19268,8 +19272,8 @@
             }
             listaCont.innerHTML = historik.slice(0, 100).map(h => `
                 <div class="historik-rad">
-                    <div><strong>${h.namn}</strong> <span class="tag-badge">${rollLabelText(h.kategori)}</span></div>
-                    <div class="historik-rad-mitt">${h.franLagNamn}${h.franSpelare ? ' (' + tt('Du', 'You') + ')' : ''} → ${h.tillLagNamn}${h.tillSpelare ? ' (' + tt('Du', 'You') + ')' : ''}</div>
+                    <div><strong>${h.personId ? `<span class="team-link" onclick="visaPersonFranTransferHistorik('${h.kategori}','${h.personId}')">${h.namn}</span>` : h.namn}</strong> <span class="tag-badge">${rollLabelText(h.kategori)}</span></div>
+                    <div class="historik-rad-mitt">${h.franGroupId ? `<span class="team-link" onclick="visaLagsida('${h.franGroupId}','${escNamn(h.franLagNamnRen)}','oversikt')">${h.franLagNamn}</span>` : h.franLagNamn}${h.franSpelare ? ' (' + tt('Du', 'You') + ')' : ''} → ${h.tillGroupId ? `<span class="team-link" onclick="visaLagsida('${h.tillGroupId}','${escNamn(h.tillLagNamnRen)}','oversikt')">${h.tillLagNamn}</span>` : h.tillLagNamn}${h.tillSpelare ? ' (' + tt('Du', 'You') + ')' : ''}</div>
                     <div class="historik-rad-hoger">${formatBelopp(h.pris)}<br><span style="font-size:11px; color:var(--text-muted);">${tt('Säsong', 'Season')} ${h.sasong}, ${tt('race', 'race')} ${h.raceNr}</span></div>
                 </div>`).join('');
         }
