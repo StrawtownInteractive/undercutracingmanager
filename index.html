@@ -8020,9 +8020,9 @@
         // Vem styr vilket lag? Hämtas vid varje synk (billigt) så att ett lag
         // som nyss tagits över av en annan manager inte står kvar som
         // datorstyrt tills nästa fulla lagimport. Fel här stoppar inte synken.
-        async function synkaOnlineManagers() {
+        async function synkaOnlineManagers(paket) {
             try {
-                const { data, error } = await window.supabaseClient.rpc('lag_managers');
+                const { data, error } = paket ? await synkSvar(paket.managers) : await window.supabaseClient.rpc('lag_managers');
                 if (error) throw error;
                 let karta = {};
                 (data || []).forEach(r => { karta[r.team_id] = r.username; });
@@ -8154,6 +8154,27 @@
 
         // fullImport: true = hämta alltid hela pyramiden; 'start' = sidladdning
         // (hela pyramiden bara om den lokala är äldre än ett dygn, se ovan).
+        // Loggar (fas 3b-22): synk_paket() returnerar allt som synken läser
+        // (eget lag, säsong, kalender, resultat, tabell, schema, managers,
+        // marknad, bud, fria agenter, leveranser, träning, veckoekonomi) i ett
+        // anrop i stället för ca 13. Saknas funktionen eller går den fel
+        // används de gamla separata anropen resten av sidvisningen.
+        let synkPaketAv = false;
+        const synkSvar = data => Promise.resolve({ data: data, error: null });
+        async function hamtaSynkPaket(sb) {
+            if (synkPaketAv || !pyramidLagId) return null;
+            try {
+                const { data, error } = await sb.rpc('synk_paket', { p_lag_id: pyramidLagId });
+                if (error) throw error;
+                if (!data || !Array.isArray(data.kalender)) throw new Error('oväntat svar');
+                return data;
+            } catch (e) {
+                synkPaketAv = true;
+                console.warn('synk_paket gick inte – använder separata anrop:', e);
+                return null;
+            }
+        }
+
         async function synkaOnlineVarld(fullImport) {
             if (onlineSynk) return onlineSynk;
             // Tidsstämpeln sätts direkt, så att ett misslyckat eller tidigt
@@ -8163,10 +8184,12 @@
                 const sb = window.supabaseClient;
                 if (!sb || !pyramidLagId || spelarData.arTestlage) return;
                 try {
-                    const { data: egen, error: e1 } = await sb.from('teams').select('id, division_id').eq('id', pyramidLagId).maybeSingle();
+                    const paket = await hamtaSynkPaket(sb);
+                    const { data: egen, error: e1 } = paket ? await synkSvar(paket.egen)
+                        : await sb.from('teams').select('id, division_id').eq('id', pyramidLagId).maybeSingle();
                     if (e1) throw e1;
                     if (!egen || !GROUP_DEFS[egen.division_id]) return;
-                    const [ss, kal] = await Promise.all([
+                    const [ss, kal] = paket ? [{ data: { season_number: paket.sasong }, error: null }, { data: paket.kalender, error: null }] : await Promise.all([
                         sb.from('season_state').select('season_number').maybeSingle(),
                         sb.rpc('race_schema')
                     ]);
@@ -8197,12 +8220,14 @@
                         });
                     }
                     const behoverLag = fullLag || delDiv.length > 0;
+                    // Paketet gäller serverns säsong och egna divisionen – i ikapp-läget hämtas separat.
+                    const franPaket = !!paket && !ikapp;
                     const [res, tab, sch, lagRader] = await Promise.all([
-                        ikapp
+                        franPaket ? synkSvar(paket.race_resultat) : ikapp
                             ? sb.from('race_resultat').select('race_nr, bana, kval, lopp, skador').eq('sasong', sasong).contains('kval', [{ lagId: egen.id }])
                             : sb.from('race_resultat').select('race_nr, bana, kval, lopp, skador').eq('division_id', egen.division_id).eq('sasong', sasong),
-                        sb.from('serietabell').select('team_id, antal_race, poang, poang_bil1, poang_bil2').eq('sasong', sasong),
-                        sb.from('division_schema').select('schema').eq('division_id', ikapp ? spelarData.serieId : egen.division_id).eq('sasong', sasong).maybeSingle(),
+                        franPaket ? synkSvar(paket.serietabell) : sb.from('serietabell').select('team_id, antal_race, poang, poang_bil1, poang_bil2').eq('sasong', sasong),
+                        franPaket ? synkSvar(paket.division_schema || null) : sb.from('division_schema').select('schema').eq('division_id', ikapp ? spelarData.serieId : egen.division_id).eq('sasong', sasong).maybeSingle(),
                         fullLag ? sb.from('teams').select('id, division_id, name, is_ai, slot, snapshot')
                             : behoverLag ? sb.from('teams').select('id, division_id, name, is_ai, slot, snapshot').in('division_id', delDiv)
                             : Promise.resolve({ data: null, error: null })
@@ -8223,11 +8248,11 @@
                         for (let r = 1; r <= 10; r++) if (!resultat[r]) spelarData.onlineTillampat[onlineNyckel(sasong, r)] = true;
                     }
                     tillampaOnlineLage(tab.data || [], sch.data && sch.data.schema);
-                    await synkaOnlineManagers();
+                    await synkaOnlineManagers(paket);
                     onlineSenasteSynk = Date.now();
                     await synkaEkonomi();
                     kollaInloggningsbonus();
-                    synkaOnlineMarknad().then(() => synkaPersonal()).then(() => synkaTraning()).then(() => synkaVeckoekonomi());
+                    synkaOnlineMarknad(paket).then(() => synkaPersonal()).then(() => synkaTraning(paket)).then(() => synkaVeckoekonomi(paket));
                     skickaOrderTillServer(spelarData.raceNr);
                     sparaOchUppdatera();
                 } catch (e) {
@@ -8288,14 +8313,16 @@
             return a;
         }
 
-        async function synkaOnlineMarknad() {
+        async function synkaOnlineMarknad(paket) {
             if (!arOnline()) return;
             if (onlineMarknadSynk) return onlineMarknadSynk;
             onlineMarknadSenast = Date.now();
             onlineMarknadSynk = (async () => {
                 const sb = window.supabaseClient;
                 try {
-                    const [akt, bud, fria, lev] = await Promise.all([
+                    const [akt, bud, fria, lev] = paket
+                        ? [paket.marknad, paket.marknad_bud, paket.fria_agenter, paket.leveranser].map(d => ({ data: d, error: null }))
+                        : await Promise.all([
                         sb.from('marknad').select('*').eq('status', 'aktiv').order('deadline'),
                         sb.from('marknad_bud').select('auktion_id, belopp'),
                         sb.from('fria_agenter').select('id, kategori, person, sasong').is('anstalld_av', null),
@@ -8724,10 +8751,10 @@
             spelarData.onlineTraningVecka = rad.vecka;
             spelarData.senasteTraningKey = spelarData.sasong + '-' + spelarData.raceNr;
         }
-        async function synkaTraning() {
+        async function synkaTraning(paket) {
             if (!arOnline()) return;
             try {
-                const { data, error } = await window.supabaseClient.from('traning_resultat')
+                const { data, error } = paket ? await synkSvar(paket.traning) : await window.supabaseClient.from('traning_resultat')
                     .select('vecka, resultat, ateranvant').eq('team_id', onlineData.lagId).order('vecka', { ascending: false }).limit(1);
                 if (error) throw error;
                 const rad = data && data[0];
@@ -8774,10 +8801,10 @@
             if (info.utgatt) loggaHandelse(tt('Sponsoravtalet med {sponsorNamn} har gått ut.', 'The sponsorship deal with {sponsorNamn} has expired.').replaceAll('{sponsorNamn}', info.utgatt));
             spelarData.onlineEkonomiVecka = rad.vecka;
         }
-        async function synkaVeckoekonomi() {
+        async function synkaVeckoekonomi(paket) {
             if (!arOnline()) return;
             try {
-                const { data, error } = await window.supabaseClient.from('ekonomi_vecka')
+                const { data, error } = paket ? await synkSvar(paket.ekonomi_vecka) : await window.supabaseClient.from('ekonomi_vecka')
                     .select('vecka, sasong, rader, netto, budget_efter').eq('team_id', onlineData.lagId).order('vecka', { ascending: false }).limit(5);
                 if (error) throw error;
                 let nya = (data || []).filter(r => r.vecka > (spelarData.onlineEkonomiVecka || 0)).sort((a, b) => a.vecka - b.vecka);
@@ -8791,16 +8818,22 @@
             } catch (e) { console.error('Kunde inte hämta veckoekonomin:', e); }
         }
 
-        // Skickar det egna lagets order för en omgång till servern.
+        // Skickar det egna lagets order för en omgång till servern. En order som
+        // redan skickats oförändrad under sidvisningen skickas inte igen (synken
+        // anropar den här var 10:e minut, varje minut när ett resultat väntas).
+        let senastSkickadOrder = null;
         async function skickaOrderTillServer(raceNr) {
             if (!arOnline() || spelarData.sasong !== onlineData.sasong) return;
             let order = hamtaOrderForRace(hamtaSpelarLag(), spelarData.sasong, raceNr);
             if (!order) return;
+            const orderNyckel = JSON.stringify([onlineData.lagId, spelarData.sasong, raceNr, order.kval || null, order.lopp || null]);
+            if (orderNyckel === senastSkickadOrder) return;
             try {
                 const { error } = await window.supabaseClient.rpc('lagg_lagorder', {
                     p_sasong: spelarData.sasong, p_race_nr: raceNr, p_kval: order.kval || null, p_lopp: order.lopp || null
                 });
                 if (error) throw error;
+                senastSkickadOrder = orderNyckel;
             } catch (e) { console.error('Kunde inte skicka ordern till servern:', e); }
         }
 

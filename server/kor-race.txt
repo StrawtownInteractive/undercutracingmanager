@@ -1615,16 +1615,17 @@ Deno.serve(async (req) => {
   const nu = Date.now();
 
   // --- 1. Divisioner och lag -------------------------------------------
-  const { data: divisioner, error: dErr } = await db.from("divisions").select("id, tier, kort, parent_id");
+  // Loggar: allt som läses varje körning hämtas i ett anrop (se hamtaLage()).
+  const lage = await hamtaLage(db, nu, logg);
+  const { data: divisioner, error: dErr } = await lage.divisioner();
   if (dErr) return new Response("divisions: " + dErr.message, { status: 500 });
   // Egress: lagens ögonblicksbilder är stora, så först hämtas bara en lätt
   // lista (vilka lag som har en bild + bana/vakanser). Hela bilderna hämtas
   // med laddaSnapshots() först när något i körningen faktiskt behöver dem
   // (kval/lopp, vakanser, avslutad försäljning, nya AI-försäljningar).
-  const { data: lag, error: tErr } = await db.from("teams").select("id, division_id, name, is_ai, slot, user_id");
+  const { data: lag, error: tErr } = await lage.lag();
   if (tErr) return new Response("teams: " + tErr.message, { status: 500 });
-  const { data: snapInfo, error: siErr } = await db.from("teams")
-    .select("id, bana:snapshot->bana, vakanser:snapshot->vakanser").not("snapshot", "is", null);
+  const { data: snapInfo, error: siErr } = await lage.snapInfo();
   if (siErr) return new Response("teams: " + siErr.message, { status: 500 });
   const snapInfoPerLag = new Map<string, Rad>(((snapInfo as Rad[]) || []).map((r) => [r.id, r]));
   (lag as Rad[]).forEach((t) => { t.harSnapshot = snapInfoPerLag.has(t.id); t.snapshot = null; });
@@ -1669,21 +1670,21 @@ Deno.serve(async (req) => {
 
   // --- 1b. Transfermarknaden ---------------------------------------------
   try {
-    await korMarknad(db, divisioner as Rad[], lag as Rad[], logg, nu, laddaSnapshots, snapInfoPerLag);
+    await korMarknad(db, divisioner as Rad[], lag as Rad[], logg, nu, laddaSnapshots, snapInfoPerLag, lage);
   } catch (e) {
     logg.push("marknad: " + (e instanceof Error ? e.message : String(e)));
   }
 
   // --- 1c. Träning och utveckling för mänskliga lag ----------------------
   try {
-    await korTraning(db, logg);
+    await korTraning(db, logg, lage);
   } catch (e) {
     logg.push("träning: " + (e instanceof Error ? e.message : String(e)));
   }
 
   // --- 1d. Utbetalningar för körda lopp ------------------------------------
   try {
-    await korUtbetalningar(db, lag as Rad[], tierPerDiv, logg, nu);
+    await korUtbetalningar(db, lag as Rad[], tierPerDiv, logg, nu, lage);
   } catch (e) {
     logg.push("utbetalning: " + (e instanceof Error ? e.message : String(e)));
   }
@@ -1705,7 +1706,7 @@ Deno.serve(async (req) => {
   }
 
   // --- 2. Vilka race ska köras? ------------------------------------------
-  const { data: kalender, error: kErr } = await db.rpc("race_schema");
+  const { data: kalender, error: kErr } = await lage.kalender();
   if (kErr) return new Response("race_schema: " + kErr.message, { status: 500 });
   const forfallna = (kalender as Rad[])
     .filter((k) => Date.parse(k.kval_at) <= nu)
@@ -1716,8 +1717,7 @@ Deno.serve(async (req) => {
   // Egress: kval/lopp (stora) hämtas inte här. lopp_at sätts alltid samtidigt
   // som lopp, så "lopp: true" räcker som markering för ett kört lopp. Kvalet
   // hämtas separat bara när loppet ska köras (se nedan).
-  const { data: befintliga } = await db.from("race_resultat")
-    .select("division_id, race_nr, bana, lopp_at").eq("sasong", sasong);
+  const { data: befintliga } = await lage.befintliga(sasong);
   const resultat = new Map<string, Rad>();
   (befintliga as Rad[] || []).forEach((r) => resultat.set(r.division_id + "|" + r.race_nr,
     { division_id: r.division_id, race_nr: r.race_nr, bana: r.bana, kval: undefined, lopp: r.lopp_at ? true : null }));
@@ -1860,19 +1860,103 @@ Deno.serve(async (req) => {
 });
 
 // ---------------------------------------------------------------------------
+// Läget för en körning (fas 3b-21)
+// ---------------------------------------------------------------------------
+// Varje körning läser samma saker: divisioner, lag, marknaden, fria agenter,
+// träningsklockan, lagens träningsläge, väntande utbetalningar, raceschemat
+// och säsongens resultat. kor_race_lage() (supabase/fas3b21.sql) returnerar
+// allt i ett svar, så en körning utan något att göra blir ca 1 API-anrop i
+// stället för ca 10 (varje anrop är en rad i Supabase-loggarna). Saknas
+// funktionen eller går den fel används de gamla separata anropen.
+// Metoderna ger samma { data, error } som supabase-js, så koden ovan är
+// oförändrad i övrigt.
+// deno-lint-ignore no-explicit-any
+type Svar = { data: any; error: { message: string } | null };
+type Lage = {
+  rpc: boolean;
+  divisioner: () => PromiseLike<Svar>;
+  lag: () => PromiseLike<Svar>;
+  snapInfo: () => PromiseLike<Svar>;
+  utgangna: () => PromiseLike<Svar>;
+  aktiva: () => PromiseLike<Svar>;
+  antalFria: (tillagdaIKorningen: number) => Promise<number>;
+  sasongNr: () => Promise<number>;
+  klocka: () => PromiseLike<Svar>;
+  tillstandLatt: () => PromiseLike<Svar>;
+  vantandeUtbetalning: () => PromiseLike<Svar>;
+  kalender: () => PromiseLike<Svar>;
+  befintliga: (sasong: number) => PromiseLike<Svar>;
+};
+
+// deno-lint-ignore no-explicit-any
+async function hamtaLage(db: any, nu: number, logg: string[]): Promise<Lage> {
+  const nuIso = new Date(nu).toISOString();
+  const separata: Lage = {
+    rpc: false,
+    divisioner: () => db.from("divisions").select("id, tier, kort, parent_id"),
+    lag: () => db.from("teams").select("id, division_id, name, is_ai, slot, user_id"),
+    snapInfo: () => db.from("teams")
+      .select("id, bana:snapshot->bana, vakanser:snapshot->vakanser").not("snapshot", "is", null),
+    utgangna: () => db.from("marknad").select("*").eq("status", "aktiv").lte("deadline", nuIso),
+    aktiva: () => db.from("marknad").select("id, person_id, saljare_team_id, hogsta_bud, hogsta_budare, antal_bud, manskliga_bud, deadline").eq("status", "aktiv"),
+    antalFria: async () => {
+      const { data } = await db.from("fria_agenter").select("id").is("anstalld_av", null);
+      return ((data as Rad[]) || []).length;
+    },
+    sasongNr: async () => {
+      const { data: ss } = await db.from("season_state").select("season_number").maybeSingle();
+      return (ss && ss.season_number) || 1;
+    },
+    klocka: () => db.rpc("traning_klocka"),
+    tillstandLatt: () => db.from("lag_tillstand")
+      .select("team_id, aldrad:traning->aldradSasong, senT:traning->senasteTraning, senU:traning->senasteUppdatering"),
+    vantandeUtbetalning: () => db.from("race_resultat")
+      .select("division_id, sasong, race_nr, lopp_at").is("utbetalt_at", null).not("lopp_at", "is", null),
+    kalender: () => db.rpc("race_schema"),
+    befintliga: (sasong: number) => db.from("race_resultat")
+      .select("division_id, race_nr, bana, lopp_at").eq("sasong", sasong),
+  };
+  const { data: l, error } = await db.rpc("kor_race_lage", { p_nu: nuIso });
+  if (error || !l || !Array.isArray(l.lag)) {
+    logg.push("kor_race_lage: " + (error ? error.message : "oväntat svar") + " – använder separata anrop");
+    return separata;
+  }
+  const ok = (data: unknown): Promise<Svar> => Promise.resolve({ data, error: null });
+  return {
+    rpc: true,
+    divisioner: () => ok(l.divisioner),
+    lag: () => ok((l.lag as Rad[]).map((t) => ({
+      id: t.id, division_id: t.division_id, name: t.name, is_ai: t.is_ai, slot: t.slot, user_id: t.user_id,
+    }))),
+    snapInfo: () => ok((l.lag as Rad[]).filter((t) => t.har_snapshot)
+      .map((t) => ({ id: t.id, bana: t.bana, vakanser: t.vakanser }))),
+    utgangna: () => ok(l.utgangna),
+    // Bara deadline > nu: de utgångna stängs tidigare i samma körning.
+    aktiva: () => ok(l.aktiva),
+    // Fria agenter som lades tillbaka av osålda auktioner i körningen räknas till.
+    antalFria: (tillagda: number) => Promise.resolve((Number(l.antal_fria) || 0) + tillagda),
+    sasongNr: () => Promise.resolve(Number(l.sasong) || 1),
+    klocka: () => ok(l.traning_klocka),
+    tillstandLatt: () => ok(l.tillstand_latt),
+    vantandeUtbetalning: () => ok(l.vantande_utbetalning),
+    kalender: () => ok(l.kalender),
+    befintliga: (sasong: number) => sasong === l.sasong ? ok(l.befintliga) : separata.befintliga(sasong),
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Transfermarknaden (Fas 3a)
 // ---------------------------------------------------------------------------
 // Träningsrace (måndag 20:00), personalens väntande träning (söndag 20:00)
 // och åldrande vid ny säsong. Allt är idempotent per vecka/säsong (lagras i
 // lag_tillstand.traning) och sparas bara om laget inte ändrats under tiden.
-async function korTraning(db: ReturnType<typeof createClient>, logg: string[]) {
-  const { data: klocka, error: kErr } = await db.rpc("traning_klocka");
+async function korTraning(db: ReturnType<typeof createClient>, logg: string[], lage: Lage) {
+  const { data: klocka, error: kErr } = await lage.klocka();
   if (kErr || !klocka) { logg.push("träning: " + (kErr ? kErr.message : "ingen klocka")); return; }
   const vecka = klocka.vecka as number, sasong = (klocka.sasong as number) || 1;
   // Egress: kolla först med en lätt fråga om något lag har något att göra
   // (åldrande, träningsrace eller söndagsuppdatering) innan hela tillståndet hämtas.
-  const { data: latt, error: lattErr } = await db.from("lag_tillstand")
-    .select("team_id, aldrad:traning->aldradSasong, senT:traning->senasteTraning, senU:traning->senasteUppdatering");
+  const { data: latt, error: lattErr } = await lage.tillstandLatt();
   if (!lattErr) {
     const naganAttGora = ((latt as Rad[]) || []).some((r) =>
       typeof r.aldrad !== "number" || r.aldrad < sasong ||
@@ -1931,7 +2015,7 @@ async function korTraning(db: ReturnType<typeof createClient>, logg: string[]) {
 }
 
 async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[], lag: Rad[], logg: string[], nu: number,
-  laddaSnapshots: () => Promise<void>, snapInfoPerLag: Map<string, Rad>) {
+  laddaSnapshots: () => Promise<void>, snapInfoPerLag: Map<string, Rad>, lage: Lage) {
   const tierFor = new Map(divisioner.map((d) => [d.id, d.tier]));
   const lagPerId = new Map(lag.map((t) => [t.id, t]));
   const rng = S.rngFor("marknad", Math.floor(nu / 60000));
@@ -1949,7 +2033,8 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
     }
 
     // Avsluta auktioner vars tid har gått ut.
-    const { data: utgangna } = await db.from("marknad").select("*").eq("status", "aktiv").lte("deadline", new Date(nu).toISOString());
+    const { data: utgangna } = await lage.utgangna();
+    let friaTillagda = 0;
     for (const a of (utgangna as Rad[]) || []) {
       const sald = !!a.hogsta_budare;
       const { data: tagen } = await db.from("marknad")
@@ -1960,7 +2045,10 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
       const kopare = sald ? lagPerId.get(a.hogsta_budare) : null;
       const saljarNamn = a.saljare_typ === "lag" ? (saljare ? saljare.name : "Okänt lag") : (a.saljare_typ === "fri" ? "Fri agent" : "Sparkad personal");
       if (!sald) {
-        if (a.saljare_typ === "fri") await db.from("fria_agenter").insert({ kategori: a.kategori, person: Object.assign({}, a.person, { id: a.person_id }) });
+        if (a.saljare_typ === "fri") {
+          const { error: fErr } = await db.from("fria_agenter").insert({ kategori: a.kategori, person: Object.assign({}, a.person, { id: a.person_id }) });
+          if (!fErr) friaTillagda++;
+        }
         if (a.saljare_typ === "lag" && saljare && !saljare.is_ai) {
           await db.from("leveranser").insert({ team_id: saljare.id, typ: "osald", auktion_id: a.id, kategori: a.kategori, person_id: a.person_id, motpart: a.person.namn });
         }
@@ -1987,7 +2075,7 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
     }
 
     // Aktiva auktioner: AI-bud och nya AI-försäljningar.
-    const { data: aktiva } = await db.from("marknad").select("id, person_id, saljare_team_id, hogsta_bud, hogsta_budare, antal_bud, manskliga_bud, deadline").eq("status", "aktiv");
+    const { data: aktiva } = await lage.aktiva();
     const aiLag = lag.filter((t) => t.is_ai && (t.snapshot || t.harSnapshot));
     const aiIds = aiLag.map((t) => t.id);
     for (const a of (aktiva as Rad[]) || []) {
@@ -2014,11 +2102,9 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
     }
 
     // Fria agenter: alltid minst MIN_FRIA_AGENTER lediga.
-    const { data: fria } = await db.from("fria_agenter").select("id").is("anstalld_av", null);
-    const saknas = M.MIN_FRIA_AGENTER - (((fria as Rad[]) || []).length);
+    const saknas = M.MIN_FRIA_AGENTER - await lage.antalFria(friaTillagda);
     if (saknas > 0) {
-      const { data: ss } = await db.from("season_state").select("season_number").maybeSingle();
-      const sasong = (ss && ss.season_number) || 1;
+      const sasong = await lage.sasongNr();
       const roller = ["forare", "mekaniker", "ingenjor"];
       const rader = V.medSlump(rng, () => Array.from({ length: saknas }, () => {
         const kategori = roller[Math.floor(rng() * roller.length)];
@@ -2045,10 +2131,9 @@ async function korMarknad(db: ReturnType<typeof createClient>, divisioner: Rad[]
 const RAPPORT_MS = 30 * 60 * 1000;
 async function korUtbetalningar(
   // deno-lint-ignore no-explicit-any
-  db: any, lag: Rad[], tierPerDiv: Map<string, number>, logg: string[], nu: number,
+  db: any, lag: Rad[], tierPerDiv: Map<string, number>, logg: string[], nu: number, lage: Lage,
 ) {
-  const { data: vantande, error } = await db.from("race_resultat")
-    .select("division_id, sasong, race_nr, lopp_at").is("utbetalt_at", null).not("lopp_at", "is", null);
+  const { data: vantande, error } = await lage.vantandeUtbetalning();
   if (error) { logg.push("utbetalning: " + error.message); return; }
   const forfallna = ((vantande as Rad[]) || []).filter((r) => Date.parse(r.lopp_at) + RAPPORT_MS <= nu);
   if (!forfallna.length) return;
