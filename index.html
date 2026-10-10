@@ -2997,12 +2997,12 @@
                 <button id="ls-sub-mekaniker-btn" onclick="bytSubflik('lagsida', 'mekaniker')" data-i18n="appMekaniker">Mekaniker</button>
                 <button id="ls-sub-ingenjor-btn" onclick="bytSubflik('lagsida', 'ingenjor')" data-i18n="appIngenjor">Ingenjör</button>
                 <button id="ls-sub-bilar-btn" onclick="bytSubflik('lagsida', 'bilar')" data-i18n="appFabrik">Bilar</button>
-                <button id="ls-sub-trofeer-btn" onclick="bytSubflik('lagsida', 'trofeer')" data-i18n="appTrofeer">Troféer</button>
+                <button id="ls-sub-trofeer-btn" onclick="oppnaTrofeer()" data-i18n="appTrofeer">Troféer</button>
                 <button id="ls-sub-h2h-btn" onclick="bytSubflik('lagsida', 'h2h')" style="display:none;" data-i18n="appHeadToHead">Head-to-head</button>
                 <button id="ls-sub-statistik-btn" onclick="bytSubflik('lagsida', 'statistik')" style="display:none;" data-i18n="appStatistik">Statistik</button>
                 <button id="ls-sub-traning-btn" onclick="bytSubflik('lagsida', 'traning')" style="display:none;" data-i18n="appTraning">Träning</button>
                 <button id="ls-sub-scouting-btn" onclick="bytSubflik('lagsida', 'scouting')" style="display:none;" data-i18n="appScouting">Scouting</button>
-                <button id="ls-sub-forberedelsetraning-btn" onclick="bytSubflik('lagsida', 'forberedelsetraning')" style="display:none;" data-i18n="appForberedelsetraning">Förberedelseträning</button>
+                <button id="ls-sub-forberedelsetraning-btn" onclick="subflikar._forberedelseFranProfil = false; bytSubflik('lagsida', 'forberedelsetraning')" style="display:none;" data-i18n="appForberedelsetraning">Förberedelseträning</button>
                 <button id="ls-sub-kontrakt-btn" onclick="bytSubflik('lagsida', 'kontrakt')" style="display:none;" data-i18n="appKontrakt">Kontrakt</button>
             </div>
 
@@ -3154,6 +3154,7 @@
                     <h3 data-i18n="appTrofeskap">Troféskåp</h3>
                     <div id="ls-trofeer-lista"></div>
                 </div>
+                <button class="btn-blue" onclick="stangTrofeer()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <!-- Underflik: Head-to-head (endast när man besöker ett annat lags Lagsida) -->
@@ -3281,6 +3282,7 @@
                     </table>
                     </div>
                 </div>
+                <button class="btn-blue" id="forberedelsetraning-tillbaka" onclick="stangForberedelsetraningTillProfil()" style="margin-top: 10px; display:none;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <!-- Underflik: Kontrakt (endast för din egen Lagsida) -->
@@ -3330,6 +3332,7 @@
                         </div>
                         <div id="pp-lankruta" style="background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px 20px; min-width:220px; display:flex; flex-direction:column; gap:10px;">
                             <span class="team-link" onclick="oppnaMarknadsjamforelse()" data-i18n="appJamforMarknadspris">Jämför marknadspris</span>
+                            <span class="team-link" id="pp-lank-forberedelse" style="display:none;" onclick="oppnaForberedelsetraningFranProfil()" data-i18n="appForberedelsetraning">Förberedelseträning</span>
                             <span class="team-link" id="pp-lank-forhandla" data-i18n="appForhandlaKontrakt">Förhandla kontrakt</span>
                             <span class="team-link" id="pp-lank-historik" data-i18n="appKarriarhistorik">Karriärhistorik</span>
                             <span class="team-link" id="pp-lank-karriar">Karriäröversikt</span>
@@ -3530,6 +3533,20 @@
                     </div>
                 </div>
                 <button class="btn-blue" onclick="stangLagRaceschema()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+            </div>
+
+            <div id="ls-pane-transferhistorik" class="ls-pane">
+                <div class="card">
+                    <h3 id="ls-transferhistorik-titel">Transferhistorik</h3>
+                    <p id="ls-transferhistorik-summering" style="font-size:13px; color:var(--text-muted); margin-top:-6px;"></p>
+                    <div class="tabell-scroll">
+                    <table>
+                        <thead id="ls-transferhistorik-head"></thead>
+                        <tbody id="ls-transferhistorik-body"></tbody>
+                    </table>
+                    </div>
+                </div>
+                <button class="btn-blue" onclick="stangTransferhistorik()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-karriarshistorik" class="ls-pane">
@@ -9637,6 +9654,149 @@
             renderLagsida();
         }
 
+        // "Troféer" – Troféskåpet, öppnas från headerns länk eller underfliken.
+        // Tillbaka går till den undersida man kom från (som Raceschema nedan).
+        function oppnaTrofeer() {
+            if (subflikar.lagsida !== 'trofeer') subflikar._lagsidaForeTrofeer = subflikar.lagsida;
+            subflikar.lagsida = 'trofeer';
+            renderLagsida();
+        }
+
+        function stangTrofeer() {
+            subflikar.lagsida = subflikar._lagsidaForeTrofeer || 'oversikt';
+            renderLagsida();
+        }
+
+        // "Transferhistorik" – ett lags köp och försäljningar av personal. Finns på
+        // alla lagsidor (headerns länkar). Online hämtas lagets marknadsaffärer från
+        // servern (lag_transferhistorik, fas 3b-24, gäller även AI-lagen). På det
+        // egna laget läggs dessutom den lokala historiken till (bl.a. friköp, som
+        // servern inte sparar som marknadsaffär). Utan server används bara den
+        // lokala historiken (spelarData.transferHistorik).
+        const TRANSFERHISTORIK_SERVER_MAX_ALDER_MS = 5 * 60000;
+        let transferhistorikCache = {};
+        function oppnaTransferhistorik() {
+            if (subflikar.lagsida !== 'transferhistorik') subflikar._lagsidaForeTransferhistorik = subflikar.lagsida;
+            subflikar.lagsida = 'transferhistorik';
+            renderLagsida();
+        }
+
+        function stangTransferhistorik() {
+            subflikar.lagsida = subflikar._lagsidaForeTransferhistorik || 'oversikt';
+            renderLagsida();
+        }
+
+        async function hamtaLagTransferhistorik(lagId) {
+            let c;
+            try {
+                const { data, error } = await window.supabaseClient.rpc('lag_transferhistorik', { p_lag_id: lagId, p_antal: 150 });
+                if (error) throw error;
+                c = { tid: Date.now(), rader: Array.isArray(data) ? data : [] };
+            } catch (e) {
+                console.warn('Kunde inte hämta transferhistoriken:', e);
+                c = { tid: Date.now() - TRANSFERHISTORIK_SERVER_MAX_ALDER_MS + 60000, rader: [], fel: true }; // nytt försök efter 1 min
+            }
+            transferhistorikCache[lagId] = c;
+            return c;
+        }
+
+        // Lokala rader (spelarData.transferHistorik) för ett lag, i samma format som serverns.
+        function lokalTransferRader(lag, egetLag) {
+            let ren = lagnamnUtanDivisionssuffix(lag.namn);
+            let arLaget = (namn, renNamn) => (renNamn && lagnamnUtanDivisionssuffix(renNamn) === ren) || (namn && lagnamnUtanDivisionssuffix(namn) === ren);
+            return (spelarData.transferHistorik || []).map(h => {
+                let kop = egetLag ? !!h.tillSpelare : (!h.tillSpelare && arLaget(h.tillLagNamn, h.tillLagNamnRen));
+                let salj = egetLag ? !!h.franSpelare : (!h.franSpelare && arLaget(h.franLagNamn, h.franLagNamnRen));
+                if (!kop && !salj) return null;
+                return {
+                    arKop: kop, namn: h.namn, kategori: h.kategori, formaga: h.formaga, personId: h.personId || null,
+                    motNamn: kop ? h.franLagNamn : h.tillLagNamn, motLagId: null,
+                    motGid: kop ? h.franGroupId : h.tillGroupId, motRen: kop ? h.franLagNamnRen : h.tillLagNamnRen,
+                    pris: Number(h.pris) || 0, datum: h.datum || null, sasong: h.sasong || null, raceNr: h.raceNr || null
+                };
+            }).filter(Boolean);
+        }
+
+        function serverTransferRader(rader, lagId) {
+            return rader.map(r => {
+                let kop = r.kopare_team_id === lagId;
+                let motNamn = kop
+                    ? (r.saljare_typ === 'fri' ? tt('Fri agent', 'Free agent') : (r.saljare_typ === 'sparkad' ? tt('Sparkad personal', 'Released staff') : (r.saljare_namn || tt('Okänt lag', 'Unknown team'))))
+                    : (r.kopare_namn || tt('Okänt lag', 'Unknown team'));
+                return {
+                    arKop: kop, namn: r.namn, kategori: r.kategori, formaga: r.formaga, personId: r.person_id || null,
+                    motNamn: motNamn, motLagId: kop ? r.saljare_team_id : r.kopare_team_id, motGid: null, motRen: null,
+                    pris: Number(r.pris) || 0, datum: r.avslutad || null, sasong: null, raceNr: null
+                };
+            });
+        }
+
+        function renderTransferhistorik(lag, egetLag) {
+            let head = document.getElementById('ls-transferhistorik-head');
+            let body = document.getElementById('ls-transferhistorik-body');
+            let summering = document.getElementById('ls-transferhistorik-summering');
+            let titel = document.getElementById('ls-transferhistorik-titel');
+            if (!head || !body || !lag) return;
+            if (titel) titel.textContent = `${tt('Transferhistorik', 'Transfer history')} – ${lagnamnUtanDivisionssuffix(lag.namn)}`;
+            head.innerHTML = `<tr><th>${tt('Datum', 'Date')}</th><th>${tt('Typ', 'Type')}</th><th>${tt('Person', 'Person')}</th><th>${tt('Roll', 'Role')}</th><th>${tt('Förmåga', 'Ability')}</th><th>${tt('Från / till', 'From / to')}</th><th>${tt('Pris', 'Price')}</th></tr>`;
+
+            let rader, fotnot = '';
+            if (arOnline() && window.supabaseClient && lag.lagId) {
+                let c = transferhistorikCache[lag.lagId];
+                if (!c || Date.now() - c.tid >= TRANSFERHISTORIK_SERVER_MAX_ALDER_MS) {
+                    if (summering) summering.textContent = '';
+                    body.innerHTML = `<tr><td colspan="7" style="color:var(--text-muted);">${tt('Hämtar…', 'Loading…')}</td></tr>`;
+                    let id = lag.lagId;
+                    hamtaLagTransferhistorik(id).then(() => {
+                        if (subflikar.lagsida === 'transferhistorik' && (hamtaVisatLag() || hamtaSpelarLag() || {}).lagId === id) renderLagsida();
+                    });
+                    return;
+                }
+                rader = serverTransferRader(c.rader, lag.lagId);
+                if (egetLag) {
+                    // Egna lokala rader som inte redan finns från servern (t.ex. friköp).
+                    lokalTransferRader(lag, true).forEach(l => {
+                        if (!rader.some(r => r.arKop === l.arKop && r.pris === l.pris && (r.personId && l.personId ? r.personId === l.personId : r.namn === l.namn))) rader.push(l);
+                    });
+                } else {
+                    fotnot = tt('Friköp syns bara i lagets egen historik.', 'Release-clause buyouts only show in the team\'s own history.');
+                }
+                if (c.fel) fotnot = tt('Kunde inte hämta historiken från servern just nu.', 'Could not load the history from the server right now.');
+                rader.sort((x, y) => (Date.parse(y.datum) || 0) - (Date.parse(x.datum) || 0));
+            } else {
+                rader = lokalTransferRader(lag, egetLag);
+            }
+
+            if (!rader.length) {
+                if (summering) summering.textContent = fotnot;
+                body.innerHTML = `<tr><td colspan="7" style="color:var(--text-muted);">${egetLag ? tt('Du har inte köpt eller sålt någon personal än.', 'You have not bought or sold any staff yet.') : tt('Laget har inte köpt eller sålt någon personal än.', 'This team has not bought or sold any staff yet.')}</td></tr>`;
+                return;
+            }
+            let kop = rader.filter(h => h.arKop), salj = rader.filter(h => !h.arKop);
+            let summa = lista => lista.reduce((t, h) => t + (h.pris || 0), 0);
+            let netto = summa(salj) - summa(kop);
+            if (summering) summering.textContent = `${kop.length} ${tt('köp', 'purchases')} (${formatBelopp(summa(kop))}) · ${salj.length} ${tt('sålda', 'sold')} (${formatBelopp(summa(salj))}) · ${tt('Netto', 'Net')} ${netto >= 0 ? '+' : '−'}${formatBelopp(Math.abs(netto))}${fotnot ? ' · ' + fotnot : ''}`;
+            const rollNamn = { forare: tt('Förare', 'Driver'), mekaniker: tt('Mekaniker', 'Mechanic'), ingenjor: tt('Ingenjör', 'Engineer'), principal: tt('Team Principal', 'Team Principal') };
+            body.innerHTML = rader.map(h => {
+                let typ = h.arKop
+                    ? `<span style="color:var(--danger-soft);">${tt('Köp', 'Purchase')}</span>`
+                    : `<span style="color:var(--success);">${tt('Sälj', 'Sale')}</span>`;
+                let personHTML = h.personId && hittaPersonNagonstans(h.kategori, h.personId)
+                    ? `<span class="team-link" onclick="visaPersonFranTransferHistorik('${h.kategori}','${escNamn(h.personId)}')">${h.namn}</span>` : (h.namn || '–');
+                let motHTML;
+                if (h.motLagId && hittaLagOchGruppMedId(h.motLagId)) {
+                    motHTML = `<span class="team-link" onclick="visaLagsidaForLagId('${h.motLagId}')">${h.motNamn}</span>`;
+                } else if (h.motGid && h.motRen && (spelarData.tabeller[h.motGid] || []).some(l => l.namn === h.motRen)) {
+                    motHTML = `<span class="team-link" onclick="visaLagsida('${h.motGid}','${escNamn(h.motRen)}','oversikt')">${h.motNamn || h.motRen}</span>`;
+                } else {
+                    motHTML = h.motNamn || '–';
+                }
+                let datum = h.datum ? formateraDatumKort(h.datum) : '–';
+                let nar = h.sasong ? ` <span style="color:var(--text-muted);">· S${h.sasong}${h.raceNr ? ' R' + h.raceNr : ''}</span>` : '';
+                return `<tr><td>${datum}${nar}</td><td>${typ}</td><td>${personHTML}</td><td>${rollNamn[h.kategori] || h.kategori || '–'}</td><td>${h.formaga != null ? h.formaga + '/100' : '–'}</td><td>${h.arKop ? tt('från', 'from') : tt('till', 'to')} ${motHTML}</td><td>${formatBelopp(h.pris || 0)}</td></tr>`;
+            }).join('');
+        }
+
         // Kval/race för en omgång i valfri serie: egna serien ur raceResultat
         // (eller veckans redan körda kval), övriga serier via gruppRapportData().
         function lagRaceData(gid, raceNr) {
@@ -13324,7 +13484,7 @@
                 let btn = document.getElementById('ls-sub-' + s + '-btn');
                 if (btn) btn.classList.toggle('active', subflikar.lagsida === s);
             });
-            ['oversikt', 'forare', 'mekaniker', 'ingenjor', 'bilar', 'trofeer', 'h2h', 'statistik', 'traning', 'scouting', 'forberedelsetraning', 'kontrakt', 'bil', 'person', 'person-rekord', 'person-marknad', 'person-karriar', 'personal-karriar', 'personal-historik', 'rivaler', 'raceschema', 'karriarshistorik', 'principal'].forEach(s => {
+            ['oversikt', 'forare', 'mekaniker', 'ingenjor', 'bilar', 'trofeer', 'h2h', 'statistik', 'traning', 'scouting', 'forberedelsetraning', 'kontrakt', 'bil', 'person', 'person-rekord', 'person-marknad', 'person-karriar', 'personal-karriar', 'personal-historik', 'rivaler', 'raceschema', 'transferhistorik', 'karriarshistorik', 'principal'].forEach(s => {
                 let pane = document.getElementById('ls-pane-' + s);
                 if (pane) pane.classList.toggle('active', subflikar.lagsida === s);
             });
@@ -13350,6 +13510,7 @@
             else if (subflikar.lagsida === 'personal-historik') renderPersonalKarriarhistorik();
             else if (subflikar.lagsida === 'rivaler') renderRivaler(lag);
             else if (subflikar.lagsida === 'raceschema') renderLagRaceschema(lag);
+            else if (subflikar.lagsida === 'transferhistorik') renderTransferhistorik(lag, egetLag);
             else if (subflikar.lagsida === 'karriarshistorik') renderKarriarshistorik(lag);
             else if (subflikar.lagsida === 'principal') renderPrincipalPane();
         }
@@ -13519,10 +13680,11 @@
             // (renderHubStatusCard), här också placerade uppe i headerkortet.
             let headerLinksHTML = `
                 <div class="hub-header-links">
-                    <span class="team-link" onclick="bytSubflik('lagsida', 'trofeer')">${tt('Troféer', 'Trophies')}</span>
+                    <span class="team-link" onclick="oppnaTrofeer()">${tt('Troféer', 'Trophies')}</span>
                     <span class="team-link" onclick="oppnaKarriarshistorik()">${tt('Karriärhistorik', 'Career history')}</span>
                     <span class="team-link" onclick="oppnaRivaler()">${tt('Rivaler', 'Rivals')}</span>
                     <span class="team-link" onclick="oppnaLagRaceschema()">${tt('Raceschema', 'Race schedule')}</span>
+                    <span class="team-link" onclick="oppnaTransferhistorik()">${tt('Transferhistorik', 'Transfer history')}</span>
                 </div>`;
 
             el.innerHTML = `
@@ -14075,6 +14237,8 @@
             if (lankMarknad) lankMarknad.style.display = 'none';
             let lankUtkop = document.getElementById('pp-lank-utkop');
             if (lankUtkop) lankUtkop.style.display = 'none';
+            let lankForberedelse = document.getElementById('pp-lank-forberedelse');
+            if (lankForberedelse) lankForberedelse.style.display = '';
 
             let statsHtml = '';
             DRIVARE_STAT_KEYS.forEach(k => {
@@ -14222,6 +14386,8 @@
 
         function renderPersonPane() {
             if (!lsPersonKontext) return;
+            let lankForberedelse = document.getElementById('pp-lank-forberedelse');
+            if (lankForberedelse) lankForberedelse.style.display = 'none'; // visas bara för juniorprospekt (renderPersonPaneJunior)
             if (lsPersonKontext.teamlos) {
                 if (lsPersonKontext.teamlosTyp === 'friagent') { renderPersonPaneFriAgent(lsPersonKontext.id); return; }
                 if (lsPersonKontext.teamlosTyp === 'auktion') { renderPersonPaneAuktionTeamless(lsPersonKontext.id); return; }
@@ -15262,11 +15428,31 @@
         // Den valda förmågan ökar med +1 poäng/vecka (i samband med söndagens
         // ekonomiuppdatering, se korEkonomiUppdatering/traningJuniorprogram)
         // fram till och med den säsong prospektet fyller JUNIOR_DEBUTALDER (20) år.
-        function sattJuniorForberedelsetraning(id, varde) {
-            let junior = (spelarData.juniorprogram || []).find(j => j.id === id);
+        // Online (fas 3b-25): valet skickas direkt till servern (personal_synka),
+        // som äger juniorprogrammet och kör träningen på söndagar. Förut låg
+        // valet bara lokalt till nästa personalsynk (upp till 10 min), och ett
+        // serversvar under tiden (synk som redan var på väg, scouting) kunde
+        // skriva över det med serverns tomma värde, så att valet aldrig nådde
+        // servern. Efter synken kontrolleras att servern har valet.
+        async function sattJuniorForberedelsetraning(id, varde) {
+            let val = varde || null;
+            let hitta = () => (spelarData.juniorprogram || []).find(j => j.id === id);
+            let junior = hitta();
             if (!junior) return;
-            junior.traningsval = varde || null;
+            junior.traningsval = val;
             sparaOchUppdatera();
+            if (!arOnline()) return;
+            if (personalSynk) { try { await personalSynk; } catch (e) { /* hanteras i synkaPersonal */ } }
+            junior = hitta();
+            if (!junior) return;
+            junior.traningsval = val; // en synk som redan var på väg kan ha skrivit över valet
+            await synkaPersonal(true);
+            junior = hitta();
+            if (junior && (junior.traningsval || null) !== val) {
+                junior.traningsval = val;
+                alert(tt('Träningsvalet kunde inte sparas på servern just nu. Försök igen om en stund.', 'The training choice could not be saved on the server right now. Please try again shortly.'));
+            }
+            if (subflikar.lagsida === 'forberedelsetraning') renderForberedelsetraningTab();
         }
 
         // Körs från korEkonomiUppdatering() varje söndag: den valda förmågan
@@ -15448,7 +15634,27 @@
         // förmåga hen ska förbereda sig (tränas) inom - se
         // sattJuniorForberedelsetraning()/traningJuniorprogram(). Endast
         // prospekt som inte fyllt JUNIOR_DEBUTALDER (20) år kan tränas vidare.
+        // Från ett juniorprospekts profil (länken "Förberedelseträning" under
+        // "Jämför marknadspris"): öppnar Förberedelseträning för det egna laget,
+        // med en Tillbaka-knapp till profilen.
+        function oppnaForberedelsetraningFranProfil() {
+            let egna = hamtaSpelarLag();
+            if (egna) { lsGroupId = spelarData.serieId; lsLagNamn = egna.namn; }
+            subflikar._forberedelseFranProfil = true;
+            subflikar.lagsida = 'forberedelsetraning';
+            renderLagsida();
+            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        }
+
+        function stangForberedelsetraningTillProfil() {
+            subflikar._forberedelseFranProfil = false;
+            subflikar.lagsida = lsPersonKontext ? 'person' : 'oversikt';
+            renderLagsida();
+        }
+
         function renderForberedelsetraningTab() {
+            let tillbaka = document.getElementById('forberedelsetraning-tillbaka');
+            if (tillbaka) tillbaka.style.display = subflikar._forberedelseFranProfil && lsPersonKontext ? '' : 'none';
             let body = document.getElementById('forberedelsetraning-body');
             if (!body) return;
             let lista = spelarData.juniorprogram || [];
@@ -16630,31 +16836,84 @@
             bytArenaVy('detalj');
         }
 
+        // Bästa kvaltid per arena (fas 3b-23): hämtas från servern när arenasidan
+        // öppnas och hålls i minnet en stund, så att sidan inte frågar om och om igen.
+        const ARENA_KVAL_MAX_ALDER_MS = 10 * 60000;
+        let arenaKvalCache = {};
+        async function hamtaArenaBastaKval(lagId) {
+            let c;
+            try {
+                const { data, error } = await window.supabaseClient.rpc('arena_basta_kval', { p_lag_id: lagId });
+                if (error) throw error;
+                c = { tid: Date.now(), rekord: data || null };
+            } catch (e) {
+                console.warn('Kunde inte hämta bästa kvaltid:', e);
+                c = { tid: Date.now() - ARENA_KVAL_MAX_ALDER_MS + 60000, rekord: null, fel: true }; // nytt försök efter 1 min
+            }
+            arenaKvalCache[lagId] = c;
+            return c;
+        }
+
         function renderArenaDetaljSida() {
             let card = document.getElementById('arena-detalj-innehall');
             if (!card || !arenaDetaljLagId) return;
             let hit = hittaLagOchGruppMedId(arenaDetaljLagId);
             if (!hit) return;
             let lag = hit.lag;
-            let rekord = spelarData.arenaRekord ? spelarData.arenaRekord[arenaDetaljLagId] : null;
-            let rekordHTML = rekord ? `
+            let rekordHTML, rekordRubrik;
+            if (arOnline() && window.supabaseClient) {
+                // Bästa kvaltid på arenan i alla divisioner och säsonger (servern, fas 3b-23).
+                rekordRubrik = tt('Historisk bästa kvaltid', 'Historical best qualifying time');
+                let c = arenaKvalCache[arenaDetaljLagId];
+                if (!c || Date.now() - c.tid >= ARENA_KVAL_MAX_ALDER_MS) {
+                    rekordHTML = '<p style="font-size:13px; color:var(--text-muted);">' + tt('Hämtar…', 'Loading…') + '</p>';
+                    let id = arenaDetaljLagId;
+                    hamtaArenaBastaKval(id).then(() => { if (arenaDetaljLagId === id && subflikar.arena === 'detalj') renderArenaDetaljSida(); });
+                } else if (c.rekord) {
+                    let r = c.rekord;
+                    let div = GROUP_DEFS[r.division_id] ? GROUP_DEFS[r.division_id].kort : r.division_id;
+                    let lagCell = r.lag_id && hittaLagOchGruppMedId(r.lag_id)
+                        ? `<span class="team-link" onclick="visaLagsidaForLagId('${r.lag_id}')">${escNamn(r.lag_namn)}</span>` : escNamn(r.lag_namn || '–');
+                    let banaRad = r.bana_namn && r.bana_namn !== lag.bana
+                        ? `<tr><td>${tt('Bana', 'Track')}</td><td>${escNamn(r.bana_namn)} <span style="color:var(--text-muted);">(${tt('dåvarande namn', 'name at the time')})</span></td></tr>` : '';
+                    rekordHTML = `
+                <table>
+                    <tbody>
+                        <tr><td>${tt('Kvaltid', 'Qualifying time')}</td><td><strong>${formateraKvaltid(r.kval_poang, r.bana_langd || lag.banaLangd)}</strong></td></tr>
+                        <tr><td>${tt('Förare', 'Driver')}</td><td>${escNamn(r.forar_namn || '–')}</td></tr>
+                        <tr><td>${tt('Lag', 'Team')}</td><td>${lagCell}</td></tr>
+                        ${banaRad}
+                        ${r.kval_at ? `<tr><td>${tt('Datum', 'Date')}</td><td>${formateraDatum(r.kval_at)}</td></tr>` : ''}
+                        <tr><td>${tt('Race / Säsong', 'Race / Season')}</td><td>${tt('Race', 'Race')} ${r.race_nr}, ${tt('Säsong', 'Season')} ${r.sasong} · ${escNamn(div)}</td></tr>
+                    </tbody>
+                </table>`;
+                } else {
+                    rekordHTML = '<p style="font-size:13px; color:var(--text-muted);">' + (c.fel
+                        ? tt('Kunde inte hämta kvaltiden just nu.', 'Could not load the qualifying time right now.')
+                        : tt('Inga kval körda på den här arenan ännu.', 'No qualifying sessions held at this arena yet.')) + '</p>';
+                }
+            } else {
+                // Utan server: lagets lokala rekord (bästa vinnarresultat i poäng).
+                rekordRubrik = tt('Historiskt bästa resultat', 'Historical best result');
+                let rekord = spelarData.arenaRekord ? spelarData.arenaRekord[arenaDetaljLagId] : null;
+                rekordHTML = rekord ? `
                 <table>
                     <tbody>
                         <tr><td>${tt('Förare', 'Driver')}</td><td>${escNamn(rekord.forarNamn)}</td></tr>
                         <tr><td>${tt('Lag', 'Team')}</td><td>${escNamn(rekord.lagNamn)}</td></tr>
                         <tr><td>${tt('Resultat', 'Result')}</td><td>${rekord.poäng} p</td></tr>
-                        <tr><td>${tt('Bantid', 'Track time')}</td><td style="color:var(--text-muted);">${tt('– (kommer i en senare uppdatering)', '– (coming in a later update)')}</td></tr>
                         <tr><td>${tt('Datum', 'Date')}</td><td>${formateraDatum(rekord.datum)}</td></tr>
                         <tr><td>${tt('Race / Säsong', 'Race / Season')}</td><td><span class="team-link" onclick="visaRaceArkiv('${rekord.raceArkivId}')">${tt('Race', 'Race')} ${rekord.raceNr}, ${tt('Säsong', 'Season')} ${rekord.sasong}</span></td></tr>
                     </tbody>
                 </table>
             ` : '<p style="font-size:13px; color:var(--text-muted);">' + tt('Inga historiska resultat registrerade på den här arenan ännu.', 'No historical results recorded at this arena yet.') + '</p>';
+            }
             card.innerHTML = `
                 <h3>${escNamn(lag.bana)}</h3>
                 <p style="font-size:12.5px; color:var(--text-muted); margin-top:-6px;">${tt('Hemmaarena för', 'Home arena for')} <span class="team-link" onclick="visaLagsidaForLagId('${lag.lagId}')">${escNamn(lag.namn)}</span> · ${GROUP_DEFS[hit.gid] ? GROUP_DEFS[hit.gid].kort : hit.gid}</p>
                 <p><strong>${tt('Längd:', 'Length:')}</strong> ${lag.banaLangd} km | <strong>${tt('Kurvor:', 'Corners:')}</strong> ${lag.banaKurvor} st</p>
                 <p><strong>${tt('Svårighetsgrad:', 'Difficulty:')}</strong> ${banaSvarighetsgrad(lag.banaLangd, lag.banaKurvor)} / 10</p>
-                <h4 style="margin-bottom:4px;">${tt('Historisk bästa bantid', 'Historical best track time')}</h4>
+                <h4 style="margin-bottom:4px;">${rekordRubrik}</h4>
                 ${rekordHTML}
             `;
         }
@@ -16785,9 +17044,9 @@
                 if (!spelarData.gruppResultat[gid]) spelarData.gruppResultat[gid] = {};
                 spelarData.gruppResultat[gid][raceNr] = {
                     banaNamn: rad.banaNamn, arrangorNamn: rad.arrangorNamn, banaLangd: rad.banaLangd, banaKurvor: rad.banaKurvor,
-                    kval: kval.map(k => ({ i: k.lag.lagId, b: k.bil, f: k.forare.namn, s: k.startPos, kp: Math.round(k.kvalPoang * 10) / 10 })),
+                    kval: kval.map(k => ({ i: k.lag.lagId, b: k.bil, f: k.forare.namn, fi: k.forare.id || null, s: k.startPos, kp: Math.round(k.kvalPoang * 10) / 10 })),
                     referatData: extraheraReferatData(lopp, banaInfo),
-                    lopp: lopp.map(r => ({ i: r.lag.lagId, b: r.bil, f: r.forarNamn, s: r.startPos, p: r.placering, po: r.poäng, d: r.dnf ? 1 : 0, v: r.snabbasteVarv ? 1 : 0 }))
+                    lopp: lopp.map(r => ({ i: r.lag.lagId, b: r.bil, f: r.forarNamn, fi: r.forarId || null, s: r.startPos, p: r.placering, po: r.poäng, d: r.dnf ? 1 : 0, v: r.snabbasteVarv ? 1 : 0 }))
                 };
             });
         }
@@ -16840,20 +17099,35 @@
                 let b = r.bana || {};
                 return {
                     banaNamn: b.banaNamn, arrangorNamn: b.arrangorNamn, banaLangd: b.banaLangd, banaKurvor: b.banaKurvor,
-                    kval: r.kval.map(k => ({ lagId: k.lagId, lagNamn: k.lagNamn, bil: k.bil, forarNamn: k.forarNamn, startPos: k.startPos, kvalPoang: k.kvalPoäng })),
-                    lopp: Array.isArray(r.lopp) ? r.lopp.map(l => ({ lagId: l.lagId, lagNamn: l.lagNamn, bil: l.bil, forarNamn: l.forarNamn, startPos: l.startPos, placering: l.placering, poang: l.poäng || 0, dnf: !!l.dnf, snabbast: !!l.snabbasteVarv })) : null,
+                    kval: r.kval.map(k => ({ lagId: k.lagId, lagNamn: k.lagNamn, bil: k.bil, forarId: k.forarId || null, forarNamn: k.forarNamn, startPos: k.startPos, kvalPoang: k.kvalPoäng })),
+                    lopp: Array.isArray(r.lopp) ? r.lopp.map(l => ({ lagId: l.lagId, lagNamn: l.lagNamn, bil: l.bil, forarId: l.forarId || null, forarNamn: l.forarNamn, startPos: l.startPos, placering: l.placering, poang: l.poäng || 0, dnf: !!l.dnf, snabbast: !!l.snabbasteVarv })) : null,
                     referatData: null
                 };
             }
             let res = spelarData.gruppResultat && spelarData.gruppResultat[gid] ? spelarData.gruppResultat[gid][raceNr] : null;
             if (!res) return null;
-            let lopp = (res.lopp || []).map(r => ({ lagId: r.i, bil: r.b, forarNamn: r.f, startPos: r.s, placering: r.p, poang: r.po, dnf: !!r.d, snabbast: !!r.v }));
+            let lopp = (res.lopp || []).map(r => ({ lagId: r.i, bil: r.b, forarId: r.fi || null, forarNamn: r.f, startPos: r.s, placering: r.p, poang: r.po, dnf: !!r.d, snabbast: !!r.v }));
             // Äldre rapporter saknar egen kvaldata – startuppställningen ur racet används då.
             let kval = res.kval
-                ? res.kval.map(k => ({ lagId: k.i, bil: k.b, forarNamn: k.f, startPos: k.s, kvalPoang: k.kp }))
-                : lopp.map(l => ({ lagId: l.lagId, bil: l.bil, forarNamn: l.forarNamn, startPos: l.startPos, kvalPoang: null }));
+                ? res.kval.map(k => ({ lagId: k.i, bil: k.b, forarId: k.fi || null, forarNamn: k.f, startPos: k.s, kvalPoang: k.kp }))
+                : lopp.map(l => ({ lagId: l.lagId, bil: l.bil, forarId: l.forarId, forarNamn: l.forarNamn, startPos: l.startPos, kvalPoang: null }));
             kval.sort((a, b) => a.startPos - b.startPos);
             return { banaNamn: res.banaNamn, arrangorNamn: res.arrangorNamn, banaLangd: res.banaLangd, banaKurvor: res.banaKurvor, kval: kval, lopp: lopp, referatData: res.referatData };
+        }
+
+        // Hittar en förare från en racerapport: först på id i alla lag (föraren
+        // kan ha bytt lag), annars på namn i laget hen körde för i racet.
+        function hittaForareForResultat(forarId, lagId, namn) {
+            if (forarId) {
+                for (let gid of ALL_GROUP_IDS) {
+                    for (let lag of (spelarData.tabeller[gid] || [])) {
+                        if (lag.lagId && (lag.forare || []).some(f => f && f.id === forarId)) return { forarId: forarId, lagId: lag.lagId };
+                    }
+                }
+            }
+            let hit = lagId ? hittaLagOchGruppMedId(lagId) : null;
+            let f = hit && namn ? (hit.lag.forare || []).find(x => x && x.namn === namn) : null;
+            return f && f.id ? { forarId: f.id, lagId: lagId } : null;
         }
 
         function renderGruppRacerapport() {
@@ -16871,6 +17145,13 @@
                 let namn = lag.namn.replace(/\s*\([^)]*\)\s*$/, '');
                 return `<span class="team-link" onclick="visaLagsida('${v.gid}', '${escNamn(lag.namn)}', 'oversikt')">${namn}</span>`;
             };
+            // Förarnamnet länkar till förarens profil i det lag hen kör för NU
+            // (hen kan ha bytt lag sedan racet). Utan förar-id (äldre rapporter)
+            // söks föraren på namn i racelaget. Hittas hen inte visas bara namnet.
+            let forarCellFor = (forarId, lagId, namn) => {
+                let hit = hittaForareForResultat(forarId, lagId, namn);
+                return hit ? `<span class="team-link" onclick="visaForarProfil('${hit.forarId}','${hit.lagId}')">${escNamn(namn)}</span>` : escNamn(namn);
+            };
             let bytLank = visaKval
                 ? (res.lopp ? `<span class="team-link" onclick="visaGruppRacerapport('${v.gid}', ${v.raceNr})">${tt('Visa racerapport', 'View race report')}</span>` : '')
                 : `<span class="team-link" onclick="visaGruppRacerapport('${v.gid}', ${v.raceNr}, 'kval')">${tt('Kval', 'Qualifying')}</span>`;
@@ -16880,14 +17161,14 @@
                 let rader = res.kval.map(k => {
                     let cls = k.startPos <= 3 ? ' class="promotion-zone"' : '';
                     let tid = (k.kvalPoang === null || k.kvalPoang === undefined) ? '–' : formateraKvaltid(k.kvalPoang, res.banaLangd);
-                    return `<tr><td${cls}>${k.startPos}</td><td>${lagCellFor(k.lagId, k.lagNamn)}</td><td>${tt('Bil', 'Car')} ${k.bil}</td><td>${escNamn(k.forarNamn)}</td><td>${tid}</td></tr>`;
+                    return `<tr><td${cls}>${k.startPos}</td><td>${lagCellFor(k.lagId, k.lagNamn)}</td><td>${tt('Bil', 'Car')} ${k.bil}</td><td>${forarCellFor(k.forarId, k.lagId, k.forarNamn)}</td><td>${tid}</td></tr>`;
                 }).join('');
                 tabell = `<thead><tr><th>${tt('Pos', 'Pos')}</th><th>${tt('Stall', 'Team')}</th><th>${tt('Bil', 'Car')}</th><th>${tt('Förare', 'Driver')}</th><th>${tt('Tid', 'Time')}</th></tr></thead><tbody>${rader}</tbody>`;
             } else {
                 let rader = res.lopp.map(r => {
                     let not = r.dnf ? ' <span style="color:var(--danger-soft);">DNF</span>' : (r.snabbast ? ' <span title="' + tt('Snabbaste varv', 'Fastest lap') + '">⏱</span>' : '');
                     let cls = (!r.dnf && r.placering <= 3) ? ' class="promotion-zone"' : '';
-                    return `<tr><td${cls}>${r.dnf ? '–' : r.placering}</td><td>${lagCellFor(r.lagId, r.lagNamn)}</td><td>${tt('Bil', 'Car')} ${r.bil}</td><td>${escNamn(r.forarNamn)}${not}</td><td>P${r.startPos}</td><td>${r.poang} p</td></tr>`;
+                    return `<tr><td${cls}>${r.dnf ? '–' : r.placering}</td><td>${lagCellFor(r.lagId, r.lagNamn)}</td><td>${tt('Bil', 'Car')} ${r.bil}</td><td>${forarCellFor(r.forarId, r.lagId, r.forarNamn)}${not}</td><td>P${r.startPos}</td><td>${r.poang} p</td></tr>`;
                 }).join('');
                 tabell = `<thead><tr><th>${tt('Pl', 'Pos')}</th><th>${tt('Stall', 'Team')}</th><th>${tt('Bil', 'Car')}</th><th>${tt('Förare', 'Driver')}</th><th>${tt('Start', 'Start')}</th><th>${tt('Poäng', 'Points')}</th></tr></thead><tbody>${rader}</tbody>`;
                 referat = res.referatData ? byggReferatText(res.referatData, []) : '';
@@ -20367,7 +20648,15 @@
                 let lista = historiaTopplistaForare(falt, 15);
                 let body = document.getElementById(id);
                 body.innerHTML = lista.length
-                    ? lista.map((f, idx) => `<tr><td>${idx + 1}</td><td>${f.namn}${f.aktiv ? '' : ' <span class="tag-badge">' + tt('Legend', 'Legend') + '</span>'}</td><td>${f.lagNamn}</td><td>${f.karriar[falt] || 0}</td></tr>`).join('')
+                    ? lista.map((f, idx) => {
+                        // Aktiva förare länkar till profilen; legends (pensionerade) har ingen
+                        // lagsida kvar, men deras sista lag länkas om det fortfarande finns.
+                        let forareHTML = f.aktiv && f.id && f.lagId
+                            ? `<span class="team-link" onclick="visaForarProfil('${f.id}','${f.lagId}')">${f.namn}</span>` : f.namn;
+                        let lagHTML = f.lagId && hittaLagOchGruppMedId(f.lagId)
+                            ? `<span class="team-link" onclick="visaLagsidaForLagId('${f.lagId}')">${f.lagNamn}</span>` : (f.lagNamn || '–');
+                        return `<tr><td>${idx + 1}</td><td>${forareHTML}${f.aktiv ? '' : ' <span class="tag-badge">' + tt('Legend', 'Legend') + '</span>'}</td><td>${lagHTML}</td><td>${f.karriar[falt] || 0}</td></tr>`;
+                    }).join('')
                     : '<tr><td colspan="4">' + tt('Ingen förare har något värde än.', 'No driver has a value yet.') + '</td></tr>';
             });
         }
@@ -20379,7 +20668,7 @@
             let lista = [];
             ALL_GROUP_IDS.forEach(gid => {
                 (spelarData.tabeller[gid] || []).forEach(lag => {
-                    lista.push({ namn: lag.namn, arSpelare: !!lag.arSpelare, karriar: lag.karriar || tomKarriar() });
+                    lista.push({ namn: lag.namn, lagId: lag.lagId || null, gid: gid, arSpelare: !!lag.arSpelare, karriar: lag.karriar || tomKarriar() });
                 });
             });
             return lista;
@@ -20389,7 +20678,7 @@
             let lag = alleKarriarlag().filter(l => (l.karriar.lopp || 0) > 0).sort((a, b) => b.karriar.vinster - a.karriar.vinster || b.karriar.poang - a.karriar.poang).slice(0, 20);
             let body = document.getElementById('historia-lagstatistik-body');
             body.innerHTML = lag.length
-                ? lag.map((l, idx) => `<tr><td>${idx + 1}</td><td>${l.namn}${l.arSpelare ? ' <span class="tag-badge">' + tt('Du', 'You') + '</span>' : ''}</td><td>${l.karriar.lopp}</td><td>${l.karriar.vinster}</td><td>${l.karriar.pallplatser}</td><td>${l.karriar.poang}</td><td>${l.karriar.poles || 0}</td><td>${l.karriar.mastarskap || 0}</td><td>${l.karriar.dnf || 0}</td></tr>`).join('')
+                ? lag.map((l, idx) => `<tr><td>${idx + 1}</td><td><span class="team-link" onclick="visaLagsida('${l.gid}', '${escNamn(l.namn)}', 'oversikt')">${l.namn}</span>${l.arSpelare ? ' <span class="tag-badge">' + tt('Du', 'You') + '</span>' : ''}</td><td>${l.karriar.lopp}</td><td>${l.karriar.vinster}</td><td>${l.karriar.pallplatser}</td><td>${l.karriar.poang}</td><td>${l.karriar.poles || 0}</td><td>${l.karriar.mastarskap || 0}</td><td>${l.karriar.dnf || 0}</td></tr>`).join('')
                 : '<tr><td colspan="9">' + tt('Inget lag har genomfört ett lopp än.', 'No team has completed a race yet.') + '</td></tr>';
         }
 
