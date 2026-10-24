@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://undercutmanager.com/sitemap.xml
