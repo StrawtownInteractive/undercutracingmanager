@@ -27,6 +27,17 @@
     <meta name="google-adsense-account" content="ca-pub-6674737196022137">
     <title>Undercut Racing Manager</title>
     <meta name="description" content="Gratis managerspel om racing i webbläsaren. Bygg ditt stall, utveckla bilarna, sätt taktiken och tävla mot riktiga managers i en seriepyramid med fem divisioner.">
+    <!-- Länkförhandsvisning (Reddit, Discord, X, Facebook m.fl.) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Undercut Racing Manager">
+    <meta property="og:url" content="https://undercutmanager.com/">
+    <meta property="og:title" content="Undercut Racing Manager – free browser racing manager">
+    <meta property="og:description" content="Run your own racing team, develop your cars and set race strategy against real managers in a five-division league pyramid. Free, no download, desktop and mobile.">
+    <meta property="og:image" content="https://undercutmanager.com/assets/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Undercut Racing Manager – a team manager's office overlooking a race track">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="assets/favicon.png">
 
     <!-- =====================================================================
@@ -3342,6 +3353,7 @@
                             <span class="team-link" id="pp-lank-forhandla" data-i18n="appForhandlaKontrakt">Förhandla kontrakt</span>
                             <span class="team-link" id="pp-lank-historik" data-i18n="appKarriarhistorik">Karriärhistorik</span>
                             <span class="team-link" id="pp-lank-karriar">Karriäröversikt</span>
+                            <span class="team-link" id="pp-lank-traning" style="display:none;" onclick="oppnaPersonTraningshistorik()">Träningshistorik</span>
                             <span class="team-link" id="pp-lank-utkop" data-i18n="appAktiveraUtkopsklausul">Aktivera utköpsklausul</span>
                             <span class="team-link" id="pp-lank-sparka" data-i18n="appGeSparken">Ge sparken</span>
                             <span class="team-link" id="pp-lank-marknad" data-i18n="appSkickaTillMarknaden">Sälj</span>
@@ -3430,6 +3442,22 @@
                     <p id="ppm-tom-text" style="display:none; color:var(--text-muted);" data-i18n="appJamforMarknadsprisTomt">Inga tidigare marknadsaffärer för liknande personer hittades ännu.</p>
                 </div>
                 <button class="btn-blue" onclick="stangMarknadsjamforelse()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+            </div>
+
+            <!-- "Träningshistorik" – egen undersida (samma mönster som Jämför
+                 marknadspris), se renderPersonTraningshistorik(). -->
+            <div id="ls-pane-person-traning" class="ls-pane">
+                <div class="card">
+                    <div class="avatar-portrait-wrap">
+                        <span id="ppt-avatar"></span>
+                        <div class="avatar-portrait-text">
+                            <h2 id="ppt-namn">-</h2>
+                            <div class="avatar-portrait-sub" id="ppt-underrubrik">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" id="ppt-innehall"></div>
+                <button class="btn-blue" onclick="stangPersonTraningshistorik()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-person-karriar" class="ls-pane">
@@ -9591,6 +9619,20 @@
             renderLagsida();
         }
 
+        // "Träningshistorik" - egen undersida (samma lsPersonKontext som
+        // personprofilen), öppnas från länkrutan på det egna lagets personer.
+        // Se renderPersonTraningshistorik().
+        function oppnaPersonTraningshistorik() {
+            if (!lsPersonKontext) return;
+            subflikar.lagsida = 'person-traning';
+            renderLagsida();
+        }
+
+        function stangPersonTraningshistorik() {
+            subflikar.lagsida = 'person';
+            renderLagsida();
+        }
+
         // "Karriär" (Karriäröversikt + Karriärhistorik + Troféskåp i en enda
         // undersida) för en förare - egen undersida (samma mönster som Jämför
         // marknadspris ovan), öppnas från förarprofilens länkruta (se pp-lankruta).
@@ -9881,11 +9923,13 @@
             let funnet = lagId ? hittaLagMedId(lagId) : null;
             let lag = funnet ? funnet.lag : hamtaSpelarLag();
             if (!lag || !lag.teamPrincipal) return;
-            lsPersonKontext = { kategori: 'principal', lagId: lag.lagId, franMarknad: !!franMarknad };
             subflikar._lagsidaForegaende = (subflikar.lagsida === 'principal') ? subflikar._lagsidaForegaende : subflikar.lagsida;
-            subflikar.lagsida = 'principal';
+            // Öppnad från en annan flik → Tillbaka ska gå dit, se stangPersonPane()/stangPrincipalPane()/stangBilProfil().
             let aktivFlikEl = document.querySelector('.tab-content.active');
-            if (aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida') foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            let franAnnanFlik = !!(aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida');
+            if (franAnnanFlik) foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            lsPersonKontext = { kategori: 'principal', lagId: lag.lagId, franMarknad: !!franMarknad || franAnnanFlik };
+            subflikar.lagsida = 'principal';
             bytFlik('lagsida');
             renderLagsida();
         }
@@ -10087,13 +10131,15 @@
 
         function oppnaPersonPane(kategori, id, kontext) {
             subflikar._lagsidaForegaende = (subflikar.lagsida === 'person') ? subflikar._lagsidaForegaende : subflikar.lagsida;
-            lsPersonKontext = Object.assign({ kategori: kategori, id: id }, kontext || {});
-            subflikar.lagsida = 'person';
             // Profilen ritas alltid in i Lagsida-fliken (ls-pane-person) – växla dit
             // även när anropet kom från en annan underflik i Lagsida (t.ex. Mekaniker/Ingenjör),
             // precis som visaPersonGlobal() redan gör för Hem/Marknad/Serietabellen.
+            // Öppnad från en annan flik → Tillbaka ska gå dit, se stangPersonPane()/stangPrincipalPane()/stangBilProfil().
             let aktivFlikEl = document.querySelector('.tab-content.active');
-            if (aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida') foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            let franAnnanFlik = !!(aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida');
+            if (franAnnanFlik) foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            lsPersonKontext = Object.assign({ kategori: kategori, id: id }, kontext || {}, franAnnanFlik ? { franMarknad: true } : {});
+            subflikar.lagsida = 'person';
             bytFlik('lagsida');
             renderLagsida();
         }
@@ -10106,10 +10152,12 @@
         // renderPersonPaneJunior() nedan.
         function oppnaJuniorPersonPane(id) {
             subflikar._lagsidaForegaende = (subflikar.lagsida === 'person') ? subflikar._lagsidaForegaende : subflikar.lagsida;
-            lsPersonKontext = { kategori: 'forare', id: id, teamlos: true };
-            subflikar.lagsida = 'person';
+            // Öppnad från en annan flik → Tillbaka ska gå dit, se stangPersonPane()/stangPrincipalPane()/stangBilProfil().
             let aktivFlikEl = document.querySelector('.tab-content.active');
-            if (aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida') foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            let franAnnanFlik = !!(aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida');
+            if (franAnnanFlik) foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            lsPersonKontext = { kategori: 'forare', id: id, teamlos: true, franMarknad: franAnnanFlik };
+            subflikar.lagsida = 'person';
             bytFlik('lagsida');
             renderLagsida();
         }
@@ -10121,10 +10169,12 @@
             let a = (spelarData.friaAgenter || []).find(x => x.id === id);
             if (!a) return;
             subflikar._lagsidaForegaende = (subflikar.lagsida === 'person') ? subflikar._lagsidaForegaende : subflikar.lagsida;
-            lsPersonKontext = { kategori: a.kategori, id: id, teamlos: true, teamlosTyp: 'friagent' };
-            subflikar.lagsida = 'person';
+            // Öppnad från en annan flik (Marknad) → Tillbaka ska gå dit, se stangPersonPane().
             let aktivFlikEl = document.querySelector('.tab-content.active');
-            if (aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida') foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            let franAnnanFlik = !!(aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida');
+            if (franAnnanFlik) foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            lsPersonKontext = Object.assign({ kategori: a.kategori, id: id, teamlos: true, teamlosTyp: 'friagent' }, { franMarknad: franAnnanFlik });
+            subflikar.lagsida = 'person';
             bytFlik('lagsida');
             renderLagsida();
         }
@@ -10136,10 +10186,12 @@
             let a = spelarData.marknad.find(x => x.id === auktionId);
             if (!a) return;
             subflikar._lagsidaForegaende = (subflikar.lagsida === 'person') ? subflikar._lagsidaForegaende : subflikar.lagsida;
-            lsPersonKontext = { kategori: a.kategori, id: auktionId, teamlos: true, teamlosTyp: 'auktion' };
-            subflikar.lagsida = 'person';
+            // Öppnad från en annan flik (Marknad) → Tillbaka ska gå dit, se stangPersonPane().
             let aktivFlikEl = document.querySelector('.tab-content.active');
-            if (aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida') foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            let franAnnanFlik = !!(aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida');
+            if (franAnnanFlik) foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            lsPersonKontext = Object.assign({ kategori: a.kategori, id: auktionId, teamlos: true, teamlosTyp: 'auktion' }, { franMarknad: franAnnanFlik });
+            subflikar.lagsida = 'person';
             bytFlik('lagsida');
             renderLagsida();
         }
@@ -10160,14 +10212,16 @@
             let grupp = spelarData.tabeller[groupId];
             let lag = grupp ? grupp.find(l => l.namn === lagNamn) : null;
             if (!lag) return;
+            // Öppnad från en annan flik → Tillbaka ska gå dit, se stangPersonPane()/stangPrincipalPane()/stangBilProfil().
             let aktivFlikEl = document.querySelector('.tab-content.active');
-            if (aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida') foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            let franAnnanFlik = !!(aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida');
+            if (franAnnanFlik) foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
             lsGroupId = groupId;
             lsLagNamn = lagNamn;
             let subflik = kategori === 'forare' ? 'forare' : (kategori === 'mekaniker' ? 'mekaniker' : 'ingenjor');
             subflikar._lagsidaForegaende = subflik;
             subflikar.lagsida = 'person';
-            lsPersonKontext = { kategori: kategori, id: id };
+            lsPersonKontext = { kategori: kategori, id: id, franMarknad: franAnnanFlik };
             bytFlik('lagsida');
             renderLagsida();
         }
@@ -12944,6 +12998,117 @@
             bytUtTransaktionerHTML();
         }
 
+        // Kontoutdragets rader sparas som färdig text på det språk som var aktivt
+        // när händelsen loggades (loggaTransaktion). Vid visning känns texten igen
+        // mot mallarna nedan (på alla språk) och skrivs om på aktuellt språk – så
+        // även redan sparade rader byter språk. Okända texter visas oförändrade.
+        // Mallarna speglar anropen till loggaTransaktion(); "enums" räknas upp
+        // (språkberoende värden), övriga {platshållare} kopieras som de är.
+        // Lägg till en mall här när ett nytt loggaTransaktion-anrop läggs till.
+        const TRANS_MALLAR = [
+            { gen: () => tt('Managerlicens: ', 'Manager license: ') + '{titel}' },
+            { enums: { u: () => MANAGERLICENS_UPPDRAG.map((_, i) => i) }, gen: v => tt('Managerlicens: ', 'Manager license: ') + uppdragTitel(MANAGERLICENS_UPPDRAG[v.u]) },
+            { gen: () => tt('Inloggningsbonus dag ', 'Login bonus day ') + '{dag}' },
+            { gen: () => tt('Sign-on bonus: ', 'Sign-on bonus: ') + '{namn}' },
+            { gen: () => tt('Mästerskapsbonus: ', 'Championship bonus: ') + '{namn}' },
+            { gen: () => tt('{kopare} aktiverade {namn}s friköpsklausul', "{kopare} activated {namn}'s release clause") },
+            { enums: { r: () => ['forare', 'mekaniker', 'ingenjor', 'principal'] }, gen: v => tt('Köpte {rollText} {namn} från {lagNamn}', 'Bought {rollText} {namn} from {lagNamn}').replaceAll('{rollText}', rollText(v.r)) },
+            { enums: { r: () => ['forare', 'mekaniker', 'ingenjor', 'principal'] }, gen: v => tt('Köpte {rollText} {namn} ({franNamn})', 'Bought {rollText} {namn} ({franNamn})').replaceAll('{rollText}', rollText(v.r)) },
+            { enums: { r: () => ['forare', 'mekaniker', 'ingenjor', 'principal'] }, gen: v => tt('Sålde {rollText} {namn} till {hogstaBudare}', 'Sold {rollText} {namn} to {hogstaBudare}').replaceAll('{rollText}', rollText(v.r)) },
+            { enums: { r: () => ['forare', 'mekaniker', 'ingenjor', 'principal'] }, gen: v => tt('Friköpte {rollText} {namn} från {namn2}', 'Bought out {rollText} {namn} from {namn2}').replaceAll('{rollText}', rollText(v.r)) },
+            { gen: () => tt('Friköp av {namn} ({lagNamn})', 'Release clause for {namn} ({lagNamn})') },
+            { gen: () => tt('Bytte namn på arenan', 'Renamed the arena') },
+            { enums: { r: () => ['mekaniker', 'ingenjor'] }, gen: v => tt('Anställde {roll}: {namn}', 'Hired {roll}: {namn}').replaceAll('{roll}', v.r === 'mekaniker' ? tt('mekaniker', 'mechanic') : tt('ingenjör', 'engineer')) },
+            { enums: { r: () => ['mekaniker', 'ingenjor'] }, gen: v => tt('Anställde extra {roll}: {namn}', 'Hired extra {roll}: {namn}').replaceAll('{roll}', v.r === 'mekaniker' ? tt('mekaniker', 'mechanic') : tt('ingenjör', 'engineer')) },
+            { enums: { a: () => Object.keys(ATTRIBUT_LABEL_SV) }, gen: v => tt('Träning: Mekaniker ({attr})', 'Training: Mechanics ({attr})').replace('{attr}', ATTRIBUT_LABEL[v.a]) },
+            { enums: { a: () => Object.keys(ATTRIBUT_LABEL_SV) }, gen: v => tt('Träning: Ingenjörer ({attr})', 'Training: Engineers ({attr})').replace('{attr}', ATTRIBUT_LABEL[v.a]) },
+            { gen: () => tt('Värvade förare: {namn}', 'Signed driver: {namn}') },
+            { gen: () => tt('Scouting: nytt juniorprospekt', 'Scouting: new junior prospect') },
+            { enums: { d: () => Object.keys(KOMPONENT_LABEL_SV) }, gen: v => tt('Uppgraderade ', 'Upgraded ') + KOMPONENT_LABEL[v.d] + ' (' + tt('Bil', 'Car') + ' {bil})' },
+            { gen: () => tt('Sponsorintäkt ({sponsorNamn})', 'Sponsor income ({sponsorNamn})') },
+            { gen: () => tt('Sponsorintäkt', 'Sponsor income') },
+            { gen: () => tt('Merchandiseförsäljning', 'Merchandise sales') },
+            { gen: () => tt('Biljettintäkter', 'Ticket income') },
+            { gen: () => tt('Fabriksunderhåll', 'Factory maintenance') },
+            { gen: () => tt('Förarlöner (kontrakt)', 'Driver wages (contract)') },
+            { gen: () => tt('Mekanikerlöner', 'Mechanic wages') },
+            { gen: () => tt('Ingenjörslöner', 'Engineer wages') },
+            { gen: () => tt('Team Principal-lön', 'Team Principal salary') },
+            { gen: () => tt('Ränta på minussaldo', 'Interest on negative balance') },
+            { gen: () => tt('Kontraktsbonus: {namn}', 'Contract bonus: {namn}') },
+            { gen: () => tt('Prispengar Race {raceNr} ({poang}p)', 'Prize money Race {raceNr} ({poang}p)') },
+            { gen: () => tt('Sponsorbonus ({sponsorNamn})', 'Sponsor bonus ({sponsorNamn})') },
+            { gen: () => tt('Prispengar (P{spelarPlacering} i {kort})', 'Prize money (P{spelarPlacering} in {kort})') },
+            { gen: () => tt('Sponsorbonus – mästerskap ({sponsorNamn})', 'Sponsor bonus – championship ({sponsorNamn})') },
+            { gen: () => tt('Föregående klubb-intäkt: {namn}', 'Previous-club revenue: {namn}') }
+        ];
+        // Fria värden som ändå är språkberoende (sponsornamn med svenska ord).
+        function transFriVarde(namn, varde) {
+            if (namn === 'sponsorNamn') {
+                let sv = Object.keys(SPONSOR_NAMN_INTL).find(k => SPONSOR_NAMN_INTL[k] === varde);
+                return sponsorNamnVisa(sv || varde);
+            }
+            return varde;
+        }
+        let transMallIndex = null;
+        const transTextCache = new Map();
+        function byggTransMallIndex() {
+            transMallIndex = [];
+            const sprakLista = (typeof OVERSATTNINGAR !== 'undefined') ? Object.keys(OVERSATTNINGAR) : ['sv', 'en'];
+            const sparat = aktivtSprak;
+            const esc = x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            try {
+                TRANS_MALLAR.forEach((mall, mi) => {
+                    // Alla kombinationer av enum-värden
+                    let kombos = [{}];
+                    Object.keys(mall.enums || {}).forEach(k => {
+                        let varden = mall.enums[k]();
+                        kombos = kombos.flatMap(kb => varden.map(val => Object.assign({}, kb, { [k]: val })));
+                    });
+                    sprakLista.forEach(L => {
+                        aktivtSprak = L;
+                        kombos.forEach(v => {
+                            let mallText = mall.gen(v);
+                            if (typeof mallText !== 'string') return;
+                            let namn = [];
+                            let delar = mallText.split(/(\{\w+\})/);
+                            let re = '^' + delar.map(d => {
+                                let m = d.match(/^\{(\w+)\}$/);
+                                if (m) { namn.push(m[1]); return '(.+?)'; }
+                                return esc(d);
+                            }).join('') + '$';
+                            transMallIndex.push({ mi: mi, v: v, re: new RegExp(re), namn: namn });
+                        });
+                    });
+                });
+            } catch (e) {
+                console.warn('Kunde inte bygga kontoutdragets mallindex', e);
+            } finally {
+                aktivtSprak = sparat;
+            }
+        }
+        function transaktionTextVisa(text) {
+            if (typeof text !== 'string' || !text) return text;
+            if (!transMallIndex) byggTransMallIndex();
+            let traff = transTextCache.get(text);
+            if (traff === undefined) {
+                traff = null;
+                for (const post of transMallIndex) {
+                    let m = text.match(post.re);
+                    if (m) { traff = { post: post, varden: m.slice(1) }; break; }
+                }
+                transTextCache.set(text, traff);
+            }
+            if (!traff) return text;
+            try {
+                let ut = TRANS_MALLAR[traff.post.mi].gen(traff.post.v);
+                traff.post.namn.forEach((n, i) => { ut = ut.replace('{' + n + '}', () => transFriVarde(n, traff.varden[i])); });
+                return ut;
+            } catch (e) {
+                return text;
+            }
+        }
+
         const TRANSAKTIONER_SIDA_STORLEK = 10;
         function bytUtTransaktionerHTML() {
             let body = document.getElementById('transaktioner-body');
@@ -12965,7 +13130,7 @@
                 let färg = positiv ? "var(--success)" : "var(--danger-soft)";
                 rad.innerHTML = `
                     <td>S${t.sasong} V${t.vecka}</td>
-                    <td>${t.text}</td>
+                    <td>${transaktionTextVisa(t.text)}</td>
                     <td style="color: ${färg};">${tecken}${formatBelopp(Math.abs(t.belopp))}</td>
                 `;
                 body.appendChild(rad);
@@ -13490,7 +13655,7 @@
                 let btn = document.getElementById('ls-sub-' + s + '-btn');
                 if (btn) btn.classList.toggle('active', subflikar.lagsida === s);
             });
-            ['oversikt', 'forare', 'mekaniker', 'ingenjor', 'bilar', 'trofeer', 'h2h', 'statistik', 'traning', 'scouting', 'forberedelsetraning', 'kontrakt', 'bil', 'person', 'person-rekord', 'person-marknad', 'person-karriar', 'personal-karriar', 'personal-historik', 'rivaler', 'raceschema', 'transferhistorik', 'karriarshistorik', 'principal'].forEach(s => {
+            ['oversikt', 'forare', 'mekaniker', 'ingenjor', 'bilar', 'trofeer', 'h2h', 'statistik', 'traning', 'scouting', 'forberedelsetraning', 'kontrakt', 'bil', 'person', 'person-rekord', 'person-marknad', 'person-traning', 'person-karriar', 'personal-karriar', 'personal-historik', 'rivaler', 'raceschema', 'transferhistorik', 'karriarshistorik', 'principal'].forEach(s => {
                 let pane = document.getElementById('ls-pane-' + s);
                 if (pane) pane.classList.toggle('active', subflikar.lagsida === s);
             });
@@ -13511,6 +13676,7 @@
             else if (subflikar.lagsida === 'person') renderPersonPane();
             else if (subflikar.lagsida === 'person-rekord') renderPersonRekord();
             else if (subflikar.lagsida === 'person-marknad') renderMarknadsjamforelse();
+            else if (subflikar.lagsida === 'person-traning') renderPersonTraningshistorik();
             else if (subflikar.lagsida === 'person-karriar') renderPersonKarriaroversikt();
             else if (subflikar.lagsida === 'personal-karriar') renderPersonalKarriaroversikt();
             else if (subflikar.lagsida === 'personal-historik') renderPersonalKarriarhistorik();
@@ -13873,15 +14039,22 @@
         // ---- BILPROFIL (egen sida per bil, samma mönster som oppnaPersonPane/renderPersonPane) ----
         function visaBilProfil(lagId, bilNr) {
             subflikar._lagsidaForegaende = (subflikar.lagsida === 'bil') ? subflikar._lagsidaForegaende : subflikar.lagsida;
-            lsBilKontext = { lagId: lagId, bilNr: bilNr };
-            subflikar.lagsida = 'bil';
+            // Öppnad från en annan flik → Tillbaka ska gå dit, se stangPersonPane()/stangPrincipalPane()/stangBilProfil().
             let aktivFlikEl = document.querySelector('.tab-content.active');
-            if (aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida') foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            let franAnnanFlik = !!(aktivFlikEl && aktivFlikEl.id !== 'tab-lagsida');
+            if (franAnnanFlik) foregaendeFlik = aktivFlikEl.id.replace('tab-', '');
+            lsBilKontext = { lagId: lagId, bilNr: bilNr, franAnnanFlik: franAnnanFlik };
+            subflikar.lagsida = 'bil';
             bytFlik('lagsida');
             renderLagsida();
         }
 
         function stangBilProfil() {
+            if (lsBilKontext && lsBilKontext.franAnnanFlik) {
+                lsBilKontext = null;
+                bytFlik(foregaendeFlik);
+                return;
+            }
             subflikar.lagsida = subflikar._lagsidaForegaende || 'oversikt';
             lsBilKontext = null;
             renderLagsida();
@@ -14235,6 +14408,7 @@
             document.getElementById('pp-header-badges').innerHTML = `<span class="tag-badge">${tt('Juniorprospekt', 'Junior prospect')}</span>`;
             document.getElementById('pp-lank-historik').style.display = 'none';
             document.getElementById('pp-lank-karriar').style.display = 'none';
+            document.getElementById('pp-lank-traning').style.display = 'none';
             let lankForhandla = document.getElementById('pp-lank-forhandla');
             if (lankForhandla) lankForhandla.style.display = 'none';
             let lankSparka = document.getElementById('pp-lank-sparka');
@@ -14321,6 +14495,8 @@
             if (lankHistorik) lankHistorik.style.display = 'none';
             let lankKarriar = document.getElementById('pp-lank-karriar');
             if (lankKarriar) lankKarriar.style.display = 'none';
+            let lankTraningT = document.getElementById('pp-lank-traning');
+            if (lankTraningT) lankTraningT.style.display = 'none';
             let lankForhandla = document.getElementById('pp-lank-forhandla');
             if (lankForhandla) lankForhandla.style.display = 'none';
             let lankSparka = document.getElementById('pp-lank-sparka');
@@ -14449,6 +14625,10 @@
             let headerBadges = document.getElementById('pp-header-badges');
             let lankHistorik = document.getElementById('pp-lank-historik');
             let lankKarriar = document.getElementById('pp-lank-karriar');
+            // Träningshistorik visas bara för det egna lagets personer (andra
+            // lags träning är deras sak och sparas inte heller för AI-lag).
+            let lankTraning = document.getElementById('pp-lank-traning');
+            if (lankTraning) { lankTraning.style.display = lag.arSpelare ? '' : 'none'; lankTraning.innerText = tt('Träningshistorik', 'Training history'); }
             if (roll === 'forare') {
                 forareSektioner.style.display = '';
                 // Troféskåp/Karriärhistorik/Karriäröversikt är slagna till en enda
@@ -14764,6 +14944,55 @@
             document.getElementById('pnh-avatar').innerHTML = avatarHTML(p, lsPersonKontext.kategori, 'large', lag);
             document.getElementById('pnh-namn').innerText = p.namn;
             document.getElementById('pnh-historik-body').innerHTML = pnHistorikRowsHTML(p);
+        }
+
+        // "Träningshistorik" - alla sparade träningspass för personen (p.traningsHistorik,
+        // fylls av laggTillTraningsHistorik(), max TRANING_HISTORIK_MAX poster),
+        // senaste överst, plus en summering per förmåga.
+        function renderPersonTraningshistorik() {
+            if (!lsPersonKontext) return;
+            let grupp = spelarData.tabeller[lsPersonKontext.groupId || lsGroupId];
+            let lagNamn = lsPersonKontext.lagNamn || lsLagNamn;
+            let lag = grupp ? grupp.find(l => l.namn === lagNamn) : null;
+            if (!lag) return;
+            let p = hittaPerson(lag, lsPersonKontext.kategori, lsPersonKontext.id);
+            if (!p) return;
+            let roll = lsPersonKontext.kategori;
+            let rollText = roll === 'forare' ? tt('Förare', 'Driver') : (roll === 'mekaniker' ? tt('Mekaniker', 'Mechanic') : tt('Ingenjör', 'Engineer'));
+
+            document.getElementById('ppt-avatar').innerHTML = avatarHTML(p, roll, 'large', lag);
+            document.getElementById('ppt-namn').innerText = p.namn;
+            document.getElementById('ppt-underrubrik').innerText = `${rollText} · ${tt('Träningshistorik', 'Training history')}`;
+
+            let hist = Array.isArray(p.traningsHistorik) ? p.traningsHistorik : [];
+            let html = `<h3>${tt('Träningshistorik', 'Training history')}</h3>`;
+            html += `<p style="font-size:12px; color:var(--text-muted); margin-top:0;">${tt('Personens senaste träningspass (upp till {n} st), senaste överst.', 'The person\'s latest training sessions (up to {n}), most recent first.').replace('{n}', TRANING_HISTORIK_MAX)}</p>`;
+            if (hist.length === 0) {
+                html += `<p style="color:var(--text-muted);">${tt('Ingen träningshistorik ännu.', 'No training history yet.')}</p>`;
+                document.getElementById('ppt-innehall').innerHTML = html;
+                return;
+            }
+
+            // Summering per förmåga
+            let summa = {};
+            hist.forEach(h => {
+                if (!summa[h.attribut]) summa[h.attribut] = { pass: 0, forbattring: 0 };
+                summa[h.attribut].pass++;
+                summa[h.attribut].forbattring += (h.forbattring || 0);
+            });
+            html += `<div class="marknad-stats-grid" style="margin-bottom:14px;">`;
+            Object.keys(summa).sort((a, b) => summa[b].forbattring - summa[a].forbattring).forEach(k => {
+                html += `<div><div class="marknad-stat-label">${ATTRIBUT_LABEL[k] || k}</div><div class="marknad-stat-value">+${summa[k].forbattring}</div><div style="font-size:11px; color:var(--text-muted);">${summa[k].pass} ${tt('pass', 'sessions')}</div></div>`;
+            });
+            html += `</div>`;
+
+            html += `<div class="tabell-scroll"><table><thead><tr><th>${tt('Säsong', 'Season')}</th><th>${tt('Vecka', 'Week')}</th><th>${tt('Förmåga', 'Ability')}</th><th>${tt('Prestation', 'Performance')}</th><th>${tt('Förbättring', 'Improvement')}</th></tr></thead><tbody>`;
+            hist.forEach(h => {
+                let procent = (typeof h.procent === 'number') ? Math.round(h.procent * 100) + '%' : '–';
+                html += `<tr><td>${h.sasong != null ? h.sasong : '–'}</td><td>${h.vecka != null ? h.vecka : '–'}</td><td>${ATTRIBUT_LABEL[h.attribut] || h.attribut || '–'}</td><td>${procent}</td><td>+${h.forbattring || 0}</td></tr>`;
+            });
+            html += `</tbody></table></div>`;
+            document.getElementById('ppt-innehall').innerHTML = html;
         }
 
         // Rekord & Legacy-undersidan för en förare – jämför mot ALLA förare i spelet
@@ -15531,7 +15760,7 @@
 
         // Bygger ett kort för en scoutad person. lag === null betyder fri agent.
         function scoutingKortHTML(p, roll, lag) {
-            let c = p.contract;
+            let c = lag ? p.contract : friAgentKontrakt(p);
             let lagInfo = lag ? lag.namn : tt('Fri agent · inget lag just nu', 'Free agent · no team right now');
             let kontraktInfo = c
                 ? `${krV(c.salaryPerSeason)}/${tt('vecka', 'week')} · ${c.contractYearsRemaining} ${tt('säsonger kvar', 'seasons left')}${c.releaseClause ? ' · ' + tt('Friköp:', 'Release:') + ' ' + kr(c.releaseClause) : ' · ' + tt('Ingen friköpsklausul', 'No release clause')}`
@@ -19480,7 +19709,8 @@
                 let actions = full
                     ? `<span style="color:var(--text-muted); font-size:12px; align-self:center;">${tt('Din trupp är full', 'Your roster is full')}</span>`
                     : `<button class="btn-blue btn-small" onclick="anstallFriAgent('${a.id}')">${tt('Skriv kontrakt', 'Sign contract')}</button>`;
-                let kontr = auktionsKontrakt(a);
+                let faKontrakt = friAgentKontrakt(a);
+                let kontr = { lon: faKontrakt.salaryPerSeason, kontraktslangd: faKontrakt.contractLength };
                 return `
                     <div class="player-card">
                         <div class="player-card-main">
@@ -19507,6 +19737,27 @@
         // Skriver kontrakt direkt med en fri agent – ingen budgivning, inget pris
         // (det är ju därför hen är en "fri" agent). Först till kvarn: den som
         // klickar Skriv kontrakt först får personen.
+        // Kontraktet en fri agent får när du skriver på – tas fram i förväg så
+        // att lön och längd kan visas innan du bestämmer dig. Slumpen seedas på
+        // personens id + din division, så samma siffror visas varje gång och är
+        // exakt det som skrivs in vid signering. En fri agent ärver aldrig sitt
+        // gamla, utgångna kontrakt (contractYearsRemaining 0, status 'Free Agent').
+        function friAgentKontrakt(a) {
+            let tier = GROUP_DEFS[spelarData.serieId].tier;
+            let h = 0x811c9dc5, s = String(a.id) + ':' + tier;
+            for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+            let seed = h >>> 0;
+            let rng = function () {
+                seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+                let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+                t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            };
+            return URMVarld.medSlump(rng, () => a.kategori === 'forare'
+                ? URMVarld.nyttForarKontrakt(a.formaga, tier, false)
+                : URMVarld.nyttStabKontrakt(a.formaga, tier, a.kategori));
+        }
+
         function anstallFriAgent(id) {
             if (budgetSparrarNyaKostnader()) return;
             let idx = spelarData.friaAgenter.findIndex(a => a.id === id);
@@ -19515,11 +19766,12 @@
             let spelarLag = hamtaSpelarLag();
             if (a.kategori === 'mekaniker' && ickeExtraAntal(spelarLag.mekanikerLista) >= 10) { alert(tt('Din mekanikertrupp är redan full (10/10).', 'Your mechanic roster is already full (10/10).')); return; }
             if (a.kategori === 'ingenjor' && ickeExtraAntal(spelarLag.ingenjorLista) >= 10) { alert(tt('Din ingenjörstrupp är redan full (10/10).', 'Your engineer roster is already full (10/10).')); return; }
-            if (!confirm(tt('Skriv kontrakt med {namn} ({rollText}) som fri agent? Ingen transfersumma – bara en ny lön att betala.', 'Sign {namn} ({rollText}) as a free agent? No transfer fee – just a new salary to pay.').replaceAll('{namn}', a.namn).replaceAll('{rollText}', rollText(a.kategori)))) return;
+            let kontrakt = friAgentKontrakt(a);
+            if (!confirm(tt('Skriv kontrakt med {namn} ({rollText}) som fri agent?\n\nLön: {lonVecka}/vecka ({lonSasong}/säsong)\nKontraktslängd: {langd} säsonger\n\nIngen transfersumma.', 'Sign {namn} ({rollText}) as a free agent?\n\nSalary: {lonVecka}/week ({lonSasong}/season)\nContract length: {langd} seasons\n\nNo transfer fee.').replaceAll('{namn}', a.namn).replaceAll('{rollText}', rollText(a.kategori)).replaceAll('{lonVecka}', formatBelopp(lonPerVecka(kontrakt.salaryPerSeason))).replaceAll('{lonSasong}', formatBelopp(kontrakt.salaryPerSeason)).replaceAll('{langd}', kontrakt.contractLength))) return;
             if (a.online) {
                 window.supabaseClient.rpc('fri_agent_anstall', { p_id: a.id }).then(({ data, error }) => {
                     if (error) { alert(error.message); synkaOnlineMarknad(); return; }
-                    let person = Object.assign({}, data || {}, { kategori: a.kategori, personId: (data && data.id) || a.personId });
+                    let person = Object.assign({}, data || {}, { kategori: a.kategori, personId: (data && data.id) || a.personId, kontrakt: Object.assign({}, kontrakt) });
                     ['avatarId', 'avatarSeed', 'avatarTraits', 'avatarSignature', 'avatarVersion'].forEach(k => { if (a[k] !== undefined) person[k] = a[k]; });
                     spelarData.friaAgenter = spelarData.friaAgenter.filter(x => x.id !== a.id);
                     laggTillSpelarPerson(person);
@@ -19531,6 +19783,7 @@
                 return;
             }
             spelarData.friaAgenter.splice(idx, 1);
+            a.kontrakt = kontrakt;
             laggTillSpelarPerson(a);
             loggaHandelse(tt('Du skrev kontrakt med fria agenten {namn} ({rollText}).', 'You signed free agent {namn} ({rollText}).').replaceAll('{namn}', a.namn).replaceAll('{rollText}', rollText(a.kategori)));
             laggTillNyhet(tt('Du skrev kontrakt med fria agenten {namn}.', 'You signed free agent {namn}.').replaceAll('{namn}', a.namn));
