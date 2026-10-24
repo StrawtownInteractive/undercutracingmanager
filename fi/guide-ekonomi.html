@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Talousopas – Undercut Racing Manager</title>
+<meta name="description" content="Näin talous toimii Undercut Racing Managerissa: viikon tulot ja menot, minkä sponsorisopimuksen valitset, palkintorahat divisioonittain ja miten vältät negatiivisen budjetin.">
+<link rel="canonical" href="https://undercutmanager.com/fi/guide-ekonomi.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-ekonomi.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-ekonomi.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-ekonomi.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-ekonomi.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-ekonomi.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-ekonomi.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-ekonomi.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-ekonomi.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-ekonomi.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-ekonomi.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">Tietoa pelistä</a><a href="guider.html" aria-current="page">Oppaat</a><a href="manual.html">Ohjeet</a><a href="vanliga-fragor.html">Usein kysyttyä</a><a href="integritetspolicy.html">Tietosuojakäytäntö</a><select class="sprakval" aria-label="Kieli" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-ekonomi.html">Svenska</option><option data-l="en" value="../en/guide-ekonomi.html">English</option><option data-l="de" value="../de/guide-ekonomi.html">Deutsch</option><option data-l="fr" value="../fr/guide-ekonomi.html">Français</option><option data-l="es" value="../es/guide-ekonomi.html">Español</option><option data-l="pl" value="../pl/guide-ekonomi.html">Polski</option><option data-l="fi" value="../fi/guide-ekonomi.html" selected>Suomi</option><option data-l="hu" value="../hu/guide-ekonomi.html">Magyar</option><option data-l="ja" value="../ja/guide-ekonomi.html">日本語</option></select><a class="knapp" href="../">Pelaa ilmaiseksi</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Oppaat</a> › Talousopas</p>
+<h1>Talousopas: budjetti, sponsorisopimukset ja palkintorahat</h1>
+<p class="ingress">Kaikilla Undercut Racing Managerin talleilla on samat lähtökohdat – silti joillakin managereilla on aina rahaa päivityksiin ja hankintoihin, kun taas toiset tasapainoilevat jatkuvasti nollan tuntumassa. Ero on lähes aina siinä, miten kiinteitä kuluja hoidetaan ja millainen sponsorisopimus valitaan.</p>
+
+<h2>Viikon rahavirta</h2>
+<p>Talous päivittyy joka sunnuntai klo 20.00. Silloin kaikille talleille tapahtuu samanaikaisesti seuraavaa:</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Tulot</th><th>Menot</th></tr>
+<tr><td>Sponsorituotot (satunnaiset divisioonan mukaan tai kiinteät sponsorisopimuksen kautta)</td><td>Kuljettajien, mekaanikkojen, insinöörien ja Team Principalin palkat</td></tr>
+<tr><td>Fanituotemyynti (riippuu kuljettajien suosiosta)</td><td>Tehtaan ylläpito, 30 000 kr</td></tr>
+<tr><td></td><td>Korko, 5 % mahdollisesta alijäämästä</td></tr>
+</table></div>
+<p>Lisäksi rahaa tulee ja menee viikon aikana: pistekohtaiset palkintorahat heti jokaisen kilpailun jälkeen, kuljettajien sopimusbonukset, päivitykset, hankinnat ja myynnit. Kaikki näkyy tiliotteessa ja Talous-välilehden taloushistoriassa.</p>
+
+<h2>Kiinteät kulut ratkaisevat kaiken</h2>
+<p>Tulot vaihtelevat viikosta toiseen. Kulut eivät. Siksi juuri kiinteät kulut on pidettävä hallinnassa.</p>
+<p>Suurin kiinteä kulu on henkilöstö. Jokainen mekaanikko ja insinööri maksaa 100 000 kr viikkopalkkaa, eli miljoona kruunua kaudessa henkilöä kohden. Koska henkilöstön kyky lasketaan yhteen (katso <a href="guide-personal.html">henkilöstöopas</a>), jokainen autoon sijoitettu työntekijä tekee siitä nopeamman – mutta palkka on sama, olipa henkilö kuinka hyvä tahansa. Vahva työntekijä antaa siis enemmän kykyä kruunua kohden kuin heikko.</p>
+<p>Tee joka kausi yksinkertainen tarkistus: onko sinulla varaa täyteen miehistöön molemmissa autoissa? Jos ei, suosi autoa, joka tavoittelee nousua. Varalla oleva ja ylimääräinen henkilöstö ei vaikuta kilpailuun lainkaan; jos heitä ei ole tarkoitettu varamiehiksi, he vain maksavat rahaa.</p>
+
+<h2>Minkä sponsorisopimuksen valitset?</h2>
+<p>Ilman sponsorisopimusta sponsorituotto arvotaan joka viikko divisioonasi perusteella. Kohdassa Talous → Sponsorisopimus voit sen sijaan solmia kiinteän sopimuksen, joka kestää koko kauden. Saat kolme tarjousta:</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Profiili</th><th>Perussumma</th><th>Bonukset</th><th>Sopii, kun…</th></tr>
+<tr><td>Varma</td><td>Korkea</td><td>Matalat</td><td>rakennat uudelleen, autosi on heikko tai haluat ennustettavan talouden</td></tr>
+<tr><td>Tasapainoinen</td><td>Keskitaso</td><td>Keskitaso</td><td>odotat taistelevasi kärkisijoista silloin tällöin</td></tr>
+<tr><td>Riski</td><td>Matala</td><td>Korkeat</td><td>olet lohkosi selvä suosikki ja odotat paljon palkintopalleja ja voittoja</td></tr>
+</table></div>
+<p>Bonukset maksetaan jokaisesta palkintopallista ja voitosta <strong>autokohtaisesti</strong>, ja lisäksi mestaruudesta. Talli, jolla on kaksi vahvaa autoa, voi siis hyötyä paljon riskisopimuksesta. Sopimusta ei kuitenkaan voi irtisanoa kesken kauden – jos auto ei kulje, olet jumissa matalan perussumman kanssa kymmenen viikkoa.</p>
+<p>Hyvä nyrkkisääntö: valitse riskisopimus vain, jos realistisesti odotat nousevasi palkintopallille noin joka toisessa kilpailussa tai useammin. Muuten varmuus on arvokkaampi kuin teoreettinen bonus.</p>
+<p>Älä unohda Team Principalia: hänen sponsorointitaitonsa muuttaa kaikkien kolmen tarjouksen perussummaa jopa ±15 prosenttia. Uusi Team Principal aloittaa tasolta 10, mutta kehittyy +1 viikossa. Voi siis kannattaa odottaa pitkän kiinteän sopimuksen kanssa, kunnes Team Principalisi on ylittänyt 50.</p>
+
+<h2>Palkintorahat: miksi nousu on niin arvokas</h2>
+<p>Jokaisen kilpailun jälkeen talli saa palkintorahaa jokaisesta autojensa ajamasta pisteestä. Pistekohtainen summa riippuu divisioonasta:</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Divisioona</th><th>Kr pisteeltä</th><th>Esimerkki: voitto (25 p)</th></tr>
+<tr><td>Undercut Masters League</td><td>15 000 kr</td><td>375 000 kr</td></tr>
+<tr><td>Divisioona 2</td><td>11 000 kr</td><td>275 000 kr</td></tr>
+<tr><td>Divisioona 3</td><td>6 000 kr</td><td>150 000 kr</td></tr>
+<tr><td>Divisioona 4</td><td>3 000 kr</td><td>75 000 kr</td></tr>
+<tr><td>Divisioona 5</td><td>2 000 kr</td><td>50 000 kr</td></tr>
+</table></div>
+<p>Samat pisteet ovat siis ylimmässä divisioonassa seitsemän ja puoli kertaa arvokkaampia kuin alimmassa. Lisäksi kauden päätteeksi jaetaan suuri potti sarjataulukon loppusijoituksen mukaan: voittaja saa puolet lohkon potista – ja potti lohkoa kohden kaksinkertaistuu jokaisessa ylemmässä divisioonassa. Lue lisää <a href="guide-seriepyramiden.html">sarjapyramidin oppaasta</a>.</p>
+<p>Nousu ei siis ole pelkkää arvovaltaa. Se muuttaa tallin koko taloudellisen tilanteen. Vahva panostus kaudella, jolla sinulla on mahdollisuus nousta, on siksi usein viisaampaa kuin panostuksen tasainen levittäminen usealle kaudelle.</p>
+
+<h2>Suositut kuljettajat ovat rahan arvoisia</h2>
+<p>Fanituotemyynti määräytyy kahden kilpailevan kuljettajasi keskimääräisen suosion mukaan – jopa 60 prosenttia normaalia pienempänä tai jopa 80 prosenttia suurempana. Suosio kasvaa voitoista ja palkintopalleista ja laskee huonojen kilpailujen jälkeen. Usein voittava kuljettaja tuo siis rahaa kahdesti: palkintorahoina ja fanituotteina.</p>
+
+<h2>Negatiivinen budjetti: lukossa, mutta ei konkurssissa</h2>
+<p>Tallisi ei voi koskaan mennä konkurssiin. Mutta alle 0 kr:n olet tiukasti rajoitettu: ei päivityksiä, ei hankintoja, ei uusia sopimuksia, ei harjoittelua, ei soittoja kykyjenetsijöille – ja joka viikko 5 prosentin korko alijäämästä. Koron vuoksi suuri alijäämä kasvaa itsestään, jos tulot eivät riitä.</p>
+<p>Jos päädyt sinne, ulospääsyjä on kolme: myy henkilöstöä, odota seuraavaa talouspäivitystä tai ota laina. Parasta on tietysti olla koskaan päätymättä sinne – pidä puskuri, joka kattaa vähintään viikon kiinteät kulut.</p>
+
+<h2>Yhteenveto</h2>
+<div class="card"><ul>
+<li>Pidä kiinteät kulut hallinnassa, etenkin henkilöstön palkat.</li>
+<li>Valitse sponsorisopimus sen mukaan, kuinka varma olet tallin vireestä – älä suurimman luvun perusteella.</li>
+<li>Panosta enemmän kausina, joilla nousu on realistinen.</li>
+<li>Vaali kuljettajiesi suosiota – se näkyy kassassa.</li>
+<li>Pidä aina puskuri nollan yläpuolella.</li>
+</ul></div>
+<p>Kaikki tarkat summat ja taulukot löytyvät <a href="manual.html">ohjeista</a>.</p>
+<div class="card las-mer"><h3>Lue seuraavaksi</h3><ul><li><a href="guide-kontrakt.html">Sopimukset ja siirtomarkkinat: neuvottele, osta ja myy</a></li><li><a href="guide-seriepyramiden.html">Sarjapyramidi: näin pääset Masters Leagueen</a></li><li><a href="guide-hemmabana.html">Kotirata: muokkaa rata autosi mukaan</a></li></ul><p><a href="guider.html">Kaikki oppaat →</a></p></div><div class="card cta"><h2 style="margin-top:0">Kokeile omalla tallillasi</h2><p>Undercut Racing Manager on ilmainen ja toimii suoraan selaimessa.</p><a class="knapp" href="../">Pelaa ilmaiseksi</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Tietoa pelistä</a> &nbsp;·&nbsp; <a href="guider.html">Oppaat</a> &nbsp;·&nbsp; <a href="manual.html">Ohjeet</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Usein kysyttyä</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Tietosuojakäytäntö</a> &nbsp;·&nbsp; <a href="../">Peliin</a>
+<div class="fot-sprak"><a href="../guide-ekonomi.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-ekonomi.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-ekonomi.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-ekonomi.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-ekonomi.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-ekonomi.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-ekonomi.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-ekonomi.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-ekonomi.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

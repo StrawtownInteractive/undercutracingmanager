@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Sopimukset ja siirtomarkkinat – Undercut Racing Manager</title>
+<meta name="description" content="Näin neuvottelet sopimuksia, suojaudut ostolausekkeilta ja teet hyviä kauppoja siirtomarkkinoilla Undercut Racing Managerissa.">
+<link rel="canonical" href="https://undercutmanager.com/fi/guide-kontrakt.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-kontrakt.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-kontrakt.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-kontrakt.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-kontrakt.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-kontrakt.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-kontrakt.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-kontrakt.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-kontrakt.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-kontrakt.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-kontrakt.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">Tietoa pelistä</a><a href="guider.html" aria-current="page">Oppaat</a><a href="manual.html">Ohjeet</a><a href="vanliga-fragor.html">Usein kysyttyä</a><a href="integritetspolicy.html">Tietosuojakäytäntö</a><select class="sprakval" aria-label="Kieli" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-kontrakt.html">Svenska</option><option data-l="en" value="../en/guide-kontrakt.html">English</option><option data-l="de" value="../de/guide-kontrakt.html">Deutsch</option><option data-l="fr" value="../fr/guide-kontrakt.html">Français</option><option data-l="es" value="../es/guide-kontrakt.html">Español</option><option data-l="pl" value="../pl/guide-kontrakt.html">Polski</option><option data-l="fi" value="../fi/guide-kontrakt.html" selected>Suomi</option><option data-l="hu" value="../hu/guide-kontrakt.html">Magyar</option><option data-l="ja" value="../ja/guide-kontrakt.html">日本語</option></select><a class="knapp" href="../">Pelaa ilmaiseksi</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Oppaat</a> › Sopimukset ja siirtomarkkinat</p>
+<h1>Sopimukset ja siirtomarkkinat: neuvottele, osta ja myy</h1>
+<p class="ingress">Kaikilla Undercut Racing Managerin kuljettajilla ja koko henkilöstöllä on sopimus – ja koska jokaista tallia johtaa oikea manageri, parhaat kuljettajasi voidaan ostaa pois, jos et ole tarkkana. Tämä opas auttaa sinua neuvottelemaan fiksusti ja tekemään kannattavia kauppoja.</p>
+
+<h2>Näin neuvottelu etenee</h2>
+<p>Neuvottelet henkilön profiilisivulla ”Neuvottele sopimus” -painikkeella. Siellä näet henkilön vaatimukset ja toiveet, ja kokoat tarjouksesi itse: viikkopalkka, vuosien määrä, allekirjoitusbonus, suoritusbonukset, ostolauseke ja – kuljettajilla – mahdollinen ykköskuljettajan asema.</p>
+<p>Tärkein työkalu on prosenttiluku <strong>”Hyväksymisen todennäköisyys”</strong>, joka päivittyy heti, kun muutat tarjousta, sekä luettelo siitä, mikä nostaa tai laskee todennäköisyyttä. Käytä sitä aktiivisesti: muuta yhtä ehtoa kerrallaan ja katso, mikä liikuttaa lukua eniten. Usein käy ilmi, että sopimuksen pituus tai allekirjoitusbonus vaikuttaa enemmän kuin korkeampi viikkopalkka – ja kertabonus on halvempi kuin vuosien ajan joka viikko maksettava palkka.</p>
+<p>Henkilö voi hyväksyä, hylätä tai tehdä vastatarjouksen. Kärsivällisyys on kuitenkin rajallinen: muutaman peräkkäisen yrityksen jälkeen henkilö menettää kiinnostuksensa ja neuvottelu keskeytyy. Tee mieluummin harkittu ensimmäinen tarjous kuin tingi pienin askelin.</p>
+
+<h2>Mikä vaikuttaa kyllä-vastauksen todennäköisyyteen?</h2>
+<ul>
+<li><strong>Suhde talliin (0–100).</strong> 50 on neutraali; 100 antaa +10 prosenttiyksikköä ja 0 antaa −10. Suhde paranee +8 joka kerta, kun pääsette sopimukseen.</li>
+<li><strong>Team Principalisi neuvottelutaito.</strong> Se voi muuttaa todennäköisyyttä jopa noin 10 prosenttiyksikköä keskimääräiseen Team Principaliin verrattuna.</li>
+<li><strong>Tallin laatu ja moraali.</strong> Menestyvään talliin, jonka moraali on korkea, on helpompi sitoutua.</li>
+<li><strong>Muiden tallien kiinnostus.</strong> Jos kuljettajan sopimusta on jäljellä vähän, muut tallit voivat tehdä hänelle palkkatarjouksia, mikä nostaa hänen vaatimuksiaan.</li>
+</ul>
+
+<h2>Ostolauseke – sekä ase että riski</h2>
+<p>Jos kuljettajalla on ostolauseke, kuka tahansa toinen manageri voi maksaa koko summan ja ottaa sopimuksen heti itselleen, etkä voi estää sitä. Saat rahat, mutta menetät kuljettajan.</p>
+<p>Muutama huomioitava asia:</p>
+<div class="card"><ul>
+<li><strong>Aseta tärkeimmille kuljettajillesi korkea lauseke.</strong> Matala lauseke tekee neuvottelusta halvemman, mutta on avoin kutsu kilpailijoille.</li>
+<li><strong>Ensimmäinen vuosi on aina suojattu.</strong> Henkilön lauseketta ei voi koskaan käyttää hänen ensimmäisenä vuotenaan seurassa.</li>
+<li><strong>Juniorit ovat erityisen suojattuja.</strong> Junioriohjelmasta nostettu lupaus saa nelivuotisen sopimuksen, jonka lauseketta kukaan ei voi käyttää – ennen kuin sopimus neuvotellaan uudelleen.</li>
+<li><strong>Voit itse käyttää lausekkeita.</strong> Jos löydät toisesta tallista kuljettajan, jolla on matala lauseke, se voi olla nopein tie parempaan joukkueeseen.</li>
+</ul></div>
+<p>Omalla joukkuesivullasi on <em>Kilpakumppanit</em>-luettelo, joka näyttää, mistä talleista olet viime kausina ostanut kuljettajia tai henkilöstöä lausekkeella – ja vastustajillasi on tietenkin samanlainen.</p>
+
+<h2>Ykköskuljettajan asema</h2>
+<p>Ykköskuljettajan asemassa oleva kuljettaja odottaa tulevansa suosituksi, ja voimassa oleva ykköskuljettajasopimus antaa autolle pienen lisävaikutuksen kilpailussa. Mutta siinä on kääntöpuolensa: kuljettaja saa suhteeseensa +1 aina, kun hän sijoittuu tallikaverinsa edelle, ja −3, kun tallikaveri sijoittuu edelle. Anna asema vain kuljettajalle, joka on oikeasti parempi – ja tue häntä vapaasti tiimimääräyksillä (katso <a href="guide-taktik.html">taktiikkaopas</a>).</p>
+
+<h2>Kun sopimus päättyy</h2>
+<p>Joka kausi ”Vuosia jäljellä” vähenee yhdellä. Kun jäljellä on enää yksi vuosi, sopimus merkitään Expiring-tilaan, ja valitset jatkoneuvottelun, odottamisen tai sopimuksen päättymisen välillä. Jos annat kuljettajasopimuksen päättyä, varakuljettaja ottaa paikan – tai palkataan tulokas, jos varapenkki on tyhjä.</p>
+<p>Lähellä kolmeakymmentä olevien kuljettajien kohdalla on usein viisasta jatkaa sopimusta lyhyemmäksi aikaa. Kyky alkaa laskea 30 ikävuoden jälkeen, ja pitkästä, korkeapalkkaisesta sopimuksesta tulee silloin taakka.</p>
+
+<h2>Siirtomarkkinat</h2>
+<p>Markkinat-välilehdellä näkyvät kaikki käynnissä olevat huutokaupat. Huutokauppa kestää tasan seitsemän päivää, ja ajan päättyessä henkilö siirtyy korkeimman tarjouksen tehneelle – edellyttäen, että ostajalla on varaa ja tilaa joukkueessa huutokaupan ratketessa.</p>
+<h3>Ostajana</h3>
+<ul>
+<li>Päätä enimmäishintasi ennen ensimmäistä tarjousta ja pidä siitä kiinni.</li>
+<li>Tarkista budjetti ja joukkueen koko ennen määräaikaa. Voitettu tarjous, johon sinulla ei ole varaa tai tilaa, ei toteudu.</li>
+<li>Katso ikää ja ajotyyliä, älä vain kykyä – katso <a href="guide-personal.html">henkilöstöopas</a>.</li>
+<li>Tarkista siirtohistoria. Siitä näet, millä hinnalla samanlaisia kuljettajia on oikeasti myyty – paras pohja järkevälle tarjoukselle.</li>
+</ul>
+<h3>Myyjänä</h3>
+<ul>
+<li>Myy kuljettajat ennen kuin 30 ikävuoden jälkeinen heikkeneminen näkyy luvuissa, ei sen jälkeen.</li>
+<li>Korvaa miehistön heikoin paremmalla aina kun voit, ja myy varalla olevaa henkilöstöä, jota et tarvitse. Jokainen työntekijä maksaa 100 000 kr viikossa.</li>
+<li>Huutokauppa peruuntuu, jos irtisanot henkilön sen aikana, joten anna sen kulkea loppuun.</li>
+</ul>
+
+<h2>Yhteenveto</h2>
+<div class="card"><ul>
+<li>Käytä todennäköisyyslukua aktiivisesti ja tee harkittu ensimmäinen tarjous.</li>
+<li>Korkeat ostolausekkeet avainkuljettajille.</li>
+<li>Ykköskuljettajan asema vain selvästi parhaalle kuljettajalle.</li>
+<li>Lyhyet jatkosopimukset noin 30-vuotiaille kuljettajille.</li>
+<li>Päätä enimmäishinta etukäteen ja tarkista budjetti ennen huutokaupan loppua.</li>
+</ul></div>
+<div class="card las-mer"><h3>Lue seuraavaksi</h3><ul><li><a href="guide-seriepyramiden.html">Sarjapyramidi: näin pääset Masters Leagueen</a></li><li><a href="guide-hemmabana.html">Kotirata: muokkaa rata autosi mukaan</a></li><li><a href="vad-ar-en-undercut.html">Mikä on undercut? Varikkotaktiikka, josta peli sai nimensä</a></li></ul><p><a href="guider.html">Kaikki oppaat →</a></p></div><div class="card cta"><h2 style="margin-top:0">Kokeile omalla tallillasi</h2><p>Undercut Racing Manager on ilmainen ja toimii suoraan selaimessa.</p><a class="knapp" href="../">Pelaa ilmaiseksi</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Tietoa pelistä</a> &nbsp;·&nbsp; <a href="guider.html">Oppaat</a> &nbsp;·&nbsp; <a href="manual.html">Ohjeet</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Usein kysyttyä</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Tietosuojakäytäntö</a> &nbsp;·&nbsp; <a href="../">Peliin</a>
+<div class="fot-sprak"><a href="../guide-kontrakt.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-kontrakt.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-kontrakt.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-kontrakt.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-kontrakt.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-kontrakt.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-kontrakt.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-kontrakt.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-kontrakt.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

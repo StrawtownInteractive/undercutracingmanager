@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>À propos du jeu – Undercut Racing Manager</title>
+<meta name="description" content="Undercut Racing Manager est un jeu de gestion de course automobile gratuit dans le navigateur. Construisez votre écurie, développez vos voitures et affrontez d’autres managers.">
+<link rel="canonical" href="https://undercutmanager.com/fr/om.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/om.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/om.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/om.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/om.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/om.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/om.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/om.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/om.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/om.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/om.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html" aria-current="page">À propos du jeu</a><a href="guider.html">Guides</a><a href="manual.html">Manuel</a><a href="vanliga-fragor.html">Questions fréquentes</a><a href="integritetspolicy.html">Politique de confidentialité</a><select class="sprakval" aria-label="Langue" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../om.html">Svenska</option><option data-l="en" value="../en/om.html">English</option><option data-l="de" value="../de/om.html">Deutsch</option><option data-l="fr" value="../fr/om.html" selected>Français</option><option data-l="es" value="../es/om.html">Español</option><option data-l="pl" value="../pl/om.html">Polski</option><option data-l="fi" value="../fi/om.html">Suomi</option><option data-l="hu" value="../hu/om.html">Magyar</option><option data-l="ja" value="../ja/om.html">日本語</option></select><a class="knapp" href="../">Jouer gratuitement</a></nav>
+</div></header>
+<main>
+<h1>À propos d’Undercut Racing Manager</h1>
+<p class="ingress">Undercut Racing Manager est un jeu de gestion de course automobile gratuit qui se joue dans le navigateur. Vous prenez la tête de votre propre écurie, la construisez à partir de rien et affrontez d’autres managers semaine après semaine – rien à installer, tout fonctionne directement dans le navigateur, sur ordinateur comme sur mobile.</p>
+
+<h2>Comment fonctionne le jeu</h2>
+<p>Vous êtes le manager de l’équipe. Vous recrutez des pilotes, des mécaniciens et des ingénieurs, négociez leurs contrats, améliorez les deux voitures de l’équipe composant par composant et fixez la tactique avant chaque qualification et chaque course. Les épreuves se déroulent automatiquement selon un calendrier hebdomadaire fixe : ce sont donc vos décisions pendant la semaine qui font la différence :</p>
+<div class="card"><ul>
+<li><strong>Lundi 20 h</strong> – course d’entraînement pour les pilotes inscrits</li>
+<li><strong>Mercredi 20 h</strong> – qualifications</li>
+<li><strong>Vendredi 20 h</strong> – course</li>
+<li><strong>Dimanche 20 h</strong> – mise à jour des finances</li>
+</ul></div>
+<p>Toutes les heures sont à l’heure suédoise (CET/CEST) ; vous pouvez les afficher dans votre propre fuseau horaire dans les paramètres. Une saison compte 10 courses. Après chaque saison, tout le monde dans le jeu vieillit d’un an, les classements sont remis à zéro et les équipes montent et descendent entre les divisions.</p>
+
+<h2>Ce que vous faites en tant que manager</h2>
+<div class="funktioner">
+<div class="card"><h3>Construisez votre effectif</h3><p>Recrutez des pilotes, des mécaniciens et des ingénieurs, entraînez leurs attributs, repérez de nouveaux talents et négociez les contrats. Chaque pilote a son propre style de pilotage – agressif, défensif ou équilibré.</p></div>
+<div class="card"><h3>Développez les voitures</h3><p>Améliorez les cinq composants des voitures – pneus, moteur, aérodynamique, boîte de vitesses et châssis. Leur influence sur les qualifications et la course varie selon le caractère du circuit.</p></div>
+<div class="card"><h3>Fixez la tactique</h3><p>Avant chaque qualification et chaque course, vous choisissez la tactique et la stratégie d’arrêt aux stands. La forme du jour des pilotes, les composants des voitures et le moral de l’équipe décident ensuite du résultat.</p></div>
+<div class="card"><h3>Gérez les finances</h3><p>Surveillez le budget, les salaires, les contrats de sponsoring et les primes. Achetez et vendez du personnel sur le marché des transferts, où toutes les équipes peuvent enchérir sur les pilotes et le personnel des autres.</p></div>
+<div class="card"><h3>Grimpez dans la pyramide</h3><p>Le jeu compte cinq niveaux, de la Division 5 jusqu’à l’Undercut Masters League. Gagnez votre groupe pour monter – et évitez les dernières places pour ne pas descendre.</p></div>
+<div class="card"><h3>Affrontez les autres</h3><p>Chassez les titres, les trophées et les records saison après saison. Échangez avec d’autres managers sur le forum et suivez la série à travers les classements, les résultats et les comptes rendus de course.</p></div>
+</div>
+
+<h2>Gratuit</h2>
+<p>Le jeu est entièrement gratuit. Il est financé par la publicité, qui n’est affichée que si vous l’avez acceptée dans les paramètres des cookies. Pour en savoir plus, consultez notre <a href="integritetspolicy.html">politique de confidentialité</a>.</p>
+<p>Vous voulez démarrer rapidement ? Commencez par notre <a href="guide-nyborjare.html">guide du débutant</a> ou parcourez tous les <a href="guider.html">guides de stratégie</a>. Vous voulez en savoir plus sur les règles et tous les détails ? Lisez le <a href="manual.html">manuel</a>.</p>
+<p>Undercut Racing Manager est développé par <strong>Strawtown Interactive</strong>.</p>
+
+<div class="card cta"><h2 style="margin-top:0">Prêt à bâtir votre écurie ?</h2><p>Créez un compte et constituez votre équipe en quelques minutes.</p><a class="knapp" href="../">Jouer gratuitement</a></div>
+
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">À propos du jeu</a> &nbsp;·&nbsp; <a href="guider.html">Guides</a> &nbsp;·&nbsp; <a href="manual.html">Manuel</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Questions fréquentes</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Politique de confidentialité</a> &nbsp;·&nbsp; <a href="../">Vers le jeu</a>
+<div class="fot-sprak"><a href="../om.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/om.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/om.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/om.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/om.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/om.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/om.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/om.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/om.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

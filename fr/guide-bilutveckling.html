@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Développement de la voiture  – Undercut Racing Manager</title>
+<meta name="description" content="Guide des cinq composants de la voiture dans Undercut Racing Manager : leur rôle, le coût des améliorations, comment planifier selon le règlement et gérer les dégâts.">
+<link rel="canonical" href="https://undercutmanager.com/fr/guide-bilutveckling.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-bilutveckling.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-bilutveckling.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-bilutveckling.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-bilutveckling.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-bilutveckling.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-bilutveckling.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-bilutveckling.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-bilutveckling.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-bilutveckling.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-bilutveckling.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">À propos du jeu</a><a href="guider.html" aria-current="page">Guides</a><a href="manual.html">Manuel</a><a href="vanliga-fragor.html">Questions fréquentes</a><a href="integritetspolicy.html">Politique de confidentialité</a><select class="sprakval" aria-label="Langue" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-bilutveckling.html">Svenska</option><option data-l="en" value="../en/guide-bilutveckling.html">English</option><option data-l="de" value="../de/guide-bilutveckling.html">Deutsch</option><option data-l="fr" value="../fr/guide-bilutveckling.html" selected>Français</option><option data-l="es" value="../es/guide-bilutveckling.html">Español</option><option data-l="pl" value="../pl/guide-bilutveckling.html">Polski</option><option data-l="fi" value="../fi/guide-bilutveckling.html">Suomi</option><option data-l="hu" value="../hu/guide-bilutveckling.html">Magyar</option><option data-l="ja" value="../ja/guide-bilutveckling.html">日本語</option></select><a class="knapp" href="../">Jouer gratuitement</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Guides</a> › Développement de la voiture </p>
+<h1>Développement de la voiture : tirer le meilleur de chaque couronne</h1>
+<p class="ingress">Chaque équipe possède deux voitures de cinq composants chacune. Bien les améliorer fait la différence entre une équipe qui progresse et une équipe qui stagne malgré de grosses dépenses. Voici les calculs derrière les améliorations et les pièges les plus courants.</p>
+
+<h2>Les cinq composants</h2>
+<p>La voiture 1 et la voiture 2 sont améliorées de façon totalement séparée, et chaque composant a un indice de 0 à 100. Les composants contribuent différemment en qualifications et en course, et l’effet dépend du caractère du circuit :</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Composant</th><th>Qualifications</th><th>Course</th><th>Type de circuit où il brille</th></tr>
+<tr><td>Moteur</td><td>Moyenne</td><td>Contribution la plus forte</td><td>Circuits longs</td></tr>
+<tr><td>Aérodynamique</td><td>Contribution la plus forte</td><td>Moyenne</td><td>Circuits sinueux (surtout en qualifications)</td></tr>
+<tr><td>Pneus</td><td>–</td><td>Forte contribution</td><td>Circuits sinueux</td></tr>
+<tr><td>Châssis</td><td>Forte, régulière</td><td>Forte, régulière</td><td>Tous les circuits</td></tr>
+<tr><td>Boîte de vitesses</td><td>Faible, régulière</td><td>Moyenne, régulière</td><td>Tous les circuits</td></tr>
+</table></div>
+<p>Deux points ressortent. D’abord, le <strong>châssis</strong> est le composant le plus fiable : il contribue fortement en qualifications comme en course, quel que soit le circuit. Ensuite, les <strong>pneus</strong> n’interviennent qu’en course – ils n’influencent pas du tout le tour de qualification, mais déterminent la capacité de la voiture à tenir le rythme pendant la course.</p>
+
+<h2>Le coût croît avec le carré</h2>
+<p>Chaque amélioration augmente le composant de 5 points d’indice et coûte <strong>20 000 kr + indice² × 30</strong>, calculé sur l’indice avant l’amélioration. Cela donne une courbe très ascendante :</p>
+<div class="card tabell-scroll"><table>
+<tr><th>À partir de l’indice</th><th>Coût des +5 suivants</th></tr>
+<tr><td>0</td><td>20 000 kr</td></tr>
+<tr><td>20</td><td>32 000 kr</td></tr>
+<tr><td>40</td><td>68 000 kr</td></tr>
+<tr><td>60</td><td>128 000 kr</td></tr>
+<tr><td>80</td><td>212 000 kr</td></tr>
+<tr><td>95</td><td>290 750 kr</td></tr>
+</table></div>
+<p>En additionnant les paliers, la différence devient encore plus nette. Faire passer un composant de 0 à 50 coûte au total environ 414 000 kr. Faire passer le même composant par les 25 derniers points, de 75 à 100, coûte près de 1,2 million kr – presque trois fois plus pour une amélioration deux fois moindre.</p>
+<p>La conclusion est simple : <strong>construisez large avant de construire haut</strong>. Cinq composants à 60 donnent en général plus de performance par couronne que trois à 90 et deux à 20.</p>
+
+<h2>Ordre de priorité pour une nouvelle équipe</h2>
+<ol>
+<li><strong>Sortez tous les composants du plancher.</strong> Sous l’indice 30, les améliorations sont si bon marché qu’elles sont presque toujours rentables.</li>
+<li><strong>Châssis et moteur</strong> ensuite – le châssis parce qu’il aide partout, le moteur parce qu’il apporte le plus en course, là où se distribuent les points.</li>
+<li><strong>Aérodynamique et pneus</strong> selon les circuits de votre groupe. Si vous courez souvent sur des circuits sinueux, ils valent davantage.</li>
+<li><strong>Boîte de vitesses</strong> en dernier – elle contribue régulièrement, mais le moins.</li>
+</ol>
+<p>N’oubliez pas qu’il y a deux voitures. Une équipe avec une voiture de pointe et une voiture faible perd souvent face à une équipe avec deux voitures homogènes, car le classement additionne les points des deux voitures.</p>
+
+<h2>Timing : une amélioration prend un jour</h2>
+<p>L’argent est débité immédiatement, mais une amélioration prend un jour avant que le nouveau niveau soit effectif, et chaque composant ne peut avoir qu’une amélioration en cours à la fois. Deux conséquences pratiques :</p>
+<ul>
+<li>Lancez les améliorations au plus tard le mardi soir si vous voulez qu’elles comptent pour les qualifications du mercredi.</li>
+<li>Vous pouvez améliorer les cinq composants des deux voitures en parallèle. Dix améliorations par jour sont donc possibles – si le budget le permet.</li>
+</ul>
+
+<h2>Planifiez selon le règlement</h2>
+<p>Après chaque saison entre en vigueur un nouveau règlement qui <strong>divise par deux un composant pour toutes les équipes</strong>. L’ordre est fixe et rotatif : avant la saison 2, les Pneus sont divisés par deux, avant la saison 3 le Moteur, avant la saison 4 l’Aérodynamique, avant la saison 5 la Boîte de vitesses, avant la saison 6 le Châssis – puis le cycle recommence.</p>
+<p>C’est l’un des aspects les plus sous-estimés du jeu. Imaginez que vous améliorez le moteur de 80 à 85 en fin de saison 2 pour 212 000 kr. Au changement de saison, le moteur est divisé par deux – et de vos cinq points d’indice supplémentaires, il n’en reste que 2,5. Vous avez payé plein tarif pour la moitié de l’effet, et en plus sur la partie la plus chère de la courbe des coûts.</p>
+<p>Règles pratiques :</p>
+<div class="card"><ul>
+<li>Évitez les améliorations coûteuses du composant qui sera le prochain divisé par deux pendant les dernières semaines de la saison.</li>
+<li>Investissez plutôt dans les quatre autres composants pendant cette période.</li>
+<li>Après la division, le composant est bon marché à reconstruire – c’est le moment d’investir dedans.</li>
+</ul></div>
+<p>Comme la division touche toutes les équipes de la même façon, ce n’est pas une punition contre vous – c’est une occasion pour celui qui planifie mieux que la concurrence.</p>
+
+<h2>Les dégâts – et pourquoi un style agressif coûte cher</h2>
+<p>Après chaque course, 0 à 3 voitures sont endommagées au hasard. Un dégât fait baisser un composant de 10 à 70 % de sa valeur de façon permanente, et il n’existe aucune réparation – le composant est reconstruit avec des améliorations ordinaires.</p>
+<p>Un exemple chiffré : un moteur à 80 endommagé de 30 % tombe à 56. Le ramener à un peu plus de 80 coûte environ 760 000 kr. Les pilotes au style de pilotage agressif ont un risque nettement plus élevé d’endommager la voiture que ceux au style équilibré ou défensif – ce risque doit être pris en compte dans le choix des pilotes, surtout si la voiture coûte déjà cher à entretenir.</p>
+<p>Une petite consolation : comme les améliorations sont d’autant moins chères que l’indice est bas, la reconstruction coûte toujours moins que la construction initiale des mêmes paliers.</p>
+
+<h2>Résumé</h2>
+<div class="card"><ul>
+<li>Construisez large : relevez d’abord les composants les plus faibles.</li>
+<li>Châssis et moteur rapportent le plus dans presque toutes les situations.</li>
+<li>Gardez les deux voitures homogènes.</li>
+<li>Lancez les améliorations au plus tard la veille des qualifications.</li>
+<li>Économisez sur le composant qui sera divisé par deux au prochain changement de saison.</li>
+<li>Comptez avec les dégâts – et pensez au style de pilotage de vos pilotes.</li>
+</ul></div>
+<p>Vous voulez savoir comment le circuit influence la rentabilité des composants ? Lisez le <a href="guide-hemmabana.html">guide du circuit à domicile</a> et le <a href="guide-taktik.html">guide tactique</a>.</p>
+<div class="card las-mer"><h3>À lire ensuite</h3><ul><li><a href="guide-personal.html">Pilotes, mécaniciens et ingénieurs : construire votre effectif</a></li><li><a href="guide-ekonomi.html">Guide des finances : budget, sponsoring et primes</a></li><li><a href="guide-kontrakt.html">Contrats et marché des transferts : négocier, acheter et vendre</a></li></ul><p><a href="guider.html">Tous les guides →</a></p></div><div class="card cta"><h2 style="margin-top:0">Essayez avec votre propre écurie</h2><p>Undercut Racing Manager est gratuit et se joue directement dans le navigateur.</p><a class="knapp" href="../">Jouer gratuitement</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">À propos du jeu</a> &nbsp;·&nbsp; <a href="guider.html">Guides</a> &nbsp;·&nbsp; <a href="manual.html">Manuel</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Questions fréquentes</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Politique de confidentialité</a> &nbsp;·&nbsp; <a href="../">Vers le jeu</a>
+<div class="fot-sprak"><a href="../guide-bilutveckling.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-bilutveckling.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-bilutveckling.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-bilutveckling.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-bilutveckling.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-bilutveckling.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-bilutveckling.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-bilutveckling.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-bilutveckling.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

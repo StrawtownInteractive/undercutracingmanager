@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Guide des finances  – Undercut Racing Manager</title>
+<meta name="description" content="Comment fonctionnent les finances dans Undercut Racing Manager : revenus et coûts hebdomadaires, quel contrat de sponsoring choisir, primes par division et comment éviter un budget négatif.">
+<link rel="canonical" href="https://undercutmanager.com/fr/guide-ekonomi.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-ekonomi.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-ekonomi.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-ekonomi.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-ekonomi.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-ekonomi.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-ekonomi.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-ekonomi.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-ekonomi.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-ekonomi.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-ekonomi.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">À propos du jeu</a><a href="guider.html" aria-current="page">Guides</a><a href="manual.html">Manuel</a><a href="vanliga-fragor.html">Questions fréquentes</a><a href="integritetspolicy.html">Politique de confidentialité</a><select class="sprakval" aria-label="Langue" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-ekonomi.html">Svenska</option><option data-l="en" value="../en/guide-ekonomi.html">English</option><option data-l="de" value="../de/guide-ekonomi.html">Deutsch</option><option data-l="fr" value="../fr/guide-ekonomi.html" selected>Français</option><option data-l="es" value="../es/guide-ekonomi.html">Español</option><option data-l="pl" value="../pl/guide-ekonomi.html">Polski</option><option data-l="fi" value="../fi/guide-ekonomi.html">Suomi</option><option data-l="hu" value="../hu/guide-ekonomi.html">Magyar</option><option data-l="ja" value="../ja/guide-ekonomi.html">日本語</option></select><a class="knapp" href="../">Jouer gratuitement</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Guides</a> › Guide des finances </p>
+<h1>Guide des finances : budget, sponsoring et primes</h1>
+<p class="ingress">Toutes les équipes d’Undercut Racing Manager partent sur un pied d’égalité – pourtant, certains managers ont toujours de l’argent pour des améliorations et des recrues, tandis que d’autres jonglent sans cesse autour de zéro. La différence tient presque toujours à la gestion des coûts fixes et au choix du contrat de sponsoring.</p>
+
+<h2>Les flux d’argent de la semaine</h2>
+<p>Les finances sont mises à jour chaque dimanche à 20 h. Voici ce qui se passe alors pour toutes les équipes en même temps :</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Entrées</th><th>Sorties</th></tr>
+<tr><td>Revenus de sponsoring (aléatoires selon la division, ou fixes via un contrat de sponsoring)</td><td>Salaires des pilotes, mécaniciens, ingénieurs et du directeur d’équipe</td></tr>
+<tr><td>Ventes de produits dérivés (selon la popularité des pilotes)</td><td>Entretien de l’usine, 30 000 kr</td></tr>
+<tr><td></td><td>Intérêts, 5 % d’un éventuel déficit</td></tr>
+</table></div>
+<p>À cela s’ajoutent les entrées et sorties de la semaine : primes par point juste après chaque course, bonus contractuels des pilotes, améliorations, recrutements et ventes. Tout apparaît dans le relevé de compte et dans l’historique financier de l’onglet Finances.</p>
+
+<h2>Les coûts fixes décident de tout</h2>
+<p>Les revenus varient d’une semaine à l’autre. Les coûts, non. C’est pourquoi ce sont les coûts fixes qu’il faut maîtriser.</p>
+<p>Le plus gros coût fixe, c’est le personnel. Chaque mécanicien et chaque ingénieur coûte 100 000 kr de salaire hebdomadaire, soit un million de couronnes par saison et par personne. Comme le niveau du personnel s’additionne (voir le <a href="guide-personal.html">guide du personnel</a>), chaque membre affecté à une voiture la rend plus rapide – mais le salaire est le même, quel que soit son niveau. Une recrue forte apporte donc plus de niveau par couronne qu’une recrue faible.</p>
+<p>Faites une vérification simple chaque saison : pouvez-vous vous offrir une équipe complète sur les deux voitures ? Sinon, privilégiez la voiture qui vise la promotion. Le personnel en Réserve et le personnel supplémentaire ne comptent pas du tout en course ; s’ils ne sont pas prévus comme remplaçants, ils ne font que coûter de l’argent.</p>
+
+<h2>Quel contrat de sponsoring choisir ?</h2>
+<p>Sans contrat de sponsoring, les revenus de sponsoring sont tirés au sort chaque semaine en fonction de votre division. Sous Finances → Contrats de sponsoring, vous pouvez à la place signer un contrat fixe qui dure une saison entière. Vous recevez trois offres :</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Profil</th><th>Montant de base</th><th>Bonus</th><th>Adapté quand…</th></tr>
+<tr><td>Sûr</td><td>Élevé</td><td>Faibles</td><td>vous reconstruisez, avez une voiture faible ou voulez des finances prévisibles</td></tr>
+<tr><td>Équilibré</td><td>Moyen</td><td>Moyens</td><td>vous comptez vous battre de temps en temps pour les premières places</td></tr>
+<tr><td>Risqué</td><td>Faible</td><td>Élevés</td><td>vous êtes le grand favori de votre groupe et comptez sur de nombreux podiums et victoires</td></tr>
+</table></div>
+<p>Les bonus sont versés par podium et par victoire <strong>pour chaque voiture</strong>, plus un bonus en cas de titre. Une équipe avec deux voitures fortes peut donc tirer beaucoup d’un contrat risqué. Mais le contrat ne peut pas être résilié en cours de saison – si la voiture ne suit pas, vous êtes coincé avec un faible montant de base pendant dix semaines.</p>
+<p>Une bonne règle : ne choisissez le contrat risqué que si vous comptez réalistement monter sur le podium environ une course sur deux, ou plus souvent. Sinon, la sécurité vaut plus que le bonus théorique.</p>
+<p>N’oubliez pas le directeur d’équipe : sa compétence en sponsoring modifie le montant de base des trois offres jusqu’à ±15 %. Un nouveau directeur d’équipe commence à 10, mais progresse de +1 par semaine. Il peut donc être rentable d’attendre qu’il ait dépassé 50 avant de signer un long contrat fixe.</p>
+
+<h2>Les primes : pourquoi la promotion vaut si cher</h2>
+<p>Après chaque course, l’équipe reçoit une prime pour chaque point marqué par ses voitures. Le montant par point dépend de la division :</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Division</th><th>Kr par point</th><th>Exemple : victoire (25 pts)</th></tr>
+<tr><td>Undercut Masters League</td><td>15 000 kr</td><td>375 000 kr</td></tr>
+<tr><td>Division 2</td><td>11 000 kr</td><td>275 000 kr</td></tr>
+<tr><td>Division 3</td><td>6 000 kr</td><td>150 000 kr</td></tr>
+<tr><td>Division 4</td><td>3 000 kr</td><td>75 000 kr</td></tr>
+<tr><td>Division 5</td><td>2 000 kr</td><td>50 000 kr</td></tr>
+</table></div>
+<p>Les mêmes points valent donc sept fois et demie plus dans la division supérieure qu’en bas de la pyramide. En outre, une grosse cagnotte de fin de saison est distribuée selon le classement final : le vainqueur reçoit la moitié de la cagnotte du groupe – et la cagnotte par groupe double à chaque division supérieure. Pour en savoir plus, lisez le <a href="guide-seriepyramiden.html">guide de la pyramide des divisions</a>.</p>
+<p>La promotion n’est donc pas qu’une question de prestige. Elle change toute la situation financière de l’équipe. Investir massivement pendant une saison où vous pouvez monter est donc souvent plus judicieux que d’étaler l’investissement sur plusieurs saisons.</p>
+
+<h2>Les pilotes populaires rapportent de l’argent</h2>
+<p>Les revenus des produits dérivés dépendent de la popularité moyenne de vos deux pilotes titulaires – de jusqu’à 60 % de moins à jusqu’à 80 % de plus que la normale. La popularité augmente avec les victoires et les podiums et baisse après de mauvaises courses. Un pilote qui gagne souvent rapporte donc deux fois : via les primes et via les produits dérivés.</p>
+
+<h2>Budget négatif : bloqué, mais pas en faillite</h2>
+<p>Votre équipe ne peut jamais faire faillite. Mais en dessous de 0 kr, vous êtes fortement limité : pas d’améliorations, pas de recrutements, pas de nouveaux contrats, pas d’entraînement, pas d’appels aux recruteurs – et 5 % d’intérêts sur le déficit chaque semaine. À cause des intérêts, un gros déficit se creuse tout seul si les revenus ne suffisent pas.</p>
+<p>Si vous en arrivez là, il existe trois issues : vendre du personnel, attendre la prochaine mise à jour des finances ou contracter un prêt. Le mieux est évidemment de ne jamais en arriver là – gardez une réserve couvrant au moins une semaine de coûts fixes.</p>
+
+<h2>Résumé</h2>
+<div class="card"><ul>
+<li>Maîtrisez les coûts fixes, surtout les salaires du personnel.</li>
+<li>Choisissez le contrat de sponsoring selon votre confiance dans la forme de l’équipe – pas selon le plus gros chiffre.</li>
+<li>Investissez davantage les saisons où la promotion est réaliste.</li>
+<li>Soignez la popularité de vos pilotes – elle se voit dans la caisse.</li>
+<li>Gardez toujours une réserve au-dessus de zéro.</li>
+</ul></div>
+<p>Tous les montants et tableaux exacts figurent dans le <a href="manual.html">manuel</a>.</p>
+<div class="card las-mer"><h3>À lire ensuite</h3><ul><li><a href="guide-kontrakt.html">Contrats et marché des transferts : négocier, acheter et vendre</a></li><li><a href="guide-seriepyramiden.html">La pyramide des divisions : comment atteindre la Masters League</a></li><li><a href="guide-hemmabana.html">Le circuit à domicile : façonnez le circuit selon votre voiture</a></li></ul><p><a href="guider.html">Tous les guides →</a></p></div><div class="card cta"><h2 style="margin-top:0">Essayez avec votre propre écurie</h2><p>Undercut Racing Manager est gratuit et se joue directement dans le navigateur.</p><a class="knapp" href="../">Jouer gratuitement</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">À propos du jeu</a> &nbsp;·&nbsp; <a href="guider.html">Guides</a> &nbsp;·&nbsp; <a href="manual.html">Manuel</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Questions fréquentes</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Politique de confidentialité</a> &nbsp;·&nbsp; <a href="../">Vers le jeu</a>
+<div class="fot-sprak"><a href="../guide-ekonomi.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-ekonomi.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-ekonomi.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-ekonomi.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-ekonomi.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-ekonomi.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-ekonomi.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-ekonomi.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-ekonomi.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

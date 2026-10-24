@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Ohjeet – Undercut Racing Manager</title>
+<meta name="description" content="Undercut Racing Managerin täydelliset ohjeet: joukkue, autot, taktiikka, talous, sarjat, siirtomarkkinat ja paljon muuta.">
+<link rel="canonical" href="https://undercutmanager.com/fi/manual.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/manual.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/manual.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/manual.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/manual.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/manual.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/manual.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/manual.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/manual.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/manual.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/manual.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">Tietoa pelistä</a><a href="guider.html">Oppaat</a><a href="manual.html" aria-current="page">Ohjeet</a><a href="vanliga-fragor.html">Usein kysyttyä</a><a href="integritetspolicy.html">Tietosuojakäytäntö</a><select class="sprakval" aria-label="Kieli" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../manual.html">Svenska</option><option data-l="en" value="../en/manual.html">English</option><option data-l="de" value="../de/manual.html">Deutsch</option><option data-l="fr" value="../fr/manual.html">Français</option><option data-l="es" value="../es/manual.html">Español</option><option data-l="pl" value="../pl/manual.html">Polski</option><option data-l="fi" value="../fi/manual.html" selected>Suomi</option><option data-l="hu" value="../hu/manual.html">Magyar</option><option data-l="ja" value="../ja/manual.html">日本語</option></select><a class="knapp" href="../">Pelaa ilmaiseksi</a></nav>
+</div></header>
+<main>
+<h1>Ohjeet</h1>
+<p class="ingress">Täydellinen opas Undercut Racing Manageriin – samat ohjeet kuin pelin Ohjeet-välilehdellä.</p>
+
+            <img src="assets/manual-header.png" alt="Team-personal i diskussion vid depåtaket med publikläktare i bakgrunden" style="width:100%; max-height:280px; object-fit:cover; border-radius:10px; display:block; margin-bottom:14px;">
+            <div class="card" id="man-toc">
+                <h3>Sisällysluettelo</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Uusi Undercut Racing Managerissa? Aloita kohdasta <a href="#man-intro">Aloittaminen</a>. Napsauta alla olevaa otsikkoa hypätäksesi suoraan siihen osioon.</p>
+                <div class="man-toc-grid">
+                    <div>
+                        <p class="man-toc-heading">Aloittaminen</p>
+                        <ul>
+                            <li><a href="#man-intro">Näin peli ja navigointi toimivat</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Joukkue ja kilpailu</p>
+                        <ul>
+                            <li><a href="#man-trupp">Joukkueesi ja henkilöstösi</a></li>
+                            <li><a href="#man-lagsidor">Joukkuesivut ja profiilit</a></li>
+                            <li><a href="#man-tavling">Kaudet, kilpailut ja pisteet</a></li>
+                            <li><a href="#man-serier">Sarjat, markkinat ja viikko-ohjelma</a></li>
+                            <li><a href="#man-serier">Kotirata, rataennätykset ja siirtohistoria</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Kehitys</p>
+                        <ul>
+                            <li><a href="#man-egenskaper">Ominaisuudet ja harjoittelu</a></li>
+                            <li><a href="#man-skador-ekonomi">Vauriot, talous ja varikkopysähdykset</a></li>
+                            <li><a href="#man-sponsoravtal">Sponsorisopimukset</a></li>
+                            <li><a href="#man-prispengar">Palkintorahat</a></li>
+                            <li><a href="#man-valuta">Valuutta</a></li>
+                            <li><a href="#man-moral-ovrigt">Joukkuehenki, Team Principal ja kuvitukset</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="man-toc-heading">Sopimukset ja henkilöstö</p>
+                        <ul>
+                            <li><a href="#man-kontrakt">Sopimusjärjestelmä</a></li>
+                            <li><a href="#man-pension">Eläköityminen ja ikääntyminen</a></li>
+                            <li><a href="#man-mekaniker">Mekaanikot</a></li>
+                            <li><a href="#man-ingenjorer">Insinöörit</a></li>
+                            <li><a href="#man-principal">Tallipäällikkö</a></li>
+                            <li><a href="#man-chefer">Pääasennusmekaanikko ja pääinsinööri</a></li>
+                            <li><a href="#man-scouting">Tiivistely ja junioriohjelma</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Kilpailut ja sosiaalinen</p>
+                        <ul>
+                            <li><a href="#man-taktik">Taktiikkakatsaus</a></li>
+                            <li><a href="#man-popularitet">Suosio ja fanituotteet</a></li>
+                            <li><a href="#man-lagledare">Joukkueenjohtaja, esittely ja kansallisuus</a></li>
+                            <li><a href="#man-forum">Foorumi</a></li>
+                            <li><a href="#man-inkorg">Saapuneet</a></li>
+                            <li><a href="#man-historia">Tilastot, pokaalit ja legendat</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="man-intro">
+                <h3>Aloittaminen: näin peli ja navigointi toimivat</h3>
+                <p>Johdat omaa kilpa-autoilujoukkuettasi divisioonien läpi ja kilpailet muita ihmisiä vastaan – oikeita managereita ympäri maailmaa. Palkkaat kuljettajia, mekaanikoita ja insinöörejä, päivität autoa, asetat taktiikkasi ennen kilpailua – ja peli hoitaa loput automaattisesti joka viikko alla olevan aikataulun mukaan.</p>
+                <p><strong>Viikko-ohjelma (tapahtuu täysin automaattisesti, Ruotsin aikaa):</strong></p>
+                <ul style="margin:4px 0 12px; padding-left:18px;">
+                    <li><strong>Maanantai 20.00</strong> – harjoituskilpailu ilmoittautuneille kuljettajille</li>
+                    <li><strong>Keskiviikko 20.00</strong> – aika-ajo</li>
+                    <li><strong>Perjantai 20.00</strong> – kilpailu</li>
+                    <li><strong>Sunnuntai 20.00</strong> – talous päivittyy</li>
+                </ul>
+                <p><strong>Aikavyöhyke:</strong> Kaikki pelin ajat – kilpailut, aika-ajot, harjoitukset, talouspäivitys ja kykyjenetsijöiden puhelut – ovat <strong>Ruotsin aikaa</strong> (GMT+1, kesäaikaan GMT+2). Kohdassa <strong>Oma tili → Asetukset → Aikavyöhyke</strong> voit valita oman aikavyöhykkeesi. Tällöin oikean yläkulman kello sekä kaikki pelin päivämäärät ja kellonajat (esim. tulevat kilpailut ja saapuneet viestit) näytetään sinun ajassasi. Siirtomarkkinoiden lähtölaskennat ovat aina oikein aikavyöhykkeestä riippumatta. Itse tapahtumat tapahtuvat edelleen klo 20.00 Ruotsin aikaa.</p>
+                <p><strong>Näin liikut navigoinnissa:</strong></p>
+                <ul style="margin:4px 0 0; padding-left:18px;">
+                    <li><strong>Koti</strong> – työtilasi: mestaruussijoitus ja budjetti ylimpänä, lista asioista, jotka vaativat huomiotasi juuri nyt, sekä joukkueen tila, henkilöstö, seuraava kilpailu, Uutiset ja Tapahtumaloki.</li>
+                    <li><strong>Joukkuesivu</strong> – joukkue ja autot (oma joukkueesi ja kaikki muut), alavälilehdillä Yleiskatsaus, Kuljettajat, Mekaanikot, Insinööri, <strong>Autot</strong> (päivitä jokaisen auton omat komponentit, Auto 1 ja Auto 2 erikseen), Pokaalit ja (omalle joukkueellesi) <strong>Harjoittelu</strong>, <strong>Tiivistely</strong> ja <strong>Sopimukset</strong>.</li>
+                    <li><strong>Areena</strong> – kotiareenasi.</li>
+                    <li><strong>Talous</strong> – budjetti, tulot, kustannukset ja historia.</li>
+                    <li><strong>Sarja</strong> – taulukot, tulokset ja lohkosi foorumi.</li>
+                    <li><strong>Markkinat</strong> – siirtomarkkinat, osta ja myy henkilöstöä.</li>
+                    <li><strong>Kilpailu</strong> – tallisi seuraava (tai viimeisin) aika-ajo ja kilpailu sekä taktiikkapalaveri, jossa annat ohjeet molempiin, ja kilpailuraportit.</li>
+                    <li><strong>Tilastot</strong> – mestariluettelo, ennätykset, joukkuetilastot, saavutukset ja legendat.</li>
+                    <li><strong>Ohjeet</strong> – tämä sivu.</li>
+                    <li><strong>Foorumi</strong> – erillinen keskustelufoorumi oikeine ketjuineen, avoin kaikille kirjautuneille pelaajille kaikista talleista. Täysin erillinen Sarja-välilehden alareunan chat-lokista, katso <a href="#man-forum">Foorumi</a>.</li>
+                    <li><strong>Käyttäjätunnuksesi</strong> (ylhäällä oikealla) – <strong>Asetukset</strong> ja <strong>Tietoa Undercut Racing Managerista</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="card" id="man-trupp">
+                <h3>Joukkueesi ja henkilöstösi</h3>
+                <p><strong>Joukkuesäännöt:</strong> Jokaisella joukkueella on tarkalleen 2 aktiivista autoa ja omat kuljettajat kummallekin autolle ("Auto 1" ja "Auto 2"), sekä enintään 10 varakuljettajaa, jotka ovat yhteisiä koko joukkueelle. Voit palkata enintään 10 mekaanikkoa ja 10 insinööriä joukkuetta kohti (palkkaaminen maksaa 100 000 kr sekä 100 000 kr viikkopalkkaa per työntekijä). Jokainen mekaanikko ja insinööri osoitetaan jompaankumpaan joukkueen kahdesta autosta – ja valitset itse kumpaan, henkilön profiilisivun kautta.</p>
+                <p><strong>Henkilöstön erottaminen:</strong> Oman henkilöstösi profiilisivulta voit milloin tahansa erottaa henkilön – hän lähtee joukkueesta välittömästi ilman korvausta (Auton 1/Auton 2 kuljettajan tilalle tulee varakuljettaja, jos sellainen on olemassa). Jos henkilö on samalla asetettu myyntiin, huutokauppa peruuntuu.</p>
+                <p><strong>Nimet ja kansallisuus:</strong> Kaikki pelin kuljettajat, mekaanikot, insinöörit ja Team Principalit ovat miehiä, mutta voivat olla mistä tahansa pelin kansallisuudesta (Ruotsi, Italia, Saksa, Ranska, Espanja, Iso-Britannia, Alankomaat, Suomi, Brasilia, USA, Japani, Australia, Belgia, Itävalta, Monaco, Meksiko, Kanada, Tanska, Norja ja Sveitsi) – nimi vastaa henkilön kansallisuutta.</p>
+            </div>
+
+            <div class="card" id="man-lagsidor">
+                <h3>Joukkuesivut ja profiilit</h3>
+                <p>Kaikki joukkueet (oma joukkueesi ja kaikki vastustajat) näytetään samanlaisella Joukkuesivulla, alavälilehdillä Yleiskatsaus, Kuljettajat, Mekaanikot ja Insinööri. Napsauta minkä tahansa kuljettajan, mekaanikon tai insinöörin nimeä – omassa joukkueessasi, vastustajalla tai siirtomarkkinoilla – avataksesi henkilön profiilisivun Joukkuesivun alasivuna. Siellä näkyy ikä, kansallisuus, kaikki kyvyt, ajotyyli (kuljettajille), mihin autoon henkilö kuuluu ja rekrytointipäivä. Jos henkilö on omasi, voit sieltä asettaa hänet myyntiin, erottaa hänet tai (mekaanikoille/insinööreille) siirtää hänet Auton 1 ja Auton 2 välillä.</p>
+                <p>Omalla tallisivullasi → <strong>Yleiskatsaus</strong>-alivälilehdellä on kaksi lisäpikavalintaa: <strong>Kilpailijat</strong>-painike näyttää listan talleista, joilta olet viimeisten 10 kauden aikana vienyt kuljettajia tai henkilöstöä irtisanomispykälän avulla, lyhyellä perustelulla jokaisella rivillä, ja <strong>Uran historia</strong> -linkki näyttää tallisi sijoituksen kausi kaudelta koko urasi ajalta.</p>
+            </div>
+
+            <div class="card" id="man-tavling">
+                <h3>Kaudet, kilpailut ja pisteet</h3>
+                <p><strong>Kaudet ja ikääntyminen:</strong> Kausi koostuu 10 viikosta (10 kilpailua). Jokaisen päättyneen kauden jälkeen kaikki pelissä täyttävät vuosia – tämä koskee kuljettajia, mekaanikoita ja insinöörejä kaikissa joukkueissa, ei vain omassasi – ja pisteet kaikissa taulukoissa nollataan ennen uutta kautta. Katso osio <a href="#man-pension">Eläköityminen ja ikääntyminen</a> saadaksesi tietoa eläkeiästä ja siitä, miten kyky muuttuu ajan myötä.</p>
+                <p><strong>Kuljettajat:</strong> Kuljettajilla on satunnaisesti osoitettu ajotyyli (Aggressiivinen, Defensiivinen tai Tasapainoinen) ja he aloittavat 20-vuotiaina. Ajotyyli vaikuttaa paitsi kilpailuun myös vaurioitumisriskiin – katso <a href="#man-skador-ekonomi">Vauriot, talous ja varikkopysähdykset</a>.</p>
+                <p><strong>Auton kilpailukyky:</strong> Jokainen auto saa OMAN kilpailutuloksensa. Auton suorituskyky lasketaan kuljettajan toteutuneesta kyvystä sekä autoon sijoitettujen mekaanikkojen ja insinöörien <strong>yhteenlasketusta</strong> kyvystä. Jokainen kuljettajan kykypiste painaa 10 kertaa enemmän kuin henkilöstön piste, mutta henkilöstön kyvyt lasketaan yhteen – kaksi mekaanikkoa kyvyillä 80 ja 10 antaa 90, viisi mekaanikkoa kyvyllä 80 antaa 400 – joten täysi mekaanikko- ja insinöörimiehistö voi yhdessä painaa suunnilleen yhtä paljon kuin kuljettaja. Lisäksi tulevat auton omien osien vaikutus (katso Autot-välilehti), varikkopysähdys ja joukkueen moraali.</p>
+                <p><strong>Kuljettajan suoritus:</strong> Yksikään kuljettaja ei aja huippukunnossa joka kerta. Ennen jokaista aika-ajoa ja jokaista kilpailua kullekin kuljettajalle arvotaan suoritustaso 70-100% hänen kyvystään.</p>
+                <p><strong>Komponenttien panos kilpailussa:</strong> Auton viisi komponenttia (Renkaat, Moottori, Aerodynamiikka, Vaihteisto, Alusta) vaikuttavat kaikki eri tavoin aika-ajoon ja kilpailuun, ja vaikutus skaalautuu myös radan ominaisuuksien mukaan. Moottori antaa eniten kilpailussa (lisää pitkillä radoilla), aerodynamiikka antaa eniten aika-ajossa (lisää mutkaisilla radoilla), renkaat ratkaisevat, kuinka hyvin auto pitää vauhtia koko kilpailun ajan (tärkeämpää mitä enemmän mutkia), kun taas vaihteisto ja alusta antavat tasaisen panoksen sekä aika-ajossa että kilpailussa. Katso Autot-välilehti komponentti kerrallaan -selitystä varten – siellä päivität Autoa 1 ja Autoa 2 täysin erikseen.</p>
+                <p><strong>Pisteet autoa kohti:</strong> Jokaisessa kilpailussa kaikki autot (kaksi per joukkue) kilpailevat yksilöllisesti lähtöpaikasta ja sijoituksesta. 10 parasta autoa kilpailussa saa pisteitä järjestelmällä 25-18-15-12-10-8-6-4-2-1. Joukkueen kokonaispisteet ovat molempien autojen tuoma summa, ja sarjataulukko näyttää, kuinka paljon KUMPIKIN auto (Auto 1 / Auto 2) on tuonut kauden aikana.</p>
+                <p><strong>Kausien väliset kilpailusäännöt:</strong> Jokaisen päättyneen kauden jälkeen astuu voimaan uusi sääntö: yksi auton viidestä komponentista (Renkaat, Moottori, Aerodynamiikka, Vaihteisto, Alusta – tässä järjestyksessä) puolitetaan KAIKILTA pelin joukkueilta, myös omaltasi. Tämä toistuu rullaavassa 5 kauden syklissä: Kausi 2 rankaisee Renkaita, Kausi 3 Moottoria, Kausi 4 Aerodynamiikkaa, Kausi 5 Vaihteistoa, Kausi 6 Alustaa, Kausi 7 taas Renkaita, ja niin edelleen. Sääntöä sovelletaan TARKALLEEN kerran jokaista kausinumeroa kohti eikä se koskaan koske jälkikäteen jo pelattuja kausia – ensimmäistä kautta (Kausi 1) ei koskaan rangaista, koska sääntö edellyttää, että kausi on todella päättynyt, ennen kuin se voidaan aktivoida. Sinulle ilmoitetaan Uutisissa ja Saapuneissa aina, kun uusi sääntö astuu voimaan, ja viimeksi sovellettu sääntö näkyy aina Kilpailu-välilehdellä.</p>
+            </div>
+
+            <div class="card" id="man-serier">
+                <h3>Sarjat, markkinat ja viikko-ohjelma</h3>
+                <p><strong>Siirtomarkkinat:</strong> "Markkinat"-välilehdellä listataan kaikki käynnissä olevat huutokaupat. Voit asettaa oman kuljettajasi, mekaanikkosi tai insinöörisi myyntiin henkilön profiilisivulta – huutokauppa kestää silloin tarkalleen 7 päivää. Kaikki sarjojen joukkueet voivat tehdä tarjouksia toistensa henkilöstöstä, sekä Markkinat-välilehdeltä että suoraan henkilön profiilista. Et voi koskaan tarjota omasta ilmoituksestasi. Kun määräaika umpeutuu, henkilö siirtyy korkeimman tarjouksen tehneelle: jos myyt voitolla, rahat lisätään budjettiisi, ja jos ostat jonkun, kustannus vähennetään budjetistasi (kunhan sinulla on varaa ja tilaa joukkueessa huutokaupan ratkettua).</p>
+                <p><strong>Sarjat ja sarjapyramidi:</strong> Pelissä on viisi tasoa: <strong>Undercut Masters League</strong> (1 ryhmä, 10 joukkuetta), <strong>Divisioona 2</strong> (2 ryhmää, kussakin 10 joukkuetta), <strong>Divisioona 3</strong> (4 ryhmää, kussakin 10 joukkuetta), <strong>Divisioona 4</strong> (8 ryhmää, kussakin 10 joukkuetta) ja <strong>Divisioona 5</strong> (16 ryhmää, kussakin 10 joukkuetta) – yhteensä 310 joukkuetta. Kilpailet muita ihmisiä vastaan – jokaista joukkuetta johtaa oikea manageri. Voit napsauttaa mitä tahansa taulukon joukkuetta tarkastellaksesi sen joukkuesivua auto kerrallaan.</p>
+                <p><strong>Nousu ja putoaminen:</strong> Kun 10 kilpailun kausi on ohi, jokaisesta lohkosta (paitsi Undercut Masters Leaguesta) 1. sija nousee yllä olevaan divisioonaan. Lisäksi divisioonan parhaat kakkoset nousevat – yhtä monta kuin yllä olevassa divisioonassa on lohkoja (1 Divisioonasta 2, 2 Divisioonasta 3, 4 Divisioonasta 4 ja 8 Divisioonasta 5). Kakkoset järjestetään pisteiden mukaan; tasapisteissä ratkaisevat parhaan auton pisteet. Jokaisesta lohkosta (paitsi Divisioonasta 5, joka on alin taso) 3 heikointa joukkuetta putoaa alla olevaan divisioonaan, ensisijaisesti kahteen kyseiseen lohkoon liitettyyn lohkoon. Näin joukkueiden määrä lohkoa kohti pysyy aina 10:ssä. Kakkosten tämänhetkisen tilanteen näet kohdasta Sarja → Sarjataulukko → Parhaat kakkoset.</p>
+                <p><strong>Radat ja kilpailut:</strong> Jokainen kausi koostuu 10 kilpailusta, joissa saman lohkon joukkueet vuorottelevat isäntinä kotiradoillaan. Radan pituus ja mutkien määrä vaikuttavat siihen, kuinka paljon kukin komponentti merkitsee juuri siinä kilpailussa.</p>
+                <p><strong>Viikko-ohjelma:</strong> Jokainen viikko noudattaa samaa sykliä: <strong>maanantaina klo 20.00</strong> ajetaan harjoituskilpailu, <strong>keskiviikkona klo 20.00</strong> ajetaan aika-ajo, <strong>perjantaina klo 20.00</strong> ajetaan itse kilpailu, ja <strong>sunnuntaina klo 20.00</strong> talous päivitetään. Kaikki tapahtuu automaattisesti pelin toimesta kellonajan koittaessa – mitään näistä ei tarvitse käynnistää itse painikkeella. Kaikki ajat ovat Ruotsin aikaa (GMT+1, kesäaikaan GMT+2).</p>
+                <p><strong>Kotirata ja rataennätykset:</strong> Areena-välilehdellä voit ilmaiseksi muuttaa oman kotiratasi mutkien määrää (5-20) ja pituutta (2,0-8,0 km) sekä nimetä sen uudelleen (100 000 kr) – muutos koskee vain tulevia, vielä aika-ajamattomia kilpailuja. Useammat mutkat suosivat aerodynamiikkaa/renkaita/ajettavuutta, pidempi rata suosii moottoria mutta vaatii enemmän polttoainetta. Jokaisella areenalla on oma rataennätyksensä (nopein sillä radalla ajettu kilpailu, riippumatta siitä, mikä joukkue sen ajoi), näkyvissä kun katsot isäntäjoukkuetta.</p>
+                <p><strong>Siirtohistoria:</strong> Markkinat-välilehdeltä löydät lokin kaikista sarjoissa toteutuneista osto- ja myyntitapahtumista (kuka myytiin, mistä ja mihin joukkueeseen sekä lopullinen hinta) – tämän listan ratkaisevat edellä kuvatut huutokaupat.</p>
+            </div>
+
+            <div class="card" id="man-egenskaper">
+                <h3>Ominaisuudet ja harjoittelu</h3>
+                <p><strong>Ominaisuudet (0-100):</strong> Jokaisella kuljettajalla, mekaanikolla ja insinöörillä on viisi yksilöllistä ominaisuutta asteikolla 0-100, ja henkilön "Kyky" on näiden viiden keskiarvo. Kuljettajilla on Kokemus, Nopeus, Rengashallinta, Puolustus ja Tiimikyky. Mekaanikoilla on Kokemus, Moottoriosaaminen, Nopeus, Paineensieto ja Tiimikyky. Insinööreillä on Kokemus, Taktiikka, Nopeus, Paineensieto ja Tiimikyky. Kaikki ominaisuudet näkyvät henkilön profiilissa Joukkuesivulla (napsauta nimeä).</p>
+                <p><strong>Kokemus:</strong> Kokemusta ei voi harjoittaa. Se kasvaa sen sijaan automaattisesti 5 pistettä joka kerta, kun henkilö täyttää vuosia (kerran jokaista päättynyttä kautta kohti kaikille pelissä). Kuljettaja aloittaa aina Kokemuksella 10, 20-vuotiaana, ja sama perusperiaate koskee mekaanikoita ja insinöörejä.</p>
+                <p><strong>Harjoitteluvälilehti ja harjoituskilpailu:</strong> Joukkuesivu → alavälilehti ”Harjoittelu” -kohdassa ilmoitat kuljettajia, mekaanikoita ja insinöörejä viikon harjoituskilpailuun ja valitset, mihin kykyyn kukin keskittyy. Kuljettajat voivat harjoitella Nopeutta, Renkaiden hallintaa, Puolustusta tai Tiimityötä, mekaanikot Moottoriosaamista, Nopeutta, Mediasuhteita tai Tiimityötä ja insinöörit Taktiikkaa, Nopeutta, Mediasuhteita tai Tiimityötä – Kokemusta ei voi harjoitella. Viikossa voi osallistua enintään 3 kuljettajaa, 3 mekaanikkoa ja 3 insinööriä, ja harjoittelu on maksutonta. Harjoituskilpailu ajetaan automaattisesti joka maanantai klo 20.00. Kuinka paljon kyky paranee (1–5 pistettä), riippuu henkilön suorituksesta kilpailussa. Parannus tulee voimaan heti harjoituskilpailun jälkeen – niin kuljettajilla, mekaanikoilla kuin insinööreillä. Lyhyt selostus näkyy samalla alavälilehdellä alempana. Jos et anna uutta harjoitusmääräystä, joukkue harjoittelee samoilla henkilöillä ja kyvyillä kuin edellisellä viikolla.</p>
+            </div>
+
+            <div class="card" id="man-skador-ekonomi">
+                <h3>Vauriot, talous ja varikkopysähdykset</h3>
+                <p><strong>Vauriot:</strong> Jokaisen ajetun kilpailun jälkeen 0-3 autoa kilpailevien joukkueiden joukossa vaurioituu satunnaisesti (joskus siis ei yhtään). Vaurio kohdistuu yhteen auton viidestä komponentista (Renkaat, Moottori, Aerodynamiikka, Vaihteisto tai Alusta) ja alentaa sitä pysyvästi 10-70% sen nykyisestä arvosta. Vaurioita ei voi korjata – komponentti jää uudelle, matalammalle tasolle ja se rakennetaan uudelleen tavallisilla päivityksillä (katso alla), jotka ovat sitä halvempia, mitä matalampi indeksi on. Jos komponentin päivitys on käynnissä vaurion sattuessa, päivitys antaa +5 uudesta tasosta. <strong>Ajotyylillä on väliä:</strong> Aggressiivisella ajotyylillä ajava kuljettaja ajaa enemmän rajoilla ja hänellä on huomattavasti suurempi riski auton vaurioitumiseen kuin Tasapainoisella tai Defensiivisellä tyylillä ajavilla.</p>
+                <p><strong>Päivityskustannus – halpa alussa, kallis huipulla:</strong> Jokainen päivitys Autot-välilehdellä nostaa komponentin indeksiä 5:llä (maks. 100:aan asti), ja hinta lasketaan indeksistä <em>ennen</em> päivitystä kaavalla <code>20 000 kr + indeksi² × 30</code>. Käytännössä tämä tarkoittaa, että kustannus kasvaa indeksin neliönä: lähes koskemattoman komponentin (indeksi 0) päivittäminen maksaa vain 20 000 kr, indeksillä 50 se maksaa 95 000 kr, ja juuri ennen kuin komponentti saavuttaa maksimiarvon 100 (indeksi 95), se maksaa peräti 290 750 kr. Käytännössä kannattaa siis lähes aina kehittää joukkueen heikoimpia komponentteja ennen jo vahvan komponentin nostamista entistä korkeammalle. Päivityspainike Autot-välilehdellä näyttää aina tarkalleen, mitä seuraava askel maksaa, ja saat vahvistuskysymyksen ennen rahan veloittamista. <strong>Jokainen päivitys kestää 1 päivän:</strong> kustannus veloitetaan heti vahvistaessasi, mutta komponentti näyttää "Päivittyy..." ja säilyttää vanhan indeksinsä, kunnes päivä on kulunut, jolloin uusi taso astuu voimaan automaattisesti (sinun ei tarvitse tehdä mitään muuta). Komponentilla voi olla vain yksi päivitys jonossa kerrallaan – sinun on odotettava se valmiiksi ennen kuin voit aloittaa saman komponentin seuraavan päivityksen.</p>
+                <p><strong>Talouspäivitys (joka sunnuntai klo 20.00):</strong> Joka sunnuntai joukkueesi – kuten kaikki muutkin sarjojen joukkueet – saa sponsorituloja ja tuloja fanituotteiden myynnistä, ja maksaa henkilöstön palkat ja kiinteän tehdasylläpidon (30 000 kr). Niin kauan kuin sinulla ei ole voimassa olevaa sponsorisopimusta (katso <a href="#man-sponsoravtal">Sponsorisopimukset</a>), sponsoritulo arvotaan sen divisioonan mukaan, jossa kilpailet – korkeampi divisioona antaa korkeamman keskiarvon. Fanituotetulo arvotaan aina samalla tavalla, mutta sitä skaalataan lisäksi kahden kuljettajasi keskimääräisellä suosiolla (katso <a href="#man-popularitet">Suosio ja fanituotteet</a>). Kumpikaan tulo ei voi koskaan ylittää 1 000 000 kr viikossa. <strong>Negatiivinen budjetti maksaa korkoa:</strong> niin kauan kuin joukkueesi budjetti on alle 0 kr, negatiivisesta saldosta vähennetään lisäksi joka viikko 5 % korkona (näkyy viikon taloudessa nimellä ”Lainan korko”) – vielä yksi syy pitää budjettia silmällä, katso seuraava kappale. Kaikki viikon luvut tallennetaan taloushistoriaasi, joka löytyy välilehdeltä Talous → Taloushistoria: siellä näet sekä viikko kerrallaan -listan menneistä viikoista että yhteenvedon kunkin kauden kaikista viikoista.</p>
+                <p><strong>Negatiivinen budjetti – rajoitukset (ei konkurssia):</strong> Joukkueesi ei voi koskaan mennä konkurssiin tai joutua aloittamaan alusta, oli budjetti kuinka negatiivinen tahansa. Niin kauan kuin budjetti on alle 0 kr, joukkue on sen sijaan tiukasti rajoitettu: et voi ostaa tai palkata kuljettajia/henkilöstöä (et markkinoilta, vapailta agenteilta etkä irtisanomispykälien kautta), tarjota tai allekirjoittaa uusia sopimuksia (mukaan lukien sopimusten jatkot ja junioreiden palkkaaminen), päivittää autoa, soittaa kykyjenetsijöille, harjoittaa henkilöstöä tai muuten ottaa uusia kuluja (esim. areenan laajennus tai areenan uudelleennimeäminen). Palkat, ylläpito ja lainan korko vähennetään kuitenkin normaalisti joka viikko. Myy henkilöstöä, ota laina tai odota seuraavaa talouspäivitystä päästäksesi takaisin yli 0 kr:n ja saadaksesi täyden toimintavapauden takaisin.</p>
+                <p><strong>Varikkopysähdys ja rengasstrategia:</strong> Jokainen auto tekee kilpailun aikana yhden varikkopysähdyksen satunnaisella rengasstrategialla (esimerkiksi 1-pysähdys hyökkäävä, 2-pysähdys tasapainoinen tai 1-pysähdys puolustava), ja tämä näkyy omana sarakkeenaan kilpailutuloksessa. Se, kuinka hyvin varikkopysähdys onnistuu, antaa lisäyksen auton kilpailupisteisiin, ja insinöörisi ratkaisevat, kuinka suuri tämä lisäys on – mitä korkeampi yhteenlaskettu kyky auton insinööreillä on, sitä parempi varikkopysähdys ja sitä suurempi bonus. Auton rengaskomponentti vaikuttaa myös strategiaan: paremmat renkaat tekevät hyökkäävämmästä strategiasta kannattavamman. Varikkopysähdys vaikuttaa myös yhdessä Taktiikkakatsauksessa tekemäsi rengasvalinnan kanssa (katso <a href="#man-taktik">Taktiikkakatsaus</a>) – mitä paremmat insinöörit, sitä enemmän varikkopysähdys kompensoi kovan rengasvalinnan haittaa kilpailussa.</p>
+            </div>
+
+            <div class="card" id="man-sponsoravtal">
+                <h3>Sponsorisopimukset</h3>
+                <p><strong>Talous → Sponsorisopimukset</strong> -välilehdellä voit allekirjoittaa kiinteän sponsorisopimuksen sen sijaan, että luottaisit satunnaiseen sponsorituloon (katso <a href="#man-skador-ekonomi">Vauriot, talous & varikkopysähdykset</a>). Kun sinulla ei ole voimassa olevaa sopimusta, näytetään kolme erilaista tarjousta: <strong>Turvallinen</strong> (korkea viikoittainen perussumma, pienet bonukset), <strong>Tasapainoinen</strong> (tasainen yhdistelmä) ja <strong>Riski</strong> (matala perussumma, suuret bonukset, jos talli menestyy). Jokaisessa tarjouksessa on kiinteä viikoittainen perussumma, joka korvaa satunnaisen sponsoritulon, sekä bonusehdot, jotka maksetaan jokaisesta palkintosijasta, jokaisesta voitosta ja mestaruudesta. Tallipäällikkösi sponsorointitaito vaikuttaa kaikkien kolmen tarjouksen perussummaan.</p>
+                <p>Allekirjoitettu sponsorisopimus on aina voimassa koko kauden (10 kilpailua) eikä sitä <strong>voi irtisanoa etuajassa</strong> – uuden voit allekirjoittaa vasta, kun se on päättynyt. Voimassa voi olla vain yksi sponsorisopimus kerrallaan. Sopimuksen ollessa voimassa se näkyy kohdassa Talous → Sponsorisopimukset yhdessä jäljellä olevien viikkojen kanssa.</p>
+            </div>
+
+            <div class="card" id="man-prispengar">
+                <h3>Palkintorahat</h3>
+                <p><strong>Yksittäinen kilpailu:</strong> Joukkue saa <strong>palkintorahaa jokaisesta pisteestä</strong>, jonka sen autot ajavat kussakin kilpailussa: 15 000 kr/piste Undercut Masters Leaguessa, 11 000 kr divisioonassa 2, 6 000 kr divisioonassa 3, 3 000 kr divisioonassa 4 ja 2 000 kr divisioonassa 5. Jos sinulla on sponsorisopimus, lisäksi tulevat <strong>sponsoribonukset</strong> (palkintosija- ja voittobonus, autoa kohti). Kuljettajien <strong>sopimusbonukset</strong> (palkintosija-, voitto- ja pistebonus) maksetaan sen sijaan kuljettajalle, ja ne ovat joukkueelle <strong>kulu</strong>. Kaikki kirjataan heti maaliintulon jälkeen ja näkyy tiliotteella.</p>
+                <p><strong>Sarjataulukko – palkintorahojen puu:</strong> Kauden lopussa jokainen joukkue saa palkintorahaa loppusijoituksensa mukaan. Jokaisessa sarjassa on 10 joukkuetta. Divisioonassa 1 on 1 sarja, divisioonassa 2 on 2 sarjaa, divisioonassa 3 on 4 sarjaa ja niin edelleen – sarjojen määrä <strong>kaksinkertaistuu</strong> jokaisessa divisioonassa divisioonaan 10 asti (512 sarjaa). Jokaisella divisioonalla on aina sama kokonaispalkintopotti: <strong>20 000 000 kr</strong>. Divisioonassa 1 koko potti on sen ainoassa sarjassa. Jokaisessa alemmassa divisioonassa <strong>potti sarjaa kohti puolittuu</strong> – mutta koska sarjojen määrä samalla kaksinkertaistuu, divisioonan kokonaissumma pysyy aina samana (puolet potista × kaksi kertaa enemmän sarjoja). Kunkin sarjan sisällä potti maksetaan sijoille 1–10: <strong>50 %, 20 %, 10 %, 7 %, 5 %, 3 %, 2 %, 1,5 %, 1 % ja 0,5 %</strong> (yhteensä 100 %). Esimerkki: divisioonan 1 voittaja saa 50 % 20 000 000 kr:sta = <strong>10 000 000 kr</strong>. Divisioonan 3 sarjassa on 20 000 000 ÷ 4 = 5 000 000 kr, joten sen voittaja saa 2 500 000 kr.</p>
+                <div><p><strong>Taulukko 1 – Palkintopotti divisioonittain ja sarjoittain</strong></p><div class="tabell-scroll"><table><thead><tr><th>Divisioona</th><th>Sarjat</th><th>Potti sarjaa kohti</th><th>Voittaja (50 %)</th><th>10. sija (0,5 %)</th><th>Divisioona yhteensä</th></tr></thead><tbody><tr><td>Divisioona 1 (Undercut Masters League)</td><td>1</td><td>20 000 000 kr</td><td>10 000 000 kr</td><td>100 000 kr</td><td>1 × 20 000 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Divisioona 2</td><td>2</td><td>10 000 000 kr</td><td>5 000 000 kr</td><td>50 000 kr</td><td>2 × 10 000 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Divisioona 3</td><td>4</td><td>5 000 000 kr</td><td>2 500 000 kr</td><td>25 000 kr</td><td>4 × 5 000 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Divisioona 4</td><td>8</td><td>2 500 000 kr</td><td>1 250 000 kr</td><td>13 000 kr</td><td>8 × 2 500 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Divisioona 5</td><td>16</td><td>1 250 000 kr</td><td>625 000 kr</td><td>6 000 kr</td><td>16 × 1 250 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Divisioona 6</td><td>32</td><td>625 000 kr</td><td>313 000 kr</td><td>3 000 kr</td><td>32 × 625 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>Divisioona 7</td><td>64</td><td>312 500 kr</td><td>156 000 kr</td><td>2 000 kr</td><td>64 × 312 500 = <strong>20 000 000 kr</strong></td></tr><tr><td>Divisioona 8</td><td>128</td><td>156 250 kr</td><td>78 000 kr</td><td>1 000 kr</td><td>128 × 156 250 = <strong>20 000 000 kr</strong></td></tr><tr><td>Divisioona 9</td><td>256</td><td>78 125 kr</td><td>39 000 kr</td><td>1 000 kr</td><td>256 × 78 125 = <strong>20 000 000 kr</strong></td></tr><tr><td>Divisioona 10</td><td>512</td><td>39 062,5 kr</td><td>20 000 kr</td><td>1 000 kr</td><td>512 × 39 062,5 = <strong>20 000 000 kr</strong></td></tr></tbody></table></div><p><strong>Taulukko 2 – Maksu sijoittain (kr, pyöristetty lähimpään 1 000 kruunuun)</strong></p><div class="tabell-scroll"><table><thead><tr><th>Divisioona</th><th>1.</th><th>2.</th><th>3.</th><th>4.</th><th>5.</th><th>6.</th><th>7.</th><th>8.</th><th>9.</th><th>10.</th></tr><tr><th></th><th>50 %</th><th>20 %</th><th>10 %</th><th>7 %</th><th>5 %</th><th>3 %</th><th>2 %</th><th>1,5 %</th><th>1 %</th><th>0,5 %</th></tr></thead><tbody><tr><td>Div 1</td><td>10 000 000</td><td>4 000 000</td><td>2 000 000</td><td>1 400 000</td><td>1 000 000</td><td>600 000</td><td>400 000</td><td>300 000</td><td>200 000</td><td>100 000</td></tr><tr><td>Div 2</td><td>5 000 000</td><td>2 000 000</td><td>1 000 000</td><td>700 000</td><td>500 000</td><td>300 000</td><td>200 000</td><td>150 000</td><td>100 000</td><td>50 000</td></tr><tr><td>Div 3</td><td>2 500 000</td><td>1 000 000</td><td>500 000</td><td>350 000</td><td>250 000</td><td>150 000</td><td>100 000</td><td>75 000</td><td>50 000</td><td>25 000</td></tr><tr><td>Div 4</td><td>1 250 000</td><td>500 000</td><td>250 000</td><td>175 000</td><td>125 000</td><td>75 000</td><td>50 000</td><td>38 000</td><td>25 000</td><td>13 000</td></tr><tr><td>Div 5</td><td>625 000</td><td>250 000</td><td>125 000</td><td>88 000</td><td>63 000</td><td>38 000</td><td>25 000</td><td>19 000</td><td>13 000</td><td>6 000</td></tr><tr><td>Div 6</td><td>313 000</td><td>125 000</td><td>63 000</td><td>44 000</td><td>31 000</td><td>19 000</td><td>13 000</td><td>9 000</td><td>6 000</td><td>3 000</td></tr><tr><td>Div 7</td><td>156 000</td><td>63 000</td><td>31 000</td><td>22 000</td><td>16 000</td><td>9 000</td><td>6 000</td><td>5 000</td><td>3 000</td><td>2 000</td></tr><tr><td>Div 8</td><td>78 000</td><td>31 000</td><td>16 000</td><td>11 000</td><td>8 000</td><td>5 000</td><td>3 000</td><td>2 000</td><td>2 000</td><td>1 000</td></tr><tr><td>Div 9</td><td>39 000</td><td>16 000</td><td>8 000</td><td>5 000</td><td>4 000</td><td>2 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr><tr><td>Div 10</td><td>20 000</td><td>8 000</td><td>4 000</td><td>3 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr></tbody></table></div><p style="font-size:12px; color:var(--text-muted);">Kaikki palkintorahat pyöristetään lähimpään 1 000 kruunuun, eikä mikään sija saa alle 1 000 kr. Siksi divisioonan summa voi poiketa hieman tasan 20 000 000 kr:sta.</p></div><p><strong>Tabell 2 – Utbetalning per placering (kr, avrundat till närmaste 1 000 kr)</strong></p><div class="tabell-scroll"><table><thead><tr><th>Division</th><th>1:a</th><th>2:a</th><th>3:e</th><th>4:e</th><th>5:e</th><th>6:e</th><th>7:e</th><th>8:e</th><th>9:e</th><th>10:e</th></tr><tr><th></th><th>50 %</th><th>20 %</th><th>10 %</th><th>7 %</th><th>5 %</th><th>3 %</th><th>2 %</th><th>1,5 %</th><th>1 %</th><th>0,5 %</th></tr></thead><tbody><tr><td>Div 1</td><td>10 000 000</td><td>4 000 000</td><td>2 000 000</td><td>1 400 000</td><td>1 000 000</td><td>600 000</td><td>400 000</td><td>300 000</td><td>200 000</td><td>100 000</td></tr><tr><td>Div 2</td><td>5 000 000</td><td>2 000 000</td><td>1 000 000</td><td>700 000</td><td>500 000</td><td>300 000</td><td>200 000</td><td>150 000</td><td>100 000</td><td>50 000</td></tr><tr><td>Div 3</td><td>2 500 000</td><td>1 000 000</td><td>500 000</td><td>350 000</td><td>250 000</td><td>150 000</td><td>100 000</td><td>75 000</td><td>50 000</td><td>25 000</td></tr><tr><td>Div 4</td><td>1 250 000</td><td>500 000</td><td>250 000</td><td>175 000</td><td>125 000</td><td>75 000</td><td>50 000</td><td>38 000</td><td>25 000</td><td>13 000</td></tr><tr><td>Div 5</td><td>625 000</td><td>250 000</td><td>125 000</td><td>88 000</td><td>63 000</td><td>38 000</td><td>25 000</td><td>19 000</td><td>13 000</td><td>6 000</td></tr><tr><td>Div 6</td><td>313 000</td><td>125 000</td><td>63 000</td><td>44 000</td><td>31 000</td><td>19 000</td><td>13 000</td><td>9 000</td><td>6 000</td><td>3 000</td></tr><tr><td>Div 7</td><td>156 000</td><td>63 000</td><td>31 000</td><td>22 000</td><td>16 000</td><td>9 000</td><td>6 000</td><td>5 000</td><td>3 000</td><td>2 000</td></tr><tr><td>Div 8</td><td>78 000</td><td>31 000</td><td>16 000</td><td>11 000</td><td>8 000</td><td>5 000</td><td>3 000</td><td>2 000</td><td>2 000</td><td>1 000</td></tr><tr><td>Div 9</td><td>39 000</td><td>16 000</td><td>8 000</td><td>5 000</td><td>4 000</td><td>2 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr><tr><td>Div 10</td><td>20 000</td><td>8 000</td><td>4 000</td><td>3 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr></tbody></table></div><p style="font-size:12px; color:var(--text-muted);">Alla prispengar avrundas till närmaste 1 000 kr, och ingen placering får mindre än 1 000 kr. Därför kan summan i en division skilja sig något från exakt 20 000 000 kr.</p></div>
+                <p>Kauden palkintorahat maksetaan tilillesi heti kaudenvaihdossa ja näkyvät kohdassa <strong>Palkintorahat</strong> välilehdellä Talous → Talous, viikoittain ja tiliotteessa. Kuljettajasopimusten ja sponsorisopimusten mestaruusbonukset maksetaan tämän lisäksi.</p>
+            </div>
+
+            <div class="card" id="man-valuta">
+                <h3>Valuutta</h3>
+                <p>Kaikki pelin rahasummat tallennetaan ja lasketaan sisäisesti aina Ruotsin kruunuina (SEK) – tämä ei vaikuta peliin tasapainoon. <strong>Oma tili → Asetukset</strong> -välilehdellä voit kuitenkin valita, missä valuutassa summat <em>näytetään</em>: SEK, USD, EUR tai GBP. Vaihtokurssi on kiinteä: <strong>10 SEK = 1 USD = 1 EUR = 1 GBP</strong>. Vaihto tulee voimaan heti ja riippuu vain omasta valinnastasi – se on siis puhtaasti kosmeettinen eikä muuta sitä, kuinka paljon jokin todella maksaa pelin taloudessa.</p>
+            </div>
+
+            <div class="card" id="man-moral-ovrigt">
+                <h3>Joukkuehenki, Team Principal ja kuvitukset</h3>
+                <p><strong>Joukkuehenki:</strong> Jokaisella joukkueella on joukkuehenki asteikolla 0-100, joka näkyy Joukkuesivun ylälaidassa omalla mittarillaan. Henki muuttuu jokaisen kilpailun jälkeen: voitot ja podiumsijat nostavat sitä, huonot tulokset laskevat sitä, ja lisäksi se vetäytyy hitaasti kohti neutraalia keskitasoa ajan myötä. Joukkuehenki antaa pienen bonuksen tai pienen vähennyksen autojen pisteisiin jokaisessa kilpailussa – yli 50:n henki antaa pienen nousun, alle 50:n henki pienen vähennyksen – joten sillä on merkitystä, mutta se ei koskaan yksin ratkaise kilpailua.</p>
+                <p><strong>Team Principal:</strong> Jokainen joukkue, sekä omasi että kaikki vastustajajoukkueet, saa Team Principalin jo joukkueen luonnin yhteydessä. Hän näkyy Joukkuesivun ylälaidassa yhdessä kansallisuutensa ja oman kuvituksensa kanssa, mutta ei vaikuta itse kilpailuun.</p>
+                <p><strong>Kuvitukset:</strong> Kaikki pelin henkilöt – kuljettajat, mekaanikot, insinöörit ja Team Principalit – näytetään omalla värillisellä kuvituksellaan (nimikirjaimet värillisessä ympyrässä, uniikki jokaiselle nimelle) nimen kohdalla, sekä listoissa että profiilisivulla.</p>
+                <p><strong>Kilpailukatsaus:</strong> Koti-välilehdellä ja Sarja-välilehdellä näet, kuinka monta kilpailua on ajettu kuluvalla kaudella (10:stä yhteensä), sekä urallasi ajettujen kilpailujen kokonaismäärän kaudesta riippumatta.</p>
+            </div>
+
+            <div class="card" id="man-kontrakt">
+                <h3>Sopimusjärjestelmä – näin se toimii (yksinkertaisesti selitettynä)</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Kaikilla kuljettajilla, mekaanikoilla, insinööreillä ja Team Principalillasi on sopimus. Löydät kootun listan kaikista sopimuksistasi kohdasta <strong>Joukkuesivu → Sopimukset</strong>, ja kunkin henkilön sopimusta hallitset hänen omalta profiilisivultaan (napsauta nimeä missä tahansa pelissä, esim. Joukkuesivulla) – siellä ovat painikkeet <strong>Neuvottele sopimus</strong> ja <strong>Irtisano sopimus</strong>.</p>
+                <p><strong>1. Sopimuksen neuvotteleminen:</strong> Avaa henkilön profiili ja napsauta "Neuvottele sopimus". Näet henkilön arvosanan, iän, nykyiset ehdot, motivaation ja suhteen joukkueeseen, sekä mitä henkilö vähintään vaatii ja mieluiten haluaa (palkka, sopimuksen pituus, mahdollinen ykköskuljettajastatus, ostolauseke). Asetat itse tarjouksesi – viikkopalkan, vuosien määrän, allekirjoitusbonuksen, podium- ja voittobonuksen, mestaruusbonuksen ja (kuljettajille) ykköskuljettajastatuksen – ja näet heti "Hyväksymistodennäköisyyden" prosentteina, listalla mikä nostaa tai laskee mahdollisuutta (esim. liian alhainen palkka, liian lyhyt sopimus, huono joukkue, muiden joukkueiden kiinnostus).</p>
+                <p><strong>2. Tarjouksen lähettäminen:</strong> Henkilö hyväksyy, hylkää tai tekee vastatarjouksen (esim. "vaatii 5,8 milj. kr ja ykköskuljettajastatuksen"). Voit tällöin nostaa tarjousta ja lähettää uudelleen, hyväksyä vastatarjouksen tai peruuttaa – mutta muutaman peräkkäisen yrityksen jälkeen henkilö menettää kiinnostuksensa ja neuvottelu keskeytyy tällä kertaa.</p>
+                <p><strong>3. Sopimus vaikuttaa talouteen automaattisesti:</strong> Peruspalkka veloitetaan automaattisesti joka viikko (sunnuntain talouspäivitys, aivan kuten mekaanikko- ja insinööripalkat jo tekivät). Bonukset maksetaan ja kirjataan omina tapahtuminaan heti kun ne ansaitaan: podiumbonus jokaisesta podiumsijasta, voittobonus jokaisesta voitosta, pistebonus jokaisesta auton tuomasta pisteestä ja mestaruusbonus, jos henkilön auto voittaa sarjansa kauden lopussa.</p>
+                <p><strong>4. Sopimusaika laskee alaspäin:</strong> Jokainen päättynyt kausi vähentää "Vuosia jäljellä" -lukua 1:llä kaikissa sopimuksissasi. Jos jollakulla on enää yksi vuosi jäljellä, sopimus näytetään "Päättymässä"-tilassa ja saat muistutuksen henkilön profiiliin kolmella vaihtoehdolla: <strong>Neuvottele jatko</strong>, <strong>Säilytä nykyinen sopimus</strong> (odota ja katso) tai <strong>Anna sopimuksen päättyä</strong> (henkilöstä tulee vapaa pelaaja ja hän lähtee joukkueesta kauden lopussa). Jos kuljettajasopimus päättyy ilman jatkoa, paikan täyttää automaattisesti varakuljettaja – jos varakuljettajaa ei ole, tilalle rekrytoidaan sen sijaan uusi aloittelija, joten auto ei koskaan jää pysyvästi ilman kuljettajaa. Mekaanikoilla ja insinööreillä paikka jää tyhjäksi (aivan kuten kun erotat heidät manuaalisesti), ja Team Principal -sopimus uusiutuu aina automaattisesti, koska rooli ei voi jäädä täyttämättä.</p>
+                <p><strong>5. Ykköskuljettaja:</strong> Jos asetat ykköskuljettajastatuksen kuljettajasopimukseen, henkilö odottaa saavansa etusijan strategiavalinnoissa ja päivityksissä. Aktiivinen ykköskuljettajasopimus antaa autolle pienen ylimääräisen pistepanoksen kilpailussa, mutta jos joukkueen toinen auto silti suoriutuu paremmin kilpailu toisensa jälkeen, kuljettajan suhde joukkueeseen heikkenee – merkki siitä, että ykköskuljettaja tuntee itsensä petetyksi.</p>
+                <p><strong>6. Muut joukkueet ja ostolauseke:</strong> Jos kuljettajalla on lyhyt aika sopimusta jäljellä, toinen sarjojen joukkue voi osoittaa kiinnostusta ja tehdä oman palkkatarjouksensa – tämä näkyy ilmoituksena ja tekijänä neuvottelussa. Jos kuljettajalla on lisäksi ostolauseke, toinen manageri voi milloin tahansa maksaa koko lausekesumman ottaakseen sopimuksen heti haltuunsa; saat silloin kirjeen Saapuneisiin (vinkillä, että korkeampi ostolauseke seuraavalla kerralla pienentää tätä riskiä), ja rahat siirtyvät tilillesi automaattisesti. Henkilön ostolauseketta ei koskaan voida laukaista hänen ENSIMMÄISENÄ VUOTENAAN seurassa, riippumatta siitä, kuinka korkea se on.</p>
+                <p><strong>7. Henkilöstö (mekaanikot, insinöörit, Team Principal):</strong> Samaa sopimusjärjestelmää käytetään henkilöstöllesi, joskin vähemmillä ehdoilla (palkka, sopimuksen pituus, allekirjoitusbonus, suoritusbonus ja ostolauseke – ei podium-/voitto-/mestaruusbonusta tai ykköskuljettajastatusta). Team Principal -sopimusta hallitset suoraan kohdassa Joukkuesivu → Sopimukset.</p>
+                <p><strong>8. Ilmoitukset:</strong> Kaikki sopimuksiin liittyvä – lähestyvä sopimuksen päättyminen, palkkavaatimukset, muiden joukkueiden kiinnostus, päättyneet sopimukset, maksetut bonukset, aktivoidut ostolausekkeet sekä onnistuneet ja epäonnistuneet neuvottelut – ilmestyy viesteinä Tapahtumalokiin, jonka löydät <strong>Koti</strong>-välilehdeltä.</p>
+                <p><strong>9. Suhde talliin:</strong> Jokaisessa sopimuksessa on suhde talliin asteikolla 0–100, joka kertoo, kuinka tyytyväinen henkilö on talliisi. Uusi henkilö aloittaa arvosta 50–79. Suhde vaikuttaa todennäköisyyteen, että henkilö hyväksyy tarjouksesi sopimusneuvotteluissa: 50 on neutraali, 100 antaa +10 prosenttiyksikköä ja 0 antaa −10 prosenttiyksikköä. Neuvottelunäkymässä suhde on myös osa Motivaatio-arvoa (suhteen ja tallin moraalin keskiarvo), joka on vain tiedoksi. Suhde nousee +8 aina, kun sovitte uudesta tai jatketusta sopimuksesta. Vakituisilla kuljettajillasi se muuttuu myös jokaisen kauden lopussa: +4, jos kuljettaja saavutti pistetavoitteensa, −6, jos hän sai alle puolet tavoitteesta. Ykköskuljettajan asemassa oleva kuljettaja saa +1 jokaisen kilpailun jälkeen, jossa hän on tallikaverinsa edellä, ja −3, jos tallikaveri on edellä.</p>
+            </div>
+
+            <div class="card" id="man-pension">
+                <h3>Eläköityminen ja ikääntyminen</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Koskee kaikkia pelin joukkueita.</p>
+                <p><strong>Kuljettajat eläköityvät 40-vuotiaina:</strong> Heti kun kuljettaja täyttää 40 vuotta (kaudenvaihdossa), hän lähtee joukkueesta. Aivan kuten päättyneen sopimuksen yhteydessä, varakuljettaja nousee paikalle, jos sellainen on olemassa – muuten uusi aloittelija rekrytoidaan heti, joten auto ei koskaan jää pysyvästi ilman kuljettajaa. Pidä siis silmällä varapenkkiäsi ja Junioriohjelmaasi (katso <a href="#man-scouting">Tiivistely ja junioriohjelma</a>), kun kuljettajasi lähestyvät 40:tä ikävuotta.</p>
+                <p><strong>Mekaanikot ja insinöörit voivat olla enintään 60-vuotiaita:</strong> 60-vuotiaana henkilö jää eläkkeelle ja lähtee joukkueesta. Omassa joukkueessasi paikka jää tyhjäksi, kunnes palkkaat jonkun uuden.</p>
+                <p><strong>Kykyjen heikkeneminen 30 vuoden jälkeen (vain kuljettajat):</strong> Kuljettajan muut kyvyt – Nopeus, Rengashallinta, Puolustus ja Tiimikyky – heikkenevät asteittain joka kausi, jonka hän on yli 30-vuotias, ja heikkeneminen kasvaa sitä suuremmaksi mitä vanhemmaksi kuljettaja tulee. Tämä ei vaikuta Kokemukseen – se päinvastoin jatkaa kasvamistaan 5 pisteellä vuodessa aivan kuten kaikilla muillakin. Vanhemmalla kuljettajalla on siis enemmän Kokemusta mutta heikommat fyysiset/tekniset kyvyt, mikä tekee joukkueen vireestä jotain, jota kannattaa suunnitella pitkällä aikavälillä.</p>
+            </div>
+
+            <div class="card" id="man-taktik">
+                <h3>Taktiikkakatsaus: ohjeet ennen aika-ajoa ja kilpailua</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;"><strong>Kilpailu</strong>-välilehdellä on kaksi erillistä taktiikkapalaveria – <strong>Taktiikkapalaveri – Ennen aika-ajoa</strong> ja <strong>Taktiikkapalaveri – Ennen kilpailua</strong> – joissa annat tallipäällikkönä ohjeita joukkueellesi. Kummassakin palaverissa on pääinsinöörin oma ehdotus, ja ne tallennetaan erikseen. Valinnat koskevat molempia autojasi ja pysyvät voimassa, kunnes muutat niitä – aseta taktiikkasi hyvissä ajoin ennen kuin aika-ajo (keskiviikkona klo 20.00) ja kilpailu (perjantaina klo 20.00) ajetaan automaattisesti.</p>
+                <p><strong>Lähtörenkaat (Soft / Medium / Hard):</strong> Soft on nopein, mutta kuluu nopeimmin, Hard kestää parhaiten mutta on hitain, ja Medium sijoittuu tasapainoisesti niiden väliin. Kova kuluminen rankaisee eniten mutkaisilla radoilla. <strong>Varikkopysähdys voi parantaa kuluneita renkaita:</strong> mitä korkeampi yhteenlaskettu kyky autosi insinööreillä on, sitä enemmän varikkopysähdys kompensoi kovan rengasvalinnan haittaa kilpailun aikana.</p>
+                <p><strong>Alaspaino (0-100):</strong> Korkeampi alaspaino antaa paremman pidon mutkissa (auttaa aika-ajossa, erityisesti mutkaisilla radoilla, sekä kilpailussa mutkaisilla radoilla), mutta maksaa huippunopeutta suorilla (haittaa kilpailua radoilla, joissa on pitkiä suoria). Matalampi alaspaino on päinvastoin hyväksi huippunopeudelle, mutta antaa heikomman mutkaotteen. Oikea asetus riippuu siis radan luonteesta.</p>
+                <p><strong>Ajettavuus (0-100):</strong> Ajettavuusasetus tekee autosta helpommin hallittavan ja antaa suoraan positiivisen panoksen sekä aika-ajoon että kilpailuun, mitä korkeammalle se asetetaan.</p>
+                <p><strong>Tiimimääräykset (vain kilpailu):</strong> Voit valita priorisoida Autoa 1 tai Autoa 2 – priorisoitu auto saa ylimääräisen pistelisän kilpailussa, kun taas toinen auto antaa hieman periksi, tai valita "Ei prioriteettia" vapaalle kilpailulle kahden kuljettajasi välillä.</p>
+                <p><strong>Polttoaine:</strong> Kilpailu-välilehti näyttää suositellun polttoainemäärän (litroina) kilpailun radalle, perustuen radan pituuteen ja mutkien määrään. Jos ajat vähemmällä polttoaineella kuin suositellaan, auto ei säästä aikaa vaan päinvastoin menettää suorituskykyä ("säästöajo"), ja DNF-riski (moottorivika) kasvaa sitä enemmän, mitä suurempi vaje on. Jos ajat enemmällä polttoaineella kuin suositellaan, suorituskyky kärsii ylimääräisestä painosta. Parhaan tuloksen saat siis pysymällä mahdollisimman lähellä suositeltua määrää – tämä näytetään autokohtaisesti Kilpailu-välilehdellä sekä ennen että jälkeen kilpailun.</p>
+            </div>
+
+            <div class="card" id="man-popularitet">
+                <h3>Suosio ja fanituotteet</h3>
+                <p>Jokaisella kuljettajalla on <strong>Suosio</strong> (0-100), joka näkyy kuljettajan profiilisivulla. Suosio nousee voiton tai podiumsijan jälkeen, kasvaa hieman top-10-sijoituksella, laskee huonon kilpailun myötä ja vetäytyy muuten ajan myötä hitaasti kohti neutraalia keskitasoa – aivan kuten joukkuehenki.</p>
+                <p>Kahden kilpailevan kuljettajasi (Auto 1 ja Auto 2) keskimääräinen suosio skaalaa viikoittaista <strong>fanituotemyyntiäsi</strong> talouspäivityksessä: korkea keskisuosio antaa jopa +80% lisää, matala keskisuosio voi laskea tuloa jopa -60%. Suositut kuljettajat ovat siis rahanarvoisia sen lisäksi, mitä he tienaavat radalla.</p>
+            </div>
+
+            <div class="card" id="man-mekaniker">
+                <h3>Mekaanikot</h3>
+                <p><strong>Mitä mekaanikot tekevät?</strong> Mekaanikot huoltavat autoa ja vaikuttavat sen suorituskykyyn sekä aika-ajossa että kilpailussa. Ratkaisevaa on juuri kyseiseen autoon sijoitettujen mekaanikkojen <strong>yhteenlaskettu kyky</strong> – auto 1 ja auto 2 lasketaan täysin erikseen. Kaksi mekaanikkoa kyvyillä 80 ja 10 antaa siis 90, ja viisi mekaanikkoa kyvyllä 80 antaa 400. Kyky on mekaanikon viiden ominaisuuden keskiarvo, joten kaikki ominaisuudet painavat yhtä paljon. Jokainen kuljettajan kykypiste painaa kymmenen kertaa enemmän kuin henkilöstön piste, mutta koska henkilöstön kyvyt lasketaan yhteen, täysi ja vahva mekaanikkomiehistö tekee suuren eron jokaisessa kilpailussa.</p>
+                <p><strong>Miehitys:</strong> Sinulla voi olla enintään 10 vakituista mekaanikkoa, enintään 5 autoa kohti. Jokainen mekaanikko sijoitetaan henkilön profiilisivulla Autoon 1, Autoon 2 tai Reserviin. Vain autoon sijoitetut mekaanikot lasketaan – Reservissä olevat ja <strong>ylimääräiset</strong> mekaanikot (jotka palkataan vakituisen kymmenikön lisäksi varalle) maksavat palkkaa, mutta eivät vaikuta kilpailuun. Auto ilman mekaanikkoja lasketaan ikään kuin tiimin taito olisi 10. Jos nimeät <strong>Pääasennusmekaanikon</strong>, hän saa +20 % taitoonsa sille autolle, johon hänet on sijoitettu (katso <a href="#man-chefer">Pääasennusmekaanikko ja pääinsinööri</a>).</p>
+                <p><strong>Kehitys:</strong> Kokemus kasvaa itsestään mekaanikon vanhetessa. Muita ominaisuuksia parannat ilmoittamalla enintään 3 mekaanikkoa maanantain harjoituskilpailuun kohdassa Joukkuesivu → Harjoittelu (+1–+5 suorituksen mukaan, voimaan heti harjoituskilpailun jälkeen). Palkkaaminen maksaa 100 000 kr, minkä jälkeen maksetaan viikkopalkkaa (katso <a href="#man-trupp">Joukkueesi ja henkilöstösi</a>).</p>
+            </div>
+
+            <div class="card" id="man-ingenjorer">
+                <h3>Insinöörit</h3>
+                <p><strong>Mitä insinöörit tekevät?</strong> Insinöörit vastaavat auton säädöistä ja kilpailustrategiasta. Kuten mekaanikoilla, ratkaisevaa on kyseisen auton insinöörien <strong>yhteenlaskettu kyky</strong>, ja se vaikuttaa auton kilpailukykyyn aika-ajossa ja kilpailussa samalla tavalla kuin mekaanikkojen kyky.</p>
+                <p><strong>Lisämerkitys kilpailussa:</strong> Itse kilpailussa insinööreillä on lisäksi kolme omaa vaikutusta, jotka kaikki perustuvat auton insinöörien yhteenlaskettuun kykyyn. He <strong>vähentävät renkaiden kulumista</strong> – jo yhteensä 100:lla kuluminen maksaa 65 % vähemmän (se on suurin vaikutus), mikä näkyy eniten mutkaisilla radoilla. He antavat <strong>varikkobonuksen</strong>, joka kasvaa sitä enemmän, mitä suurempi yhteenlaskettu kyky on. Ja he tekevät <strong>varikkopysähdyksistä nopeampia</strong> – noin 3,6 sekunnista heikolla insinöörimiehistöllä aina pelin nopeimpiin, noin 1,6 sekunnin pysähdyksiin. Aika-ajoon vaikuttavat siis mekaanikot ja insinöörit yhtä paljon, mutta kilpailussa insinöörit ovat tärkein henkilöstöryhmä.</p>
+                <p><strong>Miehitys ja kehitys:</strong> Samat säännöt kuin mekaanikoilla: enintään 10 vakituista insinööriä, enintään 5 autoa kohti. Reservissä olevia ja ylimääräisiä insinöörejä ei lasketa, ja auto ilman insinöörejä lasketaan taidoksi 10. <strong>Pääinsinööri</strong> saa +20 % taitoonsa omalle autolleen. Enintään 3 insinööriä voi ilmoittaa maanantain harjoituskilpailuun kohdassa Joukkuesivu → Harjoittelu.</p>
+            </div>
+
+            <div class="card" id="man-principal">
+                <h3>Tallipäällikkö</h3>
+                <p><strong>Mitä tallipäällikkö tekee?</strong> Tallipäällikkö (Team Principal) johtaa joukkuetta radan ulkopuolella eikä koskaan vaikuta kilpailuun suoraan, mutta hänen kolme taitoaan vaikuttavat joukkueeseen epäsuorasti. <strong>Neuvottelu</strong> nostaa tai laskee todennäköisyyttä, että kuljettaja tai muu henkilöstö hyväksyy sopimustarjouksesi – enintään noin 10 prosenttiyksikköä verrattuna keskimääräiseen tallipäällikköön, jonka arvo on 50. <strong>Sponsorointi</strong> skaalaa tarjottujen sponsorisopimusten perussummaa −15 %:sta +15 %:iin. <strong>Moraali</strong> määrää, mitä tasoa kohti joukkueen moraali pitkällä aikavälillä hakeutuu, 40:n ja 80:n välillä – ja joukkueen moraali puolestaan antaa jokaisessa kilpailussa pienen bonuksen tai vähennyksen ja vaikuttaa siihen, kuinka mielellään henkilöstö allekirjoittaa. Uusi tallipäällikkö aloittaa arvolla 10 kaikessa, joten vaikutukset ovat alussa kielteisiä ja muuttuvat myönteisiksi vasta, kun taidot ylittävät 50.</p>
+                <p><strong>Taidot:</strong> Tallipäälliköllä on kolme taitoa (0–100): <strong>Neuvottelu</strong> vaikuttaa onnistumismahdollisuuksiisi sopimusneuvotteluissa, <strong>Sponsorointi</strong> sponsoritarjousten suuruuteen ja <strong>Moraali</strong> tallin pitkän aikavälin moraaliin.</p>
+                <p><strong>Alku ja kehitys:</strong> Pelin alussa saat tallipäällikön, jolla on <strong>10</strong> jokaisessa taidossa ja satunnainen ikä <strong>40–45</strong> vuotta. Sen jälkeen tallipäällikkösi kehittyy <strong>+1 jokaisessa taidossa viikossa</strong> (sunnuntain talouspäivityksessä), enintään 100:aan.</p>
+                <p><strong>Eläköityminen:</strong> Tallipäällikkö vanhenee vuodella jokaisessa kaudenvaihdossa ja jää eläkkeelle <strong>60</strong>-vuotiaana.</p>
+                <p><strong>Rekrytointi:</strong> Jos tallillasi ei ole tallipäällikköä (eläköitymisen jälkeen tai jos olet vapauttanut/myynyt hänet), voit rekrytoida uuden <strong>ilmaiseksi</strong> painikkeella kohdassa Tallisivu → Yleiskatsaus (Henkilöstö-kortti). Uudella on 10 jokaisessa taidossa ja ikää 40–45 vuotta, aivan kuten alussa. Rekrytointimaksua ei ole, mutta tallipäällikkö saa sopimuksensa mukaisen normaalin viikkopalkan.</p>
+            </div>
+
+            <div class="card" id="man-chefer">
+                <h3>Pääasennusmekaanikko ja pääinsinööri</h3>
+                <p>Joukkuesivu → Mekaanikot tai Insinööri -kohdassa voit nimetä yhden työntekijöistäsi <strong>Pääasennusmekaanikoksi</strong> tai <strong>Pääinsinööriksi</strong> taulukon "Nimeä päälliköksi"-painikkeella (ja erottaa saman painikkeen kautta uudelleen). Päällikkö merkitään merkillä, missä tahansa hän pelissä näkyykin.</p>
+                <p>Päällikkö saa <strong>20%:n tehostuksen kykyynsä</strong> (enintään 100:aan asti) juuri sen auton laskennassa, johon hänet on osoitettu – sijoita siis päällikkösi siihen autoon, jota haluat priorisoida. Sinulla voi olla vain yksi pääasennusmekaanikko ja yksi pääinsinööri kerrallaan.</p>
+            </div>
+
+            <div class="card" id="man-lagledare">
+                <h3>Joukkuesivu: joukkueenjohtaja, esittely ja kansallisuus</h3>
+                <p>Jokaisen Joukkuesivun yläreunassa näkyy nykyään, mistä <strong>kansallisuudesta</strong> joukkue on kotoisin, sekä kuka <strong>johtaa joukkuetta</strong> otsikon "Käyttäjä" alla. Omalla Joukkuesivullasi tämä on napsautettavissa ja vie tilisi sivulle, ja voit antaa oman nimesi (painike "Anna joukkueenjohtajan nimi") ja kirjoittaa lyhyen <strong>esittelyn</strong> joukkueesta (painike "Muokkaa esittelyä"), joka näkyy kaikille, jotka vierailevat Joukkuesivullasi.</p>
+            </div>
+
+            <div class="card" id="man-forum">
+                <h3>Foorumi</h3>
+                <p><strong>Päävalikon Foorumi-välilehti:</strong> erillinen keskustelufoorumi, jossa on oikeita ketjuja, haku ja lajitteluvaihtoehdot (Viimeisin aktiivisuus, Uusimmat, Eniten vastauksia). Napsauta <strong>Uusi ketju</strong> aloittaaksesi oman keskustelun otsikolla ja aloitusviestillä, tai avaa olemassa oleva ketju lukeaksesi ja vastataksesi – jokaisessa ketjussa näkyy, kuka sen aloitti ja kuinka monta vastausta siinä on. Ketjut ovat yhteisiä kaikille kirjautuneille pelaajille joukkueesta tai divisioonasta riippumatta.</p>
+                <p><strong>Sarja-välilehden chat-loki:</strong> erillinen, pienempi "Foorumi" <strong>Sarja</strong>-välilehden alareunassa – jatkuva chat-loki, joka liittyy yllä olevasta sarjavalitsimesta tarkastelemaasi sarjaan/lohkoon. Siellä voit kirjoittaa lyhyitä viestejä oman lohkosi muille talleille. Älä sekoita sitä yllä olevaan Foorumi-välilehteen: chat-loki on lohkokohtainen, Foorumi-välilehti on yhteinen kaikille pelaajille.</p>
+            </div>
+
+            <div class="card" id="man-inkorg">
+                <h3>Saapuneet</h3>
+                <p>Kohdasta <strong>Käyttäjänimesi → Saapuneet</strong> löydät <strong>Pelin ylläpidon</strong> järjestelmäviestit (esim. voitetut siirrot, mestaruudet, nousut/putoamiset ja aktivoidut irtisanomispykälät) sekä muiden Undercut Racing Manager -pelaajien yksityisviestit. Välilehden merkki kertoo lukemattomien viestien määrän, ja viesti merkitään luetuksi klikkaamalla sitä.</p>
+                <p>Klikkaa <strong>Uusi</strong> lähettääksesi itse yksityisviestin toiselle pelaajalle – annat vastaanottajan käyttäjänimen, aiheen ja viestin. Et voi lähettää viestiä itsellesi, ja saamasi vastaukset näkyvät samassa saapuneet-kansiossa järjestelmäviestien rinnalla.</p>
+            </div>
+
+            <div class="card" id="man-scouting">
+                <h3>Tiivistely ja junioriohjelma</h3>
+                <p>Kohdassa <strong>Joukkuesivu → Tiivistely</strong> (näkyy vain omalla Joukkuesivullasi) voit soittaa tiiviestillesi <strong>500 000 kr</strong> per puhelu. Jokainen puhelu antaa uuden lupauksen (15-19-vuotias) <strong>Junioriohjelmaasi</strong>, jolla on oma tiivistelty Kyky, ajotyyli ja kansallisuus. Lupaukset ikääntyvät aivan kuten kaikki muutkin pelissä jokaisessa kaudenvaihdossa.</p>
+                <p>Heti kun lupaus täyttää <strong>20 vuotta</strong>, hänestä tulee "Valmis palkattavaksi" ja voit kirjoittaa hänet joukkueesi varapenkille "Palkkaa"-painikkeella – tämä edellyttää, että varapenkkisi ei ole täynnä (enintään 10 varakuljettajaa – myy tai erota olemassa oleva varakuljettaja ensin, jos se on täynnä).</p>
+                <p>Junioriohjelmassasi voi olla enintään <strong>5 lupausta</strong> kerrallaan. Voit soittaa tiiviestillesi vain <strong>kerran viikossa</strong> – rajoitus nollautuu joka sunnuntai kello 20.00 viikon talouspäivityksen yhteydessä. Lupauksen ikä ei jakaudu tasaisesti: 15 vuotta (8 % todennäköisyys), 16 vuotta (23 %), 17 vuotta (23 %), 18 vuotta (23 %) ja 19 vuotta (23 %).</p>
+                <p>Välilehdellä <strong>Valmentava harjoittelu</strong> valitset jokaiselle lupaukselle, joka ei ole vielä täyttänyt 20 vuotta, yhden kyvyn (Nopeus, Rengashallinta, Puolustus tai Joukkuepeli), johon hänen tulee valmistautua. Valittu kyky kasvaa <strong>+1 pisteellä joka viikko</strong> (sunnuntain talouspäivityksessä) aina siihen kauteen asti, jolloin lupaus täyttää 20 vuotta.</p>
+                <p>Kun lupaus täyttää 20 vuotta ja hänet kirjoitetaan joukkueen varapenkille, hän saa automaattisesti <strong>4 vuoden sopimuksen</strong>. Tämä ensimmäinen sopimus on myös suojattu: mikään joukkue – ei sinä itse etkä mikään muu joukkue – voi aktivoida sen vapautuslauseketta. Suoja kestää siihen asti, kunnes sopimus seuraavan kerran neuvotellaan uudelleen tai uusitaan, minkä jälkeen normaalit säännöt pätevät jälleen.</p>
+            </div>
+
+            <div class="card" id="man-historia">
+                <h3>Tilastot, pokaalit ja legendat</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Toisin kuin taulukkopisteet, jotka nollataan joka kausi (katso <a href="#man-tavling">Kaudet, kilpailut ja pisteet</a>), tämä rakentuu pysyvästi – kausi kaudelta, koko uraasi.</p>
+                <p><strong>Mestarilista (Tilastot-välilehti):</strong> Kun kausi päättyy, jokaisen divisioonan voittaja kruunataan mestariksi juuri ennen pisteiden nollausta. Välilehdellä <strong>Tilastot → Mestarilista</strong> näet, kuka voitti Undercut Masters Leaguen kunakin kautena, voit selata mestareita divisioona kerrallaan, nähdä kaikkien aikojen eniten mestaruuksia -listan sekä kuljettajien täydelliset <strong>uratilastot</strong> (kilpailut, voitot, palkintosijat, pisteet, paalupaikat, nopeimmat kierrokset ja keskeytykset) sijoitettuna kaikkien sarjoissa tällä hetkellä ajavien kuljettajien sekä kaikkien Legendojen joukkoon.</p>
+                <p><strong>Ennätykset (Tilastot-välilehti):</strong> Listat eniten voitoista, eniten podiumsijoista, eniten pole-paikoista, eniten nopeimmista kierroksista ja eniten DNF:istä kautta aikojen, sekä joukkueen varikkopysähdysennätys (nopein koskaan ajettu varikkopysähdys, minkä joukkueen ja milloin).</p>
+                <p><strong>Joukkuetilastot (Tilastot-välilehti):</strong> Jokaisen joukkueen kokonaishistoria – kilpailut, voitot, podiumsijat, pisteet, pole-paikat ja mestaruudet – riippumatta siitä, missä divisioonassa joukkue parhaillaan kilpailee.</p>
+                <p><strong>Pokaalikaappi (Joukkuesivu):</strong> Jokaisen joukkueen Joukkuesivulla – omasi ja jokaisen vastustajan – on oma alavälilehti <strong>Pokaalit</strong>, joka listaa tarkalleen, mitkä mestaruudet kyseinen joukkue on voittanut, kausi kaudelta, sekä joukkueen koko urastatistiikan.</p>
+                <p><strong>Saavutukset (Tilastot-välilehti):</strong> Pitkän aikavälin tavoitteita omalle joukkueellesi: Ensimmäinen voitto (voita ensimmäinen kilpailusi), Divisioonan mestari (sijoitu 1. divisioonassasi), Nousu Undercut Masters Leagueen, 10 palkintosijaa putkeen (vähintään yksi auto palkintopallilla 10 kilpailussa peräkkäin), Palkkasi 40-vuotiaan (palkkaa kuljettaja, joka on vähintään 39-vuotias) ja 100 kilpailua urallasi. Avattu saavutus kirjataan Uutisiin ja Tapahtumalokiin ja merkitään pysyvästi välilehdelle Tilastot → Saavutukset.</p>
+                <p><strong>Legendat (Tilastot-välilehti):</strong> Heti kun oman joukkueesi kuljettaja täyttää 40 vuotta ja jää eläkkeelle (katso <a href="#man-pension">Eläköityminen ja ikääntyminen</a>), hänet tallennetaan Legendaksi sen sijaan, että hän vain katoaisi – kilpailut, voitot, podiumsijat, urapisteet ja mestaruudet säilytettyinä ikuisesti Tilastot-välilehdellä → Legendat.</p>
+            </div>
+        
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Tietoa pelistä</a> &nbsp;·&nbsp; <a href="guider.html">Oppaat</a> &nbsp;·&nbsp; <a href="manual.html">Ohjeet</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Usein kysyttyä</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Tietosuojakäytäntö</a> &nbsp;·&nbsp; <a href="../">Peliin</a>
+<div class="fot-sprak"><a href="../manual.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/manual.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/manual.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/manual.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/manual.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/manual.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/manual.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/manual.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/manual.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>
