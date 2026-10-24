@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Kézikönyv – Undercut Racing Manager</title>
+<meta name="description" content="Az Undercut Racing Manager teljes kézikönyve: keret, autók, taktika, pénzügyek, ligák, átigazolási piac és még sok más.">
+<link rel="canonical" href="https://undercutmanager.com/hu/manual.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/manual.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/manual.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/manual.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/manual.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/manual.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/manual.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/manual.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/manual.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/manual.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/manual.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">A játékról</a><a href="guider.html">Útmutatók</a><a href="manual.html" aria-current="page">Kézikönyv</a><a href="vanliga-fragor.html">Gyakori kérdések</a><a href="integritetspolicy.html">Adatvédelmi irányelvek</a><select class="sprakval" aria-label="Nyelv" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../manual.html">Svenska</option><option data-l="en" value="../en/manual.html">English</option><option data-l="de" value="../de/manual.html">Deutsch</option><option data-l="fr" value="../fr/manual.html">Français</option><option data-l="es" value="../es/manual.html">Español</option><option data-l="pl" value="../pl/manual.html">Polski</option><option data-l="fi" value="../fi/manual.html">Suomi</option><option data-l="hu" value="../hu/manual.html" selected>Magyar</option><option data-l="ja" value="../ja/manual.html">日本語</option></select><a class="knapp" href="../">Ingyenes játék</a></nav>
+</div></header>
+<main>
+<h1>Kézikönyv</h1>
+<p class="ingress">Az Undercut Racing Manager teljes útmutatója – ugyanaz a kézikönyv, amely a játék Kézikönyv fülén található.</p>
+
+            <img src="assets/manual-header.png" alt="Team-personal i diskussion vid depåtaket med publikläktare i bakgrunden" style="width:100%; max-height:280px; object-fit:cover; border-radius:10px; display:block; margin-bottom:14px;">
+            <div class="card" id="man-toc">
+                <h3>Tartalomjegyzék</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Új vagy az Undercut Racing Managerben? Kezdd a <a href="#man-intro">Kezdő lépések</a> résznél. Kattints egy alábbi címre, hogy közvetlenül az adott részhez ugorj.</p>
+                <div class="man-toc-grid">
+                    <div>
+                        <p class="man-toc-heading">Kezdő lépések</p>
+                        <ul>
+                            <li><a href="#man-intro">Így működik a játék és a navigáció</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Keret és verseny</p>
+                        <ul>
+                            <li><a href="#man-trupp">A kereted és a személyzeted</a></li>
+                            <li><a href="#man-lagsidor">Csapatoldalak és profilok</a></li>
+                            <li><a href="#man-tavling">Szezonok, versenyek és pontok</a></li>
+                            <li><a href="#man-serier">Ligák, piac és heti menetrend</a></li>
+                            <li><a href="#man-serier">Hazai pálya, pályarekordok és átigazolási történet</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Fejlesztés</p>
+                        <ul>
+                            <li><a href="#man-egenskaper">Tulajdonságok és edzés</a></li>
+                            <li><a href="#man-skador-ekonomi">Sérülések, gazdaság és kerékcsere</a></li>
+                            <li><a href="#man-sponsoravtal">Szponzori szerződések</a></li>
+                            <li><a href="#man-prispengar">Pénzdíjak</a></li>
+                            <li><a href="#man-valuta">Pénznem</a></li>
+                            <li><a href="#man-moral-ovrigt">Csapatmorál, Team Principal és illusztrációk</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="man-toc-heading">Szerződések és személyzet</p>
+                        <ul>
+                            <li><a href="#man-kontrakt">Szerződésrendszer</a></li>
+                            <li><a href="#man-pension">Nyugdíjazás és öregedés</a></li>
+                            <li><a href="#man-mekaniker">Szerelők</a></li>
+                            <li><a href="#man-ingenjorer">Mérnökök</a></li>
+                            <li><a href="#man-principal">Csapatfőnök</a></li>
+                            <li><a href="#man-chefer">Vezető szerelő és vezető mérnök</a></li>
+                            <li><a href="#man-scouting">Beszervezés és junior program</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Versenyek és közösség</p>
+                        <ul>
+                            <li><a href="#man-taktik">Taktikai áttekintés</a></li>
+                            <li><a href="#man-popularitet">Népszerűség és merchandise</a></li>
+                            <li><a href="#man-lagledare">Csapatvezető, bemutatkozás és nemzet</a></li>
+                            <li><a href="#man-forum">Fórum</a></li>
+                            <li><a href="#man-inkorg">Beérkezett üzenetek</a></li>
+                            <li><a href="#man-historia">Statisztika, trófeák és legendák</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="man-intro">
+                <h3>Kezdő lépések: így működik a játék és a navigáció</h3>
+                <p>Saját versenycsapatodat vezeted végig a divíziókon, más emberek – valódi menedzserek – ellen a világ minden tájáról. Versenyzőket, szerelőket és mérnököket szerződtetsz, fejleszted az autót, beállítod a taktikádat a versenyek előtt – a játék pedig a többit automatikusan intézi minden héten az alábbi menetrend szerint.</p>
+                <p><strong>A heti menetrend (teljesen automatikusan zajlik, svéd idő szerint):</strong></p>
+                <ul style="margin:4px 0 12px; padding-left:18px;">
+                    <li><strong>Hétfő 20:00</strong> – edzőverseny a nevezett versenyzőknek</li>
+                    <li><strong>Szerda 20:00</strong> – időmérő</li>
+                    <li><strong>Péntek 20:00</strong> – verseny</li>
+                    <li><strong>Vasárnap 20:00</strong> – a gazdaság frissül</li>
+                </ul>
+                <p><strong>Időzóna:</strong> A játék minden időpontja – futamok, időmérő, edzés, pénzügyi frissítés és a megfigyelők hívása – <strong>svéd idő</strong> szerint értendő (GMT+1, nyári időszámítás idején GMT+2). A <strong>Fiókom → Beállítások → Időzóna</strong> alatt kiválaszthatod a saját időzónádat. Ekkor a jobb felső sarokban lévő óra és a játék összes dátuma és időpontja (pl. a következő futamok és a beérkezett üzenetek) a te idődben jelenik meg. Az átigazolási piac visszaszámlálói időzónától függetlenül mindig pontosak. Maguk az események továbbra is svéd idő szerint 20:00-kor történnek.</p>
+                <p><strong>Így igazodj el a navigációban:</strong></p>
+                <ul style="margin:4px 0 0; padding-left:18px;">
+                    <li><strong>Kezdőlap</strong> – a munkaterületed: bajnoki helyezés és költségvetés felül, egy lista azzal, ami épp most igényli a figyelmedet, valamint csapatállapot, személyzet, következő verseny, Hírek és Eseménynapló.</li>
+                    <li><strong>Csapatoldal</strong> – keret és autók (saját csapatod és az összes többi), az Áttekintés, Versenyzők, Szerelők, Mérnök, <strong>Autók</strong> (az egyes autók komponenseinek fejlesztése, az 1-es és 2-es autó külön-külön), Trófeák alfülekkel, és (saját csapatodnál) <strong>Edzés</strong>, <strong>Beszervezés</strong> és <strong>Szerződések</strong> alfülekkel.</li>
+                    <li><strong>Aréna</strong> – a hazai arénád.</li>
+                    <li><strong>Gazdaság</strong> – költségvetés, bevételek, kiadások és történet.</li>
+                    <li><strong>Liga</strong> – tabellák, eredmények és a csoportod fóruma.</li>
+                    <li><strong>Piac</strong> – az átigazolási piac, személyzet vétele és eladása.</li>
+                    <li><strong>Futam</strong> – a csapatod következő (vagy legutóbbi) időmérője és futama a taktikai megbeszéléssel, ahol mindkettőhöz utasítást adsz, valamint a versenyjelentések.</li>
+                    <li><strong>Statisztika</strong> – bajnoklista, rekordok, csapatstatisztika, eredmények és legendák.</li>
+                    <li><strong>Kézikönyv</strong> – ez az oldal.</li>
+                    <li><strong>Fórum</strong> – külön vitafórum valódi témákkal, amely minden csapat minden bejelentkezett játékosa számára nyitott. Teljesen független a Sorozat fül alján lévő csevegőnaplótól, lásd <a href="#man-forum">Fórum</a>.</li>
+                    <li><strong>A felhasználóneved</strong> (jobb felül) – <strong>Beállítások</strong> és <strong>Az Undercut Racing Managerről</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="card" id="man-trupp">
+                <h3>A kereted és a személyzeted</h3>
+                <p><strong>Keretszabályok:</strong> Minden csapatnak pontosan 2 aktív autója van saját versenyzőkkel mindegyikhez ("1-es autó" és "2-es autó"), valamint legfeljebb 10 tartalék versenyzője, akik a csapat közösek. Csapatonként legfeljebb 10 szerelőt és 10 mérnököt szerződtethetsz (a felvétel 100 000 kr-be, plusz 100 000 kr heti fizetésbe kerül alkalmazottanként). Minden szerelő és mérnök a csapat két autójának egyikéhez van rendelve – te választod ki, melyikhez, az illető profiloldalán keresztül.</p>
+                <p><strong>Személyzet elbocsátása:</strong> Saját személyzeted profiloldaláról bármikor elbocsáthatod az illetőt – azonnal elhagyja a csapatot, kártalanítás nélkül (az 1-es/2-es autó versenyzőjét a tartalék versenyző váltja, ha van ilyen). Ha az illető egyúttal eladásra van kínálva, az árverés törlődik.</p>
+                <p><strong>Nevek és nemzetiség:</strong> A játékban minden versenyző, szerelő, mérnök és Team Principal férfi, de a játék bármely nemzetiségéből származhat (Svédország, Olaszország, Németország, Franciaország, Spanyolország, Egyesült Királyság, Hollandia, Finnország, Brazília, USA, Japán, Ausztrália, Belgium, Ausztria, Monaco, Mexikó, Kanada, Dánia, Norvégia és Svájc) – a név megfelel az illető nemzetiségének.</p>
+            </div>
+
+            <div class="card" id="man-lagsidor">
+                <h3>Csapatoldalak és profilok</h3>
+                <p>Minden csapat (a sajátod és minden ellenfél) ugyanolyan típusú Csapatoldalon jelenik meg, az Áttekintés, Versenyzők, Szerelők és Mérnök alfülekkel. Kattints bármelyik versenyző, szerelő vagy mérnök nevére – saját kereteden belül, egy ellenfélnél vagy az átigazolási piacon –, hogy megnyisd az illető profiloldalát a Csapatoldal aloldalaként. Ott látható az életkor, nemzetiség, minden képesség, vezetési stílus (versenyzőknél), melyik autóhoz tartozik az illető, és a szerződtetés dátuma. Ha az illető a tiéd, onnan eladásra kínálhatod, elbocsáthatod, vagy (szerelők/mérnökök esetén) áthelyezheted az 1-es és 2-es autó között.</p>
+                <p>A saját Csapatoldaladon → az <strong>Áttekintés</strong> alfülön két extra gyorsgomb van: a <strong>Riválisok</strong> gomb azoknak a csapatoknak a listáját mutatja, amelyektől az elmúlt 10 szezonban kivásárlási záradékkal pilótát vagy személyzetet szereztél, soronként rövid indoklással, a <strong>Pályafutás</strong> hivatkozás pedig a csapatod helyezését mutatja szezonról szezonra a teljes pályafutásod alatt.</p>
+            </div>
+
+            <div class="card" id="man-tavling">
+                <h3>Szezonok, versenyek és pontok</h3>
+                <p><strong>Szezonok és öregedés:</strong> Egy szezon 10 hétből (10 versenyből) áll. Minden lezárt szezon után mindenki a játékban egy évvel idősebb lesz – ez vonatkozik minden csapat versenyzőire, szerelőire és mérnökeire, nem csak a tiédre –, és az összes tabella pontjai nullázódnak az új szezon előtt. Lásd a <a href="#man-pension">Nyugdíjazás és öregedés</a> részt a nyugdíjkorhatárokért és a képességek időbeli változásáért.</p>
+                <p><strong>Versenyzők:</strong> A versenyzőknek véletlenszerűen kiosztott vezetési stílusuk van (Agresszív, Defenzív vagy Kiegyensúlyozott), és 20 évesen kezdenek. A vezetési stílus nemcsak a versenyt, hanem a sérülés kockázatát is befolyásolja – lásd <a href="#man-skador-ekonomi">Sérülések, gazdaság és kerékcsere</a>.</p>
+                <p><strong>Autónkénti versenyképesség:</strong> Minden autó SAJÁT versenyeredményt kap. Az autó teljesítménye a pilóta teljesített képességéből és az adott autóhoz rendelt szerelők, illetve mérnökök <strong>összesített</strong> képességéből adódik. A pilóta minden képességpontja tízszer annyit számít, mint a személyzet egy pontja, de a személyzet képességei összeadódnak – két szerelő 80-as és 10-es képességgel 90-et ad, öt 80-as szerelő 400-at –, így a szerelőkből és mérnökökből álló teljes csapat együtt nagyjából annyit nyomhat a latban, mint a pilóta. Ehhez jön az autó saját alkatrészeinek hozzájárulása (lásd az Autók fület), a boxkiállás és a csapatmorál.</p>
+                <p><strong>Versenyzői teljesítmény:</strong> Egyik versenyző sem vezet csúcsformában minden alkalommal. Minden időmérő és minden verseny előtt véletlenszerűen sorsolódik egy teljesítményszint az egyes versenyzőknek, 70% és 100% között a képességükből.</p>
+                <p><strong>A komponensek hozzájárulása a versenyben:</strong> Az autó öt komponense (Gumi, Motor, Aerodinamika, Váltó, Alváz) mind eltérő mértékben járul hozzá az időmérőhöz, illetve a versenyhez, és a hatás a pálya jellemzőivel is skálázódik. A motor a versenyben ad a legtöbbet (extra hosszú pályákon), az aerodinamika az időmérőn ad a legtöbbet (extra kanyaros pályákon), a gumi határozza meg, mennyire tartja jól az autó a tempót a versenyen keresztül (annál fontosabb, minél több kanyar van), míg a váltó és az alváz egyenletes hozzájárulást ad mind az időmérőn, mind a versenyen. Lásd az Autók fület a komponensenkénti magyarázatért – ott fejleszted az 1-es és 2-es autót teljesen külön-külön.</p>
+                <p><strong>Pontok autónként:</strong> Minden versenyen az összes autó (csapatonként kettő) egyénileg versenyez a rajthelyért és a helyezésért. A verseny 10 legjobb autója pontot kap a 25-18-15-12-10-8-6-4-2-1 rendszer szerint. A csapat összpontszáma a két autó által hozott pontok összege, és a liga tabella megmutatja, hogy MELYIK autó (1-es / 2-es) mennyit hozott a szezon során.</p>
+                <p><strong>Szezonok közötti versenyszabály:</strong> Minden lezárt szezon után új szabály lép életbe: az autó öt komponensének egyike (Gumi, Motor, Aerodinamika, Váltó, Alváz – ebben a sorrendben) megfeleződik a játék MINDEN csapatánál, a sajátodat is beleértve. Ez egy forgó, 5 szezonos ütemtervben ismétlődik: a 2. szezon a Gumit sújtja, a 3. a Motort, a 4. az Aerodinamikát, az 5. a Váltót, a 6. az Alvázat, a 7. újra a Gumit, és így tovább. A szabály PONTOSAN egyszer alkalmazandó minden szezonszámra, és soha nem érinti visszamenőlegesen a már lejátszott szezonokat – az első szezont (1. szezon) sosem sújtja, mivel a szabály feltételezi, hogy egy szezon ténylegesen lezárult, mielőtt aktiválódhatna. Erről a Hírekben és a Beérkezett üzenetekben értesülsz minden alkalommal, amikor új szabály lép életbe, és a legutóbb alkalmazott szabály mindig látható a Verseny fülön.</p>
+            </div>
+
+            <div class="card" id="man-serier">
+                <h3>Ligák, piac és heti menetrend</h3>
+                <p><strong>Átigazolási piac:</strong> A "Piac" fülön az összes folyamatban lévő árverés szerepel. Saját versenyződet, szerelődet vagy mérnöködet az illető profiloldaláról kínálhatod eladásra – az árverés ekkor pontosan 7 napig tart. A ligák összes csapata licitálhat egymás személyzetére, mind a Piac fülön, mind közvetlenül az illető profiljáról. Saját hirdetésedre soha nem licitálhatsz. A határidő lejártakor az illető a legmagasabb ajánlatot tevőhöz kerül: ha nyereséggel adsz el, a pénz hozzáadódik a költségvetésedhez, ha pedig vásárolsz valakit, a költség levonódik a költségvetésedből (amíg megengedheted magadnak, és van hely a keretben az árverés lezárásakor).</p>
+                <p><strong>Sorozatok és a sorozatpiramis:</strong> A játéknak öt szintje van: <strong>Undercut Masters League</strong> (1 csoport, 10 csapat), <strong>2. divízió</strong> (2 csoport, egyenként 10 csapattal), <strong>3. divízió</strong> (4 csoport, egyenként 10 csapattal), <strong>4. divízió</strong> (8 csoport, egyenként 10 csapattal) és <strong>5. divízió</strong> (16 csoport, egyenként 10 csapattal) – összesen 310 csapat. Más emberek ellen versenyzel – minden csapatot egy valódi menedzser irányít. A tabellán bármelyik csapatra kattintva megnézheted a csapatoldalát, autóról autóra.</p>
+                <p><strong>Fel- és kiesés:</strong> Amikor egy 10 versenyes szezon véget ér, minden csoportból (kivéve az Undercut Masters League-et) az 1. helyezett feljut a fölötte lévő divízióba. Emellett feljutnak a divízió legjobb második helyezettjei is – annyian, ahány csoport van a fölötte lévő divízióban (1 a 2. divízióból, 2 a 3. divízióból, 4 a 4. divízióból és 8 az 5. divízióból). A második helyezetteket pontszám alapján rangsoroljuk; pontegyenlőség esetén a legjobb autó pontjai döntenek. Minden csoportból (kivéve az 5. divíziót, amely a legalsó szint) a 3 leggyengébb csapat kiesik az alatta lévő divízióba, elsősorban a csoporthoz kapcsolódó két csoportba. Ennek eredményeként a csapatok száma csoportonként mindig 10 marad. A második helyezettek aktuális állását a Bajnokság → Tabella → Legjobb másodikok alatt látod.</p>
+                <p><strong>Pályák és versenyek:</strong> Minden szezon 10 versenyből áll, amelyekben az azonos csoportba tartozó csapatok felváltva rendezik a versenyt a hazai pályájukon. A pálya hossza és a kanyarok száma befolyásolja, hogy az adott versenyen mennyire számít az egyes komponensek.</p>
+                <p><strong>Heti menetrend:</strong> Minden hét ugyanazt a ciklust követi: <strong>hétfőn 20:00-kor</strong> zajlik az edzőverseny, <strong>szerdán 20:00-kor</strong> zajlik az időmérő, <strong>pénteken 20:00-kor</strong> zajlik maga a verseny, és <strong>vasárnap 20:00-kor</strong> frissül a gazdaság. Minden automatikusan zajlik a játékban, amikor eljön az idő – nincs gomb, amivel ezeket egyénileg futtathatnád. Minden időpont svéd idő szerint értendő (GMT+1, nyári időszámítás idején GMT+2).</p>
+                <p><strong>Hazai pálya és pályarekordok:</strong> Az Aréna fülön ingyen átalakíthatod saját hazai pályád kanyarjainak számát (5-20) és hosszát (2,0-8,0 km), valamint átnevezheted (100 000 kr) – a változás csak a jövőbeli, még nem időmért versenyekre vonatkozik. Több kanyar az aerodinamikának/gumiknak/kezelhetőségnek kedvez, a hosszabb pálya a motornak kedvez, de több üzemanyagot igényel. Minden arénának saját pályarekordja van (a legjobb ott lefutott verseny, függetlenül attól, melyik csapat futotta), amely látható a házigazda csapat megtekintésekor.</p>
+                <p><strong>Átigazolási történet:</strong> A Piac fülön találsz egy naplót az összes lezajlott vásárlásról és eladásról a ligákban (ki lett eladva, melyik csapattól melyikhez, és a végleges ár) – ezt a listát a fent leírt árverések döntik el.</p>
+            </div>
+
+            <div class="card" id="man-egenskaper">
+                <h3>Tulajdonságok és edzés</h3>
+                <p><strong>Tulajdonságok (0-100):</strong> Minden versenyzőnek, szerelőnek és mérnöknek öt egyéni tulajdonsága van 0-100 skálán, és az illető "Képessége" ennek az ötnek az átlaga. A versenyzőknek van Tapasztalata, Gyorsasága, Gumikezelése, Védekezése és Csapatképessége. A szerelőknek van Tapasztalata, Motorismerete, Gyorsasága, Nyomástűrése és Csapatképessége. A mérnököknek van Tapasztalata, Taktikája, Gyorsasága, Nyomástűrése és Csapatképessége. Minden tulajdonság látható az illető profiljában a Csapatoldalon (kattints a névre).</p>
+                <p><strong>Tapasztalat:</strong> A Tapasztalatot nem lehet edzeni. Ehelyett automatikusan nő 5 ponttal minden alkalommal, amikor az illető betölti a következő évet (minden lezárt szezonnál egyszer, mindenkinél a játékban). Egy versenyző mindig 10-es Tapasztalattal kezd 20 évesen, és ugyanez az alapelv vonatkozik a szerelőkre és mérnökökre.</p>
+                <p><strong>Edzés fül és edzőverseny:</strong> A Csapatoldal → „Edzés” alfülön versenyzőket, szerelőket és mérnököket nevezel a heti edzőversenyre, és kiválasztod, melyik képességre összpontosítson mindegyikük. A versenyzők Gyorsaságot, Gumikezelést, Védekezést vagy Csapatmunkát, a szerelők Motorismeretet, Gyorsaságot, Médiakezelést vagy Csapatmunkát, a mérnökök pedig Taktikát, Gyorsaságot, Médiakezelést vagy Csapatmunkát edzhetnek – a Tapasztalat soha nem edzhető. Hetente legfeljebb 3 versenyző, 3 szerelő és 3 mérnök vehet részt, és az edzés ingyenes. Az edzőverseny minden hétfőn 20:00-kor automatikusan lezajlik. Hogy mennyit javul a képesség (1–5 pont), az illető versenyen nyújtott teljesítményétől függ. A fejlődés közvetlenül az edzőverseny után érvénybe lép – a versenyzőknél, a szerelőknél és a mérnököknél egyaránt. Rövid beszámoló jelenik meg lejjebb ugyanezen az alfülön. Ha nem adsz le új edzésutasítást, a csapat ugyanazokkal a személyekkel és képességekkel edz, mint az előző héten.</p>
+            </div>
+
+            <div class="card" id="man-skador-ekonomi">
+                <h3>Sérülések, gazdaság és kerékcsere</h3>
+                <p><strong>Sérülések:</strong> Minden lezajlott verseny után véletlenszerűen 0-3 autó sérül meg a versengő csapatok között (néha tehát egy sem). Egy sérülés az autó öt komponensének egyikét (Gumi, Motor, Aerodinamika, Váltó vagy Alváz) érinti, és véglegesen csökkenti jelenlegi értékének 10-70%-ával. A sérülések nem javíthatók – a komponens az új, alacsonyabb szinten marad, és szokásos fejlesztésekkel építheted újra (lásd alább), amelyek annál olcsóbbak, minél alacsonyabb az index. Ha a sérüléskor éppen fejlesztés zajlik a komponensen, a fejlesztés +5-öt ad az új szinthez képest. <strong>A vezetési stílusnak jelentősége van:</strong> az Agresszív vezetési stílusú versenyző jobban a határon vezet, és jelentősen nagyobb kockázatot vállal az autó sérülésére, mint a Kiegyensúlyozott vagy Defenzív stílusú versenyzők.</p>
+                <p><strong>Fejlesztési költség – olcsó az elején, drága a csúcson:</strong> Minden fejlesztés az Autók fülön 5-tel emeli a komponens indexét (max. 100-ig), és az árat a fejlesztés <em>előtti</em> indexből számítjuk a <code>20 000 kr + index² × 30</code> képlet szerint. A gyakorlatban ez azt jelenti, hogy a költség az index négyzetével nő: egy szinte érintetlen komponens (index 0) fejlesztése csak 20 000 kr-ba kerül, 50-es indexnél 95 000 kr-ba, és közvetlenül azelőtt, hogy egy komponens elérné a 100-as maximumot (index 95), egészen 290 750 kr-ba kerül. A gyakorlatban tehát szinte mindig érdemesebb a csapat leggyengébb komponenseit fejleszteni, mielőtt egy már erős komponenst tovább tolnál felfelé. A fejlesztés gomb az Autók fülön mindig pontosan megmutatja, mennyibe kerül a következő lépés, és egy megerősítő kérdést kapsz, mielőtt levonjuk a pénzt. <strong>Minden fejlesztés 1 napig tart:</strong> a költséget azonnal levonjuk a megerősítéskor, de a komponens "Fejlesztés alatt..." feliratot mutat, és megtartja a régi indexét, amíg el nem telik az 1 nap, ekkor az új szint automatikusan érvénybe lép (nincs semmi más teendőd). Egy komponensnek egyszerre csak egy fejlesztése lehet sorban – meg kell várnod, amíg befejeződik, mielőtt elindíthatod ugyanannak a komponensnek a következő fejlesztését.</p>
+                <p><strong>Gazdasági frissítés (minden vasárnap 20:00-kor):</strong> Minden vasárnap a csapatod – ahogy a sorozatok összes többi csapata is – szponzori bevételt és merchandise-eladásból származó bevételt kap, a személyzet fizetése és a gyár fix fenntartási költsége (30 000 kr) mellett. Amíg nincs aktív szponzori szerződésed (lásd <a href="#man-sponsoravtal">Szponzori szerződések</a>), a szponzori bevétel véletlenszerűen alakul aszerint, melyik divízióban versenyzel éppen – magasabb divízió magasabb átlagot ad. A merchandise-bevétel mindig ugyanígy véletlenszerű, de ezen felül a két versenyződ átlagos népszerűsége is skálázza (lásd <a href="#man-popularitet">Népszerűség és merchandise</a>). Egyik bevétel sem haladhatja meg soha a heti 1 000 000 kr-t. <strong>A negatív költségvetés kamattal jár:</strong> amíg a csapatod költségvetése 0 kr alatt van, minden héten a negatív egyenleg 5%-át is levonjuk kamatként (a heti pénzügyekben „Hitelkamat” néven látszik) – ez is egy ok, hogy figyeld a költségvetést, lásd a következő bekezdést. A hét összes adata elmentődik a pénzügyi előzményeidbe, amelyet a Pénzügyek → Pénzügyi előzmények fülön találsz: ott hétről hétre listát és az egyes szezonok összes hetének összesítését is látod.</p>
+                <p><strong>Negatív költségvetés – korlátozások (nincs csőd):</strong> A csapatod soha nem mehet csődbe, és nem kényszerülhet nulláról kezdeni, bármennyire negatív is a költségvetés. Amíg a költségvetés 0 kr alatt van, a csapat viszont erősen korlátozott: nem vásárolhatsz és nem szerződtethetsz versenyzőt/személyzetet (sem a piacon, sem szabadügynökként, sem kivásárlási záradékkal), nem ajánlhatsz és nem írhatsz alá új szerződést (beleértve a hosszabbításokat és a junior tehetségek leigazolását), nem fejlesztheted az autót, nem hívhatod a megfigyelőket, nem edzheted a személyzetet, és más módon sem vállalhatsz új költséget (pl. aréna bővítése vagy átnevezése). A fizetéseket, a fenntartást és a hitelkamatot azonban minden héten ugyanúgy levonjuk. Adj el személyzetet, vegyél fel kölcsönt, vagy várd meg a következő gazdasági frissítést, hogy visszakerülj 0 kr fölé, és visszakapd a teljes cselekvési szabadságot.</p>
+                <p><strong>Kerékcsere és gumistratégia:</strong> Minden autó egy kerékcserét hajt végre a verseny során véletlenszerű gumistratégiával (például 1-stopos offenzív, 2-stopos kiegyensúlyozott vagy 1-stopos defenzív), és ez külön oszlopként jelenik meg a versenyeredményben. Hogy mennyire sikerül jól a kerékcsere, az az autó pontjaihoz ad hozzá a versenyben, és a mérnökeid határozzák meg, mekkora ez a plusz – minél magasabb az autóhoz rendelt mérnökeid összesített képessége, annál jobb a kerékcsere és annál nagyobb a bónusz. Az autó gumikomponense szintén együtt hat a stratégiával: a jobb gumi miatt egy offenzívabb stratégia jobban megéri. A kerékcsere emellett együtt hat a Taktikai áttekintésben tett gumiválasztásoddal is (lásd <a href="#man-taktik">Taktikai áttekintés</a>) – minél jobbak a mérnökök, annál jobban kompenzálja a kerékcsere egy kemény gumiválasztás hátrányát a versenyben.</p>
+            </div>
+
+            <div class="card" id="man-sponsoravtal">
+                <h3>Szponzori szerződések</h3>
+                <p>A <strong>Pénzügyek → Szponzori szerződések</strong> fülön fix szponzori szerződést köthetsz ahelyett, hogy a véletlenszerű szponzori bevételre hagyatkoznál (lásd <a href="#man-skador-ekonomi">Sérülések, pénzügyek és boxkiállások</a>). Amikor nincs aktív szerződésed, három különböző profilú ajánlat jelenik meg: <strong>Biztonságos</strong> (magas heti alapösszeg, alacsony bónuszok), <strong>Kiegyensúlyozott</strong> (egyenletes keverék) és <strong>Kockázatos</strong> (alacsony alapösszeg, magas bónuszok, ha a csapat teljesít). Minden ajánlatnak fix heti alapösszege van, amely felváltja a véletlenszerű szponzori bevételt, valamint bónuszfeltételei, amelyeket dobogónként, győzelmenként és bajnoki címért fizetnek. A csapatfőnököd szponzorációs képessége mindhárom ajánlat alapösszegét befolyásolja.</p>
+                <p>Az aláírt szponzori szerződés mindig egy teljes szezonig (10 futam) tart, és <strong>idő előtt nem mondható fel</strong> – újat csak a lejárta után köthetsz. Egyszerre csak egy szponzori szerződés lehet aktív. Amíg a szerződés él, a Pénzügyek → Szponzori szerződések alatt látható a hátralévő hetek számával együtt.</p>
+            </div>
+
+            <div class="card" id="man-prispengar">
+                <h3>Pénzdíjak</h3>
+                <p><strong>Egyes verseny:</strong> A csapat minden versenyen <strong>pontonkénti pénzdíjat</strong> kap az autói által szerzett pontok után: 15 000 kr/pont az Undercut Masters League-ben, 11 000 kr a 2. divízióban, 6 000 kr a 3. divízióban, 3 000 kr a 4. divízióban és 2 000 kr az 5. divízióban. Ha van szponzori szerződésed, ehhez jönnek a <strong>szponzori bónuszok</strong> (dobogós és győzelmi bónusz, autónként). A versenyzők <strong>szerződéses bónuszait</strong> (dobogós, győzelmi és pontbónusz) viszont a versenyző kapja, és ezek <strong>költséget</strong> jelentenek a csapatnak. Minden közvetlenül a célba érkezés után könyvelődik, és a számlakivonatban látható.</p>
+                <p><strong>Tabella – a pénzdíjak fája:</strong> A szezon végén minden csapat a tabellán elért végső helyezése alapján kap pénzdíjat. Minden ligában 10 csapat van. Az 1. divízióban 1 liga van, a 2. divízióban 2, a 3. divízióban 4 és így tovább – a ligák száma minden divízióval <strong>megduplázódik</strong> egészen a 10. divízióig (512 liga). Minden divízió teljes díjalapja mindig ugyanakkora: <strong>20 000 000 kr</strong>. Az 1. divízióban a teljes összeg az egyetlen ligájáé. Minden lejjebb lévő divízióban a <strong>ligánkénti díjalap megfeleződik</strong> – de mivel a ligák száma közben megduplázódik, a divízió összege mindig ugyanannyi marad (fél díjalap × kétszer annyi liga). Minden ligán belül a díjalapot az 1–10. hely kapja: <strong>50 %, 20 %, 10 %, 7 %, 5 %, 3 %, 2 %, 1,5 %, 1 % és 0,5 %</strong> (összesen 100 %). Példa: az 1. divízió győztese 20 000 000 kr 50 %-át kapja = <strong>10 000 000 kr</strong>. A 3. divízió egy ligájának díjalapja 20 000 000 ÷ 4 = 5 000 000 kr, így a győztese 2 500 000 kr-t kap.</p>
+                <div><p><strong>1. táblázat – Díjalap divíziónként és ligánként</strong></p><div class="tabell-scroll"><table><thead><tr><th>Divízió</th><th>Ligák</th><th>Díjalap ligánként</th><th>Győztes (50 %)</th><th>10. hely (0,5 %)</th><th>Divízió összesen</th></tr></thead><tbody><tr><td>1. divízió (Undercut Masters League)</td><td>1</td><td>20 000 000 kr</td><td>10 000 000 kr</td><td>100 000 kr</td><td>1 × 20 000 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>2. divízió</td><td>2</td><td>10 000 000 kr</td><td>5 000 000 kr</td><td>50 000 kr</td><td>2 × 10 000 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>3. divízió</td><td>4</td><td>5 000 000 kr</td><td>2 500 000 kr</td><td>25 000 kr</td><td>4 × 5 000 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>4. divízió</td><td>8</td><td>2 500 000 kr</td><td>1 250 000 kr</td><td>13 000 kr</td><td>8 × 2 500 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>5. divízió</td><td>16</td><td>1 250 000 kr</td><td>625 000 kr</td><td>6 000 kr</td><td>16 × 1 250 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>6. divízió</td><td>32</td><td>625 000 kr</td><td>313 000 kr</td><td>3 000 kr</td><td>32 × 625 000 = <strong>20 000 000 kr</strong></td></tr><tr><td>7. divízió</td><td>64</td><td>312 500 kr</td><td>156 000 kr</td><td>2 000 kr</td><td>64 × 312 500 = <strong>20 000 000 kr</strong></td></tr><tr><td>8. divízió</td><td>128</td><td>156 250 kr</td><td>78 000 kr</td><td>1 000 kr</td><td>128 × 156 250 = <strong>20 000 000 kr</strong></td></tr><tr><td>9. divízió</td><td>256</td><td>78 125 kr</td><td>39 000 kr</td><td>1 000 kr</td><td>256 × 78 125 = <strong>20 000 000 kr</strong></td></tr><tr><td>10. divízió</td><td>512</td><td>39 062,5 kr</td><td>20 000 kr</td><td>1 000 kr</td><td>512 × 39 062,5 = <strong>20 000 000 kr</strong></td></tr></tbody></table></div><p><strong>2. táblázat – Kifizetés helyezésenként (kr, a legközelebbi 1 000 koronára kerekítve)</strong></p><div class="tabell-scroll"><table><thead><tr><th>Divízió</th><th>1.</th><th>2.</th><th>3.</th><th>4.</th><th>5.</th><th>6.</th><th>7.</th><th>8.</th><th>9.</th><th>10.</th></tr><tr><th></th><th>50 %</th><th>20 %</th><th>10 %</th><th>7 %</th><th>5 %</th><th>3 %</th><th>2 %</th><th>1,5 %</th><th>1 %</th><th>0,5 %</th></tr></thead><tbody><tr><td>1. div.</td><td>10 000 000</td><td>4 000 000</td><td>2 000 000</td><td>1 400 000</td><td>1 000 000</td><td>600 000</td><td>400 000</td><td>300 000</td><td>200 000</td><td>100 000</td></tr><tr><td>2. div.</td><td>5 000 000</td><td>2 000 000</td><td>1 000 000</td><td>700 000</td><td>500 000</td><td>300 000</td><td>200 000</td><td>150 000</td><td>100 000</td><td>50 000</td></tr><tr><td>3. div.</td><td>2 500 000</td><td>1 000 000</td><td>500 000</td><td>350 000</td><td>250 000</td><td>150 000</td><td>100 000</td><td>75 000</td><td>50 000</td><td>25 000</td></tr><tr><td>4. div.</td><td>1 250 000</td><td>500 000</td><td>250 000</td><td>175 000</td><td>125 000</td><td>75 000</td><td>50 000</td><td>38 000</td><td>25 000</td><td>13 000</td></tr><tr><td>5. div.</td><td>625 000</td><td>250 000</td><td>125 000</td><td>88 000</td><td>63 000</td><td>38 000</td><td>25 000</td><td>19 000</td><td>13 000</td><td>6 000</td></tr><tr><td>6. div.</td><td>313 000</td><td>125 000</td><td>63 000</td><td>44 000</td><td>31 000</td><td>19 000</td><td>13 000</td><td>9 000</td><td>6 000</td><td>3 000</td></tr><tr><td>7. div.</td><td>156 000</td><td>63 000</td><td>31 000</td><td>22 000</td><td>16 000</td><td>9 000</td><td>6 000</td><td>5 000</td><td>3 000</td><td>2 000</td></tr><tr><td>8. div.</td><td>78 000</td><td>31 000</td><td>16 000</td><td>11 000</td><td>8 000</td><td>5 000</td><td>3 000</td><td>2 000</td><td>2 000</td><td>1 000</td></tr><tr><td>9. div.</td><td>39 000</td><td>16 000</td><td>8 000</td><td>5 000</td><td>4 000</td><td>2 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr><tr><td>10. div.</td><td>20 000</td><td>8 000</td><td>4 000</td><td>3 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr></tbody></table></div><p style="font-size:12px; color:var(--text-muted);">Minden pénzdíjat a legközelebbi 1 000 koronára kerekítünk, és egyik helyezés sem kap 1 000 kr-nál kevesebbet. Ezért egy divízió összege kissé eltérhet a pontosan 20 000 000 kr-tól.</p></div><p><strong>Tabell 2 – Utbetalning per placering (kr, avrundat till närmaste 1 000 kr)</strong></p><div class="tabell-scroll"><table><thead><tr><th>Division</th><th>1:a</th><th>2:a</th><th>3:e</th><th>4:e</th><th>5:e</th><th>6:e</th><th>7:e</th><th>8:e</th><th>9:e</th><th>10:e</th></tr><tr><th></th><th>50 %</th><th>20 %</th><th>10 %</th><th>7 %</th><th>5 %</th><th>3 %</th><th>2 %</th><th>1,5 %</th><th>1 %</th><th>0,5 %</th></tr></thead><tbody><tr><td>Div 1</td><td>10 000 000</td><td>4 000 000</td><td>2 000 000</td><td>1 400 000</td><td>1 000 000</td><td>600 000</td><td>400 000</td><td>300 000</td><td>200 000</td><td>100 000</td></tr><tr><td>Div 2</td><td>5 000 000</td><td>2 000 000</td><td>1 000 000</td><td>700 000</td><td>500 000</td><td>300 000</td><td>200 000</td><td>150 000</td><td>100 000</td><td>50 000</td></tr><tr><td>Div 3</td><td>2 500 000</td><td>1 000 000</td><td>500 000</td><td>350 000</td><td>250 000</td><td>150 000</td><td>100 000</td><td>75 000</td><td>50 000</td><td>25 000</td></tr><tr><td>Div 4</td><td>1 250 000</td><td>500 000</td><td>250 000</td><td>175 000</td><td>125 000</td><td>75 000</td><td>50 000</td><td>38 000</td><td>25 000</td><td>13 000</td></tr><tr><td>Div 5</td><td>625 000</td><td>250 000</td><td>125 000</td><td>88 000</td><td>63 000</td><td>38 000</td><td>25 000</td><td>19 000</td><td>13 000</td><td>6 000</td></tr><tr><td>Div 6</td><td>313 000</td><td>125 000</td><td>63 000</td><td>44 000</td><td>31 000</td><td>19 000</td><td>13 000</td><td>9 000</td><td>6 000</td><td>3 000</td></tr><tr><td>Div 7</td><td>156 000</td><td>63 000</td><td>31 000</td><td>22 000</td><td>16 000</td><td>9 000</td><td>6 000</td><td>5 000</td><td>3 000</td><td>2 000</td></tr><tr><td>Div 8</td><td>78 000</td><td>31 000</td><td>16 000</td><td>11 000</td><td>8 000</td><td>5 000</td><td>3 000</td><td>2 000</td><td>2 000</td><td>1 000</td></tr><tr><td>Div 9</td><td>39 000</td><td>16 000</td><td>8 000</td><td>5 000</td><td>4 000</td><td>2 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr><tr><td>Div 10</td><td>20 000</td><td>8 000</td><td>4 000</td><td>3 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr></tbody></table></div><p style="font-size:12px; color:var(--text-muted);">Alla prispengar avrundas till närmaste 1 000 kr, och ingen placering får mindre än 1 000 kr. Därför kan summan i en division skilja sig något från exakt 20 000 000 kr.</p></div>
+                <p>A szezon pénzdíját a szezonváltáskor azonnal jóváírjuk a számládon, és a <strong>Pénzdíj</strong> alatt jelenik meg a Pénzügyek → Pénzügyek fülön, heti bontásban és a számlakivonatban. A pilótaszerződések és szponzori szerződések bajnoki bónuszait ezen felül fizetjük ki.</p>
+            </div>
+
+            <div class="card" id="man-valuta">
+                <h3>Pénznem</h3>
+                <p>A játékban minden összeg belsőleg mindig svéd koronában (SEK) van tárolva és számolva – ez nem befolyásolja a játékegyensúlyt. A <strong>Fiókom → Beállítások</strong> fülön viszont kiválaszthatod, milyen pénznemben <em>jelenjenek meg</em> az összegek: SEK, USD, EUR vagy GBP. Az átváltási árfolyam fix: <strong>10 SEK = 1 USD = 1 EUR = 1 GBP</strong>. A váltás azonnal érvénybe lép, és kizárólag a saját választásodtól függ – tehát tisztán kozmetikai jellegű, és nem változtatja meg, hogy valójában mennyibe kerül valami a játék gazdaságában.</p>
+            </div>
+
+            <div class="card" id="man-moral-ovrigt">
+                <h3>Csapatmorál, Team Principal és illusztrációk</h3>
+                <p><strong>Csapatmorál:</strong> Minden csapatnak van egy 0-100 skálájú csapatmorálja, amely a Csapatoldal tetején jelenik meg egy saját mérőn. A morál minden verseny után változik: a győzelmek és a dobogós helyek emelik, a rossz eredmények csökkentik, emellett idővel lassan visszahúzódik egy semleges középértékhez. A csapatmorál minden versenyben kisebb bónuszt vagy kisebb levonást ad az autók pontjaihoz – az 50 feletti morál kis emelést, az 50 alatti morál kis levonást ad –, tehát szerepet játszik, de sosem dönt el egymaga egy versenyt.</p>
+                <p><strong>Team Principal:</strong> Minden csapat, a sajátod és az összes ellenfélcsapat is, már a csapat létrehozásakor kap egy Team Principalt. Ő a Csapatoldal tetején jelenik meg a nemzetiségével és egy saját illusztrációval együtt, de nem befolyásolja magát a versenyt.</p>
+                <p><strong>Illusztrációk:</strong> A játék minden szereplője – versenyzők, szerelők, mérnökök és Team Principalok – saját színes illusztrációval jelenik meg (monogram egy színes körben, minden névhez egyedi) a neve mellett, mind a listákban, mind a profiloldalon.</p>
+                <p><strong>Verseny áttekintés:</strong> A Kezdőlap és a Liga fülön láthatod, hány verseny zajlott le a jelenlegi szezonban (a 10-ből összesen), valamint a karriered során összesen lezajlott versenyek számát, szezontól függetlenül.</p>
+            </div>
+
+            <div class="card" id="man-kontrakt">
+                <h3>Szerződésrendszer – így működik (egyszerűen elmagyarázva)</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Minden versenyzőnek, szerelőnek, mérnöknek és a Team Principalodnak van szerződése. Az összes szerződésed gyűjtött listáját a <strong>Csapatoldal → Szerződések</strong> alatt találod, és minden egyes személy szerződését az illető saját profiloldaláról kezeled (kattints a névre bárhol a játékban, pl. a Csapatoldalon) – ott találod a <strong>Szerződés tárgyalása</strong> és a <strong>Szerződés felmondása</strong> gombokat.</p>
+                <p><strong>1. Szerződés tárgyalása:</strong> Nyisd meg az illető profilját, és kattints a "Szerződés tárgyalása" gombra. Láthatod az illető értékelését, életkorát, jelenlegi feltételeit, motivációját és a csapathoz fűződő viszonyát, valamint azt, mit igényel legalább és mit szeretne inkább (fizetés, szerződés hossza, esetleges első számú versenyzői státusz, kivásárlási klauzula). Te magad állítod be az ajánlatodat – heti fizetés, évek száma, aláírási bónusz, dobogós és győzelmi bónusz, bajnoki bónusz, és (versenyzőknél) első számú versenyzői státusz –, és azonnal látod az "Elfogadási valószínűséget" százalékban, egy listával arról, mi növeli vagy csökkenti az esélyt (pl. túl alacsony fizetés, túl rövid szerződés, gyenge csapat, más csapatok érdeklődése).</p>
+                <p><strong>2. Az ajánlat elküldése:</strong> Az illető elfogadja, elutasítja vagy ellenajánlatot tesz (pl. "5,8 millió kr-t és első számú versenyzői státuszt kér"). Ekkor megemelheted az ajánlatot és újraküldheted, elfogadhatod az ellenajánlatot, vagy megszakíthatod – de néhány egymást követő próbálkozás után az illető elveszti az érdeklődését, és a tárgyalás ezúttal megszakad.</p>
+                <p><strong>3. A szerződés automatikusan hat a gazdaságra:</strong> Az alapfizetést automatikusan levonjuk minden héten (a vasárnapi gazdasági frissítéskor, ahogy eddig is történt a szerelők és mérnökök fizetésével). A bónuszokat kifizetjük, és önálló tranzakcióként könyveljük, amint megkeresik őket: dobogós bónusz minden dobogós helynél, győzelmi bónusz minden győzelemnél, pontbónusz az autó által szerzett minden pontnál, és bajnoki bónusz, ha az illető autója megnyeri a ligáját a szezon végén.</p>
+                <p><strong>4. A szerződés ideje visszaszámol:</strong> Minden lezárt szezon 1-gyel csökkenti a "Hátralévő évek" számát az összes szerződésednél. Ha valakinek már csak egy éve van hátra, a szerződés "Lejáró" státuszban jelenik meg, és emlékeztetőt kapsz az illető profilján három lehetőséggel: <strong>Hosszabbítás tárgyalása</strong>, <strong>A jelenlegi szerződés megtartása</strong> (várj és figyelj), vagy <strong>Hagyd lejárni a szerződést</strong> (az illető szabadügynök lesz, és elhagyja a csapatot a szezon végén). Ha egy versenyzői szerződés hosszabbítás nélkül jár le, a helyet automatikusan a tartalék versenyző veszi át – ha nincs tartalék versenyző, helyette egy új kezdő kerül a helyre, így egy autó soha nem marad tartósan versenyző nélkül. Szerelőknél és mérnököknél a hely üresen marad (pontosan úgy, mint amikor kézzel bocsátod el őket), és a Team Principal szerződése mindig automatikusan megújul, mivel ez a szerep nem maradhat betöltetlenül.</p>
+                <p><strong>5. Első számú versenyző:</strong> Ha egy versenyzői szerződésben beállítod az első számú versenyzői státuszt, az illető elvárja, hogy előnyben részesítsék a stratégiai döntéseknél és fejlesztéseknél. Egy aktív első számú versenyzői szerződés kis extra pontjárulékot ad az autónak a versenyben, de ha a csapat másik autója mégis jobban teljesít verseny után versenyre, a versenyző csapathoz fűződő viszonya romlik – jele annak, hogy az első számú versenyző becsapva érzi magát.</p>
+                <p><strong>6. Más csapatok és kivásárlási klauzula:</strong> Ha egy versenyzőnek kevés ideje van hátra a szerződéséből, a ligák egy másik csapata érdeklődést mutathat, és saját fizetési ajánlatot tehet – ez értesítésként és a tárgyalás egyik tényezőjeként jelenik meg. Ha a versenyzőnek emellett kivásárlási klauzulája is van, egy másik menedzser bármikor kifizetheti a teljes klauzulaösszeget, hogy azonnal átvegye a szerződést; ekkor levelet kapsz a Beérkezett üzenetekben (azzal a tanáccsal, hogy egy magasabb kivásárlási klauzula legközelebb csökkenti ennek kockázatát), és a pénz automatikusan a számládra kerül. Egy személy kivásárlási klauzulája soha nem aktiválható a klub első évében, függetlenül attól, milyen magas az összeg.</p>
+                <p><strong>7. Személyzet (szerelők, mérnökök, Team Principal):</strong> Ugyanazt a szerződésrendszert használjuk a személyzetedre, bár kevesebb feltétellel (fizetés, szerződés hossza, aláírási bónusz, teljesítménybónusz és kivásárlási klauzula – dobogós-/győzelmi-/bajnoki bónusz vagy első számú versenyzői státusz nélkül). A Team Principal szerződését közvetlenül a Csapatoldal → Szerződések alatt kezeled.</p>
+                <p><strong>8. Értesítések:</strong> Minden, ami a szerződésekkel kapcsolatos – közeledő szerződéslejárat, fizetési igények, más csapatok érdeklődése, lejárt szerződések, kifizetett bónuszok, aktivált kivásárlási klauzulák, valamint sikeres és sikertelen tárgyalások – üzenetként jelenik meg az Eseménynaplóban, amelyet a <strong>Kezdőlap</strong> fülön találsz.</p>
+                <p><strong>9. Kapcsolat a csapattal:</strong> Minden szerződéshez tartozik egy 0–100 közötti kapcsolati érték, amely azt mutatja, mennyire elégedett az illető a csapatoddal. Egy új személy 50–79 között kezd. A kapcsolat befolyásolja, mekkora eséllyel fogadja el az illető az ajánlatodat a tárgyalásokon: 50 semleges, 100 +10 százalékpontot, 0 pedig −10 százalékpontot jelent. A tárgyalási nézetben a kapcsolat a Motiváció érték része is (a kapcsolat és a csapatmorál átlaga), amely csak tájékoztató jellegű. A kapcsolat +8-cal nő minden alkalommal, amikor új vagy meghosszabbított szerződésben állapodtok meg. Az állandó pilótáidnál minden szezon végén is változik: +4, ha a pilóta elérte a pontcélját, −6, ha a cél felénél kevesebbet szerzett. Az első pilóta státuszú pilóta minden futam után +1-et kap, ha csapattársa előtt ér célba, és −3-at, ha a csapattárs végez előtte.</p>
+            </div>
+
+            <div class="card" id="man-pension">
+                <h3>Nyugdíjazás és öregedés</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">A játék minden csapatára vonatkozik.</p>
+                <p><strong>A versenyzők 40 évesen vonulnak nyugdíjba:</strong> Amint egy versenyző betölti a 40. évét (szezonváltáskor), elhagyja a csapatot. Pontosan úgy, mint egy lejárt szerződésnél, a tartalék versenyző lép a helyére, ha van ilyen – ellenkező esetben azonnal egy új kezdőt szerződtetnek, így egy autó soha nem marad tartósan versenyző nélkül. Tartsd tehát szemmel a tartalékpadodat és a Junior programodat (lásd <a href="#man-scouting">Beszervezés és junior program</a>), amikor versenyzőid közelednek a 40. évükhöz.</p>
+                <p><strong>A szerelők és mérnökök legfeljebb 60 évesek lehetnek:</strong> 60 éves korban az illető nyugdíjba vonul, és elhagyja a csapatot. Saját csapatodban a hely üresen marad, amíg fel nem veszel valakit.</p>
+                <p><strong>Képességromlás 30 éves kor után (csak versenyzőknél):</strong> Egy versenyző többi képessége – Gyorsaság, Gumikezelés, Védekezés és Csapatképesség – fokozatosan romlik minden szezonban, amikor 30 évnél idősebb, és a hanyatlás fokozatosan nagyobb lesz, ahogy a versenyző öregszik. A Tapasztalatot ez nem érinti – az továbbra is 5 ponttal nő évente, akárcsak mindenki másnál. Egy idősebb versenyzőnek tehát több Tapasztalata van, de gyengébb fizikai/technikai képességei, ami miatt egy keret formája olyasmi, amit hosszú távon érdemes megtervezni.</p>
+            </div>
+
+            <div class="card" id="man-taktik">
+                <h3>Taktikai áttekintés: utasítások az időmérő és a verseny előtt</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">A <strong>Verseny</strong> fülön két külön taktikai megbeszélés van – <strong>Taktikai megbeszélés – Az időmérő előtt</strong> és <strong>Taktikai megbeszélés – A verseny előtt</strong> –, ahol csapatvezetőként utasításokat adsz a csapatodnak. Mindkét megbeszélésnek saját javaslata van a vezető mérnöktől, és külön mentődik. A döntések mindkét autódra vonatkoznak, és addig érvényesek, amíg meg nem változtatod őket – jóval azelőtt állítsd be a taktikát, hogy az időmérő (szerda 20:00) és a verseny (péntek 20:00) automatikusan lefut.</p>
+                <p><strong>Rajtgumi (Soft / Medium / Hard):</strong> A Soft a leggyorsabb, de leggyorsabban kopik, a Hard bírja legjobban, de a leglassabb, a Medium pedig kiegyensúlyozottan a kettő között helyezkedik el. A gyors kopás leginkább a kanyaros pályákon büntet. <strong>A kerékcsere javíthat a kopott gumikon:</strong> minél magasabb az autóhoz rendelt mérnökeid összesített képessége, annál jobban kompenzálja a kerékcsere egy nehéz gumiválasztás hátrányát a verseny alatt.</p>
+                <p><strong>Leszorítóerő (0-100):</strong> A magasabb leszorítóerő jobb tapadást ad a kanyarokban (segít az időmérőn, különösen a kanyaros pályákon, és a versenyben is a kanyaros pályákon), de csúcssebességbe kerül az egyenesekben (hátráltatja a versenyt hosszú egyenesekkel rendelkező pályákon). Az alacsonyabb leszorítóerő ezzel szemben jó a csúcssebességnek, de gyengébb kanyarfelvételt ad. A megfelelő beállítás tehát a pálya jellegétől függ.</p>
+                <p><strong>Kezelhetőség (0-100):</strong> A kezelhetőség-beállítás könnyebben irányíthatóvá teszi az autót, és minél magasabbra állítod, annál egyenesen pozitív hozzájárulást ad mind az időmérőhöz, mind a versenyhez.</p>
+                <p><strong>Csapatutasítás (csak verseny):</strong> Választhatod, hogy priorizálod az 1-es vagy a 2-es autót – a priorizált autó extra pontjárulékot kap a versenyben, míg a másik autó kicsit enged, vagy választhatod a "Nincs prioritás" opciót a két versenyződ közti szabad versenyért.</p>
+                <p><strong>Üzemanyag:</strong> A Verseny fül a verseny pályájához ajánlott üzemanyag-mennyiséget (literben) mutatja, a pálya hossza és kanyarjainak száma alapján. Ha az ajánlottnál kevesebb üzemanyaggal versenyzel, az autó nem takarít meg időt, hanem éppen ellenkezőleg, veszít a teljesítményéből ("takarékos vezetés"), és a DNF (motorleállás) kockázata annál nagyobb, minél nagyobb a hiány. Ha az ajánlottnál több üzemanyaggal versenyzel, a teljesítmény szenved a plusz súlytól. A legjobb eredményt tehát úgy éred el, ha a lehető legközelebb maradsz az ajánlott mennyiséghez – ezt a Verseny fülön autónként mutatjuk, mind a verseny előtt, mind utána.</p>
+            </div>
+
+            <div class="card" id="man-popularitet">
+                <h3>Népszerűség és merchandise</h3>
+                <p>Minden versenyzőnek van egy <strong>Népszerűsége</strong> (0-100), amely látható a versenyző profiloldalán. A népszerűség győzelem vagy dobogós helyezés után nő, egy top 10-es helyezésnél kissé emelkedik, egy rossz verseny esetén csökken, egyébként pedig idővel lassan visszahúzódik egy semleges középértékhez – pontosan úgy, mint a csapatmorál.</p>
+                <p>Két versengő versenyződ (1-es és 2-es autó) átlagos népszerűsége skálázza a heti <strong>merchandise-eladásodat</strong> a gazdasági frissítéskor: a magas átlagos népszerűség akár +80%-ot is adhat, az alacsony átlagos népszerűség akár -60%-kal is csökkentheti a bevételt. A népszerű versenyzők tehát a pályán megszerzett eredményeken felül is pénzt érnek.</p>
+            </div>
+
+            <div class="card" id="man-mekaniker">
+                <h3>Szerelők</h3>
+                <p><strong>Mit csinálnak a szerelők?</strong> A szerelők gondozzák az autót, és hozzájárulnak a teljesítményéhez az időmérőn és a versenyen is. Az adott autóhoz rendelt szerelők <strong>összesített képessége</strong> számít – az 1-es és a 2-es autót teljesen külön számoljuk. Két szerelő 80-as és 10-es képességgel tehát 90-et ad, öt 80-as szerelő pedig 400-at. A képesség a szerelő öt tulajdonságának átlaga, így minden tulajdonság egyformán számít. A pilóta minden képességpontja tízszer annyit ér, mint a személyzet egy pontja, de mivel a személyzet képességei összeadódnak, egy teljes és erős szerelőcsapat minden versenyen nagy különbséget jelent.</p>
+                <p><strong>Létszám:</strong> Legfeljebb 10 állandó szerelőd lehet, autónként legfeljebb 5. Minden szerelőt a profiloldalán osztasz be az 1-es autóhoz, a 2-es autóhoz vagy a Tartalékba. Csak az autóhoz beosztott szerelők számítanak – a Tartalékban lévők és az <strong>extra</strong> szerelők (akiket a 10 állandón felül tartalékként veszel fel) fizetést kapnak, de nem befolyásolják a versenyt. Egy szerelők nélküli autó úgy számít, mintha a csapat képessége 10 lenne. Ha <strong>Vezető szerelőt</strong> nevezel ki, +20%-ot kap a képességére annál az autónál, amelyhez be van osztva (lásd <a href="#man-chefer">Vezető szerelő és vezető mérnök</a>).</p>
+                <p><strong>Fejlődés:</strong> A tapasztalat magától nő, ahogy a szerelő idősödik. A többi tulajdonságot úgy fejlesztheted, ha legfeljebb 3 szerelőt nevezel a hétfői edzésversenyre a Csapatoldal → Edzés alatt (+1–+5 a teljesítménytől függően, közvetlenül az edzőverseny után lép életbe). A felvétel 100 000 kr-be kerül, utána heti fizetést kell fizetni (lásd <a href="#man-trupp">A kereted és a személyzeted</a>).</p>
+            </div>
+
+            <div class="card" id="man-ingenjorer">
+                <h3>Mérnökök</h3>
+                <p><strong>Mit csinálnak a mérnökök?</strong> A mérnökök felelnek az autó beállításáért és a versenystratégiáért. Ahogy a szerelőknél, itt is az adott autó mérnökeinek <strong>összesített képessége</strong> számít, és ez ugyanúgy beleszámít az autó versenyképességébe az időmérőn és a versenyen, mint a szerelőké.</p>
+                <p><strong>Különleges szerep a versenyen:</strong> Magán a versenyen a mérnököknek ezenfelül három saját hatásuk is van, amelyek mind az autó mérnökeinek összesített képességén alapulnak. <strong>Csökkentik a gumikopást</strong> – már összesen 100-nál 65%-kal kevesebbe kerül a kopás (ez a maximális hatás), ami leginkább a sok kanyaros pályákon érződik. <strong>Boxbónuszt</strong> adnak, amely tovább nő, minél magasabb az összesített képesség. És <strong>gyorsabbá teszik a kerékcserét</strong> – egy gyenge mérnökcsapattal elért kb. 3,6 másodpercről egészen a játék leggyorsabb, kb. 1,6 másodperces kerékcseréiig. Az időmérőt tehát egyformán befolyásolják a szerelők és a mérnökök, de a versenyen a mérnökök a legfontosabb személyzeti csoport.</p>
+                <p><strong>Létszám és fejlődés:</strong> Ugyanazok a szabályok, mint a szerelőknél: legfeljebb 10 állandó mérnök, autónként legfeljebb 5. A Tartalékban lévő és az extra mérnökök nem számítanak, és egy mérnökök nélküli autó 10-es képességnek számít. A <strong>Vezető mérnök</strong> +20%-ot kap a képességére a saját autójánál. Legfeljebb 3 mérnököt nevezhetsz a hétfői edzésversenyre a Csapatoldal → Edzés alatt.</p>
+            </div>
+
+            <div class="card" id="man-principal">
+                <h3>Csapatfőnök</h3>
+                <p><strong>Mit csinál a csapatfőnök?</strong> A csapatfőnök (Team Principal) a pályán kívül vezeti a csapatot, és soha nem befolyásolja közvetlenül a versenyt, de három képessége közvetve hat a csapatra. A <strong>Tárgyalás</strong> növeli vagy csökkenti annak esélyét, hogy egy versenyző vagy más munkatárs elfogadja a szerződésajánlatodat – legfeljebb körülbelül 10 százalékponttal egy átlagos, 50-es csapatfőnökhöz képest. A <strong>Szponzoráció</strong> a felajánlott szponzori szerződések alapösszegét módosítja −15% és +15% között. A <strong>Morál</strong> azt határozza meg, milyen szint felé húzódik hosszú távon a csapatmorál, 40 és 80 között – a csapatmorál pedig minden versenyen kis bónuszt vagy levonást ad, és befolyásolja, mennyire szívesen írnak alá a munkatársak. Egy új csapatfőnök mindenben 10-ről indul, így a hatások kezdetben negatívak, és csak akkor válnak pozitívvá, amikor a képességek meghaladják az 50-et.</p>
+                <p><strong>Képességek:</strong> A csapatfőnöknek három képessége van (0–100): a <strong>Tárgyalás</strong> a szerződéstárgyalások sikerességét, a <strong>Szponzoráció</strong> a szponzori ajánlatok nagyságát, a <strong>Morál</strong> pedig a csapat hosszú távú morálját befolyásolja.</p>
+                <p><strong>Kezdés és fejlődés:</strong> A játék elején kapsz egy csapatfőnököt, akinek minden képessége <strong>10</strong>, életkora pedig véletlenszerűen <strong>40–45</strong> év. Ezután a csapatfőnököd <strong>hetente minden képességben +1-et</strong> fejlődik (a vasárnapi pénzügyi frissítéskor), legfeljebb 100-ig.</p>
+                <p><strong>Visszavonulás:</strong> A csapatfőnök minden szezonváltáskor egy évvel idősebb lesz, és <strong>60</strong> évesen visszavonul.</p>
+                <p><strong>Toborzás:</strong> Ha a csapatodnak nincs csapatfőnöke (visszavonulás után, vagy ha elbocsátottad/eladtad), <strong>ingyen</strong> vehetsz fel újat a Csapatoldal → Áttekintés (Személyzet kártya) gombjával. Az új csapatfőnök minden képessége 10, és 40–45 éves, akárcsak az elején. Toborzási díj nincs, de a csapatfőnök a szerződése szerint normál heti fizetést kap.</p>
+            </div>
+
+            <div class="card" id="man-chefer">
+                <h3>Vezető szerelő és vezető mérnök</h3>
+                <p>A Csapatoldal → Szerelők, illetve Mérnök fülön kinevezhetsz egy alkalmazottad <strong>Vezető szerelőnek</strong> vagy <strong>Vezető mérnöknek</strong> a táblázat "Vezető kinevezése" gombjával (és ugyanezzel a gombbal leválthatod). A vezetőt jelvény jelöli, bárhol is jelenik meg a játékban.</p>
+                <p>A vezető <strong>20%-os erősítést kap a képességéhez</strong> (max. 100-ig) annak az autónak a számításában, amelyhez rendelve van – helyezd tehát a vezetődet ahhoz az autóhoz, amelyet priorizálni szeretnél. Egyszerre csak egy vezető szerelőd és egy vezető mérnököd lehet.</p>
+            </div>
+
+            <div class="card" id="man-lagledare">
+                <h3>Csapatoldal: csapatvezető, bemutatkozás és nemzet</h3>
+                <p>Minden Csapatoldal tetején mostantól látható, melyik <strong>nemzetből</strong> származik a csapat, valamint hogy ki <strong>irányítja a csapatot</strong> a "Felhasználó" felirat alatt. A saját Csapatoldaladon ez kattintható, és a fiókod oldalára visz, valamint megadhatod a saját neved (a "Csapatvezető nevének megadása" gombbal), és írhatsz egy rövid <strong>bemutatkozást</strong> a csapatról (a "Bemutatkozás szerkesztése" gombbal), amely mindenki számára látható, aki meglátogatja a Csapatoldaladat.</p>
+            </div>
+
+            <div class="card" id="man-forum">
+                <h3>Fórum</h3>
+                <p><strong>A főmenü Fórum füle:</strong> külön vitafórum valódi témákkal, kereséssel és rendezési lehetőségekkel (Legutóbbi aktivitás, Legújabb, Legtöbb válasz). Kattints az <strong>Új téma</strong> gombra, hogy címmel és nyitóhozzászólással saját beszélgetést indíts, vagy nyiss meg egy meglévő témát, hogy elolvasd és válaszolj – minden témánál látszik, ki indította és hány válasz érkezett rá. A témák minden bejelentkezett játékos számára közösek csapattól és divíziótól függetlenül.</p>
+                <p><strong>A Sorozat fül csevegőnaplója:</strong> egy különálló, kisebb „Fórum” a <strong>Sorozat</strong> fül alján – folyamatos csevegőnapló, amely a fenti sorozatválasztóban éppen megtekintett sorozathoz/csoporthoz tartozik. Itt rövid üzeneteket írhatsz a saját csoportod többi csapatának. Ne keverd össze a fenti Fórum füllel: a csevegőnapló csoportonként külön van, a Fórum fül globális, és minden játékosé.</p>
+            </div>
+
+            <div class="card" id="man-inkorg">
+                <h3>Beérkezett üzenetek</h3>
+                <p>A <strong>Felhasználóneved → Beérkezett üzenetek</strong> alatt találod a <strong>Játékvezetés</strong> rendszerüzeneteit (pl. megnyert átigazolások, bajnoki címek, feljutás/kiesés és aktivált kivásárlási záradékok), valamint más Undercut Racing Manager-játékosok privát üzeneteit. A fülön lévő jelvény mutatja, hány olvasatlan üzeneted van; egy üzenetet rákattintással jelölhetsz olvasottnak.</p>
+                <p>Kattints az <strong>Új</strong> gombra, ha te magad szeretnél privát üzenetet küldeni egy másik játékosnak – megadod a címzett felhasználónevét, a tárgyat és az üzenetet. Magadnak nem küldhetsz üzenetet, a kapott válaszok pedig ugyanabban a mappában jelennek meg a rendszerüzenetek mellett.</p>
+            </div>
+
+            <div class="card" id="man-scouting">
+                <h3>Beszervezés és junior program</h3>
+                <p>A <strong>Csapatoldal → Beszervezés</strong> alatt (csak a saját Csapatoldaladon látható) hívhatod a beszervezőidet <strong>500 000 kr</strong>-ért hívásonként. Minden hívás egy új tehetséget (15-19 éves) ad a <strong>Junior programodhoz</strong>, saját beszervezett Képességgel, vezetési stílussal és nemzetiséggel. A tehetségek pontosan úgy öregednek, mint mindenki más a játékban, minden szezonváltáskor.</p>
+                <p>Amint egy tehetség betölti a <strong>20. évét</strong>, "Felvételre kész" lesz, és a csapat tartalékpadjára írhatod a "Felvétel" gombbal – ehhez az szükséges, hogy a tartalékpadod ne legyen tele (max. 10 tartalék versenyző – ha tele van, először adj el vagy bocsáss el egy meglévő tartalék versenyzőt).</p>
+                <p>A Junior programodban egyszerre legfeljebb <strong>5 tehetség</strong> lehet. A beszervezőidet csak <strong>hetente egyszer</strong> hívhatod – a korlátozás minden vasárnap 20:00-kor nullázódik, a heti pénzügyi frissítéssel együtt. A tehetség életkora nem egyenletesen oszlik el: 15 év (8% valószínűség), 16 év (23%), 17 év (23%), 18 év (23%) és 19 év (23%).</p>
+                <p>A <strong>Felkészítő edzés</strong> alfülön minden olyan tehetségnek, aki még nem töltötte be a 20. életévét, kiválaszthatsz egy képességet (Sebesség, Gumikezelés, Védekezés vagy Csapatmunka), amelyre fel kell készülnie. A választott képesség <strong>hetente +1 ponttal</strong> nő (a vasárnapi pénzügyi frissítéskor) egészen addig a szezonig bezárólag, amikor a tehetség betölti a 20. életévét.</p>
+                <p>Amikor egy tehetség betölti a 20. életévét, és szerződtetik a csapat tartalékpadjára, automatikusan <strong>4 éves szerződést</strong> kap. Ez az első szerződés emellett védett: egyetlen csapat sem – sem te, sem másik csapat – aktiválhatja a kivásárlási záradékát. A védelem csak addig tart, amíg a szerződést legközelebb újra nem tárgyalják vagy meg nem újítják, utána ismét a normál szabályok érvényesek.</p>
+            </div>
+
+            <div class="card" id="man-historia">
+                <h3>Statisztika, trófeák és legendák</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">A tabellapontokkal ellentétben, amelyek minden szezonban nullázódnak (lásd <a href="#man-tavling">Szezonok, versenyek és pontok</a>), ez tartósan épül – szezonról szezonra, egész karriered során.</p>
+                <p><strong>Bajnokok listája (Statisztika fül):</strong> Amikor egy szezon véget ér, minden divízió győztesét bajnokká koronázzák, közvetlenül a pontok nullázása előtt. A <strong>Statisztika → Bajnokok listája</strong> fülön láthatod, ki nyerte meg az Undercut Masters League-et az egyes szezonokban, divíziónként böngészheted a bajnokokat, megnézheted a minden idők legtöbb bajnoki címének ranglistáját, valamint a versenyzők teljes <strong>pályafutás-statisztikáját</strong> (versenyek, győzelmek, dobogók, pontok, pole pozíciók, leggyorsabb körök és kiesések), rangsorolva a sorozatokban jelenleg versenyző összes pilóta és az összes Legenda között.</p>
+                <p><strong>Rekordok (Statisztika fül):</strong> Ranglisták a legtöbb győzelemről, legtöbb dobogós helyről, legtöbb pole pozícióról, legtöbb leggyorsabb körről és legtöbb DNF-ről minden idők legjobbjai közül, valamint a csapat kerékcsere-rekordja (a valaha végrehajtott leggyorsabb kerékcsere, melyik csapat és mikor).</p>
+                <p><strong>Csapatstatisztika (Statisztika fül):</strong> Minden csapat teljes története – versenyek, győzelmek, dobogós helyek, pontok, pole pozíciók és bajnoki címek – függetlenül attól, melyik divízióban versenyez a csapat jelenleg.</p>
+                <p><strong>Trófeavitrin (Csapatoldal):</strong> Minden csapat Csapatoldalán – a sajátodon és minden ellenfélén – van egy saját <strong>Trófeák</strong> alfül, amely pontosan felsorolja, mely bajnoki címeket nyerte az adott csapat, szezonról szezonra, valamint a csapat összesített karrierstatisztikáját.</p>
+                <p><strong>Eredmények (Statisztika fül):</strong> Hosszú távú célok a saját csapatodnak: Első győzelem (nyerd meg az első versenyedet), Divízióbajnok (végezz az 1. helyen a divíziódban), Feljutás az Undercut Masters League-be, 10 dobogó sorozatban (legalább egy autó dobogón 10 egymást követő versenyen), Leigazolt egy 40 évest (igazolj le egy legalább 39 éves versenyzőt) és 100 verseny a pályafutásod során. A feloldott eredményt a Hírek és az Eseménynapló rögzíti, és véglegesen megjelölve látod a Statisztika → Eredmények fülön.</p>
+                <p><strong>Legendák (Statisztika fül):</strong> Amint saját csapatod egyik versenyzője betölti a 40. évét és nyugdíjba vonul (lásd <a href="#man-pension">Nyugdíjazás és öregedés</a>), Legendaként mentődik el ahelyett, hogy egyszerűen eltűnne – versenyeivel, győzelmeivel, dobogós helyeivel, karrierpontjaival és bajnoki címeivel örökre megőrizve a Statisztika → Legendák fülön.</p>
+            </div>
+        
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">A játékról</a> &nbsp;·&nbsp; <a href="guider.html">Útmutatók</a> &nbsp;·&nbsp; <a href="manual.html">Kézikönyv</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Gyakori kérdések</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Adatvédelmi irányelvek</a> &nbsp;·&nbsp; <a href="../">Irány a játék</a>
+<div class="fot-sprak"><a href="../manual.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/manual.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/manual.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/manual.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/manual.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/manual.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/manual.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/manual.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/manual.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Fahrer, Mechaniker und Ingenieure – Undercut Racing Manager</title>
+<meta name="description" content="Wie Fahrer, Mechaniker und Ingenieure die Leistung des Autos in Undercut Racing Manager beeinflussen, wie du die Autos am klügsten besetzt und für Alter und Rente planst.">
+<link rel="canonical" href="https://undercutmanager.com/de/guide-personal.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-personal.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-personal.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-personal.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-personal.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-personal.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-personal.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-personal.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-personal.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-personal.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-personal.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">Über das Spiel</a><a href="guider.html" aria-current="page">Guides</a><a href="manual.html">Handbuch</a><a href="vanliga-fragor.html">Häufige Fragen</a><a href="integritetspolicy.html">Datenschutzerklärung</a><select class="sprakval" aria-label="Sprache" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-personal.html">Svenska</option><option data-l="en" value="../en/guide-personal.html">English</option><option data-l="de" value="../de/guide-personal.html" selected>Deutsch</option><option data-l="fr" value="../fr/guide-personal.html">Français</option><option data-l="es" value="../es/guide-personal.html">Español</option><option data-l="pl" value="../pl/guide-personal.html">Polski</option><option data-l="fi" value="../fi/guide-personal.html">Suomi</option><option data-l="hu" value="../hu/guide-personal.html">Magyar</option><option data-l="ja" value="../ja/guide-personal.html">日本語</option></select><a class="knapp" href="../">Kostenlos spielen</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Guides</a> › Fahrer, Mechaniker und Ingenieure</p>
+<h1>Fahrer, Mechaniker und Ingenieure: So baust du deinen Kader auf</h1>
+<p class="ingress">Ein Rennwagen ist nie besser als die Menschen um ihn herum. Aber nicht jede Rolle im Team zählt gleich viel – und wer versteht, wie das Spiel Fahrer und Personal gewichtet, kann einen siegfähigen Kader für einen Bruchteil dessen aufbauen, was die Konkurrenz bezahlt.</p>
+
+<h2>Fahrer und Team – so werden sie gewichtet</h2>
+<p>Die Rennfähigkeit des Autos wird aus drei Teilen berechnet: der Fähigkeit des Fahrers, der <strong>gesamten</strong> Fähigkeit der Mechaniker des Autos und der gesamten Fähigkeit der Ingenieure des Autos. Jeder Fähigkeitspunkt des Fahrers wiegt zehnmal so viel wie ein Punkt des Personals – aber die Punkte des Personals werden addiert. Zwei Mechaniker mit 80 und 10 ergeben 90, fünf Mechaniker mit 80 ergeben 400.</p>
+<p>Dadurch sind Fahrer und Team ungefähr gleich wichtig. Ein Fahrer mit 100 und ein volles Team aus fünf Mechanikern und fünf Ingenieuren mit 100 wiegen gleich viel. Und ein zusätzlicher Mechaniker mit 60 hebt das Auto fast so stark an wie ein zehn Punkte besserer Fahrer – oft zu geringeren Kosten.</p>
+<p>Außerdem schwankt die Tagesform des Fahrers: Vor jedem Qualifying und Rennen wird eine Leistung zwischen 70 und 100 Prozent seiner Fähigkeit ausgelost. Auch der beste Fahrer hat schlechte Tage, also beurteile einen Fahrer nicht nach einem einzelnen Rennen.</p>
+
+<h2>Jeder Angestellte am Auto zählt</h2>
+<p>Da das Spiel die Fähigkeit der Mechaniker und Ingenieure addiert, die einem Auto zugeteilt sind, gelten ein paar einfache Regeln:</p>
+<ul>
+<li><strong>Mehr Personal macht das Auto immer besser.</strong> Auch ein schwacher Neuzugang bringt seine Punkte ein – niemand zieht die anderen herunter.</li>
+<li><strong>Besetze beide Autos voll.</strong> Höchstens fünf Mechaniker und fünf Ingenieure pro Auto zählen. Ein Auto mit fünf in jeder Rolle ist viel stärker als eines mit einem oder zwei.</li>
+<li><strong>Tausche nach oben, wann immer du kannst.</strong> Wenn das Team voll ist, ist der nächste Schritt, den Schwächsten durch jemand Besseren zu ersetzen – der Unterschied in der Fähigkeit ist genau das, was das Auto gewinnt.</li>
+<li>Personal in der Reserve und zusätzliches Personal kostet Gehalt, beeinflusst das Rennen aber nicht.</li>
+<li>Ein Auto ganz ohne Mechaniker oder Ingenieure zählt so, als hätte das Team die Fähigkeit 10 – du brauchst also mindestens einen pro Auto.</li>
+</ul>
+<p>Jeder Angestellte kostet 100.000 kr bei der Einstellung und 100.000 kr Wochengehalt, die Frage ist also, wie viel Fähigkeit du pro Krone bekommst. Da das Gehalt unabhängig von der Fähigkeit gleich ist, bringt ein starker Angestellter mehr fürs Geld als ein schwacher – aber ein schwacher ist immer noch besser als ein leerer Platz, solange das Budget das Gehalt verkraftet.</p>
+
+<h2>Ernenne Chefs und setze sie richtig ein</h2>
+<p>Du kannst einen Chefmechaniker und einen Chefingenieur ernennen. Der Chef bekommt bei der Berechnung für das Auto, dem er zugeteilt ist, 20 Prozent auf seine Fähigkeit dazu. Setze die Chefs also an das Auto, das du bevorzugen willst – meist das Auto mit deinem besten Fahrer oder das Auto, das um einen Aufstiegsplatz kämpft.</p>
+
+<h2>Die Ingenieure entscheiden das Rennen</h2>
+<p>Im Qualifying sind Mechaniker und Ingenieure gleich wichtig. Im Rennen haben die Ingenieure dagegen drei zusätzliche Effekte:</p>
+<ul>
+<li>Sie <strong>verringern den Reifenverschleiß</strong> – schon wenn die Ingenieure am Auto zusammen 100 Fähigkeit haben, kostet der Verschleiß 65 Prozent weniger, das ist die Maximalwirkung.</li>
+<li>Sie geben einen <strong>Boxenbonus</strong>, der weiter wächst, je mehr gesamte Fähigkeit das Team hat.</li>
+<li>Sie machen <strong>Boxenstopps schneller</strong> – von etwa 3,6 Sekunden mit einem schwachen Team bis hin zu den schnellsten des Spiels, rund 1,6 Sekunden.</li>
+</ul>
+<p>Starke Ingenieure erlauben dir außerdem, im Rennen weichere Reifen zu fahren, ohne dass der Verschleiß den Vorteil auffrisst, wie im <a href="guide-taktik.html">Taktik-Guide</a> beschrieben. Wenn du dir nur eine Personalgruppe leisten kannst, sind die Ingenieure die bessere Wahl.</p>
+
+<h2>Training: fünf Eigenschaften, eine Fähigkeit</h2>
+<p>Alle Fahrer, Mechaniker und Ingenieure haben fünf Eigenschaften von 0–100, und die Fähigkeit ist ihr Durchschnitt. Erfahrung wächst automatisch um 5 Punkte pro Jahr und kann nicht trainiert werden. Die anderen vier werden im Trainingsrennen am Montag trainiert, an dem bis zu drei Personen pro Gruppe kostenlos teilnehmen und eine Eigenschaft um 1–5 Punkte verbessern können.</p>
+<p>Da die Fähigkeit ein einfacher Durchschnitt ist, spielt es keine Rolle, welche der vier Eigenschaften du trainierst – jeder Punkt zählt gleich. Aber es gibt einen praktischen Unterschied: Eigenschaften nahe 100 können kaum noch wachsen, also verlagere das Training auf die niedrigeren Eigenschaften.</p>
+
+<h2>Alter: Plane drei Saisons voraus</h2>
+<p>Alle im Spiel werden bei jedem Saisonwechsel ein Jahr älter. Das Alter prägt die Zukunft des Kaders auf drei Arten:</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Rolle</th><th>Was passiert</th></tr>
+<tr><td>Fahrer</td><td>Starten mit 20. Schnelligkeit, Reifenmanagement, Verteidigung und Teamfähigkeit lassen nach 30 allmählich nach, und der Rückgang nimmt mit dem Alter zu. Rente mit 40.</td></tr>
+<tr><td>Mechaniker &amp; Ingenieure</td><td>Kein Rückgang der Fähigkeit. Die Erfahrung wächst weiter. Rente mit 60.</td></tr>
+<tr><td>Teamchef</td><td>Wird jede Woche in jeder Fähigkeit um +1 besser. Rente mit 60.</td></tr>
+</table></div>
+<p>Ein älterer Fahrer hat also viel Erfahrung, aber nachlassende übrige Eigenschaften. Der ideale Fahrer zum Kaufen ist oft jemand Mitte zwanzig: erfahren genug, um jetzt gut zu sein, und mit vielen Jahren vor sich, bevor der Rückgang beginnt.</p>
+<p>Mechaniker und Ingenieure sind dagegen langfristige Investitionen – sie verlieren nie an Fähigkeit und können jahrzehntelang im Team bleiben.</p>
+
+<h2>Der Fahrstil wirkt sich stärker aus, als du denkst</h2>
+<p>Jeder Fahrer hat einen Fahrstil: aggressiv, defensiv oder ausgewogen. Aggressive Fahrer fahren näher am Limit und haben ein deutlich höheres Risiko, das Auto zu beschädigen. Ein Schaden senkt eine Komponente dauerhaft um 10–70 Prozent, und der Wiederaufbau kann Hunderttausende Kronen kosten. Zwei aggressive Fahrer im selben Team sind daher eine teure Kombination.</p>
+
+<h2>Das Nachwuchsprogramm: die Fahrer der Zukunft</h2>
+<p>Über deine Scouts kannst du einmal pro Woche für 500.000 kr einen Nachwuchsfahrer im Alter von 15–19 Jahren finden. Die Nachwuchsfahrer können jede Woche Vorbereitungstraining machen und werden mit 20 auf die Reservebank geholt – mit einem geschützten Vierjahresvertrag, dessen Ausstiegsklausel niemand auslösen kann. Das ist der sicherste Weg, einen eigenen Starfahrer hervorzubringen, ohne auf dem Transfermarkt gegen andere Teams zu konkurrieren.</p>
+
+<h2>Zusammenfassung</h2>
+<div class="card"><ul>
+<li>Fahrer und Team sind ungefähr gleich wichtig – die Fähigkeit des Personals wird addiert.</li>
+<li>Besetze das Team voll: fünf Mechaniker und fünf Ingenieure pro Auto, dann tausche nach oben.</li>
+<li>Die Ingenieure zählen im Rennen am meisten.</li>
+<li>Setze die Chefs an das Auto, das du bevorzugst.</li>
+<li>Kaufe Fahrer in ihren Zwanzigern und plane den Rückgang nach 30 ein.</li>
+<li>Baue ein Nachwuchsprogramm auf, bevor deine Fahrer auf die 40 zugehen.</li>
+</ul></div>
+<p>Wie du die richtigen Verträge mit deinem Kader aushandelst, beschreiben wir im <a href="guide-kontrakt.html">Guide zu Verträgen und Transfermarkt</a>.</p>
+<div class="card las-mer"><h3>Weiterlesen</h3><ul><li><a href="guide-ekonomi.html">Finanz-Guide: Budget, Sponsorenverträge und Preisgeld</a></li><li><a href="guide-kontrakt.html">Verträge und Transfermarkt: verhandeln, kaufen und verkaufen</a></li><li><a href="guide-seriepyramiden.html">Die Ligapyramide: So erreichst du die Masters League</a></li></ul><p><a href="guider.html">Alle Guides →</a></p></div><div class="card cta"><h2 style="margin-top:0">Probier es mit deinem eigenen Team</h2><p>Undercut Racing Manager ist kostenlos und läuft direkt im Browser.</p><a class="knapp" href="../">Kostenlos spielen</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Über das Spiel</a> &nbsp;·&nbsp; <a href="guider.html">Guides</a> &nbsp;·&nbsp; <a href="manual.html">Handbuch</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Häufige Fragen</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Datenschutzerklärung</a> &nbsp;·&nbsp; <a href="../">Zum Spiel</a>
+<div class="fot-sprak"><a href="../guide-personal.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-personal.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-personal.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-personal.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-personal.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-personal.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-personal.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-personal.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-personal.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

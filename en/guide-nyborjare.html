@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Beginner’s guide – Undercut Racing Manager</title>
+<meta name="description" content="New to Undercut Racing Manager? How to prioritise your first weeks: tactics, training, upgrades, staff and finances – step by step.">
+<link rel="canonical" href="https://undercutmanager.com/en/guide-nyborjare.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-nyborjare.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-nyborjare.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-nyborjare.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-nyborjare.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-nyborjare.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-nyborjare.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-nyborjare.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-nyborjare.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-nyborjare.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-nyborjare.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">About the game</a><a href="guider.html" aria-current="page">Guides</a><a href="manual.html">Manual</a><a href="vanliga-fragor.html">FAQ</a><a href="integritetspolicy.html">Privacy policy</a><select class="sprakval" aria-label="Language" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-nyborjare.html">Svenska</option><option data-l="en" value="../en/guide-nyborjare.html" selected>English</option><option data-l="de" value="../de/guide-nyborjare.html">Deutsch</option><option data-l="fr" value="../fr/guide-nyborjare.html">Français</option><option data-l="es" value="../es/guide-nyborjare.html">Español</option><option data-l="pl" value="../pl/guide-nyborjare.html">Polski</option><option data-l="fi" value="../fi/guide-nyborjare.html">Suomi</option><option data-l="hu" value="../hu/guide-nyborjare.html">Magyar</option><option data-l="ja" value="../ja/guide-nyborjare.html">日本語</option></select><a class="knapp" href="../">Play for free</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Guides</a> › Beginner’s guide</p>
+<h1>Beginner’s guide: your first weeks as a manager</h1>
+<p class="ingress">You have just taken over a racing team with two cars, a couple of drivers and a limited budget. This guide goes through what actually makes a difference in the first weeks – and which mistakes cost you a whole season.</p>
+
+<h2>Understand the weekly rhythm first</h2>
+<p>The most important thing to understand in Undercut Racing Manager is that nothing happens when you click – everything happens when the clock strikes. Every week follows the same schedule: training race on Monday, qualifying on Wednesday, race on Friday and the finance update on Sunday, always at 20:00 Swedish time (CET/CEST). Your job as manager is to make your decisions <em>before</em> each event runs.</p>
+<p>That means a good manager doesn’t need to be logged in all the time. A few short visits a week are enough, as long as they fall on the right days:</p>
+<div class="card"><ul>
+<li><strong>Sunday evening or Monday:</strong> read the week’s finances, start upgrades and enter staff in the training race.</li>
+<li><strong>Tuesday or Wednesday:</strong> check the tactics for qualifying and make sure the upgrades have finished.</li>
+<li><strong>Thursday or Friday:</strong> set the race tactics – tyres, downforce, fuel and team orders.</li>
+<li><strong>The weekend:</strong> read the race report, check for damage and follow up on the transfer market.</li>
+</ul></div>
+
+<h2>Week 1: three things to do right away</h2>
+<h3>1. Set the tactics – they’re free</h3>
+<p>The Tactics briefing under the Race tab costs nothing but affects every qualifying session and every race. Many new managers leave the default settings in place and lose positions for no reason at all. Read our <a href="guide-taktik.html">tactics guide</a> and spend five minutes adapting tyres, downforce, handling and fuel to the week’s track.</p>
+<h3>2. Enter staff in the training race – that’s free too</h3>
+<p>Every week you can enter up to three drivers, three mechanics and three engineers in Monday’s training race. Each participant improves a chosen attribute by 1–5 points. It costs nothing, and if you don’t give a new order the same setup as last week runs again. Training is the cheapest development in the game – never let a week go by without it.</p>
+<p>Remember that Experience can never be trained; it grows automatically with age. Put the training into Speed, Tire management, Defense and Teamwork for the drivers, and into the lowest attributes of your mechanics and engineers – ability is the average of all five attributes, so lifting the weakest gives just as much as lifting the strongest.</p>
+<h3>3. Start upgrading the weakest components</h3>
+<p>Upgrades get more expensive the higher a component already is. A step from index 0 costs 20,000 kr, but a step from index 90 costs 263,000 kr. Early on you therefore get much more performance per krona by lifting the weakest parts. More on that in the <a href="guide-bilutveckling.html">car development guide</a>.</p>
+
+<h2>Weeks 2–4: get to know your team</h2>
+<p>Once the basics are in place, it’s time to take a closer look at the squad. Open each driver’s profile and note three things: ability, age and driving style.</p>
+<ul>
+<li><strong>Ability</strong> is the single most important number in the whole game. Each ability point of the driver weighs ten times as much as a point of the mechanics or engineers – but staff points are added up, so a full crew matters about as much as the driver.</li>
+<li><strong>Age</strong> decides the future. Drivers gradually lose ability after 30 and retire at 40. A 22-year-old with average ability can be worth more than a 33-year-old who is better right now.</li>
+<li><strong>Driving style</strong> affects the risk. Aggressive drivers drive closer to the limit and damage the car considerably more often – and damage permanently lowers a component by 10–70 percent.</li>
+</ul>
+<p>Also look at how mechanics and engineers are split between Car 1 and Car 2. What counts is the combined ability of the staff on each car, up to five mechanics and five engineers per car. Every person you put on a car therefore makes it better. Our <a href="guide-personal.html">staff guide</a> explains how to crew the cars as smartly as possible.</p>
+
+<h2>Keep the budget above zero</h2>
+<p>The team can never go bankrupt, but a negative budget locks almost everything: you can’t upgrade, sign anyone, negotiate contracts, train or call your scouts. On top of that, 5 percent interest is charged on the deficit every week. As a new manager it is therefore wise to keep a buffer that covers at least one week of wages and maintenance before you make bigger purchases.</p>
+<p>A common beginner’s mistake is filling the crew faster than the finances can handle. Each hire costs 100,000 kr plus 100,000 kr in weekly wages. More staff makes the car better, but wages can quickly eat up the budget – build the crew at the pace your income allows. Read the <a href="guide-ekonomi.html">finance guide</a> before you start hiring.</p>
+
+<h2>Set a realistic goal for your first season</h2>
+<p>A season is ten races. In every group the winner goes up a division, and the division’s best runners-up are promoted too. The three worst teams in each group go down (except in Division 5, which is the bottom). For most new teams a reasonable first goal is to establish themselves in the top half of the table and build up the car and squad for season two.</p>
+<p>Also keep an eye on the regulations: after every season one of the car’s five components is halved for all teams, following a fixed rotating schedule. Whoever plans their upgrades around that schedule wastes less money than the competition.</p>
+
+<h2>Checklist for new managers</h2>
+<div class="card"><ul>
+<li>Tactics set for both qualifying and the race – not just the defaults.</li>
+<li>Three drivers, three mechanics and three engineers entered in training every week.</li>
+<li>Upgrades on the weakest components, started no later than Tuesday so they finish before qualifying.</li>
+<li>The budget above zero with a margin.</li>
+<li>An eye on the drivers’ age and contract length – see the <a href="guide-kontrakt.html">contracts guide</a>.</li>
+<li>Say hello in the forum – the other managers are real people and often generous with tips.</li>
+</ul></div>
+<p>If you want every rule in detail, the complete <a href="manual.html">manual</a> is there. And if you don’t have a team yet: <a href="../">create an account and play for free</a>.</p>
+<div class="card las-mer"><h3>Read next</h3><ul><li><a href="guide-taktik.html">Tactics guide: tyres, downforce, handling and fuel</a></li><li><a href="guide-bilutveckling.html">Car development: getting the most out of every krona</a></li><li><a href="guide-personal.html">Drivers, mechanics and engineers: building your squad</a></li></ul><p><a href="guider.html">All guides →</a></p></div><div class="card cta"><h2 style="margin-top:0">Try it with your own team</h2><p>Undercut Racing Manager is free and runs right in your browser.</p><a class="knapp" href="../">Play for free</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">About the game</a> &nbsp;·&nbsp; <a href="guider.html">Guides</a> &nbsp;·&nbsp; <a href="manual.html">Manual</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">FAQ</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Privacy policy</a> &nbsp;·&nbsp; <a href="../">To the game</a>
+<div class="fot-sprak"><a href="../guide-nyborjare.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-nyborjare.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-nyborjare.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-nyborjare.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-nyborjare.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-nyborjare.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-nyborjare.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-nyborjare.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-nyborjare.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

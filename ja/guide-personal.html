@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>ドライバー、メカニック、エンジニア – Undercut Racing Manager</title>
+<meta name="description" content="Undercut Racing Managerでドライバー、メカニック、エンジニアが車の性能にどう影響するか、車への最適な人員配置、年齢と引退への備え方を解説します。">
+<link rel="canonical" href="https://undercutmanager.com/ja/guide-personal.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-personal.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-personal.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-personal.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-personal.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-personal.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-personal.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-personal.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-personal.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-personal.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-personal.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">ゲームについて</a><a href="guider.html" aria-current="page">ガイド</a><a href="manual.html">マニュアル</a><a href="vanliga-fragor.html">よくある質問</a><a href="integritetspolicy.html">プライバシーポリシー</a><select class="sprakval" aria-label="言語" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-personal.html">Svenska</option><option data-l="en" value="../en/guide-personal.html">English</option><option data-l="de" value="../de/guide-personal.html">Deutsch</option><option data-l="fr" value="../fr/guide-personal.html">Français</option><option data-l="es" value="../es/guide-personal.html">Español</option><option data-l="pl" value="../pl/guide-personal.html">Polski</option><option data-l="fi" value="../fi/guide-personal.html">Suomi</option><option data-l="hu" value="../hu/guide-personal.html">Magyar</option><option data-l="ja" value="../ja/guide-personal.html" selected>日本語</option></select><a class="knapp" href="../">無料でプレイ</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">ガイド</a> › ドライバー、メカニック、エンジニア</p>
+<h1>ドライバー、メカニック、エンジニア：チームの作り方</h1>
+<p class="ingress">レーシングカーは、それを支える人々以上の力を発揮することはありません。しかし、チーム内のすべての役割が同じ重みを持つわけではありません。ゲームがドライバーとスタッフをどう評価するかを理解すれば、ライバルが払う費用のごく一部で勝てるチームを作れます。</p>
+
+<h2>ドライバーとスタッフ――評価の仕組み</h2>
+<p>車のレース能力は3つの要素から計算されます。ドライバーの能力、その車のメカニックの<strong>合計</strong>能力、そしてその車のエンジニアの合計能力です。ドライバーの能力1ポイントはスタッフの1ポイントの10倍の重みがありますが、スタッフのポイントは合計されます。能力80と10のメカニック2人なら90、能力80のメカニック5人なら400です。</p>
+<p>このため、ドライバーとスタッフはほぼ同じくらい重要になります。能力100のドライバーと、能力100のメカニック5人とエンジニア5人が揃ったスタッフは同じ重みです。そして能力60のメカニックを1人追加すると、ドライバーが10ポイント上手くなるのとほぼ同じくらい車が良くなります。しかも多くの場合、そのほうが安上がりです。</p>
+<p>さらに、ドライバーのその日の調子は変動します。予選とレースのたびに、能力の70～100％の範囲でパフォーマンスがランダムに決まります。最高のドライバーでも調子の悪い日はあるので、1レースだけでドライバーを評価しないようにしましょう。</p>
+
+<h2>車に配置したスタッフは一人ひとりが戦力</h2>
+<p>ゲームは車に配置されたメカニックとエンジニアの能力を合計するので、いくつかのシンプルなルールが当てはまります。</p>
+<ul>
+<li><strong>スタッフが増えれば車は必ず良くなる。</strong>能力の低い新人でもポイントを上乗せしてくれ、ほかのメンバーの足を引っ張ることはありません。</li>
+<li><strong>両方の車を満員にする。</strong>計算に入るのは1台につき最大5人のメカニックと5人のエンジニアまでです。各役割に5人ずついる車は、1～2人しかいない車よりはるかに強くなります。</li>
+<li><strong>できるときに入れ替えて底上げする。</strong>スタッフが満員になったら、次は最も弱い人をより優秀な人と入れ替えましょう。能力の差がそのまま車の向上分になります。</li>
+<li>リザーブのスタッフや追加スタッフは給料がかかりますが、レースには影響しません。</li>
+<li>メカニックやエンジニアがまったくいない車は、スタッフの能力が10として扱われます。1台につき最低1人は必要です。</li>
+</ul>
+<p>スタッフは1人につき雇用時に100,000 kr、さらに毎週100,000 krの給料がかかるので、問題は1クローナあたりどれだけの能力を得られるかです。給料は能力に関係なく同じなので、優秀なスタッフのほうがコストパフォーマンスは高くなります。ただし、予算が給料に耐えられる限り、能力の低いスタッフでも空席よりはずっとましです。</p>
+
+<h2>チーフを任命し、適切に配置する</h2>
+<p>チーフメカニックとチーフエンジニアを任命できます。チーフは、担当する車の計算において能力が20％上乗せされます。優先したい車――たいていはエースドライバーの車か、昇格圏を争っている車――にチーフを配置しましょう。</p>
+
+<h2>レースを決めるのはエンジニア</h2>
+<p>予選では、メカニックとエンジニアの重要度は同じです。しかしレースでは、エンジニアに3つの追加効果があります。</p>
+<ul>
+<li><strong>タイヤの摩耗を減らす</strong>――車のエンジニアの合計能力が100に達した時点で摩耗は65％少なくなり、これが最大効果です。</li>
+<li><strong>ピットボーナス</strong>を与え、スタッフの合計能力が高いほどボーナスは大きくなり続けます。</li>
+<li><strong>ピットストップを速くする</strong>――弱いスタッフでの約3.6秒から、ゲーム内最速の約1.6秒まで短縮されます。</li>
+</ul>
+<p>さらに、強いエンジニアがいれば、<a href="guide-taktik.html">戦術ガイド</a>で説明しているように、摩耗で優位を失うことなくレースで柔らかいタイヤを使えます。投資できるスタッフグループが1つだけなら、エンジニアを選ぶのが得策です。</p>
+
+<h2>トレーニング：5つの能力、1つの総合能力</h2>
+<p>ドライバー、メカニック、エンジニアには0～100の5つの能力があり、総合能力はその平均です。経験は毎年自動的に5ポイント増え、トレーニングはできません。残りの4つは月曜のトレーニングレースで鍛えられ、各グループから最大3人が無料で参加して、1つの能力を1～5ポイント伸ばせます。</p>
+<p>総合能力は単純な平均なので、4つの能力のうちどれを鍛えても1ポイントの価値は同じです。ただし実用面での違いはあります。100に近い能力はもうあまり伸びないので、低い能力を中心にトレーニングを回しましょう。</p>
+
+<h2>年齢：3シーズン先を見据えて計画する</h2>
+<p>シーズンが切り替わるたびに、ゲーム内の全員が1歳年を取ります。年齢はチームの将来に3つの形で影響します。</p>
+<div class="card tabell-scroll"><table>
+<tr><th>役割</th><th>起こること</th></tr>
+<tr><td>ドライバー</td><td>20歳でデビュー。30歳を過ぎるとスピード、タイヤマネジメント、ディフェンス、チームワークが少しずつ低下し、年齢とともに低下幅が大きくなります。40歳で引退。</td></tr>
+<tr><td>メカニック＆エンジニア</td><td>能力は低下しません。経験は増え続けます。60歳で引退。</td></tr>
+<tr><td>チームプリンシパル</td><td>毎週すべての能力が+1ずつ向上します。60歳で引退。</td></tr>
+</table></div>
+<p>つまり、年配のドライバーは経験が豊富な一方で、ほかの能力は下がっていきます。獲得に理想的なのは20代半ばのドライバーであることが多いです。いま十分に活躍できる経験があり、衰えが始まるまでまだ何年もあります。</p>
+<p>一方、メカニックとエンジニアは長期的な投資です。能力が衰えることはなく、何十年もチームに在籍できます。</p>
+
+<h2>ドライビングスタイルは想像以上に重要</h2>
+<p>ドライバーにはそれぞれ、攻撃的・守備的・バランス型のドライビングスタイルがあります。攻撃的なドライバーは限界ぎりぎりを攻めるため、車を壊すリスクがかなり高くなります。ダメージはパーツの値を10～70％恒久的に下げ、作り直しには数十万クローナかかることもあります。同じチームに攻撃的なドライバーが2人いると、高くつく組み合わせになります。</p>
+
+<h2>ジュニアプログラム：未来のドライバー</h2>
+<p>スカウトを通じて、週に1回、500,000 krで15～19歳の有望株を見つけられます。有望株は毎週準備トレーニングを受けられ、20歳になるとリザーブベンチに加わります。そのときの契約は保護された4年契約で、誰も契約解除条項を発動できません。移籍市場でほかのチームと争わずに、自前のスタードライバーを育てる最も確実な方法です。</p>
+
+<h2>まとめ</h2>
+<div class="card"><ul>
+<li>ドライバーとスタッフはほぼ同じくらい重要――スタッフの能力は合計される。</li>
+<li>スタッフを満員に：1台につきメカニック5人とエンジニア5人、その後は入れ替えで底上げ。</li>
+<li>レースで最も重要なのはエンジニア。</li>
+<li>チーフは優先したい車に配置する。</li>
+<li>ドライバーは20代で獲得し、30歳以降の衰えを見越して計画する。</li>
+<li>ドライバーが40歳に近づく前にジュニアプログラムを整える。</li>
+</ul></div>
+<p>チームとの適切な契約の結び方は、<a href="guide-kontrakt.html">契約と移籍市場のガイド</a>で解説しています。</p>
+<div class="card las-mer"><h3>続けて読む</h3><ul><li><a href="guide-ekonomi.html">財務ガイド：予算、スポンサー契約、賞金</a></li><li><a href="guide-kontrakt.html">契約と移籍市場：交渉、獲得、売却</a></li><li><a href="guide-seriepyramiden.html">リーグピラミッド：Masters Leagueへの道</a></li></ul><p><a href="guider.html">すべてのガイド →</a></p></div><div class="card cta"><h2 style="margin-top:0">自分のチームで試してみよう</h2><p>Undercut Racing Managerは無料で、ブラウザだけで遊べます。</p><a class="knapp" href="../">無料でプレイ</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">ゲームについて</a> &nbsp;·&nbsp; <a href="guider.html">ガイド</a> &nbsp;·&nbsp; <a href="manual.html">マニュアル</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">よくある質問</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">プライバシーポリシー</a> &nbsp;·&nbsp; <a href="../">ゲームへ</a>
+<div class="fot-sprak"><a href="../guide-personal.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-personal.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-personal.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-personal.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-personal.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-personal.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-personal.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-personal.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-personal.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

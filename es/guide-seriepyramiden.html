@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>La pirámide de divisiones – Undercut Racing Manager</title>
+<meta name="description" content="Cómo funcionan las divisiones, el ascenso, el descenso, los mejores segundos y los premios de temporada en Undercut Racing Manager, y cómo planificar tu ascenso.">
+<link rel="canonical" href="https://undercutmanager.com/es/guide-seriepyramiden.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-seriepyramiden.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-seriepyramiden.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-seriepyramiden.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-seriepyramiden.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-seriepyramiden.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-seriepyramiden.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-seriepyramiden.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-seriepyramiden.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-seriepyramiden.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-seriepyramiden.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">Sobre el juego</a><a href="guider.html" aria-current="page">Guías</a><a href="manual.html">Manual</a><a href="vanliga-fragor.html">Preguntas frecuentes</a><a href="integritetspolicy.html">Política de privacidad</a><select class="sprakval" aria-label="Idioma" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-seriepyramiden.html">Svenska</option><option data-l="en" value="../en/guide-seriepyramiden.html">English</option><option data-l="de" value="../de/guide-seriepyramiden.html">Deutsch</option><option data-l="fr" value="../fr/guide-seriepyramiden.html">Français</option><option data-l="es" value="../es/guide-seriepyramiden.html" selected>Español</option><option data-l="pl" value="../pl/guide-seriepyramiden.html">Polski</option><option data-l="fi" value="../fi/guide-seriepyramiden.html">Suomi</option><option data-l="hu" value="../hu/guide-seriepyramiden.html">Magyar</option><option data-l="ja" value="../ja/guide-seriepyramiden.html">日本語</option></select><a class="knapp" href="../">Jugar gratis</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Guías</a> › La pirámide de divisiones</p>
+<h1>La pirámide de divisiones: cómo llegar a la Masters League</h1>
+<p class="ingress">Undercut Racing Manager está construido como una pirámide con cinco niveles y 310 equipos. Cada equipo lo dirige un mánager real, y cada temporada hay equipos que suben y que bajan. Estas son las reglas y cómo usarlas para escalar.</p>
+
+<h2>Los niveles de la pirámide</h2>
+<div class="card tabell-scroll"><table>
+<tr><th>Nivel</th><th>Grupos</th><th>Equipos</th></tr>
+<tr><td>Undercut Masters League</td><td>1</td><td>10</td></tr>
+<tr><td>División 2</td><td>2</td><td>20</td></tr>
+<tr><td>División 3</td><td>4</td><td>40</td></tr>
+<tr><td>División 4</td><td>8</td><td>80</td></tr>
+<tr><td>División 5</td><td>16</td><td>160</td></tr>
+</table></div>
+<p>Cada grupo tiene siempre diez equipos. Una temporada tiene diez carreras, y los equipos del grupo se turnan como anfitriones en sus circuitos de casa.</p>
+
+<h2>Puntos: dos coches, una clasificación</h2>
+<p>En cada carrera, todos los coches compiten de forma individual. Los diez primeros puntúan según el sistema 25–18–15–12–10–8–6–4–2–1, y los puntos del equipo son la suma de los dos coches. Eso tiene una consecuencia importante: un segundo y un sexto puesto (18 + 8 = 26 puntos) valen más que una victoria y un coche fuera de los puntos (25 puntos). Dos coches igualados suelen valer más que una estrella y un coche flojo.</p>
+
+<h2>Ascenso</h2>
+<p>Al terminar la temporada, <strong>el ganador de cada grupo</strong> sube una división. Además, ascienden <strong>los mejores segundos de la división</strong>: tantos como grupos haya en la división superior:</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Desde</th><th>Ganadores de grupo que suben</th><th>Mejores segundos que suben</th></tr>
+<tr><td>División 2</td><td>2</td><td>1</td></tr>
+<tr><td>División 3</td><td>4</td><td>2</td></tr>
+<tr><td>División 4</td><td>8</td><td>4</td></tr>
+<tr><td>División 5</td><td>16</td><td>8</td></tr>
+</table></div>
+<p>Los segundos se ordenan por puntos y, en caso de empate, deciden los puntos del mejor coche. En la División 5 sube la mitad de los segundos, mientras que desde la División 2 solo sube uno de cada dos. Puedes seguir la clasificación en Serie → Clasificación → Mejores segundos.</p>
+<p>Por eso un segundo puesto en tu grupo rara vez es un fracaso, sobre todo en las divisiones bajas. Muchas veces es mejor sumar puntos de forma regular toda la temporada que jugártelo todo a superar a un líder de grupo dominante.</p>
+
+<h2>Descenso</h2>
+<p>Los <strong>tres peores equipos</strong> de cada grupo bajan una división (salvo en la División 5, que es la más baja). Se colocan preferentemente en los dos grupos vinculados al grupo que abandonan. Evitar los tres últimos puestos es, por tanto, el primer objetivo de un equipo recién ascendido.</p>
+
+<h2>Premios: por qué la cima vale tanto</h2>
+<p>El dinero llega por dos vías. Después de cada carrera se paga un premio por punto: desde 2.000 kr por punto en la División 5 hasta 15.000 kr en la Masters League. Al terminar la temporada se reparte además un bote según la posición final en la clasificación.</p>
+<p>Todas las divisiones tienen el mismo bote total, 20 millones kr, pero se reparte entre un número distinto de grupos. En la Masters League, un único grupo se reparte todo el bote; en la División 5, se lo reparten dieciséis grupos. Dentro del grupo, el ganador recibe el 50 %, el segundo el 20 %, el tercero el 10 % y así hasta el 0,5 % del décimo.</p>
+<div class="card tabell-scroll"><table>
+<tr><th>División</th><th>Bote por grupo</th><th>Ganador del grupo</th><th>Segundo</th></tr>
+<tr><td>Masters League</td><td>20.000.000 kr</td><td>10.000.000 kr</td><td>4.000.000 kr</td></tr>
+<tr><td>División 2</td><td>10.000.000 kr</td><td>5.000.000 kr</td><td>2.000.000 kr</td></tr>
+<tr><td>División 3</td><td>5.000.000 kr</td><td>2.500.000 kr</td><td>1.000.000 kr</td></tr>
+<tr><td>División 4</td><td>2.500.000 kr</td><td>1.250.000 kr</td><td>500.000 kr</td></tr>
+<tr><td>División 5</td><td>1.250.000 kr</td><td>625.000 kr</td><td>250.000 kr</td></tr>
+</table></div>
+<p>Cada escalón que subes duplica el bote de temporada. Eso convierte el ascenso en el mayor acontecimiento económico de la trayectoria de un equipo; más detalles en la <a href="guide-ekonomi.html">guía de finanzas</a>.</p>
+
+<h2>Un plan para escalar</h2>
+<ol>
+<li><strong>Inicio de temporada:</strong> estudia a los rivales de tu grupo. Haz clic en sus equipos en la clasificación y compara sus coches y pilotos con los tuyos.</li>
+<li><strong>Evalúa tus opciones:</strong> ¿estás entre los dos o tres más fuertes del grupo? Entonces el ascenso es realista y es el momento de invertir fuerte.</li>
+<li><strong>Invierte en la temporada adecuada:</strong> un gran esfuerzo en una temporada en la que puedes subir rinde más que el mismo dinero repartido en tres temporadas.</li>
+<li><strong>Tras el ascenso:</strong> el primer objetivo es evitar los tres últimos puestos. La competencia es más dura, pero los premios son mayores: úsalos para seguir construyendo.</li>
+<li><strong>Planifica según el reglamento:</strong> en cada cambio de temporada se reduce a la mitad un componente para todos. Consulta la <a href="guide-bilutveckling.html">guía de desarrollo del coche</a>.</li>
+</ol>
+
+<h2>Campeones e historia</h2>
+<p>Los puntos de la clasificación se reinician cada temporada, pero la historia permanece. Los ganadores de cada división se coronan campeones, y en la pestaña Estadísticas encontrarás la lista de campeones, los récords, las estadísticas de equipo, los logros y las Leyendas: pilotos que se retiraron tras una carrera en tu equipo. Cada equipo tiene además su propia vitrina de trofeos en su página del equipo.</p>
+<div class="card las-mer"><h3>Sigue leyendo</h3><ul><li><a href="guide-hemmabana.html">Tu circuito de casa: adapta el circuito a tu coche</a></li><li><a href="vad-ar-en-undercut.html">¿Qué es un undercut? La táctica de boxes que dio nombre al juego</a></li><li><a href="vanliga-fragor.html">Preguntas frecuentes</a></li></ul><p><a href="guider.html">Todas las guías →</a></p></div><div class="card cta"><h2 style="margin-top:0">Pruébalo con tu propio equipo</h2><p>Undercut Racing Manager es gratis y funciona directamente en el navegador.</p><a class="knapp" href="../">Jugar gratis</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Sobre el juego</a> &nbsp;·&nbsp; <a href="guider.html">Guías</a> &nbsp;·&nbsp; <a href="manual.html">Manual</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Preguntas frecuentes</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Política de privacidad</a> &nbsp;·&nbsp; <a href="../">Ir al juego</a>
+<div class="fot-sprak"><a href="../guide-seriepyramiden.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-seriepyramiden.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-seriepyramiden.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-seriepyramiden.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-seriepyramiden.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-seriepyramiden.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-seriepyramiden.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-seriepyramiden.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-seriepyramiden.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

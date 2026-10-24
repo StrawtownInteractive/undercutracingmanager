@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Versenyzők, szerelők és mérnökök – Undercut Racing Manager</title>
+<meta name="description" content="Hogyan befolyásolják a versenyzők, szerelők és mérnökök az autó teljesítményét az Undercut Racing Managerben, hogyan oszd be okosan az autókat, és hogyan tervezz az életkorral és a visszavonulással.">
+<link rel="canonical" href="https://undercutmanager.com/hu/guide-personal.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-personal.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-personal.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-personal.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-personal.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-personal.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-personal.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-personal.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-personal.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-personal.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-personal.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">A játékról</a><a href="guider.html" aria-current="page">Útmutatók</a><a href="manual.html">Kézikönyv</a><a href="vanliga-fragor.html">Gyakori kérdések</a><a href="integritetspolicy.html">Adatvédelmi irányelvek</a><select class="sprakval" aria-label="Nyelv" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-personal.html">Svenska</option><option data-l="en" value="../en/guide-personal.html">English</option><option data-l="de" value="../de/guide-personal.html">Deutsch</option><option data-l="fr" value="../fr/guide-personal.html">Français</option><option data-l="es" value="../es/guide-personal.html">Español</option><option data-l="pl" value="../pl/guide-personal.html">Polski</option><option data-l="fi" value="../fi/guide-personal.html">Suomi</option><option data-l="hu" value="../hu/guide-personal.html" selected>Magyar</option><option data-l="ja" value="../ja/guide-personal.html">日本語</option></select><a class="knapp" href="../">Ingyenes játék</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Útmutatók</a> › Versenyzők, szerelők és mérnökök</p>
+<h1>Versenyzők, szerelők és mérnökök: így építsd fel a keretet</h1>
+<p class="ingress">Egy versenyautó soha nem jobb a körülötte dolgozó embereknél. De nem minden szerep számít ugyanannyit a csapatban – és aki érti, hogyan súlyozza a játék a versenyzőket és a személyzetet, a vetélytársak kiadásainak töredékéért is nyerő keretet építhet.</p>
+
+<h2>A versenyző és a stáb – így súlyozza őket a játék</h2>
+<p>Az autó versenyképessége három részből áll össze: a versenyző képességéből, az autó szerelőinek <strong>összesített</strong> képességéből és az autó mérnökeinek összesített képességéből. A versenyző minden képességpontja tízszer annyit ér, mint a személyzet egy pontja – a személyzet pontjai viszont összeadódnak. Két szerelő 80-as és 10-es képességgel 90-et ad, öt 80-as szerelő pedig 400-at.</p>
+<p>Így a versenyző és a stáb nagyjából egyformán fontos. Egy 100-as versenyző és egy öt szerelőből és öt mérnökből álló, 100-as képességű teljes stáb ugyanannyit nyom a latban. Egy plusz 60-as szerelő pedig majdnem annyival javítja az autót, mint egy tíz ponttal jobb versenyző – gyakran kevesebb pénzért.</p>
+<p>Ráadásul a versenyző napi formája is változik: minden időmérő és verseny előtt véletlenszerűen sorsolnak egy teljesítményt a képessége 70 és 100 százaléka között. A legjobb versenyzőnek is vannak rossz napjai, ezért ne ítélj meg egy versenyzőt egyetlen verseny alapján.</p>
+
+<h2>Az autó minden munkatársa számít</h2>
+<p>Mivel a játék összeadja az autóhoz rendelt szerelők és mérnökök képességét, néhány egyszerű szabály érvényes:</p>
+<ul>
+<li><strong>Több személyzet mindig jobb autót jelent.</strong> Még egy gyenge új munkatárs is hozzáadja a pontjait – senki sem húzza le a többieket.</li>
+<li><strong>Töltsd fel mindkét autót.</strong> Autónként legfeljebb öt szerelő és öt mérnök számít. Egy autó, ahol minden poszton öt ember van, sokkal erősebb, mint az, ahol egy vagy kettő.</li>
+<li><strong>Cserélj jobbra, amikor csak tudsz.</strong> Ha a stáb teljes, a következő lépés a leggyengébb lecserélése valaki jobbra – a képességkülönbség pontosan annyi, amennyit az autó nyer.</li>
+<li>A tartalékban lévő és a többlet személyzet fizetésbe kerül, de a versenyt nem befolyásolja.</li>
+<li>Egy autó, amelyhez egyáltalán nincs szerelő vagy mérnök rendelve, úgy számít, mintha a stáb képessége 10 lenne – autónként tehát legalább egy emberre szükséged van.</li>
+</ul>
+<p>Minden munkatárs 100 000 kr-ba kerül szerződtetéskor, és heti 100 000 kr fizetést kap, a kérdés tehát az, mennyi képességet kapsz koronánként. Mivel a fizetés a képességtől függetlenül ugyanannyi, egy erős munkatárs többet ad a pénzért, mint egy gyenge – de egy gyenge munkatárs is jobb egy üres helynél, amíg a költségvetés elbírja a fizetését.</p>
+
+<h2>Nevezz ki vezetőket, és helyezd el őket jól</h2>
+<p>Kinevezhetsz egy vezető szerelőt és egy vezető mérnököt. A vezető 20 százalékkal magasabb képességgel számít annál az autónál, amelyhez beosztották. Helyezd tehát a vezetőket ahhoz az autóhoz, amelyet előnyben szeretnél részesíteni – általában a legjobb versenyződ autójához, vagy ahhoz, amelyik feljutást érő helyért harcol.</p>
+
+<h2>A mérnökök döntik el a versenyt</h2>
+<p>Az időmérőn a szerelők és a mérnökök egyformán fontosak. A versenyen viszont a mérnököknek három további hatásuk van:</p>
+<ul>
+<li><strong>Csökkentik a gumikopást</strong> – amint az autó mérnökeinek összesített képessége eléri a 100-at, a kopás 65 százalékkal kevesebbe kerül, ez a maximális hatás.</li>
+<li><strong>Boxbónuszt</strong> adnak, amely tovább nő, minél nagyobb a stáb összesített képessége.</li>
+<li><strong>Gyorsabbá teszik a kerékcserét</strong> – egy gyenge stábbal elért kb. 3,6 másodpercről egészen a játék leggyorsabb, kb. 1,6 másodperces kerékcseréiig.</li>
+</ul>
+<p>Az erős mérnökök ráadásul lehetővé teszik, hogy a versenyen puhább gumival menj anélkül, hogy a kopás felemésztené az előnyt, ahogy a <a href="guide-taktik.html">taktikai útmutató</a> leírja. Ha csak egy személyzeti csoportba tudsz befektetni, a mérnökök a jobb választás.</p>
+
+<h2>Edzés: öt tulajdonság, egy képesség</h2>
+<p>Minden versenyzőnek, szerelőnek és mérnöknek öt tulajdonsága van 0 és 100 között, a képességük pedig ezek átlaga. A Tapasztalat évente automatikusan 5 ponttal nő, és nem edzhető. A másik négyet a hétfői edzésversenyen lehet edzeni, ahol csoportonként legfeljebb három ember ingyen vehet részt, és 1–5 ponttal javíthat egy tulajdonságán.</p>
+<p>Mivel a képesség egyszerű átlag, mindegy, melyik tulajdonságot edzed a négy közül – minden pont ugyanannyit ér. Van azonban egy gyakorlati különbség: a 100-hoz közeli tulajdonságok már nem nagyon tudnak nőni, ezért az edzést az alacsonyabb tulajdonságok felé tereld.</p>
+
+<h2>Életkor: tervezz három szezonnal előre</h2>
+<p>Minden szezonváltáskor a játékban mindenki egy évvel idősebb lesz. Az életkor háromféleképpen formálja a keret jövőjét:</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Szerep</th><th>Mi történik</th></tr>
+<tr><td>Versenyzők</td><td>20 évesen kezdenek. A Gyorsaság, a Gumikezelés, a Védekezés és a Csapatképesség 30 év után fokozatosan romlik, és a hanyatlás az életkorral gyorsul. Visszavonulás 40 évesen.</td></tr>
+<tr><td>Szerelők és mérnökök</td><td>A képességük nem csökken. A tapasztalatuk tovább nő. Visszavonulás 60 évesen.</td></tr>
+<tr><td>Team Principal</td><td>Hetente minden képességében +1-gyel javul. Visszavonulás 60 évesen.</td></tr>
+</table></div>
+<p>Egy idősebb versenyzőnek tehát sok a Tapasztalata, de a többi tulajdonsága romlik. A megvásárlásra ideális versenyző gyakran 25 év körüli: elég tapasztalt ahhoz, hogy már most jó legyen, és sok éve van még a hanyatlás kezdetéig.</p>
+<p>A szerelők és a mérnökök ezzel szemben hosszú távú befektetések – soha nem veszítenek a képességükből, és évtizedekig a csapatnál maradhatnak.</p>
+
+<h2>A vezetési stílus többet számít, mint gondolnád</h2>
+<p>Minden versenyzőnek van vezetési stílusa: agresszív, defenzív vagy kiegyensúlyozott. Az agresszív versenyzők közelebb autóznak a határhoz, és jóval nagyobb eséllyel sértik meg az autót. Egy sérülés véglegesen 10–70 százalékkal csökkenti az alkatrészt, és az újraépítés több százezer koronába kerülhet. Két agresszív versenyző ugyanabban a csapatban ezért drága kombináció.</p>
+
+<h2>A junior program: a jövő versenyzői</h2>
+<p>A tehetségkutatóid segítségével hetente egyszer 500 000 kr-ért találhatsz egy 15–19 éves tehetséget. A tehetségek hetente felkészítő edzésen vehetnek részt, és 20 évesen a tartalékpadra kerülnek – egy védett, négyéves szerződéssel, amelynek kivásárlási klauzuláját senki sem érvényesítheti. Ez a legbiztosabb módja annak, hogy saját sztárversenyzőt nevelj anélkül, hogy az átigazolási piacon más csapatokkal kellene versengened.</p>
+
+<h2>Összefoglalás</h2>
+<div class="card"><ul>
+<li>A versenyző és a stáb nagyjából egyformán fontos – a személyzet képességei összeadódnak.</li>
+<li>Töltsd fel a stábot: autónként öt szerelő és öt mérnök, aztán cserélj jobbakra.</li>
+<li>A versenyen a mérnökök számítanak a legtöbbet.</li>
+<li>A vezetőket ahhoz az autóhoz oszd be, amelyet előnyben részesítesz.</li>
+<li>Huszonéves versenyzőket vegyél, és tervezz a 30 év utáni hanyatlással.</li>
+<li>Építs junior programot, mielőtt a versenyzőid 40 évesek lesznek.</li>
+</ul></div>
+<p>Hogy hogyan tárgyald meg a megfelelő szerződéseket a kereteddel, azt a <a href="guide-kontrakt.html">szerződésekről és az átigazolási piacról szóló útmutatóban</a> írjuk le.</p>
+<div class="card las-mer"><h3>Olvasd tovább</h3><ul><li><a href="guide-ekonomi.html">Pénzügyi útmutató: költségvetés, szponzori megállapodások és pénzdíjak</a></li><li><a href="guide-kontrakt.html">Szerződések és átigazolási piac: tárgyalj, vásárolj és adj el</a></li><li><a href="guide-seriepyramiden.html">A ligapiramis: így juthatsz el a Masters League-be</a></li></ul><p><a href="guider.html">Összes útmutató →</a></p></div><div class="card cta"><h2 style="margin-top:0">Próbáld ki a saját csapatoddal</h2><p>Az Undercut Racing Manager ingyenes, és közvetlenül a böngészőben fut.</p><a class="knapp" href="../">Ingyenes játék</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">A játékról</a> &nbsp;·&nbsp; <a href="guider.html">Útmutatók</a> &nbsp;·&nbsp; <a href="manual.html">Kézikönyv</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Gyakori kérdések</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Adatvédelmi irányelvek</a> &nbsp;·&nbsp; <a href="../">Irány a játék</a>
+<div class="fot-sprak"><a href="../guide-personal.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-personal.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-personal.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-personal.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-personal.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-personal.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-personal.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-personal.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-personal.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

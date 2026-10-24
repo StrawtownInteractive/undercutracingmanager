@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Contratos y mercado de fichajes – Undercut Racing Manager</title>
+<meta name="description" content="Cómo negociar contratos, protegerte de las cláusulas de rescisión y hacer buenos negocios en el mercado de fichajes de Undercut Racing Manager.">
+<link rel="canonical" href="https://undercutmanager.com/es/guide-kontrakt.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-kontrakt.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-kontrakt.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-kontrakt.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-kontrakt.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-kontrakt.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-kontrakt.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-kontrakt.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-kontrakt.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-kontrakt.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-kontrakt.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">Sobre el juego</a><a href="guider.html" aria-current="page">Guías</a><a href="manual.html">Manual</a><a href="vanliga-fragor.html">Preguntas frecuentes</a><a href="integritetspolicy.html">Política de privacidad</a><select class="sprakval" aria-label="Idioma" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-kontrakt.html">Svenska</option><option data-l="en" value="../en/guide-kontrakt.html">English</option><option data-l="de" value="../de/guide-kontrakt.html">Deutsch</option><option data-l="fr" value="../fr/guide-kontrakt.html">Français</option><option data-l="es" value="../es/guide-kontrakt.html" selected>Español</option><option data-l="pl" value="../pl/guide-kontrakt.html">Polski</option><option data-l="fi" value="../fi/guide-kontrakt.html">Suomi</option><option data-l="hu" value="../hu/guide-kontrakt.html">Magyar</option><option data-l="ja" value="../ja/guide-kontrakt.html">日本語</option></select><a class="knapp" href="../">Jugar gratis</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Guías</a> › Contratos y mercado de fichajes</p>
+<h1>Contratos y mercado de fichajes: negociar, comprar y vender</h1>
+<p class="ingress">Todos los pilotos y todo el personal de Undercut Racing Manager tienen contrato, y como cada equipo lo dirige un mánager real, pueden quitarte a tus mejores pilotos si no estás atento. Esta guía te ayuda a negociar con cabeza y a hacer negocios rentables.</p>
+
+<h2>Cómo funciona una negociación</h2>
+<p>Negocias desde la página de perfil de la persona con el botón «Negociar contrato». Allí ves sus exigencias y deseos, y tú mismo preparas tu oferta: salario semanal, número de años, prima de fichaje, primas por rendimiento, cláusula de rescisión y, en el caso de los pilotos, el posible estatus de primer piloto.</p>
+<p>La herramienta más importante es el porcentaje <strong>«Probabilidad de aceptar»</strong>, que se actualiza al instante cuando cambias la oferta, junto con una lista de lo que sube o baja la probabilidad. Úsalo de forma activa: ajusta una condición cada vez y mira qué mueve más la cifra. A menudo resulta que la duración del contrato o una prima de fichaje pesan más que un salario semanal más alto, y una prima única es más barata que un salario que se paga cada semana durante años.</p>
+<p>La persona puede aceptar, rechazar o hacer una contraoferta. Pero la paciencia es limitada: tras varios intentos seguidos, pierde el interés y la negociación se cancela. Mejor una primera oferta bien pensada que regatear a pasitos.</p>
+
+<h2>¿Qué influye en la probabilidad de un sí?</h2>
+<ul>
+<li><strong>La relación con el equipo (0–100).</strong> 50 es neutral; 100 da +10 puntos porcentuales y 0 da −10. La relación sube +8 cada vez que llegáis a un acuerdo de contrato.</li>
+<li><strong>La habilidad negociadora de tu director de equipo.</strong> Puede mover la probabilidad hasta unos 10 puntos porcentuales frente a un director de equipo medio.</li>
+<li><strong>La calidad y la moral del equipo.</strong> Es más fácil fichar por un equipo con éxito y la moral alta.</li>
+<li><strong>El interés de otros equipos.</strong> Si a un piloto le queda poco contrato, otros equipos pueden hacerle ofertas salariales, lo que sube sus exigencias.</li>
+</ul>
+
+<h2>La cláusula de rescisión: arma y riesgo a la vez</h2>
+<p>Si un piloto tiene cláusula de rescisión, cualquier otro mánager puede pagar el importe completo y quedarse con el contrato al instante, sin que puedas impedirlo. Tú recibes el dinero, pero pierdes al piloto.</p>
+<p>Algunas cosas a tener en cuenta:</p>
+<div class="card"><ul>
+<li><strong>Pon una cláusula alta a tus pilotos más importantes.</strong> Una cláusula baja abarata la negociación, pero es una invitación abierta a la competencia.</li>
+<li><strong>El primer año siempre está protegido.</strong> La cláusula de una persona nunca se puede activar durante su primer año en el club.</li>
+<li><strong>Los juniors están especialmente protegidos.</strong> Una promesa que sube desde el programa junior recibe un contrato de cuatro años cuya cláusula nadie puede activar, hasta que se renegocie.</li>
+<li><strong>Tú también puedes usar las cláusulas.</strong> Si encuentras en otro equipo a un piloto con una cláusula baja, puede ser el camino más rápido hacia una plantilla mejor.</li>
+</ul></div>
+<p>En tu propia página del equipo está la lista <em>Rivales</em>, que muestra a qué equipos les has quitado pilotos o personal mediante cláusula en las últimas temporadas; y, por supuesto, tus rivales también tienen la suya.</p>
+
+<h2>El estatus de primer piloto</h2>
+<p>Un piloto con estatus de primer piloto espera recibir un trato preferente, y un contrato de primer piloto activo da al coche una pequeña aportación extra en carrera. Pero tiene su lado negativo: el piloto gana +1 de relación cada vez que termina por delante de su compañero y pierde 3 cuando el compañero termina delante. Da el estatus solo a un piloto que de verdad sea mejor, y no dudes en usar las órdenes de equipo para apoyarlo (consulta la <a href="guide-taktik.html">guía de táctica</a>).</p>
+
+<h2>Cuando vence el contrato</h2>
+<p>Cada temporada, «Años restantes» baja en uno. Cuando solo queda un año, el contrato se marca como Expiring y eliges entre negociar una renovación, esperar o dejar que el contrato venza. Si dejas vencer el contrato de un piloto, el piloto reserva ocupa su puesto, o se ficha a un novato si el banquillo de reservas está vacío.</p>
+<p>Con los pilotos que se acercan a los 30, suele ser sensato renovar por menos tiempo. La habilidad empieza a bajar a partir de los 30, y un contrato largo con un salario alto se convierte entonces en una carga.</p>
+
+<h2>El mercado de fichajes</h2>
+<p>En la pestaña Mercado aparecen todas las subastas en curso. Una subasta dura exactamente siete días y, cuando se acaba el tiempo, la persona va para el mejor postor, siempre que el comprador pueda pagarlo y tenga sitio en la plantilla cuando se resuelva la subasta.</p>
+<h3>Como comprador</h3>
+<ul>
+<li>Decide tu precio máximo antes de hacer la primera puja y respétalo.</li>
+<li>Comprueba tu presupuesto y el tamaño de tu plantilla antes de que acabe el plazo. Una puja ganada que no puedes pagar o para la que no tienes sitio no sale adelante.</li>
+<li>Mira la edad y el estilo de conducción, no solo la habilidad: consulta la <a href="guide-personal.html">guía del personal</a>.</li>
+<li>Revisa el historial de traspasos. Ahí ves por cuánto se han vendido realmente pilotos parecidos, la mejor base para una puja razonable.</li>
+</ul>
+<h3>Como vendedor</h3>
+<ul>
+<li>Vende a los pilotos antes de que el declive de después de los 30 se note en las cifras, no después.</li>
+<li>Sustituye al más flojo del equipo por alguien mejor cuando puedas, y vende el personal en Reserva que no necesites. Cada miembro del personal cuesta 100.000 kr a la semana.</li>
+<li>Una subasta se cancela si despides a la persona mientras tanto, así que déjala terminar.</li>
+</ul>
+
+<h2>Resumen</h2>
+<div class="card"><ul>
+<li>Usa activamente el porcentaje de probabilidad y haz una primera oferta bien pensada.</li>
+<li>Cláusulas de rescisión altas para los pilotos clave.</li>
+<li>Estatus de primer piloto solo para el piloto claramente mejor.</li>
+<li>Renovaciones cortas para pilotos de alrededor de 30 años.</li>
+<li>Decide el precio máximo de antemano y revisa tu presupuesto antes de que termine la subasta.</li>
+</ul></div>
+<div class="card las-mer"><h3>Sigue leyendo</h3><ul><li><a href="guide-seriepyramiden.html">La pirámide de divisiones: cómo llegar a la Masters League</a></li><li><a href="guide-hemmabana.html">Tu circuito de casa: adapta el circuito a tu coche</a></li><li><a href="vad-ar-en-undercut.html">¿Qué es un undercut? La táctica de boxes que dio nombre al juego</a></li></ul><p><a href="guider.html">Todas las guías →</a></p></div><div class="card cta"><h2 style="margin-top:0">Pruébalo con tu propio equipo</h2><p>Undercut Racing Manager es gratis y funciona directamente en el navegador.</p><a class="knapp" href="../">Jugar gratis</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Sobre el juego</a> &nbsp;·&nbsp; <a href="guider.html">Guías</a> &nbsp;·&nbsp; <a href="manual.html">Manual</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Preguntas frecuentes</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Política de privacidad</a> &nbsp;·&nbsp; <a href="../">Ir al juego</a>
+<div class="fot-sprak"><a href="../guide-kontrakt.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-kontrakt.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-kontrakt.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-kontrakt.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-kontrakt.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-kontrakt.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-kontrakt.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-kontrakt.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-kontrakt.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

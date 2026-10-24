@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>初心者ガイド – Undercut Racing Manager</title>
+<meta name="description" content="Undercut Racing Managerを始めたばかりの方へ。最初の数週間の優先順位――戦術、トレーニング、アップグレード、スタッフ、財務――をステップごとに解説します。">
+<link rel="canonical" href="https://undercutmanager.com/ja/guide-nyborjare.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-nyborjare.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-nyborjare.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-nyborjare.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-nyborjare.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-nyborjare.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-nyborjare.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-nyborjare.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-nyborjare.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-nyborjare.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-nyborjare.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">ゲームについて</a><a href="guider.html" aria-current="page">ガイド</a><a href="manual.html">マニュアル</a><a href="vanliga-fragor.html">よくある質問</a><a href="integritetspolicy.html">プライバシーポリシー</a><select class="sprakval" aria-label="言語" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-nyborjare.html">Svenska</option><option data-l="en" value="../en/guide-nyborjare.html">English</option><option data-l="de" value="../de/guide-nyborjare.html">Deutsch</option><option data-l="fr" value="../fr/guide-nyborjare.html">Français</option><option data-l="es" value="../es/guide-nyborjare.html">Español</option><option data-l="pl" value="../pl/guide-nyborjare.html">Polski</option><option data-l="fi" value="../fi/guide-nyborjare.html">Suomi</option><option data-l="hu" value="../hu/guide-nyborjare.html">Magyar</option><option data-l="ja" value="../ja/guide-nyborjare.html" selected>日本語</option></select><a class="knapp" href="../">無料でプレイ</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">ガイド</a> › 初心者ガイド</p>
+<h1>初心者ガイド：マネージャーとしての最初の数週間</h1>
+<p class="ingress">あなたは2台の車、数人のドライバー、限られた予算を持つレーシングチームを引き継いだところです。このガイドでは、最初の数週間で本当に差がつくポイントと、1シーズンを棒に振ってしまうミスを紹介します。</p>
+
+<h2>まずは週のリズムを理解する</h2>
+<p>Undercut Racing Managerで最も大切なのは、クリックした瞬間には何も起こらず、すべては決まった時刻に起こるということです。毎週同じスケジュールで、月曜にトレーニングレース、水曜に予選、金曜にレース、日曜に財務の更新が行われます。時刻は常にスウェーデン時間（CET/CEST）の20:00です。マネージャーの仕事は、それぞれのイベントが行われる<em>前に</em>判断を済ませておくことです。</p>
+<p>つまり、優れたマネージャーでも常にログインしている必要はありません。適切な曜日であれば、週に数回の短いログインで十分です。</p>
+<div class="card"><ul>
+<li><strong>日曜の夜か月曜：</strong>その週の財務を確認し、アップグレードを開始し、トレーニングレースにスタッフをエントリーします。</li>
+<li><strong>火曜か水曜：</strong>予選の戦術を確認し、アップグレードが完了しているかをチェックします。</li>
+<li><strong>木曜か金曜：</strong>レースの戦術――タイヤ、ダウンフォース、燃料、チームオーダー――を決めます。</li>
+<li><strong>週末：</strong>レースレポートを読み、ダメージを確認し、移籍市場の動きを追います。</li>
+</ul></div>
+
+<h2>1週目：すぐにやるべき3つのこと</h2>
+<h3>1. 戦術を設定する――無料です</h3>
+<p>レースタブの戦術ミーティングは無料ですが、すべての予選とレースに影響します。多くの新人マネージャーは初期設定のまま放置し、無駄に順位を落としています。<a href="guide-taktik.html">戦術ガイド</a>を読んで、5分ほどかけてタイヤ、ダウンフォース、ハンドリング、燃料をその週のコースに合わせましょう。</p>
+<h3>2. トレーニングレースにスタッフをエントリーする――これも無料です</h3>
+<p>毎週、月曜のトレーニングレースに最大3人のドライバー、3人のメカニック、3人のエンジニアをエントリーできます。参加者はそれぞれ、選んだ能力が1～5ポイント向上します。費用はかからず、新しい指示を出さなければ前週と同じ内容が繰り返されます。トレーニングはゲーム内で最も安上がりな強化手段です。一週たりとも欠かさないようにしましょう。</p>
+<p>なお、経験はトレーニングできず、年齢とともに自動的に増えていきます。ドライバーはスピード、タイヤマネジメント、ディフェンス、チームワークを、メカニックとエンジニアは最も低い能力をトレーニングしましょう。総合能力は5つの能力の平均なので、最も低い能力を上げても、最も高い能力を上げても効果は同じです。</p>
+<h3>3. 最も弱いパーツからアップグレードを始める</h3>
+<p>アップグレードは、そのパーツの数値が高いほど費用がかさみます。インデックス0からの1段階は20,000 krですが、インデックス90からの1段階は263,000 krかかります。序盤は最も弱いパーツを上げるほうが、1クローナあたりの性能向上がはるかに大きくなります。詳しくは<a href="guide-bilutveckling.html">マシン開発ガイド</a>をご覧ください。</p>
+
+<h2>2～4週目：チームを知る</h2>
+<p>基本が整ったら、チームの陣容をじっくり見てみましょう。各ドライバーのプロフィールを開き、能力、年齢、ドライビングスタイルの3点をメモします。</p>
+<ul>
+<li><strong>能力</strong>はゲーム全体で最も重要な数値です。ドライバーの能力1ポイントは、メカニックやエンジニアの1ポイントの10倍の重みがあります。ただしスタッフのポイントは合計されるため、スタッフが揃えばドライバーとほぼ同じくらいの重みになります。</li>
+<li><strong>年齢</strong>は将来を左右します。ドライバーは30歳を過ぎると少しずつ能力が落ち、40歳で引退します。平均的な能力の22歳は、いま上手い33歳よりも価値がある場合があります。</li>
+<li><strong>ドライビングスタイル</strong>はリスクに影響します。攻撃的なドライバーは限界ぎりぎりを攻めるため、車を壊す頻度がかなり高くなります。そしてダメージはパーツの数値を10～70％恒久的に下げます。</li>
+</ul>
+<p>メカニックとエンジニアが車1と車2にどう振り分けられているかも確認しましょう。重要なのは各車に配置されたスタッフの合計能力で、1台につき最大5人のメカニックと5人のエンジニアまでが計算に入ります。つまり、車に配置する人が増えるほど、その車は強くなります。<a href="guide-personal.html">スタッフガイド</a>では、車への最適な人員配置を解説しています。</p>
+
+<h2>予算をプラスに保つ</h2>
+<p>チームが破産することはありませんが、予算がマイナスになるとほとんどのことができなくなります。アップグレード、獲得、契約交渉、トレーニング、スカウトへの依頼がすべて不可能になり、さらに毎週、赤字額に対して5％の利息がかかります。新人マネージャーは、大きな買い物をする前に、少なくとも1週間分の給料と維持費をまかなえる余裕資金を持っておくのが賢明です。</p>
+<p>よくある初心者のミスは、財務が耐えられる以上の速さでスタッフを増やしてしまうことです。雇用1人につき100,000 krと、毎週100,000 krの給料がかかります。スタッフが増えれば車は強くなりますが、給料はあっという間に予算を食いつぶします。収入が許すペースでスタッフを増やしましょう。雇用を始める前に<a href="guide-ekonomi.html">財務ガイド</a>を読んでおきましょう。</p>
+
+<h2>最初のシーズンは現実的な目標を立てる</h2>
+<p>1シーズンは10レースです。各グループの優勝チームは1つ上のディビジョンに昇格し、さらにディビジョン内の成績上位の2位チームも昇格します。各グループの下位3チームは降格します（最下層のディビジョン5を除く）。多くの新しいチームにとって、まずは順位表の上半分に定着し、2シーズン目に向けて車とチームを作り上げることが現実的な目標です。</p>
+<p>レギュレーションにも注意しましょう。毎シーズン終了後、決まった順番で、車の5つのパーツのうち1つが全チーム一律で半分になります。この順番に合わせてアップグレードを計画するマネージャーは、ライバルよりも無駄な出費を抑えられます。</p>
+
+<h2>新人マネージャーのためのチェックリスト</h2>
+<div class="card"><ul>
+<li>予選とレースの両方で戦術を設定済み――初期値のままにしない。</li>
+<li>毎週、ドライバー3人、メカニック3人、エンジニア3人をトレーニングにエントリー。</li>
+<li>最も弱いパーツのアップグレードを、予選に間に合うよう遅くとも火曜までに開始。</li>
+<li>予算は余裕を持ってプラスを維持。</li>
+<li>ドライバーの年齢と契約期間をチェック――<a href="guide-kontrakt.html">契約ガイド</a>を参照。</li>
+<li>フォーラムであいさつを――ほかのマネージャーも本物の人間で、気軽にアドバイスをくれることが多いです。</li>
+</ul></div>
+<p>すべてのルールを詳しく知りたい場合は、完全版の<a href="manual.html">マニュアル</a>があります。まだチームを持っていない方は、<a href="../">アカウントを作成して無料でプレイ</a>しましょう。</p>
+<div class="card las-mer"><h3>続けて読む</h3><ul><li><a href="guide-taktik.html">戦術ガイド：タイヤ、ダウンフォース、ハンドリング、燃料</a></li><li><a href="guide-bilutveckling.html">マシン開発：1クローナも無駄にしない強化術</a></li><li><a href="guide-personal.html">ドライバー、メカニック、エンジニア：チームの作り方</a></li></ul><p><a href="guider.html">すべてのガイド →</a></p></div><div class="card cta"><h2 style="margin-top:0">自分のチームで試してみよう</h2><p>Undercut Racing Managerは無料で、ブラウザだけで遊べます。</p><a class="knapp" href="../">無料でプレイ</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">ゲームについて</a> &nbsp;·&nbsp; <a href="guider.html">ガイド</a> &nbsp;·&nbsp; <a href="manual.html">マニュアル</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">よくある質問</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">プライバシーポリシー</a> &nbsp;·&nbsp; <a href="../">ゲームへ</a>
+<div class="fot-sprak"><a href="../guide-nyborjare.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-nyborjare.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-nyborjare.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-nyborjare.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-nyborjare.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-nyborjare.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-nyborjare.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-nyborjare.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-nyborjare.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

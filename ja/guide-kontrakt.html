@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>契約と移籍市場 – Undercut Racing Manager</title>
+<meta name="description" content="Undercut Racing Managerで契約を交渉する方法、契約解除条項から身を守る方法、移籍市場で良い取引をする方法。">
+<link rel="canonical" href="https://undercutmanager.com/ja/guide-kontrakt.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-kontrakt.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-kontrakt.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-kontrakt.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-kontrakt.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-kontrakt.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-kontrakt.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-kontrakt.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-kontrakt.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-kontrakt.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-kontrakt.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">ゲームについて</a><a href="guider.html" aria-current="page">ガイド</a><a href="manual.html">マニュアル</a><a href="vanliga-fragor.html">よくある質問</a><a href="integritetspolicy.html">プライバシーポリシー</a><select class="sprakval" aria-label="言語" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-kontrakt.html">Svenska</option><option data-l="en" value="../en/guide-kontrakt.html">English</option><option data-l="de" value="../de/guide-kontrakt.html">Deutsch</option><option data-l="fr" value="../fr/guide-kontrakt.html">Français</option><option data-l="es" value="../es/guide-kontrakt.html">Español</option><option data-l="pl" value="../pl/guide-kontrakt.html">Polski</option><option data-l="fi" value="../fi/guide-kontrakt.html">Suomi</option><option data-l="hu" value="../hu/guide-kontrakt.html">Magyar</option><option data-l="ja" value="../ja/guide-kontrakt.html" selected>日本語</option></select><a class="knapp" href="../">無料でプレイ</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">ガイド</a> › 契約と移籍市場</p>
+<h1>契約と移籍市場：交渉、獲得、売却</h1>
+<p class="ingress">Undercut Racing Managerでは、すべてのドライバーとスタッフに契約があります。しかもどのチームも本物のマネージャーが運営しているので、油断していると主力ドライバーを買い取られてしまうかもしれません。このガイドでは、賢く交渉し、得になる取引をするためのコツを紹介します。</p>
+
+<h2>交渉の流れ</h2>
+<p>交渉は、その人のプロフィールページにある「契約を交渉」ボタンから行います。そこでは相手の要求と希望が表示され、あなたは自分でオファーを組み立てます。週給、契約年数、契約金、成績ボーナス、契約解除条項、そしてドライバーの場合はファーストドライバーの地位を付けるかどうかです。</p>
+<p>最も重要なツールは<strong>「承諾の確率」</strong>のパーセンテージです。オファーを変更するとすぐに更新され、確率を上げる要因と下げる要因の一覧も表示されます。積極的に活用しましょう。条件を1つずつ変え、どれが数字を最も動かすかを確かめます。週給を上げるより、契約期間や契約金のほうが効くことはよくあります。それに、一度きりのボーナスは、何年も毎週支払う給料より安上がりです。</p>
+<p>相手は承諾、拒否、またはカウンターオファーをしてきます。ただし我慢には限界があります。何度か続けて試すと相手は興味を失い、交渉は打ち切られます。小刻みに値切るより、よく考えた最初のオファーを出しましょう。</p>
+
+<h2>承諾の確率に影響するもの</h2>
+<ul>
+<li><strong>チームとの関係（0～100）。</strong>50が中立で、100なら+10パーセントポイント、0なら−10パーセントポイントです。契約に合意するたびに関係は+8上がります。</li>
+<li><strong>チームプリンシパルの交渉力。</strong>平均的なチームプリンシパルと比べて、確率を最大約10パーセントポイント動かせます。</li>
+<li><strong>チームの実力と士気。</strong>成績が良く士気の高いチームのほうが、契約にサインしてもらいやすくなります。</li>
+<li><strong>ほかのチームの関心。</strong>契約期間が残り少ないドライバーには、ほかのチームが給料のオファーを出すことがあり、そのぶん要求が高くなります。</li>
+</ul>
+
+<h2>契約解除条項――武器でありリスクでもある</h2>
+<p>ドライバーに契約解除条項がある場合、ほかのマネージャーは誰でもその全額を支払えば、すぐに契約を引き継げます。あなたにそれを止める手段はありません。お金は入りますが、ドライバーは失います。</p>
+<p>押さえておきたいポイント：</p>
+<div class="card"><ul>
+<li><strong>主力ドライバーには高い条項額を設定する。</strong>条項額が低いと交渉は安く済みますが、ライバルを招き入れるようなものです。</li>
+<li><strong>最初の1年は常に保護される。</strong>クラブに加入して最初の1年間は、条項を発動されることは絶対にありません。</li>
+<li><strong>ジュニアは特に手厚く保護される。</strong>ジュニアプログラムから昇格した有望株には4年契約が結ばれ、再交渉されるまでは誰も条項を発動できません。</li>
+<li><strong>自分でも条項を活用できる。</strong>ほかのチームに条項額の低いドライバーがいれば、それがチームを強化する最短ルートになることもあります。</li>
+</ul></div>
+<p>自分のチームページには<em>ライバル</em>の一覧があり、最近のシーズンにどのチームからドライバーやスタッフを引き抜いたかが表示されます。もちろん、対戦相手のページにも同じ一覧があります。</p>
+
+<h2>ファーストドライバーの地位</h2>
+<p>ファーストドライバーの地位を持つドライバーは優遇されることを期待しており、有効なファーストドライバー契約はレースで車にわずかな追加ボーナスを与えます。しかし裏面もあります。そのドライバーはチームメイトより前でゴールするたびに関係が+1、チームメイトに先を越されると−3になります。この地位は本当に実力が上のドライバーだけに与え、チームオーダーで積極的に後押ししましょう（<a href="guide-taktik.html">戦術ガイド</a>参照）。</p>
+
+<h2>契約が切れるとき</h2>
+<p>シーズンごとに「残り年数」が1ずつ減ります。残り1年になると契約は「Expiring」と表示され、延長を交渉する、様子を見る、契約を満了させる、のいずれかを選びます。ドライバーの契約を満了させると、リザーブドライバーがその座に就きます。リザーブベンチが空なら新人が採用されます。</p>
+<p>30歳に近づいたドライバーは、短めの期間で延長するのが賢明なことが多いです。能力は30歳を過ぎると下がり始め、高給の長期契約は重荷になってしまいます。</p>
+
+<h2>移籍市場</h2>
+<p>マーケットタブには、進行中のすべてのオークションが表示されます。オークションの期間はちょうど7日間で、時間が来ると最高額の入札者に移籍します。ただし、オークションが決着する時点で、買い手に支払い能力とチームの空き枠があることが条件です。</p>
+<h3>買い手として</h3>
+<ul>
+<li>最初の入札をする前に上限額を決め、それを守りましょう。</li>
+<li>締め切り前に予算と所属人数を確認しましょう。支払えない、または空き枠のない落札は成立しません。</li>
+<li>能力だけでなく、年齢とドライビングスタイルも見ましょう――<a href="guide-personal.html">スタッフガイド</a>を参照。</li>
+<li>移籍履歴を確認しましょう。似たドライバーが実際にいくらで売れたかがわかり、妥当な入札額を決める最良の材料になります。</li>
+</ul>
+<h3>売り手として</h3>
+<ul>
+<li>30歳以降の衰えが数字に表れる前にドライバーを売りましょう。表れた後では遅すぎます。</li>
+<li>できるときに、スタッフの中で最も弱い人をより優秀な人と入れ替え、必要のないリザーブのスタッフは売りましょう。スタッフは1人につき週100,000 krかかります。</li>
+<li>オークション中にその人を解雇するとオークションは中止になるので、最後まで待ちましょう。</li>
+</ul>
+
+<h2>まとめ</h2>
+<div class="card"><ul>
+<li>承諾の確率を積極的に使い、よく考えた最初のオファーを出す。</li>
+<li>主力ドライバーには高い契約解除条項を。</li>
+<li>ファーストドライバーの地位は、明らかに一番上のドライバーだけに。</li>
+<li>30歳前後のドライバーとは短期の延長を。</li>
+<li>上限額は事前に決め、オークション終了前に予算を確認する。</li>
+</ul></div>
+<div class="card las-mer"><h3>続けて読む</h3><ul><li><a href="guide-seriepyramiden.html">リーグピラミッド：Masters Leagueへの道</a></li><li><a href="guide-hemmabana.html">ホームコース：車に合わせてコースを作り変える</a></li><li><a href="vad-ar-en-undercut.html">アンダーカットとは？ゲーム名の由来となったピット戦術</a></li></ul><p><a href="guider.html">すべてのガイド →</a></p></div><div class="card cta"><h2 style="margin-top:0">自分のチームで試してみよう</h2><p>Undercut Racing Managerは無料で、ブラウザだけで遊べます。</p><a class="knapp" href="../">無料でプレイ</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">ゲームについて</a> &nbsp;·&nbsp; <a href="guider.html">ガイド</a> &nbsp;·&nbsp; <a href="manual.html">マニュアル</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">よくある質問</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">プライバシーポリシー</a> &nbsp;·&nbsp; <a href="../">ゲームへ</a>
+<div class="fot-sprak"><a href="../guide-kontrakt.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-kontrakt.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-kontrakt.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-kontrakt.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-kontrakt.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-kontrakt.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-kontrakt.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-kontrakt.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-kontrakt.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

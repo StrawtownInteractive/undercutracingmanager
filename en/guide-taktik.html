@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Tactics guide – Undercut Racing Manager</title>
+<meta name="description" content="How to set your tactics for qualifying and the race in Undercut Racing Manager: tyre choice, downforce for the track’s character, handling, fuel load and team orders.">
+<link rel="canonical" href="https://undercutmanager.com/en/guide-taktik.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-taktik.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-taktik.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-taktik.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-taktik.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-taktik.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-taktik.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-taktik.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-taktik.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-taktik.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-taktik.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">About the game</a><a href="guider.html" aria-current="page">Guides</a><a href="manual.html">Manual</a><a href="vanliga-fragor.html">FAQ</a><a href="integritetspolicy.html">Privacy policy</a><select class="sprakval" aria-label="Language" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-taktik.html">Svenska</option><option data-l="en" value="../en/guide-taktik.html" selected>English</option><option data-l="de" value="../de/guide-taktik.html">Deutsch</option><option data-l="fr" value="../fr/guide-taktik.html">Français</option><option data-l="es" value="../es/guide-taktik.html">Español</option><option data-l="pl" value="../pl/guide-taktik.html">Polski</option><option data-l="fi" value="../fi/guide-taktik.html">Suomi</option><option data-l="hu" value="../hu/guide-taktik.html">Magyar</option><option data-l="ja" value="../ja/guide-taktik.html">日本語</option></select><a class="knapp" href="../">Play for free</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Guides</a> › Tactics guide</p>
+<h1>Tactics guide: tyres, downforce, handling and fuel</h1>
+<p class="ingress">The Tactics briefing costs nothing, yet it affects every qualifying session and every race you drive. This guide explains how each setting works and how to adapt it to the track.</p>
+
+<h2>Two briefings – two different problems</h2>
+<p>Under the Race tab there are two separate tactics briefings: one for qualifying (Wednesday 20:00) and one for the race (Friday 20:00). They are saved separately and apply to both of your cars. It’s important to understand that qualifying and the race are different problems:</p>
+<ul>
+<li><strong>Qualifying</strong> is about one fast lap. Tyre wear doesn’t matter, and grip in the corners matters a lot.</li>
+<li><strong>The race</strong> is about a full distance. The tyres wear, the car carries fuel, and top speed on the straights weighs more.</li>
+</ul>
+<p>That’s why the tactics should almost never be identical in the two briefings. The chief engineer gives a suggestion of his own for each briefing – a good starting point, but you can often do better yourself.</p>
+
+<h2>Read the track before you choose</h2>
+<p>Every race is held on one of the teams’ home tracks, and every track has two properties that drive almost everything: <strong>number of corners</strong> (5–20) and <strong>length</strong> (2.0–8.0 km). A good way of thinking is to place the track on a scale:</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Track type</th><th>Characteristics</th><th>What wins</th></tr>
+<tr><td>Short and twisty</td><td>Under 4 km, 14+ corners</td><td>Grip: high downforce, good tyres and aerodynamics</td></tr>
+<tr><td>Balanced</td><td>Around 4–5 km, 10–13 corners</td><td>Middle values, an even car</td></tr>
+<tr><td>Long and fast</td><td>Over 5 km, few corners</td><td>Top speed: low downforce and a strong engine</td></tr>
+</table></div>
+
+<h2>Starting tyres: Soft, Medium or Hard</h2>
+<p>Soft is fastest but wears out quickest, Hard lasts best but is slowest, and Medium sits in between.</p>
+<h3>In qualifying</h3>
+<p>A qualifying lap is too short for wear to matter. The fastest tyre is therefore almost always the right choice in qualifying.</p>
+<h3>In the race</h3>
+<p>This is where it gets interesting. Wear punishes you most on twisty tracks, but your engineers can compensate: the higher the combined ability of the engineers on the car, the less the wear costs – once the engineers together reach 100 ability, roughly two thirds of the wear penalty disappears. That gives a simple rule of thumb:</p>
+<div class="card"><ul>
+<li><strong>Few corners and/or strong engineers:</strong> Soft pays off in the race too.</li>
+<li><strong>Many corners and weak engineers:</strong> Hard is safest – otherwise the wear eats up Soft’s speed advantage.</li>
+<li><strong>Not sure?</strong> Medium is never a disaster, but rarely the best choice.</li>
+</ul></div>
+<p>Note that this makes engineers doubly valuable: they don’t just improve the car’s base performance, they also let you run a more aggressive tyre strategy. Read more in <a href="vad-ar-en-undercut.html">our explanation of the undercut</a>.</p>
+
+<h2>Downforce (0–100)</h2>
+<p>Downforce is a trade-off between grip in the corners and speed on the straights.</p>
+<ul>
+<li><strong>In qualifying</strong> high downforce helps practically always, and more the more corners the track has. The qualifying lap is decided in the corners.</li>
+<li><strong>In the race</strong> downforce pulls in two directions: the corners reward it, but the track’s length punishes it, because the car loses top speed on the straights over the whole distance.</li>
+</ul>
+<p>A useful rule of thumb for the race: compare the number of corners with the track length. If the track has <strong>more than about 3.5 corners per kilometre</strong>, raising downforce pays off; if it has fewer, you should lower it. A 3 km track with 14 corners is a downforce track, while a 6 km track with 12 corners wants low downforce.</p>
+
+<h2>Handling (0–100)</h2>
+<p>Handling is the simplest setting in the game: higher handling makes the car easier to drive and gives a purely positive contribution in both qualifying and the race. There is no downside to weigh against it. Set it high in both briefings and spend your thinking on the other choices.</p>
+
+<h2>Fuel – hit the recommendation</h2>
+<p>The Race tab shows a recommended fuel load per track, calculated from the track’s length and number of corners. Longer tracks need more, and twisty tracks slightly more than straight ones. Both mistakes cost you:</p>
+<ul>
+<li><strong>Too little fuel</strong> forces fuel saving, which costs performance – and the risk of an engine failure (DNF) grows quickly the bigger the shortfall.</li>
+<li><strong>Too much fuel</strong> makes the car heavier, and the extra weight is punished hard.</li>
+</ul>
+<p>So there is no clever shortcut here. You get the best result by staying as close to the recommendation as possible. It sounds obvious, but since the track changes every week, a fuel figure left over from the last race is one of the most common reasons for unexpectedly poor results.</p>
+
+<h2>Team orders (race only)</h2>
+<p>With team orders you can prioritise Car 1 or Car 2. The prioritised car gets an extra boost while the other gives way a little. It mainly pays off in two situations:</p>
+<ul>
+<li>When one of your drivers is clearly better and is fighting for the podium or the series win.</li>
+<li>When you have given a driver <strong>first-driver status</strong> in his contract. A first driver who is beaten by his teammate race after race loses his relationship with the team, which can make the next contract negotiation expensive.</li>
+</ul>
+<p>If your drivers are evenly matched, “No priority” is usually best – both cars collect points, and the team’s total is the sum of both.</p>
+
+<h2>Quick checklist for every week</h2>
+<div class="card"><ul>
+<li>How many corners and how long is this week’s track?</li>
+<li>Qualifying: fast tyre, high downforce, high handling.</li>
+<li>Race: tyres based on corners and your engineers’ strength, downforce based on corners per kilometre, high handling.</li>
+<li>Fuel exactly as recommended.</li>
+<li>Team orders only if you have a clear first driver.</li>
+</ul></div>
+<p>Once you’ve mastered the tactics, you can go one step further and shape your own home track around your car’s strengths – we describe that in the <a href="guide-hemmabana.html">home track guide</a>.</p>
+<div class="card las-mer"><h3>Read next</h3><ul><li><a href="guide-bilutveckling.html">Car development: getting the most out of every krona</a></li><li><a href="guide-personal.html">Drivers, mechanics and engineers: building your squad</a></li><li><a href="guide-ekonomi.html">Finance guide: budget, sponsorship deals and prize money</a></li></ul><p><a href="guider.html">All guides →</a></p></div><div class="card cta"><h2 style="margin-top:0">Try it with your own team</h2><p>Undercut Racing Manager is free and runs right in your browser.</p><a class="knapp" href="../">Play for free</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">About the game</a> &nbsp;·&nbsp; <a href="guider.html">Guides</a> &nbsp;·&nbsp; <a href="manual.html">Manual</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">FAQ</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Privacy policy</a> &nbsp;·&nbsp; <a href="../">To the game</a>
+<div class="fot-sprak"><a href="../guide-taktik.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-taktik.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-taktik.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-taktik.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-taktik.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-taktik.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-taktik.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-taktik.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-taktik.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

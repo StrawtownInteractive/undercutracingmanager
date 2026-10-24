@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Szerződések és átigazolási piac – Undercut Racing Manager</title>
+<meta name="description" content="Így tárgyalj szerződésekről, védekezz a kivásárlási klauzulák ellen, és köss jó üzleteket az átigazolási piacon az Undercut Racing Managerben.">
+<link rel="canonical" href="https://undercutmanager.com/hu/guide-kontrakt.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-kontrakt.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-kontrakt.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-kontrakt.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-kontrakt.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-kontrakt.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-kontrakt.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-kontrakt.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-kontrakt.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-kontrakt.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-kontrakt.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">A játékról</a><a href="guider.html" aria-current="page">Útmutatók</a><a href="manual.html">Kézikönyv</a><a href="vanliga-fragor.html">Gyakori kérdések</a><a href="integritetspolicy.html">Adatvédelmi irányelvek</a><select class="sprakval" aria-label="Nyelv" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-kontrakt.html">Svenska</option><option data-l="en" value="../en/guide-kontrakt.html">English</option><option data-l="de" value="../de/guide-kontrakt.html">Deutsch</option><option data-l="fr" value="../fr/guide-kontrakt.html">Français</option><option data-l="es" value="../es/guide-kontrakt.html">Español</option><option data-l="pl" value="../pl/guide-kontrakt.html">Polski</option><option data-l="fi" value="../fi/guide-kontrakt.html">Suomi</option><option data-l="hu" value="../hu/guide-kontrakt.html" selected>Magyar</option><option data-l="ja" value="../ja/guide-kontrakt.html">日本語</option></select><a class="knapp" href="../">Ingyenes játék</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Útmutatók</a> › Szerződések és átigazolási piac</p>
+<h1>Szerződések és átigazolási piac: tárgyalj, vásárolj és adj el</h1>
+<p class="ingress">Az Undercut Racing Managerben minden versenyzőnek és munkatársnak szerződése van – és mivel minden csapatot valódi menedzser irányít, a legjobb versenyzőidet elcsábíthatják, ha nem figyelsz. Ez az útmutató abban segít, hogy okosan tárgyalj és nyereséges üzleteket köss.</p>
+
+<h2>Így zajlik egy tárgyalás</h2>
+<p>A tárgyalást az illető profiloldalán, a „Szerződés tárgyalása” gombbal kezded. Itt láthatod az igényeit és kívánságait, az ajánlatodat pedig te magad állítod össze: heti fizetés, évek száma, aláírási bónusz, teljesítménybónuszok, kivásárlási klauzula és – versenyzőknél – esetleg első számú versenyzői státusz.</p>
+<p>A legfontosabb eszköz az <strong>„Elfogadás valószínűsége”</strong> százalék, amely azonnal frissül, amikor módosítod az ajánlatot, egy listával együtt arról, mi növeli vagy csökkenti az esélyt. Használd tudatosan: egyszerre egy feltételt változtass, és figyeld, mi mozdítja meg leginkább a számot. Gyakran kiderül, hogy a szerződés hossza vagy egy aláírási bónusz többet ér egy magasabb heti fizetésnél – egy egyszeri bónusz pedig olcsóbb, mint egy évekig minden héten fizetett bér.</p>
+<p>Az illető elfogadhatja, elutasíthatja az ajánlatot, vagy ellenajánlatot tehet. A türelme azonban véges: néhány egymást követő próbálkozás után elveszíti az érdeklődését, és a tárgyalás megszakad. Inkább tegyél egy jól átgondolt első ajánlatot, mint hogy apró lépésekben alkudozz.</p>
+
+<h2>Mi befolyásolja az igen esélyét?</h2>
+<ul>
+<li><strong>A csapathoz fűződő viszony (0–100).</strong> Az 50 semleges; a 100 +10 százalékpontot, a 0 pedig −10-et jelent. A viszony +8-cal javul minden alkalommal, amikor megállapodtok egy szerződésről.</li>
+<li><strong>A Team Principalod tárgyalási képessége.</strong> Egy átlagos Team Principalhoz képest akár nagyjából 10 százalékponttal is módosíthatja az esélyt.</li>
+<li><strong>A csapat színvonala és morálja.</strong> Egy sikeres, magas morálú csapathoz könnyebb aláírni.</li>
+<li><strong>Más csapatok érdeklődése.</strong> Ha egy versenyzőnek kevés ideje van hátra a szerződéséből, más csapatok fizetési ajánlatot tehetnek neki, ami megemeli az igényeit.</li>
+</ul>
+
+<h2>A kivásárlási klauzula – fegyver és kockázat egyben</h2>
+<p>Ha egy versenyzőnek van kivásárlási klauzulája, bármelyik másik menedzser kifizetheti a teljes összeget, és azonnal átveheti a szerződést, anélkül hogy te megakadályozhatnád. Megkapod a pénzt, de elveszíted a versenyzőt.</p>
+<p>Néhány dolog, amire érdemes figyelni:</p>
+<div class="card"><ul>
+<li><strong>A legfontosabb versenyzőidnél állíts be magas klauzulát.</strong> Az alacsony klauzula olcsóbbá teszi a tárgyalást, de nyílt meghívás a vetélytársaknak.</li>
+<li><strong>Az első év mindig védett.</strong> Egy személy klauzuláját soha nem lehet érvényesíteni a klubnál töltött első évében.</li>
+<li><strong>A juniorok különösen védettek.</strong> A junior programból felhozott tehetség négyéves szerződést kap, amelynek klauzuláját senki sem érvényesítheti – amíg újra nem tárgyalják.</li>
+<li><strong>Te magad is használhatsz klauzulákat.</strong> Ha egy másik csapatnál alacsony klauzulájú versenyzőt találsz, az lehet a leggyorsabb út egy jobb kerethez.</li>
+</ul></div>
+<p>A saját csapatoldaladon található a <em>Riválisok</em> lista, amely megmutatja, mely csapatoktól vásároltál ki versenyzőket vagy személyzetet az elmúlt szezonokban – és persze az ellenfeleidnek is van ilyen listájuk.</p>
+
+<h2>Az első számú versenyzői státusz</h2>
+<p>Az első számú versenyzői státusszal rendelkező versenyző elvárja, hogy előnyben részesítsék, és egy aktív első számú versenyzői szerződés kis extra hozzájárulást ad az autónak a versenyen. Van azonban egy árnyoldala: a versenyző viszonya +1-gyel javul minden alkalommal, amikor a csapattársa előtt ér célba, és −3-mal romlik, ha a csapattársa előzi meg. Csak olyan versenyzőnek add meg a státuszt, aki valóban jobb – és nyugodtan támogasd csapatutasítással (lásd a <a href="guide-taktik.html">taktikai útmutatót</a>).</p>
+
+<h2>Amikor lejár a szerződés</h2>
+<p>Minden szezonban a „Hátralévő évek” eggyel csökken. Ha már csak egy év van hátra, a szerződést Expiring jelzéssel látják el, és választhatsz: tárgyalsz a hosszabbításról, kivársz, vagy hagyod lejárni a szerződést. Ha hagyod lejárni egy versenyző szerződését, a tartalékversenyző veszi át a helyét – vagy ha üres a tartalékpad, egy újoncot szerződtetnek.</p>
+<p>A 30 évhez közeledő versenyzőknél gyakran bölcs dolog rövidebb időre hosszabbítani. A képesség 30 év után csökkenni kezd, és egy hosszú, magas fizetésű szerződés ekkor teherré válik.</p>
+
+<h2>Az átigazolási piac</h2>
+<p>A Piac fülön az összes folyamatban lévő aukció megtalálható. Egy aukció pontosan hét napig tart, és amikor lejár az idő, az illető a legmagasabb ajánlatot tevőhöz kerül – feltéve, hogy a vevő megengedheti magának, és van helye a keretben az aukció eldőlésekor.</p>
+<h3>Vevőként</h3>
+<ul>
+<li>Döntsd el a maximális árat, mielőtt megteszed az első ajánlatodat, és tartsd magad hozzá.</li>
+<li>A határidő előtt ellenőrizd a költségvetést és a keret méretét. Egy megnyert ajánlat, amelyet nem tudsz kifizetni, vagy amelynek nincs helye, nem valósul meg.</li>
+<li>Nézd az életkort és a vezetési stílust is, ne csak a képességet – lásd a <a href="guide-personal.html">személyzeti útmutatót</a>.</li>
+<li>Nézd meg az átigazolási történetet. Ott láthatod, mennyiért keltek el ténylegesen hasonló versenyzők – ez a legjobb alap egy észszerű ajánlathoz.</li>
+</ul>
+<h3>Eladóként</h3>
+<ul>
+<li>A versenyzőket még azelőtt add el, hogy a 30 év utáni hanyatlás megjelenne a számokban, ne utána.</li>
+<li>Ha teheted, cseréld le a stáb leggyengébb tagját valaki jobbra, és add el a tartalékban lévő, szükségtelen személyzetet. Minden munkatárs heti 100 000 kr-ba kerül.</li>
+<li>Az aukció megszakad, ha közben elbocsátod az illetőt, ezért hagyd végigfutni.</li>
+</ul>
+
+<h2>Összefoglalás</h2>
+<div class="card"><ul>
+<li>Használd tudatosan a valószínűségi számot, és tegyél jól átgondolt első ajánlatot.</li>
+<li>Magas kivásárlási klauzula a kulcsversenyzőknek.</li>
+<li>Első számú versenyzői státusz csak az egyértelműen legjobb versenyzőnek.</li>
+<li>Rövid hosszabbítások a 30 év körüli versenyzőknek.</li>
+<li>Előre döntsd el a maximális árat, és az aukció vége előtt ellenőrizd a költségvetést.</li>
+</ul></div>
+<div class="card las-mer"><h3>Olvasd tovább</h3><ul><li><a href="guide-seriepyramiden.html">A ligapiramis: így juthatsz el a Masters League-be</a></li><li><a href="guide-hemmabana.html">A hazai pálya: alakítsd a pályát az autódhoz</a></li><li><a href="vad-ar-en-undercut.html">Mi az az undercut? A boxtaktika, amelyről a játék a nevét kapta</a></li></ul><p><a href="guider.html">Összes útmutató →</a></p></div><div class="card cta"><h2 style="margin-top:0">Próbáld ki a saját csapatoddal</h2><p>Az Undercut Racing Manager ingyenes, és közvetlenül a böngészőben fut.</p><a class="knapp" href="../">Ingyenes játék</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">A játékról</a> &nbsp;·&nbsp; <a href="guider.html">Útmutatók</a> &nbsp;·&nbsp; <a href="manual.html">Kézikönyv</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Gyakori kérdések</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Adatvédelmi irányelvek</a> &nbsp;·&nbsp; <a href="../">Irány a játék</a>
+<div class="fot-sprak"><a href="../guide-kontrakt.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-kontrakt.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-kontrakt.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-kontrakt.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-kontrakt.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-kontrakt.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-kontrakt.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-kontrakt.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-kontrakt.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

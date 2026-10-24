@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Die Heimstrecke – Undercut Racing Manager</title>
+<meta name="description" content="So nutzt du deine Heimstrecke in Undercut Racing Manager als strategisches Werkzeug: Anzahl der Kurven, Streckenlänge, Kraftstoff und wie du die Strecke auf die Stärken deines Autos abstimmst.">
+<link rel="canonical" href="https://undercutmanager.com/de/guide-hemmabana.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-hemmabana.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-hemmabana.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-hemmabana.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-hemmabana.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-hemmabana.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-hemmabana.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-hemmabana.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-hemmabana.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-hemmabana.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-hemmabana.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">Über das Spiel</a><a href="guider.html" aria-current="page">Guides</a><a href="manual.html">Handbuch</a><a href="vanliga-fragor.html">Häufige Fragen</a><a href="integritetspolicy.html">Datenschutzerklärung</a><select class="sprakval" aria-label="Sprache" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-hemmabana.html">Svenska</option><option data-l="en" value="../en/guide-hemmabana.html">English</option><option data-l="de" value="../de/guide-hemmabana.html" selected>Deutsch</option><option data-l="fr" value="../fr/guide-hemmabana.html">Français</option><option data-l="es" value="../es/guide-hemmabana.html">Español</option><option data-l="pl" value="../pl/guide-hemmabana.html">Polski</option><option data-l="fi" value="../fi/guide-hemmabana.html">Suomi</option><option data-l="hu" value="../hu/guide-hemmabana.html">Magyar</option><option data-l="ja" value="../ja/guide-hemmabana.html">日本語</option></select><a class="knapp" href="../">Kostenlos spielen</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Guides</a> › Die Heimstrecke</p>
+<h1>Die Heimstrecke: Forme die Strecke nach deinem Auto</h1>
+<p class="ingress">Im Reiter Arena kannst du die Anzahl der Kurven und die Länge deiner Heimstrecke kostenlos ändern. Das ist eine der am meisten übersehenen Möglichkeiten im Spiel – denn eine Strecke, die besser zu deinem Auto passt als zu denen deiner Gegner, ist jedes Mal Punkte wert, wenn du Gastgeber bist.</p>
+
+<h2>Was du ändern kannst</h2>
+<ul>
+<li><strong>Anzahl der Kurven:</strong> 5–20.</li>
+<li><strong>Länge:</strong> 2,0–8,0 km.</li>
+<li><strong>Name:</strong> kann für 100.000 kr geändert werden (rein kosmetisch).</li>
+</ul>
+<p>Änderungen an Kurven und Länge sind kostenlos, gelten aber nur für zukünftige Rennen, deren Qualifying noch nicht gefahren wurde. Plane also rechtzeitig vor deinem Heimrennen.</p>
+
+<h2>Wie die Strecke das Auto beeinflusst</h2>
+<p>Die zwei Eigenschaften der Strecke verstärken unterschiedliche Teile des Autos:</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Eigenschaft</th><th>Begünstigt</th><th>Benachteiligt</th></tr>
+<tr><td>Viele Kurven</td><td>Aerodynamik (vor allem im Qualifying), Reifen, hoher Abtrieb</td><td>Teams mit schwachen Ingenieuren und weichen Reifen (Verschleiß)</td></tr>
+<tr><td>Wenige Kurven</td><td>Teams, die weiche Reifen und wenig Abtrieb fahren wollen</td><td>Teams, die ihr Auto auf Aerodynamik gebaut haben</td></tr>
+<tr><td>Lange Strecke</td><td>Motor, wenig Abtrieb</td><td>Teams mit schwachem Motor; braucht mehr Kraftstoff</td></tr>
+<tr><td>Kurze Strecke</td><td>Teams mit schwachem Motor, aber gutem Grip</td><td>Teams, die ihr Auto auf den Motor gebaut haben</td></tr>
+</table></div>
+<p>Chassis und Getriebe tragen unabhängig von der Strecke gleichmäßig bei und beeinflussen die Wahl daher nicht.</p>
+
+<h2>Drei Beispiele für Streckenprofile</h2>
+<h3>Das Motorteam</h3>
+<p>Hast du dein Geld in den Motor gesteckt und ein gutes Ingenieursteam? Baue eine lange Strecke mit wenigen Kurven, zum Beispiel 7 km und 6–8 Kurven. Der Beitrag des Motors im Rennen wächst mit der Länge der Strecke, und mit wenigen Kurven kannst du wenig Abtrieb und weiche Reifen fahren.</p>
+<h3>Das Grip-Auto</h3>
+<p>Sind Aerodynamik und Reifen deine stärksten Komponenten? Mach es umgekehrt: eine kurze, kurvige Strecke, zum Beispiel 3 km und 16–18 Kurven. Die Aerodynamik hebt das Qualifying umso stärker, je mehr Kurven die Strecke hat, und Gegner mit starkem Motor haben weniger davon.</p>
+<h3>Das Ingenieursteam</h3>
+<p>Hast du deutlich bessere Ingenieure als die Konkurrenz? Wähle eine kurvige Strecke. Dort ist der Reifenverschleiß am größten – und deine Ingenieure senken ihn stark, während deine Gegner zwischen langsamen harten Reifen und weichen Reifen wählen müssen, die verschleißen.</p>
+
+<h2>Vergiss den Kraftstoff nicht</h2>
+<p>Die empfohlene Kraftstoffmenge hängt von der Länge der Strecke und der Anzahl der Kurven ab. Eine lange Strecke braucht deutlich mehr Kraftstoff: Eine 3 km lange Strecke mit 8 Kurven liegt bei etwa 42 Litern, während eine 7 km lange Strecke mit 6 Kurven etwa 103 Liter braucht. Gegner, die ihren Kraftstoffwert vor deinem Heimrennen nicht anpassen, verlieren Leistung – aber achte darauf, selbst die Empfehlung zu treffen, die im Reiter Rennen angezeigt wird.</p>
+
+<h2>Der Streckenrekord</h2>
+<p>Jede Arena hat ihren eigenen Streckenrekord: das schnellste abgeschlossene Rennen auf genau dieser Strecke, egal welches Team es gefahren ist. Der Rekord wird angezeigt, wenn du dir das Gastgeberteam ansiehst. Wenn du das Profil der Strecke änderst, beeinflusst das natürlich, welche Zeiten möglich sind – eine kurze Strecke ergibt andere Rekorde als eine lange.</p>
+
+<h2>Zusammenfassung</h2>
+<div class="card"><ul>
+<li>Finde die stärksten Komponenten und die stärkste Personalgruppe deines Autos.</li>
+<li>Starker Motor: lange Strecke mit wenigen Kurven.</li>
+<li>Starke Aerodynamik und Reifen: kurze, kurvige Strecke.</li>
+<li>Starke Ingenieure: kurvige Strecke, auf der der Verschleiß entscheidet.</li>
+<li>Ändere rechtzeitig – die Änderung gilt nur für Rennen, deren Qualifying noch nicht gefahren wurde.</li>
+</ul></div>
+<p>Lies auch den <a href="guide-bilutveckling.html">Guide zur Fahrzeugentwicklung</a> und den <a href="guide-taktik.html">Taktik-Guide</a>.</p>
+<div class="card las-mer"><h3>Weiterlesen</h3><ul><li><a href="vad-ar-en-undercut.html">Was ist ein Undercut? Die Boxentaktik, die dem Spiel seinen Namen gab</a></li><li><a href="vanliga-fragor.html">Häufige Fragen</a></li><li><a href="guide-nyborjare.html">Einsteiger-Guide: deine ersten Wochen als Manager</a></li></ul><p><a href="guider.html">Alle Guides →</a></p></div><div class="card cta"><h2 style="margin-top:0">Probier es mit deinem eigenen Team</h2><p>Undercut Racing Manager ist kostenlos und läuft direkt im Browser.</p><a class="knapp" href="../">Kostenlos spielen</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Über das Spiel</a> &nbsp;·&nbsp; <a href="guider.html">Guides</a> &nbsp;·&nbsp; <a href="manual.html">Handbuch</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Häufige Fragen</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Datenschutzerklärung</a> &nbsp;·&nbsp; <a href="../">Zum Spiel</a>
+<div class="fot-sprak"><a href="../guide-hemmabana.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-hemmabana.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-hemmabana.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-hemmabana.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-hemmabana.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-hemmabana.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-hemmabana.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-hemmabana.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-hemmabana.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

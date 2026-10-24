@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Drivers, mechanics and engineers – Undercut Racing Manager</title>
+<meta name="description" content="How drivers, mechanics and engineers affect the car’s performance in Undercut Racing Manager, how to crew the cars smartly and how to plan for age and retirement.">
+<link rel="canonical" href="https://undercutmanager.com/en/guide-personal.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-personal.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-personal.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-personal.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-personal.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-personal.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-personal.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-personal.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-personal.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-personal.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-personal.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">About the game</a><a href="guider.html" aria-current="page">Guides</a><a href="manual.html">Manual</a><a href="vanliga-fragor.html">FAQ</a><a href="integritetspolicy.html">Privacy policy</a><select class="sprakval" aria-label="Language" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-personal.html">Svenska</option><option data-l="en" value="../en/guide-personal.html" selected>English</option><option data-l="de" value="../de/guide-personal.html">Deutsch</option><option data-l="fr" value="../fr/guide-personal.html">Français</option><option data-l="es" value="../es/guide-personal.html">Español</option><option data-l="pl" value="../pl/guide-personal.html">Polski</option><option data-l="fi" value="../fi/guide-personal.html">Suomi</option><option data-l="hu" value="../hu/guide-personal.html">Magyar</option><option data-l="ja" value="../ja/guide-personal.html">日本語</option></select><a class="knapp" href="../">Play for free</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Guides</a> › Drivers, mechanics and engineers</p>
+<h1>Drivers, mechanics and engineers: building your squad</h1>
+<p class="ingress">A racing car is never better than the people around it. But not every role in the team matters equally – and whoever understands how the game weighs drivers and staff together can build a winning squad for a fraction of what the competition pays.</p>
+
+<h2>The driver and the crew – how they are weighed</h2>
+<p>The car’s racing ability is calculated from three parts: the driver’s ability, the <strong>combined</strong> ability of the car’s mechanics and the combined ability of the car’s engineers. Each ability point of the driver weighs ten times as much as a staff point – but staff points are added up. Two mechanics at 80 and 10 give 90, five mechanics at 80 give 400.</p>
+<p>That makes the driver and the crew roughly equally important. A driver at 100 and a full crew of five mechanics and five engineers at 100 weigh the same. And an extra mechanic at 60 lifts the car almost as much as a driver who is ten points better – often for a lower cost.</p>
+<p>The driver’s form on the day also varies: before every qualifying session and race a performance between 70 and 100 percent of his ability is drawn at random. Even the best driver has bad days, so don’t judge a driver on a single race.</p>
+
+<h2>Every staff member on the car counts</h2>
+<p>Since the game adds up the ability of the mechanics and engineers placed on a car, a few simple rules apply:</p>
+<ul>
+<li><strong>More staff always makes the car better.</strong> Even a weak new hire adds his points – nobody drags the others down.</li>
+<li><strong>Fill both cars.</strong> At most five mechanics and five engineers per car count. A car with five in each role is much stronger than one with one or two.</li>
+<li><strong>Trade up when you can.</strong> Once the crew is full, the next step is to replace the weakest with someone better – the difference in ability is exactly what the car gains.</li>
+<li>Staff in Reserve and extra staff cost wages but don’t affect the race.</li>
+<li>A car with no mechanics or engineers at all counts as if the crew had ability 10 – so you need at least one per car.</li>
+</ul>
+<p>Every staff member costs 100,000 kr to hire and 100,000 kr in weekly wages, so the question becomes how much ability you get per krona. Since the wage is the same regardless of ability, a strong hire gives more for the money than a weak one – but a weak hire is still better than an empty seat, as long as the budget can handle the wage.</p>
+
+<h2>Appoint chiefs and place them well</h2>
+<p>You can appoint a Chief mechanic and a Chief engineer. The chief gets 20 percent extra on his ability in the calculation for the car he is assigned to. So place the chiefs on the car you want to prioritise – usually the car with your best driver, or the car chasing a promotion spot.</p>
+
+<h2>The engineers decide the race</h2>
+<p>In qualifying, mechanics and engineers matter equally. In the race, however, the engineers have three extra effects:</p>
+<ul>
+<li>They <strong>reduce tyre wear</strong> – as soon as the engineers on the car have 100 ability combined, wear costs 65 percent less, which is the maximum effect.</li>
+<li>They give a <strong>pit bonus</strong> that keeps growing the more combined ability the crew has.</li>
+<li>They make <strong>pit stops faster</strong> – from around 3.6 seconds with a weak crew down towards the game’s fastest, about 1.6 seconds.</li>
+</ul>
+<p>Strong engineers also let you run softer tyres in the race without the wear eating up the advantage, as described in the <a href="guide-taktik.html">tactics guide</a>. If you can only afford to invest in one staff group, the engineers are the better choice.</p>
+
+<h2>Training: five attributes, one ability</h2>
+<p>All drivers, mechanics and engineers have five attributes from 0–100, and their ability is the average of them. Experience grows automatically by 5 points a year and can’t be trained. The other four are trained in Monday’s training race, where up to three people per group can take part for free and improve an attribute by 1–5 points.</p>
+<p>Since ability is a straight average, it doesn’t matter which of the four attributes you train – every point is worth the same. But there is a practical difference: attributes close to 100 can’t grow much more, so rotate the training towards the lower attributes.</p>
+
+<h2>Age: plan three seasons ahead</h2>
+<p>Everyone in the game gets a year older at every season change. Age shapes the squad’s future in three ways:</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Role</th><th>What happens</th></tr>
+<tr><td>Drivers</td><td>Start at 20. Speed, Tire management, Defense and Teamwork gradually decline after 30, and the decline grows with age. Retirement at 40.</td></tr>
+<tr><td>Mechanics &amp; engineers</td><td>No decline in ability. Experience keeps growing. Retirement at 60.</td></tr>
+<tr><td>Team Principal</td><td>Improves by +1 in every ability each week. Retirement at 60.</td></tr>
+</table></div>
+<p>An older driver therefore has plenty of Experience but declining other attributes. The ideal driver to buy is often someone in his mid-twenties: experienced enough to be good now, and with many years left before the decline begins.</p>
+<p>Mechanics and engineers, on the other hand, are long-term investments – they never lose ability and can stay in the team for decades.</p>
+
+<h2>Driving style matters more than you think</h2>
+<p>Every driver has a driving style: Aggressive, Defensive or Balanced. Aggressive drivers drive closer to the limit and run a considerably higher risk of damaging the car. Damage permanently lowers a component by 10–70 percent, and it can cost hundreds of thousands of kronor to rebuild. Two aggressive drivers in the same team is therefore an expensive combination.</p>
+
+<h2>The Junior program: the drivers of the future</h2>
+<p>Through your scouts you can find a prospect aged 15–19 once a week for 500,000 kr. Prospects can do preparation training every week and are signed to the reserve bench when they turn 20 – with a protected four-year contract whose buyout clause nobody can trigger. It’s the safest way to produce your own star driver without competing with other teams on the transfer market.</p>
+
+<h2>Summary</h2>
+<div class="card"><ul>
+<li>The driver and the crew are roughly equally important – staff ability is added up.</li>
+<li>Fill the crew: five mechanics and five engineers per car, then trade up.</li>
+<li>Engineers matter most in the race.</li>
+<li>Place the chiefs on the car you prioritise.</li>
+<li>Buy drivers in their twenties and plan for the decline after 30.</li>
+<li>Build a junior program before your drivers approach 40.</li>
+</ul></div>
+<p>How to negotiate the right contracts with your squad is described in the <a href="guide-kontrakt.html">contracts and transfer market guide</a>.</p>
+<div class="card las-mer"><h3>Read next</h3><ul><li><a href="guide-ekonomi.html">Finance guide: budget, sponsorship deals and prize money</a></li><li><a href="guide-kontrakt.html">Contracts and the transfer market: negotiate, buy and sell</a></li><li><a href="guide-seriepyramiden.html">The league pyramid: how to reach the Masters League</a></li></ul><p><a href="guider.html">All guides →</a></p></div><div class="card cta"><h2 style="margin-top:0">Try it with your own team</h2><p>Undercut Racing Manager is free and runs right in your browser.</p><a class="knapp" href="../">Play for free</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">About the game</a> &nbsp;·&nbsp; <a href="guider.html">Guides</a> &nbsp;·&nbsp; <a href="manual.html">Manual</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">FAQ</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Privacy policy</a> &nbsp;·&nbsp; <a href="../">To the game</a>
+<div class="fot-sprak"><a href="../guide-personal.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-personal.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-personal.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-personal.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-personal.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-personal.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-personal.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-personal.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-personal.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

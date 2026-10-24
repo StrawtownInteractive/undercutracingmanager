@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>マニュアル – Undercut Racing Manager</title>
+<meta name="description" content="Undercut Racing Managerの完全マニュアル：チーム編成、マシン、戦術、経営、リーグ、移籍市場など。">
+<link rel="canonical" href="https://undercutmanager.com/ja/manual.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/manual.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/manual.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/manual.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/manual.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/manual.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/manual.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/manual.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/manual.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/manual.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/manual.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">ゲームについて</a><a href="guider.html">ガイド</a><a href="manual.html" aria-current="page">マニュアル</a><a href="vanliga-fragor.html">よくある質問</a><a href="integritetspolicy.html">プライバシーポリシー</a><select class="sprakval" aria-label="言語" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../manual.html">Svenska</option><option data-l="en" value="../en/manual.html">English</option><option data-l="de" value="../de/manual.html">Deutsch</option><option data-l="fr" value="../fr/manual.html">Français</option><option data-l="es" value="../es/manual.html">Español</option><option data-l="pl" value="../pl/manual.html">Polski</option><option data-l="fi" value="../fi/manual.html">Suomi</option><option data-l="hu" value="../hu/manual.html">Magyar</option><option data-l="ja" value="../ja/manual.html" selected>日本語</option></select><a class="knapp" href="../">無料でプレイ</a></nav>
+</div></header>
+<main>
+<h1>マニュアル</h1>
+<p class="ingress">Undercut Racing Managerの完全ガイド。ゲーム内の「マニュアル」タブと同じ内容です。</p>
+
+            <img src="assets/manual-header.png" alt="Team-personal i diskussion vid depåtaket med publikläktare i bakgrunden" style="width:100%; max-height:280px; object-fit:cover; border-radius:10px; display:block; margin-bottom:14px;">
+            <div class="card" id="man-toc">
+                <h3>目次</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Undercut Racing Managerを始めたばかりですか？<a href="#man-intro">はじめに</a>からどうぞ。以下の見出しをクリックすると、そのセクションに直接移動します。</p>
+                <div class="man-toc-grid">
+                    <div>
+                        <p class="man-toc-heading">はじめに</p>
+                        <ul>
+                            <li><a href="#man-intro">ゲームとナビゲーションの仕組み</a></li>
+                        </ul>
+                        <p class="man-toc-heading">トループ＆競技</p>
+                        <ul>
+                            <li><a href="#man-trupp">あなたのトループ＆スタッフ</a></li>
+                            <li><a href="#man-lagsidor">チームページ＆プロフィール</a></li>
+                            <li><a href="#man-tavling">シーズン、レース＆ポイント</a></li>
+                            <li><a href="#man-serier">シリーズ、マーケット＆週間スケジュール</a></li>
+                            <li><a href="#man-serier">ホームコース、コース記録＆移籍履歴</a></li>
+                        </ul>
+                        <p class="man-toc-heading">成長</p>
+                        <ul>
+                            <li><a href="#man-egenskaper">能力＆トレーニング</a></li>
+                            <li><a href="#man-skador-ekonomi">ダメージ、経済＆ピットストップ</a></li>
+                            <li><a href="#man-sponsoravtal">スポンサー契約</a></li>
+                            <li><a href="#man-prispengar">賞金</a></li>
+                            <li><a href="#man-valuta">通貨</a></li>
+                            <li><a href="#man-moral-ovrigt">チーム士気、チームプリンシパル＆イラスト</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="man-toc-heading">契約＆スタッフ</p>
+                        <ul>
+                            <li><a href="#man-kontrakt">契約システム</a></li>
+                            <li><a href="#man-pension">引退＆年齢</a></li>
+                            <li><a href="#man-mekaniker">メカニック</a></li>
+                            <li><a href="#man-ingenjorer">エンジニア</a></li>
+                            <li><a href="#man-principal">チーム代表</a></li>
+                            <li><a href="#man-chefer">チーフメカニック＆チーフエンジニア</a></li>
+                            <li><a href="#man-scouting">スカウティング＆ジュニアプログラム</a></li>
+                        </ul>
+                        <p class="man-toc-heading">レース＆ソーシャル</p>
+                        <ul>
+                            <li><a href="#man-taktik">戦術ミーティング</a></li>
+                            <li><a href="#man-popularitet">人気度＆グッズ</a></li>
+                            <li><a href="#man-lagledare">チーム代表者、紹介文＆国</a></li>
+                            <li><a href="#man-forum">フォーラム</a></li>
+                            <li><a href="#man-inkorg">受信箱</a></li>
+                            <li><a href="#man-historia">統計、トロフィー＆レジェンド</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="man-intro">
+                <h3>はじめに：ゲームとナビゲーションの仕組み</h3>
+                <p>あなたは自分のレーシングチームを率いてディビジョンを勝ち上がり、世界中の本物のマネージャーたちと対戦します。ドライバー・メカニック・エンジニアを雇用し、車をアップグレードし、レースに向けて戦術を設定します――あとは以下のスケジュールに従って、ゲームが毎週自動的に処理してくれます。</p>
+                <p><strong>週間スケジュール（完全自動・スウェーデン時間）：</strong></p>
+                <ul style="margin:4px 0 12px; padding-left:18px;">
+                    <li><strong>月曜20:00</strong> – 登録済みドライバーのトレーニングレース</li>
+                    <li><strong>水曜20:00</strong> – 予選</li>
+                    <li><strong>金曜20:00</strong> – レース</li>
+                    <li><strong>日曜20:00</strong> – 経済更新</li>
+                </ul>
+                <p><strong>タイムゾーン：</strong>ゲーム内のすべての時刻（レース、予選、トレーニング、経済更新、スカウトへの電話）は<strong>スウェーデン時間</strong>（GMT+1、夏時間はGMT+2）です。<strong>マイアカウント → 設定 → タイムゾーン</strong>で自分のタイムゾーンを選べます。選ぶと、右上の時計とゲーム内のすべての日付・時刻（今後のレースや受信箱など）があなたの時間で表示されます。移籍市場のカウントダウンはタイムゾーンに関係なく常に正確です。イベント自体は引き続きスウェーデン時間の20:00に行われます。</p>
+                <p><strong>ナビゲーションの見方：</strong></p>
+                <ul style="margin:4px 0 0; padding-left:18px;">
+                    <li><strong>ホーム</strong> – あなたの作業スペース：上部に選手権順位と予算、対応が必要な事項のリスト、さらにチーム状況、スタッフ、次の試合、ニュース、イベントログ。</li>
+                    <li><strong>チームページ</strong> – トループと車（あなた自身のチームと他の全チーム）。サブタブは概要、ドライバー、メカニック、エンジニア、<strong>車</strong>（各車のコンポーネントを個別にアップグレード、車1と車2は別々）、トロフィー、そして（自分のチームのみ）<strong>トレーニング</strong>、<strong>スカウティング</strong>、<strong>契約</strong>。</li>
+                    <li><strong>アリーナ</strong> – あなたのホームアリーナ。</li>
+                    <li><strong>財務</strong> – 予算、収入、コスト、履歴。</li>
+                    <li><strong>シリーズ</strong> – あなたのグループの順位表、結果、フォーラム。</li>
+                    <li><strong>マーケット</strong> – 移籍マーケット、スタッフの売買。</li>
+                    <li><strong>レース</strong> – チームの次回（または直近）の予選と決勝。両方の指示を設定する戦術ブリーフィングとレースレポートがあります。</li>
+                    <li><strong>統計</strong> – チャンピオンリスト、記録、チーム統計、アチーブメント、レジェンド。</li>
+                    <li><strong>マニュアル</strong> – このページです。</li>
+                    <li><strong>フォーラム</strong> – 実際のスレッドがある独立した掲示板で、全チームのログイン中のプレイヤーが利用できます。「シリーズ」タブ下部のチャットログとは完全に別物です。<a href="#man-forum">フォーラム</a>を参照してください。</li>
+                    <li><strong>あなたのユーザー名</strong>（右上）– <strong>設定</strong>と<strong>Undercut Racing Managerについて</strong>。</li>
+                </ul>
+            </div>
+
+            <div class="card" id="man-trupp">
+                <h3>あなたのトループ＆スタッフ</h3>
+                <p><strong>トループのルール：</strong>各チームは専属ドライバーを持つ2台のアクティブな車（「車1」「車2」）に加え、チーム共通で最大10人のリザーブドライバーを保有します。メカニックとエンジニアはそれぞれ最大10人まで雇用できます（雇用に100,000 kr、雇用後は1人あたり週給100,000 kr）。各メカニック・エンジニアはチームの2台のうちいずれかに割り当てられ、どちらの車にするかは本人のプロフィールページから自分で選べます。</p>
+                <p><strong>スタッフを解雇：</strong>自分のスタッフのプロフィールページから、いつでも本人を解雇できます――即座にチームを離れ、補償はありません（車1/車2のドライバーの場合はリザーブドライバーがいればそれに交代します）。同時に売りに出されている場合、オークションは中止されます。</p>
+                <p><strong>名前と国籍：</strong>ゲーム内のすべてのドライバー、メカニック、エンジニア、チームプリンシパルは男性ですが、ゲーム内のどの国籍（スウェーデン、イタリア、ドイツ、フランス、スペイン、イギリス、オランダ、フィンランド、ブラジル、アメリカ、日本、オーストラリア、ベルギー、オーストリア、モナコ、メキシコ、カナダ、デンマーク、ノルウェー、スイス）からでも出身になり得ます――名前は本人の国籍に合わせたものになります。</p>
+            </div>
+
+            <div class="card" id="man-lagsidor">
+                <h3>チームページ＆プロフィール</h3>
+                <p>すべてのチーム（あなた自身と全対戦相手）は同じ種類のチームページで表示され、サブタブは概要、ドライバー、メカニック、エンジニアです。どのドライバー・メカニック・エンジニアの名前をクリックしても――自分のトループでも、対戦相手でも、移籍マーケットでも――チームページのサブページとして本人のプロフィールページが開きます。そこには年齢、国籍、すべての能力、走行スタイル（ドライバーの場合）、所属する車、加入日が表示されます。自分のスタッフであれば、そこから売りに出す、解雇する、あるいは（メカニック/エンジニアの場合）車1と車2の間で移動させることができます。</p>
+                <p>自分のチームページ → <strong>概要</strong>サブタブには2つの追加ショートカットがあります。<strong>ライバル</strong>ボタンは、過去10シーズンに契約解除条項でドライバーやスタッフを引き抜いたチームの一覧を各行の簡単な理由とともに表示し、<strong>経歴</strong>リンクはキャリアを通じた自チームのシーズンごとの順位を表示します。</p>
+            </div>
+
+            <div class="card" id="man-tavling">
+                <h3>シーズン、レース＆ポイント</h3>
+                <p><strong>シーズンと年齢：</strong>1シーズンは10週間（10レース）で構成されます。各シーズンの終了後、ゲーム内の全員が1歳年を取ります――これはあなた自身のチームだけでなく、すべてのチームのドライバー、メカニック、エンジニアに適用されます――そして全順位表のポイントは新シーズンに向けてリセットされます。引退年齢や時間経過による能力の変化については<a href="#man-pension">引退＆年齢</a>の項目を参照してください。</p>
+                <p><strong>ドライバー：</strong>ドライバーにはランダムに走行スタイル（アグレッシブ、ディフェンシブ、バランス型）が割り当てられ、20歳でスタートします。走行スタイルはレース自体だけでなく、ダメージのリスクにも影響します――<a href="#man-skador-ekonomi">ダメージ、経済＆ピットストップ</a>を参照してください。</p>
+                <p><strong>車ごとのレース能力：</strong>各車はそれぞれ独自のレース結果を得ます。車のパフォーマンスは、ドライバーの発揮能力と、その車に配置されたメカニックおよびエンジニアの<strong>合計</strong>能力から計算されます。ドライバーの能力1ポイントはスタッフの1ポイントの10倍の重みがありますが、スタッフの能力は合計されます。80と10のメカニック2人なら90、80のメカニック5人なら400となるため、メカニックとエンジニアが揃ったフルメンバーはドライバーとほぼ同じ重みを持つこともあります。これに、その車自身のパーツによる貢献（「車」タブ参照）、ピットストップ、チームの士気が加わります。</p>
+                <p><strong>ドライバーの成績：</strong>ドライバーが毎回全力を発揮するわけではありません。各予選・各レースの前に、各ドライバーの能力の70%～100%の範囲でパフォーマンスレベルがランダムに決まります。</p>
+                <p><strong>レースにおけるコンポーネントの貢献：</strong>車の5つのコンポーネント（タイヤ、エンジン、空力性能、ギアボックス、シャシー）は、それぞれ予選とレースに異なる度合いで貢献し、その効果はコースの特性によっても変化します。エンジンはレースで最も効果があり（長いコースではさらに）、空力性能は予選で最も効果があり（コーナーの多いコースではさらに）、タイヤはレース全体を通してのペース維持を左右し（コーナーが多いほど重要）、ギアボックスとシャシーは予選・レース両方で安定した貢献をします。コンポーネントごとの詳しい説明は車タブを参照してください――そこで車1と車2を完全に別々にアップグレードできます。</p>
+                <p><strong>車ごとのポイント：</strong>各レースでは、すべての車（1チームにつき2台）がスタート順位と最終順位を個別に争います。レース上位10台の車には25-18-15-12-10-8-6-4-2-1のポイントが与えられます。チームの合計ポイントは両方の車が獲得したポイントの合計であり、順位表ではシーズン中に各車（車1／車2）がそれぞれどれだけ貢献したかが表示されます。</p>
+                <p><strong>シーズン間の競技ルール：</strong>各シーズン終了後、新しいルールが発効します：車の5つのコンポーネント（タイヤ、エンジン、空力性能、ギアボックス、シャシー――この順で）のうち1つが、あなた自身を含むゲーム内の全チームで半減します。これは5シーズン周期で繰り返されます：シーズン2はタイヤ、シーズン3はエンジン、シーズン4は空力性能、シーズン5はギアボックス、シーズン6はシャシー、シーズン7は再びタイヤ、という具合です。このルールは各シーズン番号につき正確に1回だけ適用され、すでにプレイ済みのシーズンに事後的に影響することはありません――最初のシーズン（シーズン1）がこのルールの対象になることは決してありません。ルールが発効するたびにニュースと受信箱で通知され、直近に適用されたルールはレースタブに常に表示されます。</p>
+            </div>
+
+            <div class="card" id="man-serier">
+                <h3>シリーズ、マーケット＆週間スケジュール</h3>
+                <p><strong>移籍マーケット：</strong>「マーケット」タブには進行中のすべてのオークションが一覧表示されます。自分のドライバー・メカニック・エンジニアは、本人のプロフィールページから売りに出すことができ、その時点からオークションは正確に7日間続きます。シリーズ内のすべてのチームは、マーケットタブからでも本人のプロフィールページからでも直接、互いのスタッフに入札できます。自分自身の出品に入札することはできません。締切を過ぎると、最高入札者に本人が移ります：利益を出して売却した場合はその金額があなたの予算に加算され、誰かを購入した場合はその費用が予算から差し引かれます（ただしオークション確定時に支払い余力とトループの空きがある場合に限ります）。</p>
+                <p><strong>シリーズとシリーズピラミッド：</strong>ゲームには5つのレベルがあります：<strong>Undercut Masters League</strong>（1グループ、10チーム）、<strong>ディビジョン2</strong>（10チームずつ2グループ）、<strong>ディビジョン3</strong>（10チームずつ4グループ）、<strong>ディビジョン4</strong>（10チームずつ8グループ）、<strong>ディビジョン5</strong>（10チームずつ16グループ）――合計310チームです。対戦相手はほかのプレイヤーで、各チームは本物のマネージャーが率いています。順位表のどのチームをクリックしても、そのチームページを車ごとに確認できます。</p>
+                <p><strong>昇格と降格：</strong>10レースのシーズンが終わると、各グループ（Undercut Masters Leagueを除く）の1位チームが1つ上のディビジョンに昇格します。さらに、ディビジョン内の成績上位の2位チームも昇格します。その数は1つ上のディビジョンのグループ数と同じです（ディビジョン2から1チーム、ディビジョン3から2チーム、ディビジョン4から4チーム、ディビジョン5から8チーム）。2位チームはポイント順に並べられ、同点の場合は最も成績の良いマシンのポイントで決まります。各グループ（最下層のディビジョン5を除く）では下位3チームが1つ下のディビジョンに降格し、原則としてそのグループに紐づく2つのグループに振り分けられます。これにより各グループのチーム数は常に10のままになります。2位チームの現在の順位は「シリーズ → 順位表 → 成績上位の2位」で確認できます。</p>
+                <p><strong>コース＆レース：</strong>1シーズンは10レースで構成され、同じグループのチームが交代でホームコースの主催者を務めます。コース長とコーナー数は、そのレースで各コンポーネントがどれだけ重要になるかに影響します。</p>
+                <p><strong>週間スケジュール：</strong>毎週同じサイクルが繰り返されます：<strong>月曜20:00</strong>にトレーニングレース、<strong>水曜20:00</strong>に予選、<strong>金曜20:00</strong>にレース本番、<strong>日曜20:00</strong>に経済更新。すべてゲームによって時刻が来ると自動的に行われます――自分でこれらを実行するボタンはありません。すべての時刻はスウェーデン時間（GMT+1、夏時間はGMT+2）です。</p>
+                <p><strong>ホームコース＆コース記録：</strong>アリーナタブでは、自分のホームコースのコーナー数（5～20）とコース長（2.0～8.0km）を無料で変更でき、名前も変更できます（100,000 kr）――変更が適用されるのは今後の、まだ予選が行われていないレースのみです。コーナーが多いほど空力性能/タイヤ/ハンドリングが有利になり、コースが長いほどエンジンが有利になりますがより多くの燃料が必要です。各アリーナには独自のコース記録（どのチームが記録したかにかかわらず、そのコースで達成された最速のレース）があり、主催チームを見ているときに表示されます。</p>
+                <p><strong>移籍履歴：</strong>マーケットタブには、シリーズ内で行われたすべての売買（誰が、どのチームからどのチームへ、いくらで売却されたか）のログがあります――これは上記のオークションによって決まるリストです。</p>
+            </div>
+
+            <div class="card" id="man-egenskaper">
+                <h3>能力＆トレーニング</h3>
+                <p><strong>能力（0～100）：</strong>各ドライバー、メカニック、エンジニアには0～100の5つの個別能力があり、本人の「能力値」はこの5つの平均です。ドライバーは経験、スピード、タイヤマネジメント、ディフェンス、チームワークを持ちます。メカニックは経験、エンジン知識、スピード、プレッシャー耐性、チームワークを持ちます。エンジニアは経験、戦術、スピード、プレッシャー耐性、チームワークを持ちます。すべての能力は、チームページ内の本人のプロフィール（名前をクリック）で確認できます。</p>
+                <p><strong>経験：</strong>経験はトレーニングできません。代わりに、本人が年を取るたびに（ゲーム内の全員につき、シーズン終了ごとに1回）自動的に5ポイント増加します。ドライバーは常に20歳のときに経験10からスタートし、メカニックとエンジニアにも同じ基本原則が適用されます。</p>
+                <p><strong>トレーニングタブ＆トレーニングレース：</strong>チームページ → 「トレーニング」サブタブで、ドライバー・メカニック・エンジニアをその週のトレーニングレースにエントリーし、それぞれが集中する能力を選びます。ドライバーはスピード、タイヤマネジメント、ディフェンス、チームワーク、メカニックはエンジン知識、スピード、メディア対応、チームワーク、エンジニアは戦術、スピード、メディア対応、チームワークをトレーニングできます――経験はトレーニングできません。毎週参加できるのはドライバー、メカニック、エンジニアそれぞれ最大3人までで、トレーニングは無料です。トレーニングレースは毎週月曜20:00に自動で行われます。能力の上昇幅（1～5ポイント）はレースでのパフォーマンスで決まります。ドライバー、メカニック、エンジニアのいずれも、トレーニングレース終了後すぐに反映されます。同じサブタブの下部に短いレポートが表示されます。新しいトレーニングオーダーを出さなかった場合、チームは前週と同じメンバー・能力でトレーニングします。</p>
+            </div>
+
+            <div class="card" id="man-skador-ekonomi">
+                <h3>ダメージ、経済＆ピットストップ</h3>
+                <p><strong>ダメージ：</strong>各レース終了後、出場チームのうちランダムに0～3台の車がダメージを受けます（つまり時には1台もダメージを受けないこともあります）。ダメージは車の5つのコンポーネント（タイヤ、エンジン、空力性能、ギアボックス、シャシー）のいずれか1つを直撃し、その現在値を永続的に10～70%低下させます。ダメージは修理できません――コンポーネントは新しい低いレベルのままとなり、通常のアップグレード（下記参照）で再び強化します。アップグレードは指数が低いほど安くなります。ダメージを受けた時点でそのコンポーネントのアップグレードが進行中の場合、アップグレードは新しいレベルから+5となります。<strong>走行スタイルが影響します：</strong>アグレッシブな走行スタイルのドライバーはより限界に近い走りをするため、バランス型やディフェンシブ型のドライバーに比べて車がダメージを受けるリスクが著しく高くなります。</p>
+                <p><strong>アップグレード費用――最初は安く、上位になるほど高額に：</strong>車タブでの各アップグレードはコンポーネントの指数を5上げ（最大100まで）、価格はアップグレード<em>前</em>の指数から次の式で計算されます：<code>20,000 kr + 指数² × 30</code>。実際には、費用は指数の2乗で増加することを意味します：ほぼ未着手のコンポーネント（指数0）のアップグレードはわずか20,000 krですが、指数50では95,000 kr、そして最大値100に達する直前（指数95）では290,750 krにもなります。したがって、すでに強いコンポーネントをさらに押し上げるよりも、チームの最も弱いコンポーネントを強化するほうがほぼ常に有利です。車タブのアップグレードボタンには次のステップの費用が常に正確に表示され、お金が引き落とされる前に確認画面が表示されます。<strong>各アップグレードには1日かかります：</strong>確認するとすぐに費用が引き落とされますが、1日が経過するまでコンポーネントは「アップグレード中...」と表示され古い指数のままです。1日後には新しいレベルが自動的に反映されます（それ以上何もする必要はありません）。1つのコンポーネントにつき同時にキューに入れられるアップグレードは1件のみです――同じコンポーネントで次のアップグレードを開始する前に、完了を待つ必要があります。</p>
+                <p><strong>経済更新（毎週日曜日20:00）：</strong>毎週日曜日、あなたのチームは――シリーズの他のすべてのチームと同様に――スポンサー収入とグッズ販売収入を受け取り、スタッフの給料と工場の固定維持費（30,000 kr）を支払います。有効なスポンサー契約がない間は（<a href="#man-sponsoravtal">スポンサー契約</a>参照）、スポンサー収入は現在参戦しているディビジョンに基づいてランダムに決まります――上位のディビジョンほど平均が高くなります。グッズ収入も常に同じ方法でランダムに決まりますが、さらに2人のドライバーの平均人気によって増減します（<a href="#man-popularitet">人気度＆グッズ</a>参照）。どちらの収入も週1,000,000 krを超えることはありません。<strong>マイナス予算には利息がかかります：</strong>チームの予算が0 krを下回っている間は、毎週マイナス残高の5%が利息として差し引かれます（週の経済で「借入利息」と表示）――予算に気を配るもう一つの理由です。次の段落も参照してください。週のすべての数字は経済履歴に保存され、経済 → 経済履歴タブで確認できます：過去の週ごとのリストと、各シーズンの全週の集計の両方が見られます。</p>
+                <p><strong>マイナス予算――制限（破産はなし）：</strong>予算がどれだけマイナスになっても、チームが破産したり、ゼロからやり直しを強いられたりすることはありません。その代わり、予算が0 krを下回っている間はチームが大きく制限されます：ドライバーやスタッフの購入・獲得（マーケット、フリーエージェント、契約解除条項のいずれも）、新しい契約の提示や締結（契約延長やジュニア有望株との契約を含む）、車のアップグレード、スカウトの依頼、スタッフのトレーニング、その他の新たな出費（アリーナの拡張や名称変更など）ができなくなります。ただし給料、維持費、借入利息は毎週通常どおり差し引かれます。スタッフを売る、ローンを組む、または次の経済更新を待つことで0 krを上回れば、再び自由に行動できるようになります。</p>
+                <p><strong>ピットストップ＆タイヤ戦略：</strong>各車はレース中にランダムなタイヤ戦略（例：1ストップ攻撃的、2ストップバランス型、1ストップ守備的）でピットストップを1回行い、これはレース結果に独自の列として表示されます。ピットストップの出来はレース中の車のポイントに加算をもたらし、この加算の大きさを左右するのはエンジニアです――その車を担当するエンジニアの合計能力が高いほど、ピットストップが良くなり、ボーナスも大きくなります。車のタイヤコンポーネントも戦略と連動します：タイヤが良いほど、より攻撃的な戦略が報われます。ピットストップはさらに、戦術ミーティング（<a href="#man-taktik">戦術ミーティング</a>参照）で行うタイヤ選択とも連動します――エンジニアが優れているほど、レース中の厳しいタイヤ選択の不利をピットストップがより多く補ってくれます。</p>
+            </div>
+
+            <div class="card" id="man-sponsoravtal">
+                <h3>スポンサー契約</h3>
+                <p><strong>財務 → スポンサー契約</strong>タブでは、ランダムなスポンサー収入に頼る代わりに固定のスポンサー契約を結べます（<a href="#man-skador-ekonomi">損傷、財務、ピットストップ</a>を参照）。有効な契約がない場合、3種類のオファーが表示されます：<strong>安定型</strong>（週の基本額が高く、ボーナスは低め）、<strong>バランス型</strong>（均等な組み合わせ）、<strong>リスク型</strong>（基本額は低いが、チームが好成績なら高額ボーナス）。各オファーにはランダムなスポンサー収入の代わりとなる固定の週基本額と、表彰台ごと・優勝ごと・チャンピオン獲得時に支払われるボーナス条項があります。チーム代表のスポンサー獲得能力は3つすべてのオファーの基本額に影響します。</p>
+                <p>締結したスポンサー契約は常に1シーズン（10レース）有効で、<strong>途中解約はできません</strong>。新しい契約は満了後にのみ結べます。同時に有効にできるスポンサー契約は1つだけです。契約期間中は「財務 → スポンサー契約」に残り週数とともに表示されます。</p>
+            </div>
+
+            <div class="card" id="man-prispengar">
+                <h3>賞金</h3>
+                <p><strong>各レース：</strong>チームは各レースで自チームの車が獲得した<strong>ポイントごとに賞金</strong>を受け取ります：Undercut Masters Leagueでは1ポイントあたり15,000 kr、ディビジョン2では11,000 kr、ディビジョン3では6,000 kr、ディビジョン4では3,000 kr、ディビジョン5では2,000 krです。スポンサー契約がある場合は、<strong>スポンサーボーナス</strong>（表彰台ボーナスと優勝ボーナス、車ごと）が加わります。一方、ドライバーの<strong>契約ボーナス</strong>（表彰台、優勝、ポイントのボーナス）はドライバーに支払われ、チームにとっては<strong>コスト</strong>になります。すべてはゴール直後に計上され、取引明細に表示されます。</p>
+                <p><strong>順位表――賞金ツリー：</strong>シーズン終了時、各チームは順位表の最終順位に応じて賞金を受け取ります。各リーグは10チームで構成されます。ディビジョン1には1リーグ、ディビジョン2には2リーグ、ディビジョン3には4リーグ……と、リーグ数はディビジョンが下がるごとに<strong>倍</strong>になり、ディビジョン10（512リーグ）まで続きます。各ディビジョンの賞金総額は常に同じ<strong>20,000,000 kr</strong>です。ディビジョン1では総額がその唯一のリーグに入ります。ディビジョンが1つ下がるごとに<strong>リーグあたりの賞金は半分</strong>になりますが、同時にリーグ数が倍になるため、ディビジョンの合計は常に同じです（賞金の半分×2倍のリーグ数）。各リーグ内では賞金が1～10位に分配されます：<strong>50%、20%、10%、7%、5%、3%、2%、1.5%、1%、0.5%</strong>（合計100%）。例：ディビジョン1の優勝チームは20,000,000 krの50% = <strong>10,000,000 kr</strong>を受け取ります。ディビジョン3のリーグは20,000,000 ÷ 4 = 5,000,000 krなので、その優勝チームは2,500,000 krを受け取ります。</p>
+                <div><p><strong>表1 – ディビジョン・リーグごとの賞金総額</strong></p><div class="tabell-scroll"><table><thead><tr><th>ディビジョン</th><th>リーグ数</th><th>リーグあたりの賞金</th><th>優勝（50%）</th><th>10位（0.5%）</th><th>ディビジョン合計</th></tr></thead><tbody><tr><td>ディビジョン1 (Undercut Masters League)</td><td>1</td><td>20,000,000 kr</td><td>10,000,000 kr</td><td>100,000 kr</td><td>1 × 20,000,000 = <strong>20,000,000 kr</strong></td></tr><tr><td>ディビジョン2</td><td>2</td><td>10,000,000 kr</td><td>5,000,000 kr</td><td>50,000 kr</td><td>2 × 10,000,000 = <strong>20,000,000 kr</strong></td></tr><tr><td>ディビジョン3</td><td>4</td><td>5,000,000 kr</td><td>2,500,000 kr</td><td>25,000 kr</td><td>4 × 5,000,000 = <strong>20,000,000 kr</strong></td></tr><tr><td>ディビジョン4</td><td>8</td><td>2,500,000 kr</td><td>1,250,000 kr</td><td>13,000 kr</td><td>8 × 2,500,000 = <strong>20,000,000 kr</strong></td></tr><tr><td>ディビジョン5</td><td>16</td><td>1,250,000 kr</td><td>625,000 kr</td><td>6,000 kr</td><td>16 × 1,250,000 = <strong>20,000,000 kr</strong></td></tr><tr><td>ディビジョン6</td><td>32</td><td>625,000 kr</td><td>313,000 kr</td><td>3,000 kr</td><td>32 × 625,000 = <strong>20,000,000 kr</strong></td></tr><tr><td>ディビジョン7</td><td>64</td><td>312,500 kr</td><td>156,000 kr</td><td>2,000 kr</td><td>64 × 312,500 = <strong>20,000,000 kr</strong></td></tr><tr><td>ディビジョン8</td><td>128</td><td>156,250 kr</td><td>78,000 kr</td><td>1,000 kr</td><td>128 × 156,250 = <strong>20,000,000 kr</strong></td></tr><tr><td>ディビジョン9</td><td>256</td><td>78,125 kr</td><td>39,000 kr</td><td>1,000 kr</td><td>256 × 78,125 = <strong>20,000,000 kr</strong></td></tr><tr><td>ディビジョン10</td><td>512</td><td>39,062.5 kr</td><td>20,000 kr</td><td>1,000 kr</td><td>512 × 39,062.5 = <strong>20,000,000 kr</strong></td></tr></tbody></table></div><p><strong>表2 – 順位ごとの支払額（kr、1,000クローナ単位で四捨五入）</strong></p><div class="tabell-scroll"><table><thead><tr><th>ディビジョン</th><th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>5位</th><th>6位</th><th>7位</th><th>8位</th><th>9位</th><th>10位</th></tr><tr><th></th><th>50%</th><th>20%</th><th>10%</th><th>7%</th><th>5%</th><th>3%</th><th>2%</th><th>1.5%</th><th>1%</th><th>0.5%</th></tr></thead><tbody><tr><td>Div 1</td><td>10,000,000</td><td>4,000,000</td><td>2,000,000</td><td>1,400,000</td><td>1,000,000</td><td>600,000</td><td>400,000</td><td>300,000</td><td>200,000</td><td>100,000</td></tr><tr><td>Div 2</td><td>5,000,000</td><td>2,000,000</td><td>1,000,000</td><td>700,000</td><td>500,000</td><td>300,000</td><td>200,000</td><td>150,000</td><td>100,000</td><td>50,000</td></tr><tr><td>Div 3</td><td>2,500,000</td><td>1,000,000</td><td>500,000</td><td>350,000</td><td>250,000</td><td>150,000</td><td>100,000</td><td>75,000</td><td>50,000</td><td>25,000</td></tr><tr><td>Div 4</td><td>1,250,000</td><td>500,000</td><td>250,000</td><td>175,000</td><td>125,000</td><td>75,000</td><td>50,000</td><td>38,000</td><td>25,000</td><td>13,000</td></tr><tr><td>Div 5</td><td>625,000</td><td>250,000</td><td>125,000</td><td>88,000</td><td>63,000</td><td>38,000</td><td>25,000</td><td>19,000</td><td>13,000</td><td>6,000</td></tr><tr><td>Div 6</td><td>313,000</td><td>125,000</td><td>63,000</td><td>44,000</td><td>31,000</td><td>19,000</td><td>13,000</td><td>9,000</td><td>6,000</td><td>3,000</td></tr><tr><td>Div 7</td><td>156,000</td><td>63,000</td><td>31,000</td><td>22,000</td><td>16,000</td><td>9,000</td><td>6,000</td><td>5,000</td><td>3,000</td><td>2,000</td></tr><tr><td>Div 8</td><td>78,000</td><td>31,000</td><td>16,000</td><td>11,000</td><td>8,000</td><td>5,000</td><td>3,000</td><td>2,000</td><td>2,000</td><td>1,000</td></tr><tr><td>Div 9</td><td>39,000</td><td>16,000</td><td>8,000</td><td>5,000</td><td>4,000</td><td>2,000</td><td>2,000</td><td>1,000</td><td>1,000</td><td>1,000</td></tr><tr><td>Div 10</td><td>20,000</td><td>8,000</td><td>4,000</td><td>3,000</td><td>2,000</td><td>1,000</td><td>1,000</td><td>1,000</td><td>1,000</td><td>1,000</td></tr></tbody></table></div><p style="font-size:12px; color:var(--text-muted);">賞金はすべて1,000クローナ単位で四捨五入され、どの順位も1,000 kr未満にはなりません。そのため、ディビジョンの合計は20,000,000 krちょうどからわずかにずれることがあります。</p></div><p><strong>Tabell 2 – Utbetalning per placering (kr, avrundat till närmaste 1 000 kr)</strong></p><div class="tabell-scroll"><table><thead><tr><th>Division</th><th>1:a</th><th>2:a</th><th>3:e</th><th>4:e</th><th>5:e</th><th>6:e</th><th>7:e</th><th>8:e</th><th>9:e</th><th>10:e</th></tr><tr><th></th><th>50 %</th><th>20 %</th><th>10 %</th><th>7 %</th><th>5 %</th><th>3 %</th><th>2 %</th><th>1,5 %</th><th>1 %</th><th>0,5 %</th></tr></thead><tbody><tr><td>Div 1</td><td>10 000 000</td><td>4 000 000</td><td>2 000 000</td><td>1 400 000</td><td>1 000 000</td><td>600 000</td><td>400 000</td><td>300 000</td><td>200 000</td><td>100 000</td></tr><tr><td>Div 2</td><td>5 000 000</td><td>2 000 000</td><td>1 000 000</td><td>700 000</td><td>500 000</td><td>300 000</td><td>200 000</td><td>150 000</td><td>100 000</td><td>50 000</td></tr><tr><td>Div 3</td><td>2 500 000</td><td>1 000 000</td><td>500 000</td><td>350 000</td><td>250 000</td><td>150 000</td><td>100 000</td><td>75 000</td><td>50 000</td><td>25 000</td></tr><tr><td>Div 4</td><td>1 250 000</td><td>500 000</td><td>250 000</td><td>175 000</td><td>125 000</td><td>75 000</td><td>50 000</td><td>38 000</td><td>25 000</td><td>13 000</td></tr><tr><td>Div 5</td><td>625 000</td><td>250 000</td><td>125 000</td><td>88 000</td><td>63 000</td><td>38 000</td><td>25 000</td><td>19 000</td><td>13 000</td><td>6 000</td></tr><tr><td>Div 6</td><td>313 000</td><td>125 000</td><td>63 000</td><td>44 000</td><td>31 000</td><td>19 000</td><td>13 000</td><td>9 000</td><td>6 000</td><td>3 000</td></tr><tr><td>Div 7</td><td>156 000</td><td>63 000</td><td>31 000</td><td>22 000</td><td>16 000</td><td>9 000</td><td>6 000</td><td>5 000</td><td>3 000</td><td>2 000</td></tr><tr><td>Div 8</td><td>78 000</td><td>31 000</td><td>16 000</td><td>11 000</td><td>8 000</td><td>5 000</td><td>3 000</td><td>2 000</td><td>2 000</td><td>1 000</td></tr><tr><td>Div 9</td><td>39 000</td><td>16 000</td><td>8 000</td><td>5 000</td><td>4 000</td><td>2 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr><tr><td>Div 10</td><td>20 000</td><td>8 000</td><td>4 000</td><td>3 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr></tbody></table></div><p style="font-size:12px; color:var(--text-muted);">Alla prispengar avrundas till närmaste 1 000 kr, och ingen placering får mindre än 1 000 kr. Därför kan summan i en division skilja sig något från exakt 20 000 000 kr.</p></div>
+                <p>シーズン賞金はシーズン切り替え時に即座に口座へ入金され、「財務 → 財務」の<strong>賞金</strong>欄（週ごと）と口座明細に表示されます。ドライバー契約とスポンサー契約のチャンピオンボーナスはこれとは別に支払われます。</p>
+            </div>
+
+            <div class="card" id="man-valuta">
+                <h3>通貨</h3>
+                <p>ゲーム内のすべての金額は、内部では常にスウェーデンクローナ（SEK）で保存・計算されています――ゲームバランスには影響しません。一方、<strong>マイアカウント → 設定</strong>タブでは、金額を<em>表示</em>する通貨をSEK、USD、EUR、GBPから選択できます。為替レートは固定です：<strong>10 SEK = 1 USD = 1 EUR = 1 GBP</strong>。切り替えは即座に反映され、あなた自身の選択にのみ影響します――つまり完全に見た目だけの変更であり、ゲーム経済上の実際のコストは変わりません。</p>
+            </div>
+
+            <div class="card" id="man-moral-ovrigt">
+                <h3>チーム士気、チームプリンシパル＆イラスト</h3>
+                <p><strong>チーム士気：</strong>各チームは0～100のチーム士気を持ち、チームページの最上部に専用のメーターで表示されます。士気は各レース後に変化します：優勝や表彰台は士気を高め、悪い結果は下げ、さらに時間の経過とともにゆっくりと中立的な中間値へと戻っていきます。チーム士気は各レースで車のポイントに小さなボーナスまたはペナルティを与えます――士気が50を超えると少し上乗せ、50を下回ると少し差し引かれます――したがって一定の役割は果たしますが、それ単独でレースを決定づけることは決してありません。</p>
+                <p><strong>チームプリンシパル：</strong>あなた自身のチームを含むすべてのチームには、チーム作成時にすでにチームプリンシパルが割り当てられています。チームページの最上部に国籍と専用のイラストとともに表示されますが、レース自体には影響しません。</p>
+                <p><strong>イラスト：</strong>ゲーム内のすべての人物――ドライバー、メカニック、エンジニア、チームプリンシパル――は、リストでもプロフィールページでも、名前の横に専用の色付きイラスト（色付きの円の中のイニシャル、名前ごとにユニーク）とともに表示されます。</p>
+                <p><strong>レース概要：</strong>ホームタブとシリーズタブでは、現在のシーズンで何試合開催済みか（全10試合中）、そしてシーズンにかかわらずキャリア通算で開催済みの総レース数を確認できます。</p>
+            </div>
+
+            <div class="card" id="man-kontrakt">
+                <h3>契約システム – 仕組み（かんたん解説）</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">すべてのドライバー、メカニック、エンジニア、そしてあなたのチームプリンシパルには契約があります。全契約の一覧は<strong>チームページ → 契約</strong>で確認でき、個々の契約は本人のプロフィールページ（ゲーム内のどこでも名前をクリック、例えばチームページなど）から管理します――そこに<strong>契約を交渉</strong>と<strong>契約を解除</strong>のボタンがあります。</p>
+                <p><strong>1. 契約を交渉する：</strong>本人のプロフィールを開き、「契約を交渉」をクリックします。本人のレーティング、年齢、現在の条件、モチベーション、チームとの関係、そして本人が最低限求めるものと希望するもの（給料、契約期間、場合によってはファーストドライバー資格、契約解除条項）を確認できます。あなた自身がオファー内容を設定します――週給、年数、契約金、表彰台・優勝ボーナス、選手権ボーナス、そして（ドライバーの場合）ファーストドライバー資格――そして、給料が低すぎる、契約期間が短すぎる、チームが弱い、他チームの関心があるといった、確率を上下させる要因のリストとともに「承諾確率」がパーセントですぐに表示されます。</p>
+                <p><strong>2. オファーを送る：</strong>本人はオファーを承諾するか、拒否するか、対案を出してきます（例：「5.8M krとファーストドライバー資格を要求」）。その場合、オファーを引き上げて再送する、対案を承諾する、または交渉を中止することができます――ただし数回連続で試みると本人は興味を失い、今回の交渉は打ち切られます。</p>
+                <p><strong>3. 契約は自動的に経済に影響します：</strong>基本給は毎週自動的に引き落とされます（日曜の経済更新、これまでのメカニック・エンジニアの給料と同様）。ボーナスは獲得され次第、個別の取引として支払われ記録されます：表彰台に上がるたびに表彰台ボーナス、優勝するたびに優勝ボーナス、車が獲得したポイントごとにポイントボーナス、そしてシーズン終了時に本人の車がシリーズを制覇した場合は選手権ボーナスです。</p>
+                <p><strong>4. 契約期間はカウントダウンします：</strong>各シーズン終了ごとに、すべての契約の「残り年数」が1減ります。残り1年になると契約は「Expiring（満了間近）」と表示され、本人のプロフィールに<strong>延長を交渉</strong>、<strong>現在の契約を維持</strong>（様子見）、<strong>契約を満了させる</strong>（本人はフリーエージェントになりシーズン終了時にチームを離れる）の3つの選択肢を伴う通知が表示されます。ドライバーの契約が延長なしで満了すると、そのポジションは自動的にリザーブドライバーに交代されます――リザーブドライバーがいない場合は新しいルーキーがそのポジションに加入するため、車が恒久的にドライバー不在になることはありません。メカニックとエンジニアの場合、ポジションは空のまま残ります（手動で解雇した場合と同様）。チームプリンシパルの契約は、そのポジションが空席のままになることがないため常に自動的に更新されます。</p>
+                <p><strong>5. ファーストドライバー：</strong>ドライバー契約でファーストドライバー資格を設定すると、本人は戦略の選択やアップグレードで優遇されることを期待します。有効なファーストドライバー契約は、レースで車に小さな追加ポイントをもたらしますが、それでもチームのもう一方の車がレースを重ねてより良い成績を出し続けると、本人のチームとの関係は悪化していきます――裏切られたと感じているサインです。</p>
+                <p><strong>6. 他チーム＆契約解除条項：</strong>ドライバーの契約残り期間が短い場合、シリーズ内の他チームが関心を示し、独自の給料オファーを提示することがあります――これは通知として、また交渉における要因として表示されます。さらに本人が契約解除条項を持っている場合、他のマネージャーはいつでも条項の全額を支払って契約をただちに引き継ぐことができます。その場合、受信箱に通知が届き（次回はより高い契約解除条項を設定するとそのリスクが下がるというヒントも添えられます）、代金は自動的にあなたの口座に入金されます。契約解除条項は、金額がいくらであっても、本人がクラブに在籍してから最初の1年間は発動できません。</p>
+                <p><strong>7. スタッフ（メカニック、エンジニア、チームプリンシパル）：</strong>あなたのスタッフにも同じ契約システムが使われますが、条件はより少なくなります（給料、契約期間、契約金、成績ボーナス、契約解除条項――表彰台/優勝/選手権ボーナスやファーストドライバー資格はありません）。チームプリンシパルの契約は、チームページ → 契約から直接管理します。</p>
+                <p><strong>8. 通知：</strong>契約に関するすべての事柄――契約満了の接近、給料要求、他チームからの関心、契約満了、支払われたボーナス、発動した契約解除条項、交渉の成功・失敗――は、<strong>ホーム</strong>タブにあるイベントログにメッセージとして表示されます。</p>
+                <p><strong>9. チームとの関係：</strong>各契約には、その人物がチームにどれだけ満足しているかを示す0–100の「チームとの関係」値があります。新しい人物は50–79から始まります。関係値は契約交渉でオファーを受け入れる確率に影響し、50が中立、100で+10ポイント、0で−10ポイントとなります。交渉画面では、関係値はモチベーション値（関係値とチームの士気の平均）の一部でもあり、これは参考情報です。新規または延長の契約に合意するたびに関係値は+8されます。レギュラードライバーの場合はシーズン終了ごとにも変動し、ポイント目標を達成すれば+4、目標の半分未満なら−6となります。ファーストドライバー待遇のドライバーは、チームメイトより先にゴールしたレースごとに+1、チームメイトが先なら−3となります。</p>
+            </div>
+
+            <div class="card" id="man-pension">
+                <h3>引退＆年齢</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">ゲーム内のすべてのチームに適用されます。</p>
+                <p><strong>ドライバーは40歳で引退：</strong>ドライバーが40歳になると（シーズンの切り替わり時に）、本人はチームを離れます。契約満了時と同様、リザーブドライバーがいればそのポジションに繰り上がります――いない場合は新しいルーキーが直接加入するため、車が恒久的にドライバー不在になることはありません。ドライバーが40歳に近づいたら、リザーブベンチとジュニアプログラム（<a href="#man-scouting">スカウティング＆ジュニアプログラム</a>参照）に注意を払いましょう。</p>
+                <p><strong>メカニック＆エンジニアの上限年齢は60歳：</strong>60歳になると本人は引退しチームを離れます。あなた自身のチームでは、新しく雇用するまでそのポジションは空のままです。</p>
+                <p><strong>30歳を過ぎてからの能力低下（ドライバーのみ）：</strong>ドライバーのその他の能力――スピード、タイヤマネジメント、ディフェンス、チームワーク――は、30歳を超えたシーズンごとに徐々に低下し、年齢が上がるほど低下幅も徐々に大きくなります。経験はこれに影響されません――他の全員と同じく、引き続き年に5ポイントずつ増加します。つまり年配のドライバーは経験は豊富ですが、身体的・技術的能力はやや弱くなるため、トループの状態は長期的に計画すべき事柄になります。</p>
+            </div>
+
+            <div class="card" id="man-taktik">
+                <h3>戦術ミーティング：予選＆レースに向けた指示</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;"><strong>レース</strong>タブには、<strong>作戦会議――予選前</strong>と<strong>作戦会議――レース前</strong>という2つの別々の作戦会議があり、チームのボスとしてチームに指示を出します。それぞれの会議にはチーフエンジニアからの独自の提案があり、別々に保存されます。選択は2台の車の両方に適用され、変更するまで維持されます――予選（水曜日20:00）とレース（金曜日20:00）が自動的に行われる前に、余裕をもって作戦を設定しましょう。</p>
+                <p><strong>スタートタイヤ（ソフト／ミディアム／ハード）：</strong>ソフトは最速ですが最も早く摩耗し、ハードは最も長持ちしますが最も遅く、ミディアムはその中間でバランスが取れています。摩耗が激しいほど、コーナーの多いコースでのペナルティが大きくなります。<strong>ピットストップは摩耗したタイヤを改善できます：</strong>その車のエンジニアの合計能力が高いほど、レース中の厳しいタイヤ選択の不利をピットストップがより多く補ってくれます。</p>
+                <p><strong>ダウンフォース（0～100）：</strong>ダウンフォースを高めるとコーナーでのグリップが向上します（予選、特にコーナーの多いコースで、またコーナーの多いコースでのレースでも有利）が、直線での最高速を犠牲にします（長い直線のあるコースではレースで不利）。ダウンフォースを低くすると逆に最高速には有利ですが、コーナリングは悪化します。したがって適切な設定はコースの特性次第です。</p>
+                <p><strong>ハンドリング（0～100）：</strong>ハンドリング設定は車をより扱いやすくし、設定を高くするほど予選・レースの両方に一貫してプラスの貢献をします。</p>
+                <p><strong>チームオーダー（レースのみ）：</strong>車1か車2のどちらかを優先するよう選択でき、優先された車はレースで追加のポイントボーナスを得る一方、もう一方の車は少し譲ります。または「優先なし」を選んで、2人のドライバー間の自由なレースにすることもできます。</p>
+                <p><strong>燃料：</strong>レースタブには、コースの長さとコーナー数に基づいた、そのレースのコースにおける推奨燃料量（リットル）が表示されます。推奨量より少ない燃料で走ると、車は時間を節約するどころか逆にパフォーマンスを失い（「セーブ走行」）、不足が大きいほどDNF（エンジンストップ）のリスクが高まります。推奨量より多い燃料で走ると、余分な重量によってパフォーマンスが低下します。したがって最良の結果を得るには、できるだけ推奨量に近づけることが重要です――これはレースタブでレースの前後それぞれ、車ごとに表示されます。</p>
+            </div>
+
+            <div class="card" id="man-popularitet">
+                <h3>人気度＆グッズ</h3>
+                <p>各ドライバーには<strong>人気度</strong>（0～100）があり、ドライバーのプロフィールページで確認できます。人気度は優勝や表彰台の後に上昇し、トップ10入賞でも少し上昇し、悪いレースでは低下し、それ以外の場合は時間とともにゆっくりと中立的な中間値に引き寄せられます――チーム士気と同じ仕組みです。</p>
+                <p>あなたの2人の出走ドライバー（車1と車2）の平均人気度は、経済更新における週ごとの<strong>グッズ販売</strong>をスケールさせます：平均人気度が高いと最大+80%のボーナス、平均人気度が低いと最大-60%の減少になり得ます。つまり人気のあるドライバーは、コース上で稼ぐもの以上の価値をもたらします。</p>
+            </div>
+
+            <div class="card" id="man-mekaniker">
+                <h3>メカニック</h3>
+                <p><strong>メカニックの役割</strong>メカニックは車を整備し、予選とレースの両方でパフォーマンスに貢献します。重要なのは、その車に配置されたメカニックの<strong>合計能力</strong>です。車1と車2は完全に別々に計算されます。能力80と10のメカニック2人なら90、能力80のメカニック5人なら400になります。能力はメカニックの5つの特性の平均なので、すべての特性が同じ重みを持ちます。ドライバーの能力1ポイントはスタッフの1ポイントの10倍の重みがありますが、スタッフの能力は合計されるため、人数が揃った強力なメカニックチームはどのレースでも大きな差を生みます。</p>
+                <p><strong>人員配置：</strong>正規のメカニックは最大10人、1台あたり最大5人まで持てます。各メカニックはプロフィールページで車1、車2、またはリザーブに配置します。車に配置されたメカニックだけが計算に入ります――リザーブのメカニックと<strong>追加</strong>メカニック（正規の10人とは別に控えとして雇用）は給料がかかりますが、レースには影響しません。メカニックがいない車は、能力10のスタッフがいるものとして扱われます。<strong>チーフメカニック</strong>を任命すると、担当する車において能力が+20%されます（<a href="#man-chefer">チーフメカニック＆チーフエンジニア</a>参照）。</p>
+                <p><strong>成長：</strong>経験はメカニックが年を取るにつれて自動的に増えます。その他の属性は、チームページ → トレーニングで月曜日のトレーニングレースに最大3人のメカニックをエントリーすることで伸ばせます（成績に応じて+1～+5、トレーニングレース終了後すぐに反映）。雇用には100,000 krかかり、その後は週給が支払われます（<a href="#man-trupp">あなたのトループ＆スタッフ</a>参照）。</p>
+            </div>
+
+            <div class="card" id="man-ingenjorer">
+                <h3>エンジニア</h3>
+                <p><strong>エンジニアの役割</strong>エンジニアは車のセッティングとレース戦略を担当します。メカニックと同様に、その車に配置されたエンジニアの<strong>合計能力</strong>が重要で、予選とレースの両方でメカニックと同じように車のレース能力に含まれます。</p>
+                <p><strong>レースでの特別な役割：</strong>レース本番では、エンジニアにはさらに3つの独自の効果があり、いずれもその車のエンジニアの合計能力に基づきます。<strong>タイヤの摩耗を減らします</strong>――合計100の時点で摩耗は65%少なくなり（これが最大効果です）、コーナーの多いコースで特に効果を発揮します。合計能力が高いほど大きくなる<strong>ピットボーナス</strong>を与えます。そして<strong>ピットストップを速くします</strong>――弱いエンジニアチームの約3.6秒から、ゲーム内最速の約1.6秒まで短縮されます。予選はメカニックとエンジニアから同じだけ影響を受けますが、レースではエンジニアが最も重要なスタッフです。</p>
+                <p><strong>人員配置＆成長：</strong>メカニックと同じルールです：正規のエンジニアは最大10人、1台あたり最大5人。リザーブのエンジニアと追加エンジニアは計算に入らず、エンジニアのいない車は能力10として扱われます。<strong>チーフエンジニア</strong>は担当する車において能力が+20%されます。チームページ → トレーニングで月曜日のトレーニングレースに最大3人のエンジニアをエントリーできます。</p>
+            </div>
+
+            <div class="card" id="man-principal">
+                <h3>チーム代表</h3>
+                <p><strong>チーム代表の役割</strong> チーム代表（Team Principal）はコースの外でチームを率い、レースに直接影響することはありませんが、3つの能力が間接的にチームに影響します。<strong>交渉</strong>は、ドライバーや他のスタッフがあなたの契約オファーを受け入れる確率を上下させます――平均的なチーム代表（50）と比べて最大約10ポイント。<strong>スポンサー</strong>は、提示されるスポンサー契約の基本額を−15%から+15%の範囲で調整します。<strong>モラル</strong>は、チームモラルが長期的に向かう水準を40～80の間で決めます――そしてチームモラルは毎レース小さなボーナスまたはペナルティを与え、スタッフが契約にサインする意欲にも影響します。新しいチーム代表はすべて10からスタートするため、最初は効果がマイナスで、能力が50を超えて初めてプラスになります。</p>
+                <p><strong>能力：</strong>チーム代表には3つの能力（0–100）があります。<strong>交渉</strong>は契約交渉の成功率に、<strong>スポンサー獲得</strong>はスポンサーのオファー額に、<strong>士気</strong>はチームの長期的な士気に影響します。</p>
+                <p><strong>開始時と成長：</strong>ゲーム開始時、全能力が<strong>10</strong>で年齢がランダムに<strong>40–45</strong>歳のチーム代表が付きます。その後、チーム代表は<strong>毎週各能力が+1</strong>ずつ（日曜日の財務更新時に）最大100まで成長します。CPUチームのチーム代表は10のままです。</p>
+                <p><strong>引退：</strong>チーム代表はシーズンが切り替わるたびに1歳年を取り、<strong>60</strong>歳で引退します。CPUチームには自動的に後任が就きます。</p>
+                <p><strong>採用：</strong>チーム代表がいない場合（引退後、または解雇/売却した場合）、「チームページ → 概要」（スタッフカード）のボタンから<strong>無料</strong>で新しいチーム代表を採用できます。新任者は開始時と同じく全能力10、40–45歳です。採用費用はかかりませんが、チーム代表には契約に基づく通常の週給が支払われます。</p>
+            </div>
+
+            <div class="card" id="man-chefer">
+                <h3>チーフメカニック＆チーフエンジニア</h3>
+                <p>チームページ → メカニックまたはエンジニアでは、表内の「チーフに任命」ボタンで雇用中の1人を<strong>チーフメカニック</strong>または<strong>チーフエンジニア</strong>に任命できます（同じボタンで解任もできます）。チーフはゲーム内のどこに表示されてもバッジで示されます。</p>
+                <p>チーフは、本人が割り当てられているその車の計算において<strong>能力に20%のボーナス</strong>（最大100まで）を得ます――そのため、優先したい車にチーフを配置しましょう。チーフメカニックとチーフエンジニアはそれぞれ同時に1人までです。</p>
+            </div>
+
+            <div class="card" id="man-lagledare">
+                <h3>チームページ：チーム代表者、紹介文＆国</h3>
+                <p>各チームページの最上部には、現在そのチームがどの<strong>国</strong>出身か、そして「ユーザー」という見出しの下に誰がその<strong>チームを運営しているか</strong>が表示されます。自分自身のチームページでは、これはクリック可能でアカウントページに移動し、自分自身の名前を設定（「チーム代表者の名前を入力」ボタン）したり、チームの短い<strong>紹介文</strong>（「紹介文を編集」ボタン）を書いたりでき、それはあなたのチームページを訪れる全員に表示されます。</p>
+            </div>
+
+            <div class="card" id="man-forum">
+                <h3>フォーラム</h3>
+                <p><strong>メインメニューのフォーラムタブ：</strong>本格的なスレッド、検索、並べ替えオプション（最新のアクティビティ、新着順、返信の多い順）を備えた独立したディスカッションフォーラムです。<strong>新しいスレッド</strong>をクリックするとタイトルと最初の投稿で自分の話題を始められ、既存のスレッドを開いて読んだり返信したりすることもできます――各スレッドには誰が始めたか、返信がいくつあるかが表示されます。スレッドはチームやディビジョンに関係なくログインしているすべてのプレイヤーで共有され。</p>
+                <p><strong>「シリーズ」タブのチャットログ：</strong><strong>シリーズ</strong>タブ下部にある独立した小さな「フォーラム」で、上のシリーズ選択で表示中のシリーズ/グループに紐づいたチャットログです。自分のグループの他チームに短いメッセージを書き込めるます。上の「フォーラム」タブと混同しないでください。チャットログはグループごとで、「フォーラム」タブは全体共通ですべてのプレイヤーが利用できます。</p>
+            </div>
+
+            <div class="card" id="man-inkorg">
+                <h3>受信箱</h3>
+                <p><strong>ユーザー名 → 受信箱</strong>では、<strong>運営</strong>からのシステムメッセージ（落札した移籍、チャンピオン獲得、昇格/降格、行使された契約解除条項など）と、他のUndercut Racing Managerプレイヤーからのプライベートメッセージを確認できます。タブのバッジに未読メッセージ数が表示され、メッセージをクリックすると既読になります。</p>
+                <p><strong>新規</strong>をクリックすると、他のプレイヤーにプライベートメッセージを送れます。宛先のユーザー名、件名、本文を入力してください。自分宛てには送れません。受け取った返信はシステムメッセージと同じ受信箱に表示されます。</p>
+            </div>
+
+            <div class="card" id="man-scouting">
+                <h3>スカウティング＆ジュニアプログラム</h3>
+                <p><strong>チームページ → スカウティング</strong>（自分自身のチームページでのみ表示）では、1回の連絡につき<strong>500,000 kr</strong>でスカウトに連絡できます。1回の連絡ごとに、あなたの<strong>ジュニアプログラム</strong>に新しいプロスペクト（15～19歳）が1人加わり、独自のスカウト評価済みの能力、走行スタイル、国籍を持ちます。プロスペクトは、シーズン切り替わりのたびにゲーム内の他の全員と同じように年を取ります。</p>
+                <p>プロスペクトが<strong>20歳</strong>になるとすぐに「雇用可能」となり、「雇用」ボタンでチームのリザーブベンチに契約できます――これにはリザーブベンチに空きがあることが必要です（最大10人のリザーブドライバー――満員の場合はまず既存のリザーブドライバーを売却または解雇してください）。</p>
+                <p>ジュニアプログラムには最大<strong>5人</strong>までのプロスペクトを同時に保持できます。スカウトへの連絡は<strong>週に1回のみ</strong>可能で、この制限は毎週日曜日の20時に、その週の財務更新と同時にリセットされます。プロスペクトの年齢は均等には分布しません：15歳（確率8%）、16歳（23%）、17歳（23%）、18歳（23%）、19歳（23%）。</p>
+                <p><strong>準備トレーニング</strong>サブタブでは、まだ20歳になっていない各プロスペクトについて、準備する能力（スピード、タイヤマネジメント、ディフェンス、チームワークのいずれか）を選択します。選択した能力は<strong>毎週+1ポイント</strong>（日曜日の財務更新時）上昇し、プロスペクトが20歳になるシーズンまで続きます。</p>
+                <p>プロスペクトが20歳になりチームのリザーブベンチに契約されると、自動的に<strong>4年契約</strong>が付与されます。この最初の契約は保護されており、どのチーム（あなた自身も他のチームも）もその買取条項を発動することはできません。この保護は、契約が次に再交渉または更新されるまでのみ有効で、それ以降は通常のルールが適用されます。</p>
+            </div>
+
+            <div class="card" id="man-historia">
+                <h3>統計、トロフィー＆レジェンド</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">毎シーズンリセットされる順位表のポイント（<a href="#man-tavling">シーズン、レース＆ポイント</a>参照）とは異なり、ここに記録されるものはシーズンを重ねてキャリア全体を通して永続的に蓄積されていきます。</p>
+                <p><strong>チャンピオン一覧（統計タブ）：</strong>シーズンが終わると、ポイントがリセットされる直前に各ディビジョンの優勝チームがチャンピオンになります。<strong>統計 → チャンピオン一覧</strong>タブでは、各シーズンのUndercut Masters League優勝チームを確認でき、ディビジョンごとにチャンピオンを閲覧したり、歴代最多タイトルのランキングや、ドライバーの完全な<strong>キャリア統計</strong>（レース数、勝利、表彰台、ポイント、ポールポジション、ファステストラップ、リタイア）を、現在シリーズに参戦している全ドライバーと全レジェンドの中での順位とともに見ることができます。</p>
+                <p><strong>記録（統計タブ）：</strong>歴代最多優勝数、最多表彰台数、最多ポールポジション数、最多ファステストラップ数、最多DNF数のランキング、さらにチームのピットストップ記録（これまでに記録された最速のピットストップ、どのチームがいつ記録したか）。</p>
+                <p><strong>チーム統計（統計タブ）：</strong>現在どのディビジョンに所属しているかにかかわらない、各チームの通算履歴――レース数、優勝数、表彰台数、ポイント、ポール、選手権数。</p>
+                <p><strong>トロフィーキャビネット（チームページ）：</strong>各チームのチームページ――あなた自身のチームも全対戦相手のチームも――には、そのチームがシーズンごとに獲得した選手権と、そのチームの通算キャリア統計を正確にリストする専用のサブタブ<strong>トロフィー</strong>があります。</p>
+                <p><strong>実績（統計タブ）：</strong>自分のチームの長期目標です：初勝利（最初のレースで勝つ）、ディビジョン王者（自分のディビジョンで1位になる）、Undercut Masters League昇格、10戦連続表彰台（10レース連続で少なくとも1台が表彰台に上る）、40歳と契約（39歳以上のドライバーと契約する）、キャリア通算100レース。解除された実績はニュースとイベントログに記録され、統計 → 実績タブに永続的に表示されます。</p>
+                <p><strong>レジェンド（統計タブ）：</strong>あなた自身のチームのドライバーが40歳になり引退すると（<a href="#man-pension">引退＆年齢</a>参照）、ただ消えてしまう代わりにレジェンドとして保存されます――レース数、優勝数、表彰台数、キャリアポイント、選手権数は、統計 → レジェンドタブに永久に保存されます。</p>
+            </div>
+        
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">ゲームについて</a> &nbsp;·&nbsp; <a href="guider.html">ガイド</a> &nbsp;·&nbsp; <a href="manual.html">マニュアル</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">よくある質問</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">プライバシーポリシー</a> &nbsp;·&nbsp; <a href="../">ゲームへ</a>
+<div class="fot-sprak"><a href="../manual.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/manual.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/manual.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/manual.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/manual.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/manual.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/manual.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/manual.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/manual.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

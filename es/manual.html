@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Manual – Undercut Racing Manager</title>
+<meta name="description" content="Manual completo de Undercut Racing Manager: plantilla, coches, táctica, finanzas, divisiones, mercado de fichajes y más.">
+<link rel="canonical" href="https://undercutmanager.com/es/manual.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/manual.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/manual.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/manual.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/manual.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/manual.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/manual.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/manual.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/manual.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/manual.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/manual.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">Sobre el juego</a><a href="guider.html">Guías</a><a href="manual.html" aria-current="page">Manual</a><a href="vanliga-fragor.html">Preguntas frecuentes</a><a href="integritetspolicy.html">Política de privacidad</a><select class="sprakval" aria-label="Idioma" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../manual.html">Svenska</option><option data-l="en" value="../en/manual.html">English</option><option data-l="de" value="../de/manual.html">Deutsch</option><option data-l="fr" value="../fr/manual.html">Français</option><option data-l="es" value="../es/manual.html" selected>Español</option><option data-l="pl" value="../pl/manual.html">Polski</option><option data-l="fi" value="../fi/manual.html">Suomi</option><option data-l="hu" value="../hu/manual.html">Magyar</option><option data-l="ja" value="../ja/manual.html">日本語</option></select><a class="knapp" href="../">Jugar gratis</a></nav>
+</div></header>
+<main>
+<h1>Manual</h1>
+<p class="ingress">La guía completa de Undercut Racing Manager: el mismo manual que encontrarás en la pestaña Manual del juego.</p>
+
+            <img src="assets/manual-header.png" alt="Team-personal i diskussion vid depåtaket med publikläktare i bakgrunden" style="width:100%; max-height:280px; object-fit:cover; border-radius:10px; display:block; margin-bottom:14px;">
+            <div class="card" id="man-toc">
+                <h3>Índice de contenidos</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">¿Nuevo en Undercut Racing Manager? Empieza por <a href="#man-intro">Primeros pasos</a>. Haz clic en un título de abajo para ir directamente a esa sección.</p>
+                <div class="man-toc-grid">
+                    <div>
+                        <p class="man-toc-heading">Primeros pasos</p>
+                        <ul>
+                            <li><a href="#man-intro">Cómo funcionan el juego y la navegación</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Plantilla y competición</p>
+                        <ul>
+                            <li><a href="#man-trupp">Tu plantilla y personal</a></li>
+                            <li><a href="#man-lagsidor">Páginas de equipo y perfiles</a></li>
+                            <li><a href="#man-tavling">Temporadas, carreras y puntos</a></li>
+                            <li><a href="#man-serier">Series, mercado y calendario semanal</a></li>
+                            <li><a href="#man-serier">Circuito local, récords de circuito e historial de traspasos</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Desarrollo</p>
+                        <ul>
+                            <li><a href="#man-egenskaper">Atributos y entrenamiento</a></li>
+                            <li><a href="#man-skador-ekonomi">Daños, finanzas y paradas en boxes</a></li>
+                            <li><a href="#man-sponsoravtal">Acuerdos de patrocinio</a></li>
+                            <li><a href="#man-prispengar">Premios en metálico</a></li>
+                            <li><a href="#man-valuta">Moneda</a></li>
+                            <li><a href="#man-moral-ovrigt">Moral del equipo, director de equipo e ilustraciones</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="man-toc-heading">Contratos y personal</p>
+                        <ul>
+                            <li><a href="#man-kontrakt">Sistema de contratos</a></li>
+                            <li><a href="#man-pension">Retiro y envejecimiento</a></li>
+                            <li><a href="#man-mekaniker">Mecánicos</a></li>
+                            <li><a href="#man-ingenjorer">Ingenieros</a></li>
+                            <li><a href="#man-principal">Team Principal</a></li>
+                            <li><a href="#man-chefer">Mecánico jefe e ingeniero jefe</a></li>
+                            <li><a href="#man-scouting">Ojeo y programa junior</a></li>
+                        </ul>
+                        <p class="man-toc-heading">Carrera y social</p>
+                        <ul>
+                            <li><a href="#man-taktik">Informe táctico</a></li>
+                            <li><a href="#man-popularitet">Popularidad y merchandising</a></li>
+                            <li><a href="#man-lagledare">Director de equipo, presentación y nación</a></li>
+                            <li><a href="#man-forum">Foro</a></li>
+                            <li><a href="#man-inkorg">Bandeja de entrada</a></li>
+                            <li><a href="#man-historia">Estadísticas, trofeos y leyendas</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="man-intro">
+                <h3>Primeros pasos: cómo funcionan el juego y la navegación</h3>
+                <p>Diriges tu propio equipo de carreras a través de las divisiones, compitiendo contra otras personas: mánagers reales de todo el mundo. Contratas pilotos, mecánicos e ingenieros, mejoras el coche, defines tu táctica antes de competir – y el juego se encarga automáticamente del resto cada semana según el calendario siguiente.</p>
+                <p><strong>El calendario semanal (totalmente automático, hora sueca):</strong></p>
+                <ul style="margin:4px 0 12px; padding-left:18px;">
+                    <li><strong>Lunes 20:00</strong> – carrera de entrenamiento para los pilotos inscritos</li>
+                    <li><strong>Miércoles 20:00</strong> – clasificación</li>
+                    <li><strong>Viernes 20:00</strong> – carrera</li>
+                    <li><strong>Domingo 20:00</strong> – actualización financiera</li>
+                </ul>
+                <p><strong>Zona horaria:</strong> Todas las horas del juego – carreras, clasificación, entrenamiento, actualización financiera y llamadas a los ojeadores – están en <strong>hora sueca</strong> (GMT+1, horario de verano GMT+2). En <strong>Mi cuenta → Configuración → Zona horaria</strong> puedes elegir tu propia zona horaria. El reloj de arriba a la derecha y todas las fechas y horas del juego (p. ej. las próximas carreras y la bandeja de entrada) se mostrarán entonces en tu hora. Las cuentas atrás del mercado de fichajes siempre son correctas, sea cual sea tu zona horaria. Los eventos en sí siguen ocurriendo a las 20:00, hora sueca.</p>
+                <p><strong>Cómo orientarte en la navegación:</strong></p>
+                <ul style="margin:4px 0 0; padding-left:18px;">
+                    <li><strong>Inicio</strong> – tu espacio de trabajo: posición en el campeonato y presupuesto arriba, una lista de lo que necesita tu atención ahora mismo, además del estado del equipo, el personal, el próximo evento, las noticias y el registro de eventos.</li>
+                    <li><strong>Equipo</strong> – plantilla y coches (tu propio equipo y los de los demás), con las subpestañas Resumen, Pilotos, Mecánicos, Ingenieros, <strong>Coches</strong> (mejora los componentes propios de cada coche, Coche 1 y Coche 2 por separado), Trofeos y (para tu propio equipo) <strong>Entrenamiento</strong>, <strong>Ojeo</strong> y <strong>Contratos</strong>.</li>
+                    <li><strong>Arena</strong> – tu arena local.</li>
+                    <li><strong>Finanzas</strong> – presupuesto, ingresos, costes e historial.</li>
+                    <li><strong>Serie</strong> – clasificaciones, resultados y foro de tu grupo.</li>
+                    <li><strong>Mercado</strong> – el mercado de traspasos, comprar y vender personal.</li>
+                    <li><strong>Carrera</strong> – la próxima (o la última) clasificación y carrera de tu equipo, con la charla táctica donde estableces las órdenes para ambas, además de los informes de carrera.</li>
+                    <li><strong>Estadísticas</strong> – lista de campeones, récords, estadísticas del equipo, logros y leyendas.</li>
+                    <li><strong>Manual</strong> – esta página.</li>
+                    <li><strong>Foro</strong> – un foro de debate independiente con hilos reales, abierto a todos los jugadores con sesión iniciada de todos los equipos. Totalmente separado del chat al pie de la pestaña Serie, consulta <a href="#man-forum">Foro</a>.</li>
+                    <li><strong>Tu nombre de usuario</strong> (arriba a la derecha) – <strong>Configuración</strong> y <strong>Acerca de Undercut Racing Manager</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="card" id="man-trupp">
+                <h3>Tu plantilla y personal</h3>
+                <p><strong>Reglas de plantilla:</strong> Cada equipo tiene exactamente 2 coches activos, cada uno con su propio piloto ("Coche 1" y "Coche 2"), además de hasta 10 pilotos de reserva compartidos por el equipo. Puedes contratar hasta 10 mecánicos y 10 ingenieros por equipo (cuesta 100.000 kr contratarlos más 100.000 kr de salario semanal por empleado). Cada mecánico e ingeniero se asigna a uno de los dos coches del equipo – tú eliges a cuál, desde la página de perfil de la persona.</p>
+                <p><strong>Despedir personal:</strong> Desde la página de perfil de tu propio empleado puedes despedirlo en cualquier momento – abandona el equipo de inmediato sin compensación (un piloto en el Coche 1/Coche 2 es reemplazado por el piloto de reserva si existe alguno). Si la persona también está en venta, la subasta se cancela.</p>
+                <p><strong>Nombres y nacionalidad:</strong> Todos los pilotos, mecánicos, ingenieros y directores de equipo del juego son hombres, pero pueden proceder de cualquiera de las nacionalidades del juego (Suecia, Italia, Alemania, Francia, España, Reino Unido, Países Bajos, Finlandia, Brasil, EE. UU., Japón, Australia, Bélgica, Austria, Mónaco, México, Canadá, Dinamarca, Noruega y Suiza) – el nombre coincide con la nacionalidad de la persona.</p>
+            </div>
+
+            <div class="card" id="man-lagsidor">
+                <h3>Páginas de equipo y perfiles</h3>
+                <p>Todos los equipos (el tuyo y cada rival) se muestran en el mismo tipo de página de equipo, con las subpestañas Resumen, Pilotos, Mecánicos e Ingenieros. Haz clic en el nombre de cualquier piloto, mecánico o ingeniero – en tu propia plantilla, en la de un rival o en el mercado de traspasos – para abrir la página de perfil de esa persona como subpágina de la página de equipo. Muestra la edad, nacionalidad, todas las habilidades, el estilo de conducción (para pilotos), a qué coche pertenece la persona y la fecha de reclutamiento. Si la persona es tuya, puedes ponerla en venta, despedirla o (para mecánicos/ingenieros) moverla entre el Coche 1 y el Coche 2 desde allí.</p>
+                <p>En tu propia Página de equipo → subpestaña <strong>Resumen</strong> hay dos accesos directos extra: el botón <strong>Rivales</strong> muestra una lista de equipos a los que has quitado pilotos o personal mediante una cláusula de rescisión en las últimas 10 temporadas, con un breve motivo en cada fila, y el enlace <strong>Historial de carrera</strong> muestra la posición de tu equipo temporada a temporada a lo largo de tu trayectoria.</p>
+            </div>
+
+            <div class="card" id="man-tavling">
+                <h3>Temporadas, carreras y puntos</h3>
+                <p><strong>Temporadas y envejecimiento:</strong> Una temporada consta de 10 semanas (10 carreras). Después de cada temporada completada, todos en el juego cumplen años – esto se aplica a pilotos, mecánicos e ingenieros de todos los equipos, no solo el tuyo – y los puntos de todas las clasificaciones se reinician para la nueva temporada. Consulta la sección <a href="#man-pension">Retiro y envejecimiento</a> para conocer las edades de retiro y cómo cambian las habilidades con el tiempo.</p>
+                <p><strong>Pilotos:</strong> A los pilotos se les asigna aleatoriamente un estilo de conducción (Agresivo, Defensivo o Equilibrado) y comienzan a los 20 años. El estilo de conducción afecta no solo a la carrera, sino también al riesgo de daños – consulta <a href="#man-skador-ekonomi">Daños, finanzas y paradas en boxes</a>.</p>
+                <p><strong>Capacidad de carrera por coche:</strong> Cada coche obtiene su PROPIO resultado de carrera. El rendimiento de un coche se calcula a partir de la capacidad rendida del piloto y la capacidad <strong>sumada</strong> de los mecánicos y de los ingenieros asignados a ese coche. Cada punto de capacidad del piloto cuenta 10 veces más que un punto del personal, pero la capacidad del personal se suma – dos mecánicos con 80 y 10 dan 90, cinco mecánicos con 80 dan 400 –, así que un equipo completo de mecánicos e ingenieros puede pesar más o menos lo mismo que el piloto. A esto se añade la aportación de los componentes de ese coche (ver la pestaña Coches), la parada en boxes y la moral del equipo.</p>
+                <p><strong>Rendimiento del piloto:</strong> Ningún piloto rinde al máximo siempre. Antes de cada sesión de clasificación y cada carrera, se determina aleatoriamente un nivel de rendimiento para cada piloto, entre el 70 % y el 100 % de su habilidad.</p>
+                <p><strong>Contribución de los componentes en la carrera:</strong> Los cinco componentes del coche (Neumáticos, Motor, Aerodinámica, Caja de cambios, Chasis) contribuyen cada uno de forma distinta a la clasificación y a la carrera, y el efecto también varía según las características del circuito. El motor aporta más en la carrera (más aún en circuitos largos), la aerodinámica aporta más en clasificación (más aún en circuitos con muchas curvas), los neumáticos determinan lo bien que el coche mantiene el ritmo durante la carrera (más importante cuantas más curvas haya), mientras que la caja de cambios y el chasis aportan una contribución pareja tanto en clasificación como en carrera. Consulta la pestaña Coches para una explicación componente a componente – allí mejoras el Coche 1 y el Coche 2 de forma totalmente independiente.</p>
+                <p><strong>Puntos por coche:</strong> En cada carrera, todos los coches (dos por equipo) compiten individualmente por la posición de salida y de llegada. Los 10 primeros coches de la carrera puntúan según 25-18-15-12-10-8-6-4-2-1. Los puntos totales del equipo son la suma de lo que aportan ambos coches, y la clasificación muestra cuánto ha contribuido CADA coche (Coche 1 / Coche 2) durante la temporada.</p>
+                <p><strong>Normas de competición entre temporadas:</strong> Después de cada temporada completada, entra en vigor una nueva normativa: uno de los cinco componentes del coche (Neumáticos, Motor, Aerodinámica, Caja de cambios, Chasis – en ese orden) se reduce a la mitad para TODOS los equipos del juego, incluido el tuyo. Esto se repite en un ciclo rotativo de 5 temporadas: la Temporada 2 penaliza los Neumáticos, la Temporada 3 el Motor, la Temporada 4 la Aerodinámica, la Temporada 5 la Caja de cambios, la Temporada 6 el Chasis, la Temporada 7 de nuevo los Neumáticos, y así sucesivamente. La norma se aplica EXACTAMENTE una vez por número de temporada y nunca vuelve a afectar a una temporada ya jugada – la primerísima temporada (Temporada 1) nunca se penaliza, ya que la norma requiere que una temporada haya terminado realmente antes de poder activarse. Se te notifica en las Noticias y en la Bandeja de entrada cada vez que entra en vigor una nueva norma, y la norma aplicada más recientemente siempre se muestra en la pestaña Carrera.</p>
+            </div>
+
+            <div class="card" id="man-serier">
+                <h3>Series, mercado y calendario semanal</h3>
+                <p><strong>Mercado de traspasos:</strong> En la pestaña "Mercado" se listan todas las subastas en curso. Puedes poner en venta a tu propio piloto, mecánico o ingeniero desde la página de perfil de la persona – la subasta dura entonces exactamente 7 días. Todos los equipos de la serie pueden pujar por el personal de los demás, tanto desde la pestaña Mercado como directamente desde la página de perfil de la persona. Nunca puedes pujar por tu propio anuncio. Al vencer el plazo, la persona pasa a quien haya hecho la puja más alta: si vendes con beneficio, el dinero se añade a tu presupuesto, y si compras a alguien, el coste se deduce de tu presupuesto (siempre que puedas permitírtelo y tengas espacio en la plantilla cuando se cierre la subasta).</p>
+                <p><strong>Series y la pirámide de series:</strong> El juego tiene cinco niveles: <strong>Undercut Masters League</strong> (1 grupo, 10 equipos), <strong>División 2</strong> (2 grupos de 10 equipos), <strong>División 3</strong> (4 grupos de 10 equipos), <strong>División 4</strong> (8 grupos de 10 equipos) y <strong>División 5</strong> (16 grupos de 10 equipos): 310 equipos en total. Compites contra otras personas: cada equipo lo dirige un mánager real. Puedes hacer clic en cualquier equipo de la clasificación para ver su página de equipo, coche por coche.</p>
+                <p><strong>Ascenso y descenso:</strong> Cuando termina una temporada de 10 carreras, en cada grupo (excepto la Undercut Masters League) el ganador asciende a la división superior. Además, ascienden los mejores segundos de la división – tantos como grupos hay en la división superior (1 de la División 2, 2 de la División 3, 4 de la División 4 y 8 de la División 5). Los segundos se clasifican por puntos; en caso de empate deciden los puntos del mejor coche. En cada grupo (excepto la División 5, el nivel más bajo), los 3 peores equipos descienden a la división inferior, preferentemente a los dos grupos vinculados a ese grupo. Así el número de equipos en cada grupo se mantiene siempre en 10. La clasificación actual de los segundos está en Liga → Clasificación → Mejores segundos.</p>
+                <p><strong>Circuitos y carreras:</strong> Cada temporada consta de 10 carreras en las que los equipos del mismo grupo se turnan como anfitriones en sus circuitos locales. La longitud del circuito y el número de curvas afectan a cuánto importa cada componente en esa carrera en concreto.</p>
+                <p><strong>Calendario semanal:</strong> Cada semana sigue el mismo ciclo: <strong>el lunes a las 20:00</strong> se disputa la carrera de entrenamiento, <strong>el miércoles a las 20:00</strong> se disputa la clasificación, <strong>el viernes a las 20:00</strong> se disputa la carrera en sí, y <strong>el domingo a las 20:00</strong> se actualizan las finanzas. Todo ocurre automáticamente cuando llega la hora – no hay ningún botón para ejecutar nada de esto tú mismo. Todas las horas son en hora sueca (GMT+1, horario de verano GMT+2).</p>
+                <p><strong>Circuito local y récords de circuito:</strong> En la pestaña Arena puedes reconfigurar libremente el número de curvas (5-20) y la longitud (2,0-8,0 km) de tu propio circuito local, y renombrarlo (100.000 kr) – el cambio solo se aplica a carreras futuras aún no clasificadas. Más curvas favorecen la aerodinámica/los neumáticos/el manejo, un circuito más largo favorece al motor pero necesita más combustible. Cada arena tiene su propio récord de circuito (la carrera más rápida jamás disputada allí, sea cual sea el equipo que la logró), visible al consultar al equipo anfitrión.</p>
+                <p><strong>Historial de traspasos:</strong> En la pestaña Mercado encontrarás un registro de todas las compras y ventas completadas en la serie (quién fue vendido, de qué equipo a qué equipo, y el precio final) – esta es la lista resultante de las subastas descritas arriba.</p>
+            </div>
+
+            <div class="card" id="man-egenskaper">
+                <h3>Atributos y entrenamiento</h3>
+                <p><strong>Atributos (0-100):</strong> Cada piloto, mecánico e ingeniero tiene cinco atributos individuales valorados de 0 a 100, y la "Habilidad" de la persona es el promedio de esos cinco. Los pilotos tienen Experiencia, Velocidad, Gestión de neumáticos, Defensa y Trabajo en equipo. Los mecánicos tienen Experiencia, Conocimiento del motor, Velocidad, Gestión de medios y Trabajo en equipo. Los ingenieros tienen Experiencia, Táctica, Velocidad, Gestión de medios y Trabajo en equipo. Todos los atributos se muestran en el perfil de la persona bajo la página de equipo (haz clic en el nombre).</p>
+                <p><strong>Experiencia:</strong> La experiencia no se puede entrenar. En cambio, crece automáticamente 5 puntos cada vez que la persona cumple años (una vez por temporada completada para todos en el juego). Un piloto siempre empieza con 10 de Experiencia a los 20 años, y el mismo principio básico se aplica a mecánicos e ingenieros.</p>
+                <p><strong>Pestaña de entrenamiento y carrera de entrenamiento:</strong> En la página de equipo → la subpestaña «Entrenamiento» inscribes a pilotos, mecánicos e ingenieros en la carrera de entrenamiento de la semana y eliges en qué habilidad debe centrarse cada uno. Los pilotos pueden entrenar Velocidad, Gestión de neumáticos, Defensa o Trabajo en equipo; los mecánicos, Conocimiento del motor, Velocidad, Relación con medios o Trabajo en equipo; y los ingenieros, Táctica, Velocidad, Relación con medios o Trabajo en equipo. La Experiencia nunca se puede entrenar. Pueden participar como máximo 3 pilotos, 3 mecánicos y 3 ingenieros por semana, y el entrenamiento es gratuito. Cada lunes a las 20:00 se disputa automáticamente la carrera de entrenamiento. Cuánto mejora la habilidad (1–5 puntos) depende del rendimiento de la persona en la carrera. La mejora se aplica justo después de la carrera de entrenamiento, tanto para pilotos como para mecánicos e ingenieros. Un breve resumen aparece más abajo en la misma subpestaña. Si no das una nueva orden de entrenamiento, el equipo entrena con las mismas personas y habilidades que la semana anterior.</p>
+            </div>
+
+            <div class="card" id="man-skador-ekonomi">
+                <h3>Daños, finanzas y paradas en boxes</h3>
+                <p><strong>Daños:</strong> Después de cada carrera completada, 0-3 coches entre los equipos participantes sufren daños al azar (así que a veces ninguno). El daño afecta a uno de los cinco componentes del coche (Neumáticos, Motor, Aerodinámica, Caja de cambios o Chasis) y lo reduce de forma permanente entre un 10 % y un 70 % de su valor actual. Los daños no se pueden reparar: el componente se queda en el nuevo nivel, más bajo, y se vuelve a desarrollar con mejoras normales (ver abajo), que además son más baratas cuanto más bajo es el índice. Si hay una mejora del componente en curso cuando se daña, la mejora da +5 desde el nuevo nivel. <strong>El estilo de conducción importa:</strong> un piloto con estilo Agresivo conduce más cerca del límite y corre un riesgo significativamente mayor de que el coche sufra daños que uno con estilo Equilibrado o Defensivo.</p>
+                <p><strong>Coste de mejora – barato al principio, caro en la cima:</strong> Cada mejora en la pestaña Coches aumenta el índice del componente en 5 (hasta un máximo de 100), y el precio se calcula a partir del índice <em>antes</em> de la mejora mediante la fórmula <code>20.000 kr + índice² × 30</code>. En la práctica, esto significa que el coste crece con el cuadrado del índice: mejorar un componente casi intacto (índice 0) cuesta solo 20.000 kr, en el índice 50 cuesta 95.000 kr, y justo antes de que un componente alcance el valor máximo de 100 (índice 95) cuesta nada menos que 290.750 kr. Casi siempre compensa desarrollar primero los componentes más débiles del equipo antes de seguir potenciando uno que ya es fuerte. El botón de mejora en la pestaña Coches siempre muestra exactamente lo que cuesta el siguiente paso, y recibes una confirmación antes de que se descuente el dinero. <strong>Cada mejora tarda 1 día:</strong> el coste se descuenta de inmediato al confirmar, pero el componente muestra "Mejorando..." y mantiene su índice anterior hasta que pasa el día, momento en el que el nuevo nivel entra en vigor automáticamente (no tienes que hacer nada más). Un componente solo puede tener una mejora en cola a la vez – debes esperar a que termine antes de iniciar la siguiente mejora en ese mismo componente.</p>
+                <p><strong>Actualización económica (cada domingo a las 20:00):</strong> Cada domingo tu equipo – como todos los demás equipos de las series – recibe ingresos de patrocinio e ingresos por venta de merchandising, además de pagar los salarios del personal y el mantenimiento fijo de la fábrica (30.000 kr). Mientras no tengas un contrato de patrocinio activo (ver <a href="#man-sponsoravtal">Acuerdos de patrocinio</a>), el ingreso de patrocinio se sortea según la división en la que compites actualmente: una división más alta da una media más alta. El ingreso por merchandising siempre se sortea de la misma forma, pero además se ajusta según la popularidad media de tus dos pilotos (ver <a href="#man-popularitet">Popularidad y merchandising</a>). Ninguno de los ingresos puede superar nunca 1.000.000 kr por semana. <strong>Un presupuesto negativo cuesta intereses:</strong> mientras el presupuesto de tu equipo esté por debajo de 0 kr, se descuenta además cada semana un 5 % del saldo negativo en intereses (aparece como «Intereses del préstamo» en las finanzas de la semana), otro motivo para vigilar tu presupuesto; ver el siguiente párrafo. Todas las cifras de la semana se guardan en tu historial económico, en la pestaña Finanzas → Historial económico: allí ves tanto una lista semana a semana como un resumen de todas las semanas de cada temporada.</p>
+                <p><strong>Presupuesto negativo – restricciones (sin bancarrota):</strong> Tu equipo nunca puede quebrar ni verse obligado a empezar de cero, por muy negativo que sea el presupuesto. Mientras el presupuesto esté por debajo de 0 kr, el equipo queda en cambio muy limitado: no puedes comprar ni fichar pilotos/personal (ni por el mercado, ni agentes libres, ni cláusulas de rescisión), ofrecer ni firmar contratos nuevos (incluidas las renovaciones y el fichaje de promesas juveniles), mejorar el coche, llamar a los ojeadores, entrenar al personal ni asumir otros gastos nuevos (p. ej. ampliar la arena o cambiarle el nombre). Aun así, los salarios, el mantenimiento y los intereses del préstamo se descuentan cada semana como siempre. Vende personal, pide un préstamo o espera a la próxima actualización económica para volver a superar los 0 kr y recuperar toda tu libertad de acción.</p>
+                <p><strong>Paradas en boxes y estrategia de neumáticos:</strong> Cada coche hace una parada en boxes durante la carrera con una estrategia de neumáticos determinada aleatoriamente (por ejemplo, 1 parada ofensiva, 2 paradas equilibradas o 1 parada defensiva), y esto se muestra como una columna propia en el resultado de la carrera. Lo bien que salga la parada en boxes otorga un bono a los puntos del coche en la carrera, y son tus ingenieros quienes determinan lo grande que es ese bono – cuanto mayor sea la habilidad sumada de tus ingenieros en ese coche, mejor será la parada en boxes y mayor el bono. El componente de neumáticos del coche también interactúa con la estrategia: unos neumáticos mejores hacen que una estrategia más ofensiva compense más. La parada en boxes también interactúa con la elección de neumáticos que hagas en el informe táctico (ver <a href="#man-taktik">Informe táctico</a>) – cuanto mejores sean los ingenieros, más compensa la parada en boxes la desventaja de elegir neumáticos duros durante la carrera.</p>
+            </div>
+
+            <div class="card" id="man-sponsoravtal">
+                <h3>Acuerdos de patrocinio</h3>
+                <p>En la pestaña <strong>Finanzas → Acuerdos de patrocinio</strong> puedes firmar un acuerdo de patrocinio fijo en lugar de depender de los ingresos de patrocinio aleatorios (consulta <a href="#man-skador-ekonomi">Daños, finanzas y paradas en boxes</a>). En cuanto no tienes un acuerdo activo, se muestran tres ofertas con perfiles distintos: <strong>Seguro</strong> (importe base semanal alto, bonificaciones bajas), <strong>Equilibrado</strong> (una mezcla uniforme) y <strong>Riesgo</strong> (importe base bajo, bonificaciones altas si el equipo rinde). Cada oferta tiene un importe base semanal fijo que sustituye al ingreso de patrocinio aleatorio, más cláusulas de bonificación por podio, por victoria y por título de campeonato. La habilidad de Patrocinio de tu Team Principal influye en el importe base de las tres ofertas.</p>
+                <p>Un acuerdo de patrocinio firmado dura siempre una temporada completa (10 carreras) y <strong>no se puede cancelar anticipadamente</strong>; solo puedes firmar uno nuevo cuando haya vencido. Solo puede haber un acuerdo de patrocinio activo a la vez. Mientras está vigente se muestra en Finanzas → Acuerdos de patrocinio junto con las semanas restantes.</p>
+            </div>
+
+            <div class="card" id="man-prispengar">
+                <h3>Premios en metálico</h3>
+                <p><strong>Carrera individual:</strong> El equipo recibe <strong>premios por cada punto</strong> que sus coches sumen en cada carrera: 15.000 kr/punto en la Undercut Masters League, 11.000 kr en la División 2, 6.000 kr en la División 3, 3.000 kr en la División 4 y 2.000 kr en la División 5. Si tienes un contrato de patrocinio, se suman los <strong>bonus del patrocinador</strong> (bonus por podio y por victoria, por coche). Los <strong>bonus contractuales</strong> de los pilotos (por podio, victoria y puntos), en cambio, se pagan al piloto y son un <strong>coste</strong> para el equipo. Todo se contabiliza justo después de la llegada y aparece en el extracto de cuenta.</p>
+                <p><strong>Clasificación – el árbol de premios:</strong> Al final de la temporada, cada equipo recibe premios según su posición final en la clasificación. Cada liga tiene 10 equipos. La división 1 tiene 1 liga, la división 2 tiene 2, la división 3 tiene 4 y así sucesivamente: el número de ligas se <strong>duplica</strong> en cada división hasta la división 10 (512 ligas). Cada división tiene siempre el mismo bote total: <strong>20.000.000 kr</strong>. En la división 1, todo el bote está en su única liga. En cada división inferior el <strong>bote por liga se reduce a la mitad</strong>, pero como el número de ligas se duplica a la vez, el total de la división siempre es el mismo (medio bote × el doble de ligas). Dentro de cada liga, el bote se reparte entre los puestos 1 a 10: <strong>50 %, 20 %, 10 %, 7 %, 5 %, 3 %, 2 %, 1,5 %, 1 % y 0,5 %</strong> (100 % en total). Ejemplo: el ganador de la división 1 recibe el 50 % de 20.000.000 kr = <strong>10.000.000 kr</strong>. Una liga de la división 3 tiene 20.000.000 ÷ 4 = 5.000.000 kr, así que su ganador recibe 2.500.000 kr.</p>
+                <div><p><strong>Tabla 1 – Bote por división y liga</strong></p><div class="tabell-scroll"><table><thead><tr><th>División</th><th>Ligas</th><th>Bote por liga</th><th>Ganador (50 %)</th><th>10.º puesto (0,5 %)</th><th>Total de la división</th></tr></thead><tbody><tr><td>División 1 (Undercut Masters League)</td><td>1</td><td>20.000.000 kr</td><td>10.000.000 kr</td><td>100.000 kr</td><td>1 × 20.000.000 = <strong>20.000.000 kr</strong></td></tr><tr><td>División 2</td><td>2</td><td>10.000.000 kr</td><td>5.000.000 kr</td><td>50.000 kr</td><td>2 × 10.000.000 = <strong>20.000.000 kr</strong></td></tr><tr><td>División 3</td><td>4</td><td>5.000.000 kr</td><td>2.500.000 kr</td><td>25.000 kr</td><td>4 × 5.000.000 = <strong>20.000.000 kr</strong></td></tr><tr><td>División 4</td><td>8</td><td>2.500.000 kr</td><td>1.250.000 kr</td><td>13.000 kr</td><td>8 × 2.500.000 = <strong>20.000.000 kr</strong></td></tr><tr><td>División 5</td><td>16</td><td>1.250.000 kr</td><td>625.000 kr</td><td>6.000 kr</td><td>16 × 1.250.000 = <strong>20.000.000 kr</strong></td></tr><tr><td>División 6</td><td>32</td><td>625.000 kr</td><td>313.000 kr</td><td>3.000 kr</td><td>32 × 625.000 = <strong>20.000.000 kr</strong></td></tr><tr><td>División 7</td><td>64</td><td>312.500 kr</td><td>156.000 kr</td><td>2.000 kr</td><td>64 × 312.500 = <strong>20.000.000 kr</strong></td></tr><tr><td>División 8</td><td>128</td><td>156.250 kr</td><td>78.000 kr</td><td>1.000 kr</td><td>128 × 156.250 = <strong>20.000.000 kr</strong></td></tr><tr><td>División 9</td><td>256</td><td>78.125 kr</td><td>39.000 kr</td><td>1.000 kr</td><td>256 × 78.125 = <strong>20.000.000 kr</strong></td></tr><tr><td>División 10</td><td>512</td><td>39.062,5 kr</td><td>20.000 kr</td><td>1.000 kr</td><td>512 × 39.062,5 = <strong>20.000.000 kr</strong></td></tr></tbody></table></div><p><strong>Tabla 2 – Pago por puesto (kr, redondeado a los 1.000 kr más cercanos)</strong></p><div class="tabell-scroll"><table><thead><tr><th>División</th><th>1.º</th><th>2.º</th><th>3.º</th><th>4.º</th><th>5.º</th><th>6.º</th><th>7.º</th><th>8.º</th><th>9.º</th><th>10.º</th></tr><tr><th></th><th>50 %</th><th>20 %</th><th>10 %</th><th>7 %</th><th>5 %</th><th>3 %</th><th>2 %</th><th>1,5 %</th><th>1 %</th><th>0,5 %</th></tr></thead><tbody><tr><td>Div 1</td><td>10.000.000</td><td>4.000.000</td><td>2.000.000</td><td>1.400.000</td><td>1.000.000</td><td>600.000</td><td>400.000</td><td>300.000</td><td>200.000</td><td>100.000</td></tr><tr><td>Div 2</td><td>5.000.000</td><td>2.000.000</td><td>1.000.000</td><td>700.000</td><td>500.000</td><td>300.000</td><td>200.000</td><td>150.000</td><td>100.000</td><td>50.000</td></tr><tr><td>Div 3</td><td>2.500.000</td><td>1.000.000</td><td>500.000</td><td>350.000</td><td>250.000</td><td>150.000</td><td>100.000</td><td>75.000</td><td>50.000</td><td>25.000</td></tr><tr><td>Div 4</td><td>1.250.000</td><td>500.000</td><td>250.000</td><td>175.000</td><td>125.000</td><td>75.000</td><td>50.000</td><td>38.000</td><td>25.000</td><td>13.000</td></tr><tr><td>Div 5</td><td>625.000</td><td>250.000</td><td>125.000</td><td>88.000</td><td>63.000</td><td>38.000</td><td>25.000</td><td>19.000</td><td>13.000</td><td>6.000</td></tr><tr><td>Div 6</td><td>313.000</td><td>125.000</td><td>63.000</td><td>44.000</td><td>31.000</td><td>19.000</td><td>13.000</td><td>9.000</td><td>6.000</td><td>3.000</td></tr><tr><td>Div 7</td><td>156.000</td><td>63.000</td><td>31.000</td><td>22.000</td><td>16.000</td><td>9.000</td><td>6.000</td><td>5.000</td><td>3.000</td><td>2.000</td></tr><tr><td>Div 8</td><td>78.000</td><td>31.000</td><td>16.000</td><td>11.000</td><td>8.000</td><td>5.000</td><td>3.000</td><td>2.000</td><td>2.000</td><td>1.000</td></tr><tr><td>Div 9</td><td>39.000</td><td>16.000</td><td>8.000</td><td>5.000</td><td>4.000</td><td>2.000</td><td>2.000</td><td>1.000</td><td>1.000</td><td>1.000</td></tr><tr><td>Div 10</td><td>20.000</td><td>8.000</td><td>4.000</td><td>3.000</td><td>2.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td><td>1.000</td></tr></tbody></table></div><p style="font-size:12px; color:var(--text-muted);">Todos los premios se redondean a los 1.000 kr más cercanos y ningún puesto recibe menos de 1.000 kr, por lo que el total de una división puede diferir ligeramente de 20.000.000 kr exactos.</p></div><p><strong>Tabell 2 – Utbetalning per placering (kr, avrundat till närmaste 1 000 kr)</strong></p><div class="tabell-scroll"><table><thead><tr><th>Division</th><th>1:a</th><th>2:a</th><th>3:e</th><th>4:e</th><th>5:e</th><th>6:e</th><th>7:e</th><th>8:e</th><th>9:e</th><th>10:e</th></tr><tr><th></th><th>50 %</th><th>20 %</th><th>10 %</th><th>7 %</th><th>5 %</th><th>3 %</th><th>2 %</th><th>1,5 %</th><th>1 %</th><th>0,5 %</th></tr></thead><tbody><tr><td>Div 1</td><td>10 000 000</td><td>4 000 000</td><td>2 000 000</td><td>1 400 000</td><td>1 000 000</td><td>600 000</td><td>400 000</td><td>300 000</td><td>200 000</td><td>100 000</td></tr><tr><td>Div 2</td><td>5 000 000</td><td>2 000 000</td><td>1 000 000</td><td>700 000</td><td>500 000</td><td>300 000</td><td>200 000</td><td>150 000</td><td>100 000</td><td>50 000</td></tr><tr><td>Div 3</td><td>2 500 000</td><td>1 000 000</td><td>500 000</td><td>350 000</td><td>250 000</td><td>150 000</td><td>100 000</td><td>75 000</td><td>50 000</td><td>25 000</td></tr><tr><td>Div 4</td><td>1 250 000</td><td>500 000</td><td>250 000</td><td>175 000</td><td>125 000</td><td>75 000</td><td>50 000</td><td>38 000</td><td>25 000</td><td>13 000</td></tr><tr><td>Div 5</td><td>625 000</td><td>250 000</td><td>125 000</td><td>88 000</td><td>63 000</td><td>38 000</td><td>25 000</td><td>19 000</td><td>13 000</td><td>6 000</td></tr><tr><td>Div 6</td><td>313 000</td><td>125 000</td><td>63 000</td><td>44 000</td><td>31 000</td><td>19 000</td><td>13 000</td><td>9 000</td><td>6 000</td><td>3 000</td></tr><tr><td>Div 7</td><td>156 000</td><td>63 000</td><td>31 000</td><td>22 000</td><td>16 000</td><td>9 000</td><td>6 000</td><td>5 000</td><td>3 000</td><td>2 000</td></tr><tr><td>Div 8</td><td>78 000</td><td>31 000</td><td>16 000</td><td>11 000</td><td>8 000</td><td>5 000</td><td>3 000</td><td>2 000</td><td>2 000</td><td>1 000</td></tr><tr><td>Div 9</td><td>39 000</td><td>16 000</td><td>8 000</td><td>5 000</td><td>4 000</td><td>2 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr><tr><td>Div 10</td><td>20 000</td><td>8 000</td><td>4 000</td><td>3 000</td><td>2 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td><td>1 000</td></tr></tbody></table></div><p style="font-size:12px; color:var(--text-muted);">Alla prispengar avrundas till närmaste 1 000 kr, och ingen placering får mindre än 1 000 kr. Därför kan summan i en division skilja sig något från exakt 20 000 000 kr.</p></div>
+                <p>Los premios de temporada se ingresan en tu cuenta en el mismo cambio de temporada y aparecen en <strong>Premios en metálico</strong> en Finanzas → Finanzas, por semana y en el extracto de cuenta. Las primas de campeonato de los contratos de pilotos y de los acuerdos de patrocinio se pagan además.</p>
+            </div>
+
+            <div class="card" id="man-valuta">
+                <h3>Moneda</h3>
+                <p>Todos los importes del juego siempre se almacenan y calculan internamente en coronas suecas (SEK) – esto no afecta a ningún equilibrio del juego. Sin embargo, en la pestaña <strong>Mi cuenta → Configuración</strong> puedes elegir en qué moneda se <em>muestran</em> los importes: SEK, USD, EUR o GBP. El tipo de cambio es fijo: <strong>10 SEK = 1 USD = 1 EUR = 1 GBP</strong>. El cambio se aplica de inmediato y solo afecta a tu propia visualización – es, por tanto, puramente estético y no cambia cuánto cuesta realmente algo en la economía del juego.</p>
+            </div>
+
+            <div class="card" id="man-moral-ovrigt">
+                <h3>Moral del equipo, director de equipo e ilustraciones</h3>
+                <p><strong>Moral del equipo:</strong> Cada equipo tiene una moral valorada de 0 a 100, mostrada en la parte superior de la página de equipo con su propio indicador. La moral cambia tras cada carrera: las victorias y los podios la suben, los malos resultados la bajan, y también deriva lentamente hacia un valor medio neutro con el tiempo. La moral del equipo otorga un pequeño bono o una pequeña penalización a los puntos de los coches en cada carrera – una moral por encima de 50 da un pequeño impulso, una moral por debajo de 50 una pequeña penalización – así que influye, pero nunca decide una carrera por sí sola.</p>
+                <p><strong>Director de equipo:</strong> A cada equipo, el tuyo y cada uno de los rivales, se le asigna un director de equipo en cuanto se crea el equipo. Se muestra en la parte superior de la página de equipo junto con su nacionalidad y su propia ilustración, pero no afecta a la carrera en sí.</p>
+                <p><strong>Ilustraciones:</strong> Todos en el juego – pilotos, mecánicos, ingenieros y directores de equipo – se muestran con su propia ilustración a color (iniciales en un círculo de color, único por nombre) junto a su nombre, tanto en las listas como en la página de perfil.</p>
+                <p><strong>Resumen de la carrera:</strong> En la pestaña Inicio y en la pestaña Serie puedes ver cuántas carreras se han completado en la temporada actual (de un total de 10), así como el número total de carreras completadas en tu carrera, independientemente de la temporada.</p>
+            </div>
+
+            <div class="card" id="man-kontrakt">
+                <h3>Sistema de contratos – cómo funciona (explicado de forma sencilla)</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Cada piloto, mecánico, ingeniero y tu director de equipo tiene un contrato. Encontrarás una lista combinada de todos tus contratos en <strong>Página de equipo → Contrato</strong>, y el contrato de cada persona se gestiona desde la propia página de perfil de esa persona (haz clic en el nombre en cualquier parte del juego, por ejemplo en la página de equipo) – allí encontrarás los botones <strong>Negociar contrato</strong> y <strong>Rescindir contrato</strong>.</p>
+                <p><strong>1. Negociar un contrato:</strong> Abre el perfil de la persona y haz clic en "Negociar contrato". Verás su valoración, edad, condiciones actuales, motivación y relación con el equipo, así como lo que la persona exige como mínimo y lo que idealmente le gustaría (salario, duración del contrato, posiblemente estatus de primer piloto, cláusula de rescisión). Tú formulas tu propia oferta – salario por semana, número de años, prima de fichaje, prima de podio y victoria, prima de campeonato y (para pilotos) estatus de primer piloto – y ves de inmediato una "probabilidad de aceptación" en porcentaje, con una lista de lo que sube o baja las posibilidades (por ejemplo, un salario demasiado bajo, un contrato demasiado corto, un equipo débil, el interés de otros equipos).</p>
+                <p><strong>2. Enviar la oferta:</strong> La persona acepta, rechaza o vuelve con una contraoferta (por ejemplo, "exige 5,8 M kr y estatus de primer piloto"). Entonces puedes subir la oferta y volver a enviarla, aceptar la contraoferta o cancelar – pero tras varios intentos seguidos la persona pierde el interés y la negociación se cancela por esta vez.</p>
+                <p><strong>3. El contrato afecta automáticamente a las finanzas:</strong> El salario base se deduce automáticamente cada semana (en la actualización financiera del domingo, igual que ya ocurría con los salarios de mecánicos e ingenieros). Las primas se abonan y se registran como transacciones propias en cuanto se ganan: prima de podio por cada podio, prima de victoria por cada victoria, prima de puntos por cada punto que aporte el coche, y prima de campeonato si el coche de la persona gana su serie al final de la temporada.</p>
+                <p><strong>4. El tiempo de contrato cuenta atrás:</strong> Cada temporada completada reduce en 1 los "Años restantes" de todos tus contratos. Si a alguien le queda solo un año, el contrato se muestra como "Por vencer" y recibes un recordatorio en el perfil de la persona con tres opciones: <strong>Negociar ampliación</strong>, <strong>Mantener el contrato actual</strong> (esperar) o <strong>Dejar que el contrato expire</strong> (la persona se convierte en agente libre y abandona el equipo al final de la temporada). Si el contrato de un piloto expira sin ampliación, el asiento se sustituye automáticamente por el piloto de reserva – si no hay piloto de reserva, se recluta un nuevo novato para ese asiento en su lugar, de modo que un coche nunca se queda permanentemente sin piloto. Para mecánicos e ingenieros, el puesto queda vacante (igual que al despedirlos manualmente), y el contrato del director de equipo siempre se renueva automáticamente, ya que ese puesto nunca puede quedar vacante.</p>
+                <p><strong>5. Primer piloto:</strong> Si estableces el estatus de primer piloto en el contrato de un piloto, la persona espera ser favorecida en las decisiones tácticas y las mejoras. Un contrato de primer piloto activo da al coche una pequeña contribución extra de puntos en la carrera, pero si el otro coche del equipo sigue rindiendo mejor carrera tras carrera, la relación del piloto con el equipo empeora – una señal de que el primer piloto se siente defraudado.</p>
+                <p><strong>6. Otros equipos y cláusula de rescisión:</strong> Si a un piloto le queda poco tiempo de contrato, otro equipo de la serie puede mostrar interés y hacer su propia oferta salarial – esto aparece como una notificación y como un factor en la negociación. Si el piloto además tiene una cláusula de rescisión, otro mánager puede pagar en cualquier momento el importe íntegro de la cláusula para hacerse con el contrato de inmediato; entonces recibes una carta en tu Bandeja de entrada (con un consejo que indica que una cláusula de rescisión más alta la próxima vez reduce este riesgo) y el dinero se ingresa automáticamente en tu cuenta. La cláusula de rescisión de una persona nunca puede activarse durante su PRIMER AÑO en el club, por muy alta que sea.</p>
+                <p><strong>7. Personal (mecánicos, ingenieros, director de equipo):</strong> Se usa el mismo sistema de contratos para tu personal, pero con menos condiciones (salario, duración del contrato, prima de fichaje, prima de rendimiento y cláusula de rescisión – sin bono de podio/victoria/campeonato ni estatus de primer piloto). Gestionas el contrato del director de equipo directamente en Página de equipo → Contrato.</p>
+                <p><strong>8. Notificaciones:</strong> Todo lo relacionado con los contratos – fin de contrato próximo, exigencias salariales, interés de otros equipos, contratos vencidos, primas abonadas, cláusulas de rescisión activadas, y negociaciones exitosas o fallidas – aparece como mensajes en el Registro de eventos, disponible en la pestaña <strong>Inicio</strong>.</p>
+                <p><strong>9. Relación con el equipo:</strong> Cada contrato tiene una relación con el equipo de 0 a 100 que muestra lo satisfecha que está la persona con tu equipo. Una persona nueva empieza entre 50 y 79. La relación influye en la probabilidad de que la persona acepte tu oferta en las negociaciones: 50 es neutral, 100 da +10 puntos porcentuales y 0 da −10 puntos porcentuales. En la vista de negociación, la relación también forma parte del valor de Motivación (la media de la relación y la moral del equipo), que es solo informativo. La relación aumenta +8 cada vez que acordáis un contrato nuevo o una renovación. Para tus pilotos titulares también cambia al final de cada temporada: +4 si el piloto alcanzó su objetivo de puntos, −6 si sumó menos de la mitad del objetivo. Un piloto con estatus de primer piloto gana +1 tras cada carrera en la que termina por delante de su compañero y −3 si el compañero termina delante.</p>
+            </div>
+
+            <div class="card" id="man-pension">
+                <h3>Retiro y envejecimiento</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">Se aplica a todos los equipos del juego.</p>
+                <p><strong>Los pilotos se retiran a los 40 años:</strong> En cuanto un piloto cumple 40 años (en el cambio de temporada), abandona el equipo. Igual que con un contrato vencido, el piloto de reserva asciende a ese asiento si existe uno – si no, se recluta de inmediato a un nuevo novato, de modo que un coche nunca se queda permanentemente sin piloto. Vigila tu banquillo de reserva y tu programa junior (ver <a href="#man-scouting">Ojeo y programa junior</a>) a medida que tus pilotos se acercan a los 40.</p>
+                <p><strong>Los mecánicos e ingenieros pueden tener como máximo 60 años:</strong> A los 60 años la persona se retira y abandona el equipo. En tu propio equipo, el puesto queda vacante hasta que contrates a alguien nuevo.</p>
+                <p><strong>Declive de habilidades después de los 30 (solo pilotos):</strong> El resto de habilidades de un piloto – Velocidad, Gestión de neumáticos, Defensa y Trabajo en equipo – disminuyen gradualmente cada temporada en la que tiene más de 30 años, y el declive se hace cada vez mayor a medida que el piloto envejece. La Experiencia no se ve afectada por esto – en cambio, sigue aumentando 5 puntos por año igual que para todos los demás. Un piloto mayor tiene, por tanto, más Experiencia pero habilidades físicas/técnicas más débiles, lo que hace que la forma de una plantilla sea algo que hay que planificar a largo plazo.</p>
+            </div>
+
+            <div class="card" id="man-taktik">
+                <h3>Informe táctico: órdenes antes de la clasificación y la carrera</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">En la pestaña <strong>Carrera</strong> hay dos reuniones tácticas separadas – <strong>Reunión táctica – Antes de la clasificación</strong> y <strong>Reunión táctica – Antes de la carrera</strong> – en las que tú, como jefe del equipo, das órdenes a tu equipo. Cada reunión tiene su propia sugerencia del ingeniero jefe y se guarda por separado. Las decisiones se aplican a tus dos coches y se mantienen hasta que las cambies: fija tu táctica con tiempo antes de que la clasificación (miércoles 20:00) y la carrera (viernes 20:00) se disputen automáticamente.</p>
+                <p><strong>Neumáticos de salida (Blandos / Medios / Duros):</strong> Los blandos son los más rápidos pero se desgastan antes, los duros aguantan mejor pero son los más lentos, y los medios se sitúan en un equilibrio intermedio. Un desgaste fuerte te penaliza más en circuitos con muchas curvas. <strong>La parada en boxes puede compensar los neumáticos desgastados:</strong> cuanto mayor sea la habilidad sumada de tus ingenieros en ese coche, más compensa la parada en boxes la desventaja de una elección de neumáticos duros durante la carrera.</p>
+                <p><strong>Carga aerodinámica (0-100):</strong> Más carga aerodinámica da mejor agarre en las curvas (ayuda en la clasificación, especialmente en circuitos con muchas curvas, y en la carrera en circuitos con muchas curvas) pero cuesta velocidad punta en las rectas (perjudica la carrera en circuitos con rectas largas). Una carga aerodinámica más baja, a la inversa, es buena para la velocidad punta pero da peor agarre en curva. El ajuste correcto depende, por tanto, del carácter del circuito.</p>
+                <p><strong>Manejo (0-100):</strong> El ajuste de manejo hace que el coche sea más fácil de conducir y aporta una contribución puramente positiva tanto a la clasificación como a la carrera, cuanto más alto se ajuste.</p>
+                <p><strong>Órdenes de equipo (solo carrera):</strong> Puedes elegir priorizar el Coche 1 o el Coche 2 – el coche priorizado recibe un bono extra de puntos en la carrera mientras el otro coche cede un poco, o elegir "Sin prioridad" para una carrera libre entre tus dos pilotos.</p>
+                <p><strong>Combustible:</strong> La pestaña Carrera muestra una cantidad de combustible recomendada (litros) para el circuito de la carrera, basada en su longitud y número de curvas. Llevar menos combustible del recomendado no ahorra tiempo – en cambio, el coche pierde rendimiento ("ahorro de combustible"), y el riesgo de abandono (fallo mecánico) aumenta cuanto mayor sea el déficit. Llevar más combustible del recomendado cuesta rendimiento por el peso extra. Obtienes el mejor resultado manteniéndote lo más cerca posible de la cantidad recomendada – mostrada por coche en la pestaña Carrera, tanto antes como después de la carrera.</p>
+            </div>
+
+            <div class="card" id="man-popularitet">
+                <h3>Popularidad y merchandising</h3>
+                <p>Cada piloto tiene una valoración de <strong>Popularidad</strong> (0-100), visible en la página de perfil del piloto. La popularidad sube tras una victoria o un podio, aumenta ligeramente con un resultado entre los diez primeros, baja con una mala carrera, y por lo demás deriva lentamente hacia un valor medio neutro con el tiempo – igual que la moral del equipo.</p>
+                <p>La popularidad media de tus dos pilotos en competición (Coche 1 y Coche 2) escala tus <strong>ventas de merchandising</strong> semanales en la actualización financiera: una popularidad media alta da hasta un +80 % adicional, una popularidad media baja puede reducir los ingresos hasta un -60 %. Los pilotos populares, por tanto, valen más de lo que aportan sobre la pista.</p>
+            </div>
+
+            <div class="card" id="man-mekaniker">
+                <h3>Mecánicos</h3>
+                <p><strong>¿Qué hacen los mecánicos?</strong> Los mecánicos cuidan el coche y contribuyen a su rendimiento tanto en la clasificación como en la carrera. Lo que cuenta es la <strong>capacidad sumada</strong> de los mecánicos asignados a ese coche concreto – el coche 1 y el coche 2 se calculan por separado. Dos mecánicos con capacidad 80 y 10 dan, por tanto, 90, y cinco mecánicos con capacidad 80 dan 400. La capacidad es la media de los cinco atributos del mecánico, así que todos los atributos cuentan lo mismo. Cada punto de capacidad del piloto pesa diez veces más que un punto del personal, pero como la capacidad del personal se suma, una plantilla de mecánicos completa y fuerte marca una gran diferencia en cada carrera.</p>
+                <p><strong>Plantilla:</strong> Puedes tener hasta 10 mecánicos titulares, como máximo 5 por coche. Cada mecánico se asigna al Coche 1, al Coche 2 o a la Reserva desde su página de perfil. Solo cuentan los mecánicos asignados a un coche: los de la Reserva y los mecánicos <strong>adicionales</strong> (contratados además de los 10 titulares como respaldo) cobran salario pero no influyen en la carrera. Un coche sin mecánicos cuenta como si el equipo tuviera habilidad 10. Si nombras un <strong>Mecánico jefe</strong>, obtiene un +20 % en su habilidad para el coche al que está asignado (ver <a href="#man-chefer">Mecánico jefe e ingeniero jefe</a>).</p>
+                <p><strong>Desarrollo:</strong> La experiencia aumenta sola a medida que el mecánico envejece. Los demás atributos se mejoran inscribiendo hasta 3 mecánicos en la carrera de entrenamiento del lunes en la página de equipo → Entrenamiento (+1 a +5 según el rendimiento, que se aplica justo después de la carrera de entrenamiento). Contratar cuesta 100.000 kr y después se paga un salario semanal (ver <a href="#man-trupp">Tu plantilla y personal</a>).</p>
+            </div>
+
+            <div class="card" id="man-ingenjorer">
+                <h3>Ingenieros</h3>
+                <p><strong>¿Qué hacen los ingenieros?</strong> Los ingenieros se encargan de la puesta a punto del coche y de la estrategia de carrera. Igual que con los mecánicos, cuenta la <strong>capacidad sumada</strong> de los ingenieros de ese coche, y forma parte de la capacidad de carrera del coche tanto en la clasificación como en la carrera, de la misma forma que la de los mecánicos.</p>
+                <p><strong>Importancia extra en la carrera:</strong> En la propia carrera, los ingenieros tienen además tres efectos propios, todos basados en la capacidad sumada de los ingenieros del coche. <strong>Reducen el desgaste de neumáticos</strong> – ya con un total de 100 el desgaste cuesta un 65 % menos (es el efecto máximo), algo que se nota sobre todo en circuitos con muchas curvas. Dan un <strong>bono de boxes</strong> que sigue creciendo cuanto mayor es la capacidad sumada. Y hacen las <strong>paradas en boxes más rápidas</strong>: de unos 3,6 segundos con un equipo de ingenieros débil hasta las paradas más rápidas del juego, de alrededor de 1,6 segundos. La clasificación depende por igual de mecánicos e ingenieros, pero en la carrera los ingenieros son el grupo de personal que más importa.</p>
+                <p><strong>Plantilla y desarrollo:</strong> Las mismas reglas que para los mecánicos: hasta 10 ingenieros titulares, como máximo 5 por coche. Los ingenieros en la Reserva y los ingenieros adicionales no cuentan, y un coche sin ingenieros cuenta como habilidad 10. Un <strong>Ingeniero jefe</strong> obtiene un +20 % en su habilidad para su coche. Se pueden inscribir hasta 3 ingenieros en la carrera de entrenamiento del lunes en la página de equipo → Entrenamiento.</p>
+            </div>
+
+            <div class="card" id="man-principal">
+                <h3>Team Principal</h3>
+                <p><strong>¿Qué hace el director de equipo?</strong> El director de equipo (Team Principal) dirige el equipo fuera de la pista y nunca influye directamente en la carrera, pero sus tres habilidades afectan al equipo de forma indirecta. <strong>Negociación</strong> aumenta o reduce la probabilidad de que un piloto u otro miembro del personal acepte tu oferta de contrato, hasta unos 10 puntos porcentuales frente a un director medio con 50. <strong>Patrocinio</strong> ajusta el importe base de los contratos de patrocinio que te ofrecen, de −15 % a +15 %. <strong>Moral</strong> fija el nivel hacia el que tiende la moral del equipo a largo plazo, entre 40 y 80, y la moral del equipo a su vez da una pequeña bonificación o penalización en cada carrera e influye en la disposición del personal a firmar. Un director nuevo empieza con 10 en todo, así que los efectos son negativos al principio y solo pasan a ser positivos cuando las habilidades superan 50.</p>
+                <p><strong>Habilidades:</strong> El Team Principal tiene tres habilidades (0–100): <strong>Negociación</strong> influye en tus posibilidades de éxito en las negociaciones de contrato, <strong>Patrocinio</strong> en la cuantía de las ofertas de los patrocinadores y <strong>Moral</strong> en la moral a largo plazo del equipo.</p>
+                <p><strong>Inicio y evolución:</strong> Al empezar la partida recibes un Team Principal con <strong>10</strong> en cada habilidad y una edad aleatoria de <strong>40–45</strong> años. Después tu Team Principal mejora <strong>+1 en cada habilidad por semana</strong> (en la actualización financiera del domingo), hasta un máximo de 100.</p>
+                <p><strong>Retiro:</strong> El Team Principal cumple un año en cada cambio de temporada y se retira a los <strong>60</strong>.</p>
+                <p><strong>Contratación:</strong> Si tu equipo no tiene Team Principal (tras un retiro, o si lo has despedido/vendido) puedes contratar uno nuevo <strong>gratis</strong> con el botón de Página de equipo → Resumen (la tarjeta Personal). El nuevo tiene 10 en cada habilidad y 40–45 años, igual que al principio. No hay coste de contratación, pero el Team Principal cobra un salario semanal normal según su contrato.</p>
+            </div>
+
+            <div class="card" id="man-chefer">
+                <h3>Mecánico jefe e ingeniero jefe</h3>
+                <p>En la página de equipo → Mecánicos o Ingenieros, puedes nombrar a uno de tus empleados como <strong>Mecánico jefe</strong> o <strong>Ingeniero jefe</strong> con el botón "Nombrar jefe" en la tabla (y quitarle el cargo con el mismo botón). El jefe se marca con una insignia allá donde aparezca en el juego.</p>
+                <p>El jefe recibe una bonificación del <strong>20 % en su habilidad</strong> (hasta un máximo de 100) en el cálculo del coche al que está asignado – así que coloca a tu jefe en el coche que quieras priorizar. Solo puedes tener un mecánico jefe y un ingeniero jefe a la vez.</p>
+            </div>
+
+            <div class="card" id="man-lagledare">
+                <h3>Página de equipo: director de equipo, presentación y nación</h3>
+                <p>En la parte superior de cada página de equipo ahora ves de qué <strong>nación</strong> procede el equipo, así como quién <strong>dirige el equipo</strong> bajo el encabezado "Usuario". En tu propia página de equipo esto es clicable y te lleva a tu página de cuenta, y puedes establecer tu propio nombre (botón "Establecer nombre del director de equipo") y escribir una breve <strong>presentación</strong> del equipo (botón "Editar presentación") que se muestra a todo el que visite tu página de equipo.</p>
+            </div>
+
+            <div class="card" id="man-forum">
+                <h3>Foro</h3>
+                <p><strong>La pestaña Foro del menú principal:</strong> un foro de debate independiente con hilos reales, búsqueda y opciones de orden (Actividad reciente, Más nuevos, Más respuestas). Haz clic en <strong>Nuevo hilo</strong> para iniciar tu propio debate con un título y un primer mensaje, o abre un hilo existente para leerlo y responder: cada hilo muestra quién lo inició y cuántas respuestas tiene. Los hilos los comparten todos los jugadores conectados, sea cual sea su equipo o división.</p>
+                <p><strong>El chat de la pestaña Serie:</strong> un «Foro» independiente y más pequeño al pie de la pestaña <strong>Serie</strong>: un chat continuo ligado a la serie/grupo que estás viendo en el selector de serie de arriba. Allí puedes escribir mensajes cortos a los demás equipos de tu grupo. No lo confundas con la pestaña Foro de arriba: el chat es por grupo, la pestaña Foro es global y común a todos los jugadores.</p>
+            </div>
+
+            <div class="card" id="man-inkorg">
+                <h3>Bandeja de entrada</h3>
+                <p>En <strong>Tu nombre de usuario → Bandeja de entrada</strong> encontrarás mensajes del sistema de la <strong>Administración del juego</strong> (p. ej. fichajes ganados, campeonatos, ascensos/descensos y cláusulas de rescisión activadas), así como mensajes privados de otros jugadores de Undercut Racing Manager. Una insignia en la pestaña muestra cuántos mensajes sin leer tienes, y marcas un mensaje como leído haciendo clic en él.</p>
+                <p>Haz clic en <strong>Nuevo</strong> para enviar tú mismo un mensaje privado a otro jugador: introduces el nombre de usuario del destinatario, un asunto y un mensaje. No puedes enviarte mensajes a ti mismo, y las respuestas que recibas aparecen en la misma bandeja junto a los mensajes del sistema.</p>
+            </div>
+
+            <div class="card" id="man-scouting">
+                <h3>Ojeo y programa junior</h3>
+                <p>En <strong>Página de equipo → Ojeo</strong> (visible solo en tu propia página de equipo) puedes llamar a tus ojeadores por <strong>500.000 kr</strong> por llamada. Cada llamada aporta una nueva promesa (15-19 años) a tu <strong>programa junior</strong>, con su propia habilidad detectada, estilo de conducción y nacionalidad. Las promesas envejecen igual que todos los demás en el juego en cada cambio de temporada.</p>
+                <p>En cuanto una promesa cumple <strong>20</strong> años, pasa a estar "Lista para ser contratada" y puedes ficharla para el banquillo de reserva del equipo con el botón "Contratar" – esto requiere que tu banquillo de reserva no esté lleno (máximo 10 pilotos de reserva – vende o despide primero a un piloto de reserva existente si está lleno).</p>
+                <p>Tu programa junior puede tener un máximo de <strong>5 promesas</strong> a la vez. Solo puedes llamar a tus ojeadores <strong>una vez por semana</strong> – el límite se reinicia cada domingo a las 20:00, junto con la actualización financiera de la semana. La edad de una promesa no se distribuye de forma uniforme: 15 años (8% de probabilidad), 16 años (23%), 17 años (23%), 18 años (23%) y 19 años (23%).</p>
+                <p>En la subpestaña <strong>Entrenamiento de preparación</strong> eliges, para cada promesa que aún no ha cumplido 20 años, una habilidad (Velocidad, Gestión de neumáticos, Defensa o Trabajo en equipo) en la que debe prepararse. La habilidad elegida aumenta <strong>+1 punto cada semana</strong> (en la actualización financiera del domingo) hasta la temporada incluida en la que la promesa cumple 20 años.</p>
+                <p>Cuando una promesa cumple 20 años y se ficha por el banquillo de reserva del equipo, recibe automáticamente un <strong>contrato de 4 años</strong>. Este primer contrato también está protegido: ningún equipo – ni tú mismo ni otro equipo – puede activar su cláusula de rescisión. La protección dura hasta la próxima renegociación o renovación del contrato, momento en el que se aplican de nuevo las reglas normales.</p>
+            </div>
+
+            <div class="card" id="man-historia">
+                <h3>Estadísticas, trofeos y leyendas</h3>
+                <p style="font-size:13px; color:#aaa; margin-top:0;">A diferencia de los puntos de clasificación, que se reinician cada temporada (ver <a href="#man-tavling">Temporadas, carreras y puntos</a>), esto se acumula de forma permanente – temporada tras temporada, a lo largo de toda tu carrera.</p>
+                <p><strong>Palmarés (pestaña Estadísticas):</strong> Cuando termina una temporada, el ganador de cada división se proclama campeón, justo antes de que se reinicien los puntos. En la pestaña <strong>Estadísticas → Palmarés</strong> puedes ver quién ganó la Undercut Masters League cada temporada, recorrer los campeones división por división, ver una clasificación histórica de títulos y las <strong>estadísticas de carrera</strong> completas de los pilotos (carreras, victorias, podios, puntos, poles, vueltas rápidas y abandonos), clasificadas entre todos los pilotos que compiten actualmente en las series y todas las Leyendas.</p>
+                <p><strong>Récords (pestaña Estadísticas):</strong> Clasificaciones de más victorias, más podios, más poles, más vueltas rápidas y más abandonos de todos los tiempos, además del récord de parada en boxes del equipo (la parada en boxes más rápida jamás realizada, por qué equipo y cuándo).</p>
+                <p><strong>Estadísticas del equipo (pestaña Estadísticas):</strong> El historial global de cada equipo – carreras, victorias, podios, puntos, poles y campeonatos – independientemente de en qué división compita el equipo actualmente.</p>
+                <p><strong>Vitrina de trofeos (Página de equipo):</strong> La página de equipo de cada equipo – la tuya y la de cada rival – tiene su propia subpestaña <strong>Trofeos</strong> que enumera exactamente qué campeonatos ha ganado ese equipo, temporada a temporada, además de las estadísticas de carrera globales del equipo.</p>
+                <p><strong>Logros (pestaña Estadísticas):</strong> Objetivos a largo plazo para tu equipo: Primera victoria (gana tu primera carrera), Campeón de división (termina 1.º en tu división), Ascenso a la Undercut Masters League, 10 podios seguidos (al menos un coche en el podio durante 10 carreras seguidas), Fichó a un cuarentón (ficha a un piloto de al menos 39 años) y 100 carreras en tu trayectoria. Un logro desbloqueado se registra en Noticias y en el Registro de eventos y queda marcado de forma permanente en la pestaña Estadísticas → Logros.</p>
+                <p><strong>Leyendas (pestaña Estadísticas):</strong> En cuanto un piloto de tu propio equipo cumple 40 años y se retira (ver <a href="#man-pension">Retiro y envejecimiento</a>), se guarda como leyenda en lugar de simplemente desaparecer – con sus carreras, victorias, podios, puntos de carrera y campeonatos conservados para siempre en la pestaña Estadísticas → Leyendas.</p>
+            </div>
+        
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Sobre el juego</a> &nbsp;·&nbsp; <a href="guider.html">Guías</a> &nbsp;·&nbsp; <a href="manual.html">Manual</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Preguntas frecuentes</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Política de privacidad</a> &nbsp;·&nbsp; <a href="../">Ir al juego</a>
+<div class="fot-sprak"><a href="../manual.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/manual.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/manual.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/manual.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/manual.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/manual.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/manual.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/manual.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/manual.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

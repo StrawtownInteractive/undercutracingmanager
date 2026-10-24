@@ -7,6 +7,16 @@
 <title>Om spelet – Undercut Racing Manager</title>
 <meta name="description" content="Undercut Racing Manager är ett gratis managerspel om racing i webbläsaren. Bygg ditt stall, utveckla bilarna och tävla mot andra managers.">
 <link rel="canonical" href="https://undercutmanager.com/om.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/om.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/om.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/om.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/om.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/om.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/om.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/om.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/om.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/om.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/om.html">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
 <style>:root {
@@ -73,6 +83,7 @@ a:hover { color: #67c3ff; }
 .topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
 .topp nav a { color: var(--text-secondary); text-decoration: none; }
 .topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
 .knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
 .knapp:hover { background: var(--accent-hover); }
 main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
@@ -104,6 +115,7 @@ th { color: var(--text-secondary); }
 .brodsmula a { color: var(--text-muted); }
 footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
 footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
 [id] { scroll-margin-top: 70px; }
 @media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
 </style>
@@ -111,10 +123,9 @@ footer a { color: var(--text-muted); }
 <body>
 <header class="topp"><div class="topp-inre">
 <a class="topp-logo" href="./"><img src="assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
-<nav><a href="om.html" aria-current="page">Om spelet</a><a href="guider.html">Guider</a><a href="manual.html">Manual</a><a href="vanliga-fragor.html">Vanliga frågor</a><a href="integritetspolicy.html">Integritetspolicy</a><a class="knapp" href="./">Spela gratis</a></nav>
+<nav><a href="om.html" aria-current="page">Om spelet</a><a href="guider.html">Guider</a><a href="manual.html">Manual</a><a href="vanliga-fragor.html">Vanliga frågor</a><a href="integritetspolicy.html">Integritetspolicy</a><select class="sprakval" aria-label="Språk" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="om.html" selected>Svenska</option><option data-l="en" value="en/om.html">English</option><option data-l="de" value="de/om.html">Deutsch</option><option data-l="fr" value="fr/om.html">Français</option><option data-l="es" value="es/om.html">Español</option><option data-l="pl" value="pl/om.html">Polski</option><option data-l="fi" value="fi/om.html">Suomi</option><option data-l="hu" value="hu/om.html">Magyar</option><option data-l="ja" value="ja/om.html">日本語</option></select><a class="knapp" href="./">Spela gratis</a></nav>
 </div></header>
 <main>
-
 <h1>Om Undercut Racing Manager</h1>
 <p class="ingress">Undercut Racing Manager är ett gratis, webbläsarbaserat managerspel om racing. Du tar över ett eget racingstall, bygger upp det från grunden och tävlar vecka för vecka mot andra managers – inget att installera, allt körs direkt i webbläsaren på dator och mobil.</p>
 
@@ -146,6 +157,7 @@ footer a { color: var(--text-muted); }
 <div class="card cta"><h2 style="margin-top:0">Redo att bygga ditt stall?</h2><p>Skapa ett konto och sätt ihop ditt lag på några minuter.</p><a class="knapp" href="./">Spela gratis</a></div>
 
 </main>
-<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Om spelet</a> &nbsp;·&nbsp; <a href="guider.html">Guider</a> &nbsp;·&nbsp; <a href="manual.html">Manual</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Vanliga frågor</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Integritetspolicy</a> &nbsp;·&nbsp; <a href="./">Till spelet</a></footer>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Om spelet</a> &nbsp;·&nbsp; <a href="guider.html">Guider</a> &nbsp;·&nbsp; <a href="manual.html">Manual</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Vanliga frågor</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Integritetspolicy</a> &nbsp;·&nbsp; <a href="./">Till spelet</a>
+<div class="fot-sprak"><a href="om.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="en/om.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="de/om.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="fr/om.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="es/om.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="pl/om.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="fi/om.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="hu/om.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="ja/om.html" hreflang="ja" lang="ja">日本語</a></div></footer>
 </body>
 </html>

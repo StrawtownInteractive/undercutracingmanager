@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Tor domowy – Undercut Racing Manager</title>
+<meta name="description" content="Jak wykorzystać tor domowy w Undercut Racing Manager jako narzędzie strategiczne: liczba zakrętów, długość toru, paliwo i dopasowanie toru do mocnych stron bolidu.">
+<link rel="canonical" href="https://undercutmanager.com/pl/guide-hemmabana.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-hemmabana.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-hemmabana.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-hemmabana.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-hemmabana.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-hemmabana.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-hemmabana.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-hemmabana.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-hemmabana.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-hemmabana.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-hemmabana.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">O grze</a><a href="guider.html" aria-current="page">Poradniki</a><a href="manual.html">Instrukcja</a><a href="vanliga-fragor.html">Najczęstsze pytania</a><a href="integritetspolicy.html">Polityka prywatności</a><select class="sprakval" aria-label="Język" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-hemmabana.html">Svenska</option><option data-l="en" value="../en/guide-hemmabana.html">English</option><option data-l="de" value="../de/guide-hemmabana.html">Deutsch</option><option data-l="fr" value="../fr/guide-hemmabana.html">Français</option><option data-l="es" value="../es/guide-hemmabana.html">Español</option><option data-l="pl" value="../pl/guide-hemmabana.html" selected>Polski</option><option data-l="fi" value="../fi/guide-hemmabana.html">Suomi</option><option data-l="hu" value="../hu/guide-hemmabana.html">Magyar</option><option data-l="ja" value="../ja/guide-hemmabana.html">日本語</option></select><a class="knapp" href="../">Graj za darmo</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Poradniki</a> › Tor domowy</p>
+<h1>Tor domowy: dopasuj tor do swojego bolidu</h1>
+<p class="ingress">W zakładce Arena możesz za darmo zmienić liczbę zakrętów i długość swojego toru domowego. To jedna z najczęściej pomijanych możliwości w grze – bo tor, który bardziej pasuje do twojego bolidu niż do bolidów rywali, daje punkty za każdym razem, gdy jesteś gospodarzem.</p>
+
+<h2>Co możesz zmienić</h2>
+<ul>
+<li><strong>Liczba zakrętów:</strong> 5–20.</li>
+<li><strong>Długość:</strong> 2,0–8,0 km.</li>
+<li><strong>Nazwa:</strong> można ją zmienić za 100 000 kr (zmiana czysto kosmetyczna).</li>
+</ul>
+<p>Zmiany liczby zakrętów i długości są darmowe, ale dotyczą tylko przyszłych wyścigów, w których nie odbyły się jeszcze kwalifikacje. Planuj więc z wyprzedzeniem przed domowym wyścigiem.</p>
+
+<h2>Jak tor wpływa na bolid</h2>
+<p>Dwie cechy toru wzmacniają różne elementy bolidu:</p>
+<div class="card tabell-scroll"><table>
+<tr><th>Cecha</th><th>Sprzyja</th><th>Szkodzi</th></tr>
+<tr><td>Dużo zakrętów</td><td>Aerodynamice (zwłaszcza w kwalifikacjach), oponom, wysokiemu dociskowi</td><td>Zespołom ze słabymi inżynierami i miękkimi oponami (zużycie)</td></tr>
+<tr><td>Mało zakrętów</td><td>Zespołom, które chcą jeździć na miękkich oponach i z niskim dociskiem</td><td>Zespołom, które zbudowały bolid wokół aerodynamiki</td></tr>
+<tr><td>Długi tor</td><td>Silnikowi, niskiemu dociskowi</td><td>Zespołom ze słabym silnikiem; wymaga więcej paliwa</td></tr>
+<tr><td>Krótki tor</td><td>Zespołom ze słabym silnikiem, ale dobrą przyczepnością</td><td>Zespołom, które zbudowały bolid wokół silnika</td></tr>
+</table></div>
+<p>Podwozie i skrzynia biegów wnoszą równy wkład niezależnie od toru, więc nie wpływają na wybór.</p>
+
+<h2>Trzy przykładowe profile toru</h2>
+<h3>Zespół silnikowy</h3>
+<p>Zainwestowałeś w silnik i masz dobrą ekipę inżynierów? Zbuduj długi tor z niewielką liczbą zakrętów, na przykład 7 km i 6–8 zakrętów. Wkład silnika w wyścigu rośnie wraz z długością toru, a przy niewielu zakrętach możesz jeździć z niskim dociskiem i na miękkich oponach.</p>
+<h3>Bolid z przyczepnością</h3>
+<p>Aerodynamika i opony to twoje najmocniejsze podzespoły? Zrób odwrotnie: krótki, kręty tor, na przykład 3 km i 16–18 zakrętów. Aerodynamika poprawia kwalifikacje tym bardziej, im więcej zakrętów ma tor, a rywale z mocnym silnikiem mają z niego mniej pożytku.</p>
+<h3>Zespół inżynierów</h3>
+<p>Masz wyraźnie lepszych inżynierów niż konkurencja? Wybierz kręty tor. Tam zużycie opon jest największe – a twoi inżynierowie mocno je ograniczają, podczas gdy rywale muszą wybierać między wolnymi twardymi oponami a miękkimi, które szybko się zużywają.</p>
+
+<h2>Nie zapomnij o paliwie</h2>
+<p>Zalecana ilość paliwa zależy od długości toru i liczby zakrętów. Długi tor wymaga znacznie więcej paliwa: tor o długości 3 km z 8 zakrętami to około 42 litry, a tor o długości 7 km z 6 zakrętami wymaga około 103 litrów. Rywale, którzy nie dostosują ilości paliwa przed twoim domowym wyścigiem, stracą osiągi – ale upewnij się, że sam trafisz w zalecenie widoczne w zakładce Wyścig.</p>
+
+<h2>Rekord toru</h2>
+<p>Każda arena ma własny rekord toru: najszybszy ukończony wyścig na tym konkretnym torze, bez względu na to, który zespół go przejechał. Rekord jest widoczny, gdy oglądasz zespół gospodarza. Zmiana profilu toru oczywiście wpływa na możliwe czasy – krótki tor daje inne rekordy niż długi.</p>
+
+<h2>Podsumowanie</h2>
+<div class="card"><ul>
+<li>Określ najmocniejsze podzespoły i najmocniejszą grupę personelu swojego bolidu.</li>
+<li>Mocny silnik: długi tor z niewielką liczbą zakrętów.</li>
+<li>Mocna aerodynamika i opony: krótki, kręty tor.</li>
+<li>Mocni inżynierowie: kręty tor, na którym decyduje zużycie.</li>
+<li>Zmieniaj z wyprzedzeniem – zmiana dotyczy tylko wyścigów, w których nie odbyły się jeszcze kwalifikacje.</li>
+</ul></div>
+<p>Przeczytaj też <a href="guide-bilutveckling.html">poradnik o rozwoju bolidu</a> i <a href="guide-taktik.html">poradnik taktyczny</a>.</p>
+<div class="card las-mer"><h3>Czytaj dalej</h3><ul><li><a href="vad-ar-en-undercut.html">Czym jest undercut? Taktyka pit stopów, od której gra wzięła nazwę</a></li><li><a href="vanliga-fragor.html">Najczęstsze pytania</a></li><li><a href="guide-nyborjare.html">Poradnik dla początkujących: twoje pierwsze tygodnie jako menedżer</a></li></ul><p><a href="guider.html">Wszystkie poradniki →</a></p></div><div class="card cta"><h2 style="margin-top:0">Wypróbuj z własnym zespołem</h2><p>Undercut Racing Manager jest darmowy i działa bezpośrednio w przeglądarce.</p><a class="knapp" href="../">Graj za darmo</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">O grze</a> &nbsp;·&nbsp; <a href="guider.html">Poradniki</a> &nbsp;·&nbsp; <a href="manual.html">Instrukcja</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Najczęstsze pytania</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Polityka prywatności</a> &nbsp;·&nbsp; <a href="../">Do gry</a>
+<div class="fot-sprak"><a href="../guide-hemmabana.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-hemmabana.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-hemmabana.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-hemmabana.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-hemmabana.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-hemmabana.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-hemmabana.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-hemmabana.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-hemmabana.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>マシン開発 – Undercut Racing Manager</title>
+<meta name="description" content="Undercut Racing Managerの車の5つのパーツについてのガイド。各パーツの役割、アップグレード費用、レギュレーションに合わせた計画、ダメージへの対処法。">
+<link rel="canonical" href="https://undercutmanager.com/ja/guide-bilutveckling.html">
+<link rel="alternate" hreflang="sv" href="https://undercutmanager.com/guide-bilutveckling.html">
+<link rel="alternate" hreflang="en" href="https://undercutmanager.com/en/guide-bilutveckling.html">
+<link rel="alternate" hreflang="de" href="https://undercutmanager.com/de/guide-bilutveckling.html">
+<link rel="alternate" hreflang="fr" href="https://undercutmanager.com/fr/guide-bilutveckling.html">
+<link rel="alternate" hreflang="es" href="https://undercutmanager.com/es/guide-bilutveckling.html">
+<link rel="alternate" hreflang="pl" href="https://undercutmanager.com/pl/guide-bilutveckling.html">
+<link rel="alternate" hreflang="fi" href="https://undercutmanager.com/fi/guide-bilutveckling.html">
+<link rel="alternate" hreflang="hu" href="https://undercutmanager.com/hu/guide-bilutveckling.html">
+<link rel="alternate" hreflang="ja" href="https://undercutmanager.com/ja/guide-bilutveckling.html">
+<link rel="alternate" hreflang="x-default" href="https://undercutmanager.com/guide-bilutveckling.html">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.sprakval { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 13px; }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+.fot-sprak { margin-top: 8px; }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="../"><img src="../assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">ゲームについて</a><a href="guider.html" aria-current="page">ガイド</a><a href="manual.html">マニュアル</a><a href="vanliga-fragor.html">よくある質問</a><a href="integritetspolicy.html">プライバシーポリシー</a><select class="sprakval" aria-label="言語" onchange="try{localStorage.setItem('apexManagerLang',this.options[this.selectedIndex].dataset.l)}catch(e){};location.href=this.value"><option data-l="sv" value="../guide-bilutveckling.html">Svenska</option><option data-l="en" value="../en/guide-bilutveckling.html">English</option><option data-l="de" value="../de/guide-bilutveckling.html">Deutsch</option><option data-l="fr" value="../fr/guide-bilutveckling.html">Français</option><option data-l="es" value="../es/guide-bilutveckling.html">Español</option><option data-l="pl" value="../pl/guide-bilutveckling.html">Polski</option><option data-l="fi" value="../fi/guide-bilutveckling.html">Suomi</option><option data-l="hu" value="../hu/guide-bilutveckling.html">Magyar</option><option data-l="ja" value="../ja/guide-bilutveckling.html" selected>日本語</option></select><a class="knapp" href="../">無料でプレイ</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">ガイド</a> › マシン開発</p>
+<h1>マシン開発：1クローナも無駄にしない強化術</h1>
+<p class="ingress">どのチームも、5つのパーツからなる車を2台持っています。正しく強化できるかどうかが、上へ上がっていくチームと、大金を使っても停滞するチームの分かれ目です。ここではアップグレードの裏にある計算と、よくある落とし穴を見ていきます。</p>
+
+<h2>5つのパーツ</h2>
+<p>車1と車2は完全に別々に強化され、各パーツには0～100のインデックスがあります。パーツが予選とレースに与える影響はそれぞれ異なり、その効果はコースの特性によって変わります。</p>
+<div class="card tabell-scroll"><table>
+<tr><th>パーツ</th><th>予選</th><th>レース</th><th>力を発揮するコース</th></tr>
+<tr><td>エンジン</td><td>中程度</td><td>最大の貢献</td><td>長いコース</td></tr>
+<tr><td>エアロダイナミクス</td><td>最大の貢献</td><td>中程度</td><td>コーナーの多いコース（主に予選）</td></tr>
+<tr><td>タイヤ</td><td>–</td><td>大きな貢献</td><td>コーナーの多いコース</td></tr>
+<tr><td>シャシー</td><td>大きく安定</td><td>大きく安定</td><td>すべてのコース</td></tr>
+<tr><td>ギアボックス</td><td>小さく安定</td><td>中程度で安定</td><td>すべてのコース</td></tr>
+</table></div>
+<p>特に注目すべき点が2つあります。まず、<strong>シャシー</strong>は最も頼れるパーツで、コースを問わず予選でもレースでもしっかり貢献します。次に、<strong>タイヤ</strong>はレースでしか効きません。予選の1周にはまったく影響しませんが、レースを通してペースを保てるかどうかを決めます。</p>
+
+<h2>費用は2乗で増える</h2>
+<p>アップグレード1回でパーツのインデックスは5上がり、費用はアップグレード前のインデックスを基に<strong>20,000 kr + インデックス² × 30</strong>で計算されます。そのため費用は急カーブで上昇します。</p>
+<div class="card tabell-scroll"><table>
+<tr><th>開始インデックス</th><th>次の+5の費用</th></tr>
+<tr><td>0</td><td>20,000 kr</td></tr>
+<tr><td>20</td><td>32,000 kr</td></tr>
+<tr><td>40</td><td>68,000 kr</td></tr>
+<tr><td>60</td><td>128,000 kr</td></tr>
+<tr><td>80</td><td>212,000 kr</td></tr>
+<tr><td>95</td><td>290,750 kr</td></tr>
+</table></div>
+<p>段階を合計すると、差はさらにはっきりします。パーツを0から50まで上げる費用は合計約414,000 krです。同じパーツを最後の25段階、75から100まで上げると約120万krかかります。半分の向上に3倍近い費用がかかるわけです。</p>
+<p>結論はシンプルです。<strong>高く積む前に、広く積む</strong>こと。5つのパーツを60にするほうが、3つを90、2つを20にするよりも、1クローナあたりの性能は通常高くなります。</p>
+
+<h2>新しいチームの優先順位</h2>
+<ol>
+<li><strong>すべてのパーツを底上げする。</strong>インデックス30未満のアップグレードは安いので、ほぼ確実に元が取れます。</li>
+<li><strong>次にシャシーとエンジン</strong>。シャシーはどこでも役立ち、エンジンはポイントが配られるレースで最も効果を発揮します。</li>
+<li><strong>エアロダイナミクスとタイヤ</strong>は、所属グループのコースに合わせて。コーナーの多いコースが多ければ価値が上がります。</li>
+<li><strong>ギアボックス</strong>は最後。貢献は安定していますが最も小さいパーツです。</li>
+</ol>
+<p>車は2台あることを忘れないでください。順位表は両方の車のポイントの合計で決まるため、トップクラスの車1台と弱い車1台のチームは、バランスの取れた2台を持つチームに負けることがよくあります。</p>
+
+<h2>タイミング：アップグレードには1日かかる</h2>
+<p>費用はすぐに引き落とされますが、新しいレベルが反映されるまで1日かかり、各パーツで同時に進められるアップグレードは1つだけです。実際には次の2点がポイントになります。</p>
+<ul>
+<li>水曜の予選に間に合わせたいなら、遅くとも火曜の夜までにアップグレードを始めましょう。</li>
+<li>両方の車の5つのパーツを同時並行で強化できます。予算さえあれば、1日に10回のアップグレードも可能です。</li>
+</ul>
+
+<h2>レギュレーションに合わせて計画する</h2>
+<p>シーズンが終わるたびに新しいレギュレーションが施行され、<strong>全チームの1つのパーツが半分になります</strong>。順番は固定でローテーションします。シーズン2の前にタイヤ、シーズン3の前にエンジン、シーズン4の前にエアロダイナミクス、シーズン5の前にギアボックス、シーズン6の前にシャシーが半分になり、その後また最初に戻ります。</p>
+<p>これはゲームで最も過小評価されている要素のひとつです。シーズン2の終盤に、212,000 krをかけてエンジンを80から85に上げたとしましょう。シーズンが切り替わるとエンジンは半分になり、追加した5段階のうち残るのは2.5だけです。効果が半分なのに全額を払い、しかもコスト曲線で最も高い部分で払ったことになります。</p>
+<p>目安：</p>
+<div class="card"><ul>
+<li>シーズン終盤の数週間は、次に半分になるパーツへの高額なアップグレードを避ける。</li>
+<li>その期間は、ほかの4つのパーツにお金を使う。</li>
+<li>半分になった後はパーツを安く作り直せるので、そこで投資する。</li>
+</ul></div>
+<p>半減は全チームに等しくかかるので、あなたへの罰ではありません。ライバルよりうまく計画する人にとってのチャンスなのです。</p>
+
+<h2>ダメージ――そして攻撃的なスタイルが高くつく理由</h2>
+<p>レースのたびに、0～3台の車がランダムにダメージを受けます。ダメージはパーツの値を10～70％恒久的に下げ、修理の手段はありません。パーツは通常のアップグレードで作り直すしかありません。</p>
+<p>計算例：80のエンジンが30％のダメージを受けると56になります。それを80強まで戻すには約760,000 krかかります。攻撃的なドライビングスタイルのドライバーは、バランス型や守備的なドライバーに比べて車を壊すリスクがかなり高くなります。特に車の維持費がすでに高い場合は、ドライバー選びの際にこのリスクを考慮しましょう。</p>
+<p>ちょっとした慰めとして、アップグレードはインデックスが低いほど安いので、作り直しは常に同じ段階を最初に積み上げたときより安く済みます。</p>
+
+<h2>まとめ</h2>
+<div class="card"><ul>
+<li>広く積む：最も弱いパーツから上げる。</li>
+<li>シャシーとエンジンは、ほとんどの状況で最も効果が大きい。</li>
+<li>2台の車をバランスよく保つ。</li>
+<li>アップグレードは遅くとも予選の前日までに始める。</li>
+<li>次のシーズン切り替えで半分になるパーツへの投資は控える。</li>
+<li>ダメージを想定し、ドライバーのドライビングスタイルも考える。</li>
+</ul></div>
+<p>コースによってどのパーツが得になるかを知りたい方は、<a href="guide-hemmabana.html">ホームコースガイド</a>と<a href="guide-taktik.html">戦術ガイド</a>をお読みください。</p>
+<div class="card las-mer"><h3>続けて読む</h3><ul><li><a href="guide-personal.html">ドライバー、メカニック、エンジニア：チームの作り方</a></li><li><a href="guide-ekonomi.html">財務ガイド：予算、スポンサー契約、賞金</a></li><li><a href="guide-kontrakt.html">契約と移籍市場：交渉、獲得、売却</a></li></ul><p><a href="guider.html">すべてのガイド →</a></p></div><div class="card cta"><h2 style="margin-top:0">自分のチームで試してみよう</h2><p>Undercut Racing Managerは無料で、ブラウザだけで遊べます。</p><a class="knapp" href="../">無料でプレイ</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">ゲームについて</a> &nbsp;·&nbsp; <a href="guider.html">ガイド</a> &nbsp;·&nbsp; <a href="manual.html">マニュアル</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">よくある質問</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">プライバシーポリシー</a> &nbsp;·&nbsp; <a href="../">ゲームへ</a>
+<div class="fot-sprak"><a href="../guide-bilutveckling.html" hreflang="sv" lang="sv">Svenska</a> &nbsp;·&nbsp; <a href="../en/guide-bilutveckling.html" hreflang="en" lang="en">English</a> &nbsp;·&nbsp; <a href="../de/guide-bilutveckling.html" hreflang="de" lang="de">Deutsch</a> &nbsp;·&nbsp; <a href="../fr/guide-bilutveckling.html" hreflang="fr" lang="fr">Français</a> &nbsp;·&nbsp; <a href="../es/guide-bilutveckling.html" hreflang="es" lang="es">Español</a> &nbsp;·&nbsp; <a href="../pl/guide-bilutveckling.html" hreflang="pl" lang="pl">Polski</a> &nbsp;·&nbsp; <a href="../fi/guide-bilutveckling.html" hreflang="fi" lang="fi">Suomi</a> &nbsp;·&nbsp; <a href="../hu/guide-bilutveckling.html" hreflang="hu" lang="hu">Magyar</a> &nbsp;·&nbsp; <a href="../ja/guide-bilutveckling.html" hreflang="ja" lang="ja">日本語</a></div></footer>
+</body>
+</html>
