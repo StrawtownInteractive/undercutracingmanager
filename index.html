@@ -3007,10 +3007,6 @@
 
         <!-- FLIK: Lagsida (används för både eget och motståndares lag) -->
         <div id="tab-lagsida" class="tab-content">
-            <!-- Tillbaka för Lagsidans huvudvyer (undersidor har egna knappar), se renderLagsida(). -->
-            <div id="ls-tillbaka-rad" style="display:none;">
-                <button class="btn-small btn-secondary" style="width:auto; margin-bottom:10px;" onclick="tillbaka(() => bytFlik('team'))" data-i18n="appTillbaka">Tillbaka</button>
-            </div>
             <div class="subnav-layout">
             <div class="subnav-tabs" style="display:none;">
                 <button id="ls-sub-oversikt-btn" class="active" onclick="bytSubflik('lagsida', 'oversikt')" data-i18n="appOversikt">Översikt</button>
@@ -3637,6 +3633,10 @@
                 </div>
                 <button class="btn-blue" onclick="tillbaka(() => stangPrincipalPane())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
+            </div>
+            <!-- Tillbaka för Lagsidans huvudvyer (undersidor har egna knappar), se renderLagsida(). -->
+            <div id="ls-tillbaka-rad" style="display:none;">
+                <button class="btn-blue" onclick="tillbaka(() => bytFlik('team'))" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
         </div>
 
@@ -4298,7 +4298,6 @@
             <!-- DETALJVY: en egen sida per race, öppnas via visaRaceSida(raceNr)
                  när man klickar ett race i listan ovan. -->
             <div id="race-detalj-vy" style="display:none;">
-            <button class="btn-small btn-secondary" style="width:auto; margin-bottom:10px;" onclick="tillbaka(visaRaceListan)" data-i18n="appTillbaka">Tillbaka</button>
             <!-- Racerapportens ordning: pallen överst, sedan loppresultatet, sist resten. -->
             <div class="card" id="race-podium-card" style="display:none;">
                 <div id="race-podium"></div>
@@ -4425,6 +4424,7 @@
                 </div>
             </div>
 
+            <button class="btn-blue" onclick="tillbaka(visaRaceListan)" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
         </div>
 
@@ -4788,7 +4788,6 @@
 
         <!-- FLIK: Mitt konto (nås via användarnamnet uppe till höger) -->
         <div id="tab-konto" class="tab-content">
-            <button class="btn-small btn-secondary" style="width:auto; margin-bottom:10px;" onclick="tillbaka(() => bytFlik('team'))" data-i18n="appTillbaka">Tillbaka</button>
             <div class="subnav-layout">
             <div class="subnav-tabs">
                 <button id="konto-sub-profil-btn" onclick="bytSubflik('konto', 'profil')" data-i18n="kontoSubProfil">Min profil</button>
@@ -5089,6 +5088,7 @@
                 </div>
             </div>
             </div>
+            <button class="btn-blue" onclick="tillbaka(() => bytFlik('team'))" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
         </div>
     </div>
 
