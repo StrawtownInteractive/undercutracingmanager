@@ -2919,7 +2919,7 @@
                  bytFlik('arena') fortfarande hittar den. -->
             <button id="tab-arena-btn" style="display:none;" onclick="bytArenaVy('oversikt'); bytFlik('arena'); renderArenaListaTab()" data-i18n="appArena">Arena</button>
             <button id="tab-ekonomi-btn" onclick="bytFlik('ekonomi')" data-i18n="appEkonomi">Ekonomi</button>
-            <button id="tab-serie-btn" onclick="bytFlik('serie')" data-i18n="appSerie">Serie</button>
+            <button id="tab-serie-btn" onclick="visaEgenSerie(); bytFlik('serie')" data-i18n="appSerie">Serie</button>
             <button id="tab-marknad-btn" onclick="bytFlik('marknad')" data-i18n="appMarknad">Marknad</button>
             <button id="tab-race-btn" onclick="visaRaceListan()" data-i18n="appRace">Race</button>
             <button id="tab-manual-btn" onclick="bytFlik('manual')" data-i18n="appManual">Manual</button>
@@ -3007,6 +3007,10 @@
 
         <!-- FLIK: Lagsida (används för både eget och motståndares lag) -->
         <div id="tab-lagsida" class="tab-content">
+            <!-- Tillbaka för Lagsidans huvudvyer (undersidor har egna knappar), se renderLagsida(). -->
+            <div id="ls-tillbaka-rad" style="display:none;">
+                <button class="btn-small btn-secondary" style="width:auto; margin-bottom:10px;" onclick="tillbaka(() => bytFlik('team'))" data-i18n="appTillbaka">Tillbaka</button>
+            </div>
             <div class="subnav-layout">
             <div class="subnav-tabs" style="display:none;">
                 <button id="ls-sub-oversikt-btn" class="active" onclick="bytSubflik('lagsida', 'oversikt')" data-i18n="appOversikt">Översikt</button>
@@ -3163,7 +3167,7 @@
 
             <div id="ls-pane-bil" class="ls-pane">
                 <div class="card" id="bil-profil-innehall"></div>
-                <button class="btn-blue" onclick="stangBilProfil()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangBilProfil())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-trofeer" class="ls-pane">
@@ -3171,7 +3175,7 @@
                     <h3 data-i18n="appTrofeskap">Troféskåp</h3>
                     <div id="ls-trofeer-lista"></div>
                 </div>
-                <button class="btn-blue" onclick="stangTrofeer()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangTrofeer())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <!-- Underflik: Head-to-head (endast när man besöker ett annat lags Lagsida) -->
@@ -3299,7 +3303,7 @@
                     </table>
                     </div>
                 </div>
-                <button class="btn-blue" id="forberedelsetraning-tillbaka" onclick="stangForberedelsetraningTillProfil()" style="margin-top: 10px; display:none;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" id="forberedelsetraning-tillbaka" onclick="tillbaka(() => stangForberedelsetraningTillProfil())" style="margin-top: 10px; display:none;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <!-- Underflik: Kontrakt (endast för din egen Lagsida) -->
@@ -3395,7 +3399,7 @@
                 <button class="btn-green" id="pp-salj-btn" style="display:none;" data-i18n="appLaggUtTillForsaljning">Lägg ut till försäljning</button>
                 <button class="btn-blue" id="pp-bud-btn" style="display:none;" data-i18n="appLaggBud">Lägg bud</button>
                 <button class="btn-danger" id="pp-sparka-btn" style="display:none;" data-i18n="appSparkaPersonen">Sparka personen</button>
-                <button class="btn-blue" onclick="stangPersonPane()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangPersonPane())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-person-rekord" class="ls-pane">
@@ -3441,7 +3445,7 @@
                     </div>
                     <p id="ppm-tom-text" style="display:none; color:var(--text-muted);" data-i18n="appJamforMarknadsprisTomt">Inga tidigare marknadsaffärer för liknande personer hittades ännu.</p>
                 </div>
-                <button class="btn-blue" onclick="stangMarknadsjamforelse()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangMarknadsjamforelse())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <!-- "Träningshistorik" – egen undersida (samma mönster som Jämför
@@ -3457,7 +3461,7 @@
                     </div>
                 </div>
                 <div class="card" id="ppt-innehall"></div>
-                <button class="btn-blue" onclick="stangPersonTraningshistorik()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangPersonTraningshistorik())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-person-karriar" class="ls-pane">
@@ -3498,7 +3502,7 @@
                     <h3 data-i18n="appTrofeskap">Troféskåp</h3>
                     <div id="ppt-trofeer-innehall"></div>
                 </div>
-                <button class="btn-blue" onclick="stangPersonKarriaroversikt()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangPersonKarriaroversikt())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-personal-karriar" class="ls-pane">
@@ -3515,7 +3519,7 @@
                     <h3 data-i18n="appKarriaroversikt">Karriäröversikt</h3>
                     <div class="marknad-stats-grid" id="pnk-karriar-grid"></div>
                 </div>
-                <button class="btn-blue" onclick="stangPersonalKarriaroversikt()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangPersonalKarriaroversikt())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-personal-historik" class="ls-pane">
@@ -3538,7 +3542,7 @@
                     </table>
                     </div>
                 </div>
-                <button class="btn-blue" onclick="stangPersonalKarriarhistorik()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangPersonalKarriarhistorik())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-rivaler" class="ls-pane">
@@ -3553,7 +3557,7 @@
                     </div>
                     <p id="ls-rivaler-tom-text" style="display:none; color:var(--text-muted);" data-i18n="appRivalerTomt">Inga rivaler än – du har inte friköpt någon spelare eller personal från ett annat lag.</p>
                 </div>
-                <button class="btn-blue" onclick="stangRivaler()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangRivaler())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-raceschema" class="ls-pane">
@@ -3566,7 +3570,7 @@
                     </table>
                     </div>
                 </div>
-                <button class="btn-blue" onclick="stangLagRaceschema()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangLagRaceschema())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-transferhistorik" class="ls-pane">
@@ -3580,7 +3584,7 @@
                     </table>
                     </div>
                 </div>
-                <button class="btn-blue" onclick="stangTransferhistorik()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangTransferhistorik())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-karriarshistorik" class="ls-pane">
@@ -3595,7 +3599,7 @@
                     </div>
                     <p id="ls-karriarshistorik-tom-text" style="display:none; color:var(--text-muted);" data-i18n="appLagetsKarriarhistorikTomt">Historiken börjar fyllas på från och med nästa säsongsskifte.</p>
                 </div>
-                <button class="btn-blue" onclick="stangKarriarshistorik()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangKarriarshistorik())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="ls-pane-principal" class="ls-pane">
@@ -3631,7 +3635,7 @@
                     <h3 data-i18n="appAktivtKontrakt">Aktivt kontrakt</h3>
                     <div class="contract-ui"><div id="tp-kontrakt-innehall"></div></div>
                 </div>
-                <button class="btn-blue" onclick="stangPrincipalPane()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+                <button class="btn-blue" onclick="tillbaka(() => stangPrincipalPane())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
             </div>
         </div>
@@ -3675,7 +3679,7 @@
                 <p style="font-size:13px; color:#aaa; margin-top:0;"><span data-i18n="arenaBytNamnPrefix">Döp om din hemmabana till vad du vill (Kostnad:</span> <span id="arena-byt-namn-kostnad-text">100 000 kr</span><span data-i18n="arenaBytNamnSuffix">).</span></p>
                 <button class="btn-blue" id="arena-byt-namn-btn" onclick="bytArenaNamn()" data-i18n="appBytNamnPaArenan100000Kr">Byt namn på arenan (100 000 kr)</button>
             </div>
-            <button class="btn-blue" onclick="bytArenaVy('oversikt')" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+            <button class="btn-blue" onclick="tillbaka(() => bytArenaVy('oversikt'))" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="arena-pane-konfigurera" class="ls-pane">
@@ -3691,12 +3695,12 @@
                 <p style="font-size:12px; color:#aaa; margin:2px 0 10px;"><span data-i18n="arenaSvarighetsgradPrefix">Svårighetsgrad med dessa värden:</span> <strong id="hemmabana-svarighet-forhandsvisning">-</strong> / 10</p>
                 <button class="btn-blue" onclick="sparaHemmabana()" data-i18n="appSparaHemmabana">Spara hemmabana</button>
             </div>
-            <button class="btn-blue" onclick="bytArenaVy('oversikt')" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+            <button class="btn-blue" onclick="tillbaka(() => bytArenaVy('oversikt'))" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
 
             <div id="arena-pane-detalj" class="ls-pane">
             <div class="card" id="arena-detalj-innehall"></div>
-            <button class="btn-blue" onclick="stangArenaDetalj()" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
+            <button class="btn-blue" onclick="tillbaka(() => stangArenaDetalj())" style="margin-top: 10px;" data-i18n="appTillbaka">Tillbaka</button>
             </div>
         </div>
 
@@ -4294,6 +4298,7 @@
             <!-- DETALJVY: en egen sida per race, öppnas via visaRaceSida(raceNr)
                  när man klickar ett race i listan ovan. -->
             <div id="race-detalj-vy" style="display:none;">
+            <button class="btn-small btn-secondary" style="width:auto; margin-bottom:10px;" onclick="tillbaka(visaRaceListan)" data-i18n="appTillbaka">Tillbaka</button>
             <!-- Racerapportens ordning: pallen överst, sedan loppresultatet, sist resten. -->
             <div class="card" id="race-podium-card" style="display:none;">
                 <div id="race-podium"></div>
@@ -4430,7 +4435,7 @@
                 <h3 data-i18n="appAnstallMekanikerRubrik">Anställ mekaniker</h3>
                 <button class="btn-green" id="ls-mek-anstall-btn" onclick="anstallPersonal('mekaniker')" data-i18n="appAnstallMekaniker100000Kr">Anställ Mekaniker (100 000 kr)</button>
             </div>
-            <button class="btn-blue" onclick="stangAnstallMekaniker()" data-i18n="appTillbaka">Tillbaka</button>
+            <button class="btn-blue" onclick="tillbaka(() => stangAnstallMekaniker())" data-i18n="appTillbaka">Tillbaka</button>
         </div>
 
         <!-- FLIK: Anställ förare (nås via länken på Lagsida -> Förare,
@@ -4441,7 +4446,7 @@
                 <p style="margin-top:0;"><span data-i18n="lsVarvaNyForarePrefix">Värva en ny förare direkt till reservbänken (utanför transfermarknaden):</span> <strong id="marknad-forar-namn">-</strong><br><span data-i18n="lsVarvaNyForareKostnad">Kostnad: 100 000 kr</span></p>
                 <button class="btn-blue" onclick="vårvaForare()" data-i18n="appVarvaNyForare">Värva Ny Förare</button>
             </div>
-            <button class="btn-blue" onclick="stangAnstallForare()" data-i18n="appTillbaka">Tillbaka</button>
+            <button class="btn-blue" onclick="tillbaka(() => stangAnstallForare())" data-i18n="appTillbaka">Tillbaka</button>
         </div>
 
         <!-- FLIK: Anställ ingenjör (nås via länken på Lagsida -> Ingenjör,
@@ -4457,7 +4462,7 @@
                 </select>
                 <button class="btn-green" id="ls-ing-anstall-btn" onclick="anstallPersonal('ingenjor')" data-i18n="appAnstallIngenjor100000Kr">Anställ Ingenjör (100 000 kr)</button>
             </div>
-            <button class="btn-blue" onclick="stangAnstallIngenjor()" data-i18n="appTillbaka">Tillbaka</button>
+            <button class="btn-blue" onclick="tillbaka(() => stangAnstallIngenjor())" data-i18n="appTillbaka">Tillbaka</button>
         </div>
 
         <!-- FLIK: Kontraktsförhandling (nås via "Förhandla kontrakt/förlängning" på Lagsida,
@@ -4783,6 +4788,7 @@
 
         <!-- FLIK: Mitt konto (nås via användarnamnet uppe till höger) -->
         <div id="tab-konto" class="tab-content">
+            <button class="btn-small btn-secondary" style="width:auto; margin-bottom:10px;" onclick="tillbaka(() => bytFlik('team'))" data-i18n="appTillbaka">Tillbaka</button>
             <div class="subnav-layout">
             <div class="subnav-tabs">
                 <button id="konto-sub-profil-btn" onclick="bytSubflik('konto', 'profil')" data-i18n="kontoSubProfil">Min profil</button>
@@ -6267,7 +6273,7 @@
                 let onskadLangd = formaga >= 75 ? 2 : (formaga >= 50 ? 3 : 4);
                 let villVaraForsta = formaga >= 70 && (driver.age || 20) <= 30;
                 let onskadReleaseClause = avrunda10k(forvantad * (villVaraForsta ? 6 : 4));
-                return { forvantadLon: Math.max(forvantad, minsta), minLon: minsta, onskadLangd: onskadLangd, villVaraForsta: villVaraForsta, onskadReleaseClause: onskadReleaseClause };
+                return { roll: 'forare', forvantadLon: Math.max(forvantad, minsta), minLon: minsta, onskadLangd: onskadLangd, villVaraForsta: villVaraForsta, onskadReleaseClause: onskadReleaseClause };
             }
 
             function berakaStabKrav(person, lag, tier, roll) {
@@ -6276,7 +6282,7 @@
                 let forvantad = bas;
                 let minsta = avrunda10k(bas * 0.85);
                 if (c && c.aiInterest) { forvantad = Math.max(forvantad, avrunda10k(c.aiInterest.lon * 1.05)); minsta = Math.max(minsta, c.aiInterest.lon); }
-                return { forvantadLon: Math.max(forvantad, minsta), minLon: minsta, onskadLangd: 3, villVaraForsta: false, onskadReleaseClause: avrunda10k(forvantad * 2.5) };
+                return { roll: roll, forvantadLon: Math.max(forvantad, minsta), minLon: minsta, onskadLangd: 3, villVaraForsta: false, onskadReleaseClause: avrunda10k(forvantad * 2.5) };
             }
 
             // ---------------------------------------------------------------
@@ -6316,7 +6322,8 @@
 
                 let lonSpann = Math.max(1, krav.forvantadLon - krav.minLon);
                 let lonRatio = (erbjudande.salaryPerSeason - krav.minLon) / lonSpann;
-                lagg('Lön i förhållande till förarens krav', Math.max(-30, Math.min(35, (lonRatio - 0.5) * 50)));
+                let kravAgare = { forare: 'förarens', principal: 'Team Principalens', mekaniker: 'mekanikerns', ingenjor: 'ingenjörens' }[krav.roll] || 'personens';
+                lagg('Lön i förhållande till ' + kravAgare + ' krav', Math.max(-30, Math.min(35, (lonRatio - 0.5) * 50)));
                 if (erbjudande.salaryPerSeason < krav.minLon) lagg('Lönen ligger under lägstanivån', -20);
 
                 let langdDiff = (erbjudande.contractLength || 1) - krav.onskadLangd;
@@ -6330,6 +6337,9 @@
                 if (krav.villVaraForsta) {
                     if (erbjudande.firstDriverStatus) lagg('Får efterfrågad förstaförarstatus', 10);
                     else lagg('Nekas förstaförarstatus', -10);
+                } else if (erbjudande.firstDriverStatus) {
+                    // Även en förare som inte kräver det uppskattar att bli lagets förstaförare.
+                    lagg('Erbjuds förstaförarstatus', 5);
                 }
 
                 if (erbjudande.releaseClause > 0) {
@@ -6355,7 +6365,9 @@
                 if (person.contract && person.contract.relation !== undefined) {
                     lagg('Relation till laget', Math.round((person.contract.relation - 50) / 5));
                 }
-                if (lag.teamPrincipal && lag.teamPrincipal.stats && lag.teamPrincipal.stats.forhandling !== undefined) {
+                // Förhandlar man om Team Principalens eget kontrakt är det inte hen som
+                // förhandlar för laget – då räknas inte hens förhandlingsskicklighet.
+                if (krav.roll !== 'principal' && lag.teamPrincipal && lag.teamPrincipal.stats && lag.teamPrincipal.stats.forhandling !== undefined) {
                     lagg('Team Principalens förhandlingsskicklighet', (lag.teamPrincipal.stats.forhandling - 50) / 5);
                 }
 
@@ -6367,7 +6379,7 @@
                 let motbud = Object.assign({}, erbjudande);
                 motbud.salaryPerSeason = avrunda10k(Math.max(erbjudande.salaryPerSeason * 1.08, (erbjudande.salaryPerSeason + krav.forvantadLon) / 2));
                 motbud.contractLength = krav.onskadLangd;
-                if ('firstDriverStatus' in erbjudande) motbud.firstDriverStatus = krav.villVaraForsta;
+                if ('firstDriverStatus' in erbjudande) motbud.firstDriverStatus = krav.villVaraForsta || !!erbjudande.firstDriverStatus;
                 if ('releaseClause' in erbjudande && erbjudande.releaseClause) motbud.releaseClause = Math.min(erbjudande.releaseClause, krav.onskadReleaseClause);
                 return motbud;
             }
@@ -10414,8 +10426,12 @@
         function sparaVyForOmladdning(v) {
             try { sessionStorage.setItem(VY_SESSION_KEY, JSON.stringify(v)); } catch (e) {}
         }
+        // urmDjup = antal steg bakåt som finns i spelets egen historik (0 = första
+        // vyn), så att spelets Tillbaka-knappar vet om history.back() stannar i spelet.
+        function historikDjup() { return (history.state && history.state.urmDjup) || 0; }
         function historikSatt(v, ny) {
-            try { if (ny) history.pushState({ urmVy: v }, ''); else history.replaceState({ urmVy: v }, ''); } catch (e) {}
+            let djup = historikDjup();
+            try { if (ny) history.pushState({ urmVy: v, urmDjup: djup + 1 }, ''); else history.replaceState({ urmVy: v, urmDjup: djup }, ''); } catch (e) {}
             sparaVyForOmladdning(v);
         }
 
@@ -10427,9 +10443,23 @@
             if (!v) return;
             if (vyNyckel(v) !== vyNyckel(historikVy())) historikSatt(v, false);
         }
+        // Spelets Tillbaka-knappar: ett steg bakåt i samma historik som webbläsarens
+        // bakåtknapp, så att flera steg i rad (t.ex. Serietabell → Lagsida → profil)
+        // går tillbaka i rätt ordning. Finns inget tidigare steg körs reserv() –
+        // sidans gamla, fasta tillbaka-beteende.
+        let tillbakaPagarTill = 0;
+        function tillbaka(reserv) {
+            if (historikDjup() > 0) {
+                tillbakaPagarTill = Date.now() + 700;
+                history.back();
+                return;
+            }
+            if (typeof reserv === 'function') reserv();
+        }
         // Efter klicket: ny vy → nytt historiksteg.
         function historikEfterHandling() {
             if (historikAterstaller) return;
+            if (Date.now() < tillbakaPagarTill) return; // klicket var en Tillbaka – popstate sköter vyn
             let v = aktuellVy();
             if (!v) return;
             let forra = historikVy();
@@ -10445,6 +10475,17 @@
             }, false);
         });
 
+        function vyPersonFinns(k) {
+            if (!k) return false;
+            if (k.teamlos) {
+                if (k.teamlosTyp === 'friagent') return (spelarData.friaAgenter || []).some(a => a.id === k.id);
+                if (k.teamlosTyp === 'auktion') return (spelarData.marknad || []).some(a => a.id === k.id);
+                return true;
+            }
+            let grupp = spelarData.tabeller[k.groupId || lsGroupId];
+            let lag = grupp ? grupp.find(l => l.namn === (k.lagNamn || lsLagNamn)) : null;
+            return !!(lag && hittaPerson(lag, k.kategori, k.id));
+        }
         function aterstallVy(v) {
             historikAterstaller = true;
             try {
@@ -10458,6 +10499,7 @@
                 arenaDetaljLagId = v.ar || null;
                 if (v.vs && GROUP_DEFS[v.vs]) spelarData.visadSerieId = v.vs;
                 if (f === 'lagsida' && !hamtaVisatLag()) { lsGroupId = spelarData.serieId; lsLagNamn = hamtaSpelarLag().namn; subflikar.lagsida = 'oversikt'; }
+                if (f === 'lagsida' && /^person/.test(subflikar.lagsida || '') && !vyPersonFinns(lsPersonKontext)) { lsPersonKontext = null; subflikar.lagsida = 'oversikt'; }
                 if (f === 'race') {
                     if (v.rd && v.rd[0]) visaRaceSida(v.rd[0], v.rd[1] || undefined, v.rd[2] || undefined);
                     else visaRaceListan();
@@ -10582,9 +10624,9 @@
                         { label: tt('Ekonomisk historik', 'Financial history'), onclick: "bytFlik('ekonomi'); bytSubflik('ekonomi', 'historik')" }
                     ],
                     'tab-serie-btn': [
-                        { label: tt('Serietabell', 'Standings'), onclick: "bytFlik('serie'); bytSubflik('serie', 'tabell')" },
-                        { label: tt('Statistik', 'Statistics'), onclick: "bytFlik('serie'); bytSubflik('serie', 'statistik')" },
-                        { label: tt('Gamla serietabeller', 'Old final tables'), onclick: "bytFlik('serie'); bytSubflik('serie', 'gamlatabeller')" }
+                        { label: tt('Serietabell', 'Standings'), onclick: "visaEgenSerie(); bytFlik('serie'); bytSubflik('serie', 'tabell')" },
+                        { label: tt('Statistik', 'Statistics'), onclick: "visaEgenSerie(); bytFlik('serie'); bytSubflik('serie', 'statistik')" },
+                        { label: tt('Gamla serietabeller', 'Old final tables'), onclick: "visaEgenSerie(); bytFlik('serie'); bytSubflik('serie', 'gamlatabeller')" }
                     ],
                     'tab-marknad-btn': [
                         { label: tt('Översikt', 'Overview'), onclick: "bytFlik('marknad'); bytSubflik('marknad', 'oversikt')" },
@@ -11848,6 +11890,12 @@
                 });
             }
             sel.value = spelarData.visadSerieId;
+        }
+
+        // Serie öppnad från toppmenyn: börja alltid i det egna lagets serie,
+        // inte i den serie man senast bläddrade till.
+        function visaEgenSerie() {
+            if (spelarData && spelarData.serieId && spelarData.visadSerieId !== spelarData.serieId) bytVisadSerie(spelarData.serieId);
         }
 
         function bytVisadSerie(groupId) {
@@ -13651,6 +13699,8 @@
             if (subflikar.lagsida === 'h2h' && egetLag) subflikar.lagsida = 'oversikt';
             if (subflikar.lagsida === 'statistik' && egetLag) subflikar.lagsida = 'oversikt';
 
+            let lsTillbakaRad = document.getElementById('ls-tillbaka-rad');
+            if (lsTillbakaRad) lsTillbakaRad.style.display = ['oversikt', 'forare', 'mekaniker', 'ingenjor', 'bilar', 'h2h', 'statistik', 'traning', 'scouting', 'kontrakt'].includes(subflikar.lagsida) || (subflikar.lagsida === 'forberedelsetraning' && !subflikar._forberedelseFranProfil) ? '' : 'none';
             ['oversikt', 'forare', 'mekaniker', 'ingenjor', 'bilar', 'trofeer', 'h2h', 'statistik', 'traning', 'scouting', 'forberedelsetraning', 'kontrakt'].forEach(s => {
                 let btn = document.getElementById('ls-sub-' + s + '-btn');
                 if (btn) btn.classList.toggle('active', subflikar.lagsida === s);
@@ -15096,7 +15146,8 @@
                     { id: 'forare', label: tt('Förare', 'Drivers') },
                     { id: 'ingenjor', label: tt('Ingenjörer', 'Engineers') },
                     { id: 'mekaniker', label: tt('Mekaniker', 'Mechanics') },
-                    { id: 'expiring', label: tt('Går ut snart', 'Expiring Soon') }
+                    { id: 'expiring', label: tt('Går ut snart', 'Expiring Soon') },
+                    { id: 'erbjuden', label: tt('Erbjudande skickat', 'Offer sent') }
                 ];
                 filterbar.innerHTML = filters.map(f => `<button class="${kontraktFilter === f.id ? 'active' : ''}" onclick="bytKontraktFilter('${f.id}')">${f.label}</button>`).join('');
             }
@@ -15112,6 +15163,8 @@
             else if (kontraktFilter === 'mekaniker') rader = rader.filter(r => r.roll === 'mekaniker');
             else if (kontraktFilter === 'ingenjor') rader = rader.filter(r => r.roll === 'ingenjor');
             else if (kontraktFilter === 'expiring') rader = rader.filter(r => r.p.contract.contractYearsRemaining <= 1 && r.p.contract.contractStatus !== 'Free Agent');
+            // Max ett erbjudande per person och säsong – samma spärr som i oppnaForhandling().
+            else if (kontraktFilter === 'erbjuden') rader = rader.filter(r => r.p.senasteErbjudandeSasong === spelarData.sasong);
 
             let sortSel = document.getElementById('kontrakt-sortering');
             let sortVal = sortSel ? sortSel.value : 'lonHog';
@@ -15126,12 +15179,15 @@
 
             let body = document.getElementById('kontrakt-body');
             if (!body) return;
-            if (rader.length === 0) { body.innerHTML = '<tr><td colspan="7" style="color:#8FA3B8;">' + tt('Inga kontrakt matchar filtret.', 'No contracts match the filter.') + '</td></tr>'; return; }
+            if (rader.length === 0) { body.innerHTML = '<tr><td colspan="7" style="color:#8FA3B8;">' + (kontraktFilter === 'erbjuden' ? tt('Du har inte gett någon i truppen ett erbjudande den här säsongen.', 'You haven\'t made an offer to anyone on your roster this season.') : tt('Inga kontrakt matchar filtret.', 'No contracts match the filter.')) + '</td></tr>'; return; }
             body.innerHTML = rader.map(r => {
                 let c = r.p.contract;
                 let namnCell = r.roll === 'principal'
                     ? `${avatarHTML(r.p, 'principal', 22, spelarLag)}<span class="team-link" onclick="oppnaPrincipalPane('${spelarLag.lagId}')">${r.p.namn}</span>`
                     : `${avatarHTML(r.p, r.roll, 22, spelarLag)}<span class="team-link" onclick="visaPersonGlobal('${r.roll}','${r.p.id}','${spelarData.serieId}','${escNamn(spelarLag.namn)}')">${r.p.namn}</span>`;
+                if (r.p.senasteErbjudandeSasong === spelarData.sasong) {
+                    namnCell += ` <span class="tag-badge" title="${tt('Har redan fått ett erbjudande av dig den här säsongen – du kan ge ett nytt nästa säsong.', 'Has already received an offer from you this season – you can make a new one next season.')}">${tt('Erbjuden', 'Offered')}</span>`;
+                }
                 let actionCell = r.roll === 'principal'
                     ? `<button class="btn-blue btn-small" style="width:auto;" onclick="oppnaPrincipalPane('${spelarLag.lagId}')">${tt('Hantera', 'Manage')}</button>`
                     : `<button class="btn-blue btn-small" style="width:auto;" onclick="visaPersonGlobal('${r.roll}','${r.p.id}','${spelarData.serieId}','${escNamn(spelarLag.namn)}')">${tt('Hantera', 'Manage')}</button>`;
@@ -15196,7 +15252,7 @@
 
         function avslutaForhandling() {
             aktivForhandling = null;
-            bytFlik(foregaendeFlik);
+            tillbaka(() => bytFlik(foregaendeFlik));
         }
 
         // "Anställ mekaniker" är en egen sida (samma mönster som Förhandling),
@@ -15322,7 +15378,7 @@
                 html += `<p style="color:#22C55E; font-weight:bold;">${tt('{namn} accepterade erbjudandet!', '{namn} accepted the offer!').replaceAll('{namn}', p.namn)}</p>`;
             } else if (res.utfall === 'motbud') {
                 html += `<p style="color:#1D9BF0; font-weight:bold;">${tt('{namn} accepterar inte erbjudandet som det ser ut just nu.', '{namn} won\'t accept the offer as it stands right now.').replaceAll('{namn}', p.namn)}</p>`;
-                let extra = ('firstDriverStatus' in res.motbud) ? (res.motbud.firstDriverStatus ? tt(' och kräver förstaförarstatus', ' and requires first-driver status') : '') : '';
+                let extra = ('firstDriverStatus' in res.motbud) ? (res.motbud.firstDriverStatus && aktivForhandling.krav.villVaraForsta ? tt(' och kräver förstaförarstatus', ' and requires first-driver status') : '') : '';
                 html += `<p>${tt('Motbud:', 'Counter-offer:')} ${krV(res.motbud.salaryPerSeason)} ${tt('per vecka', 'per week')}${extra}, ${res.motbud.contractLength} ${tt('säsonger', 'seasons')}.</p>`;
                 html += `<button class="btn-blue" onclick="acceptaMotbud()">${tt('Acceptera motbud', 'Accept counter-offer')}</button>`;
             } else if (res.utfall === 'avvisa') {
