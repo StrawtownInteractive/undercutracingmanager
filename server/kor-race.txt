@@ -109,10 +109,23 @@ import { createClient } from "npm:@supabase/supabase-js@2";
         });
         return Math.round(s / lista.length);
     }
+    // Summan av förmågan hos bilens mekaniker respektive ingenjörer (inte
+    // snittet): 80 + 10 = 90, 5 × 80 = 400. Inget tak. Chefen räknas med +20 %
+    // på sin egen förmåga (högst 100 för honom). Bil utan personal = 10.
+    function summaFormagaMedChef(lista, chefId) {
+        if (!lista || lista.length === 0) return 10;
+        let s = 0;
+        lista.forEach(p => {
+            let f = p.formaga || 0;
+            if (chefId && p.id === chefId) f = Math.min(100, Math.round(f * 1.2));
+            s += f;
+        });
+        return s;
+    }
     function personalFormagaForBil(lag, bilNr) {
         let mek = (lag.mekanikerLista || []).filter(p => p.bil === bilNr && !p.extra);
         let ing = (lag.ingenjorLista || []).filter(p => p.bil === bilNr && !p.extra);
-        return { mek: snittFormagaMedChef(mek, lag.chefMekanikerId), ing: snittFormagaMedChef(ing, lag.chefIngenjorId) };
+        return { mek: summaFormagaMedChef(mek, lag.chefMekanikerId), ing: summaFormagaMedChef(ing, lag.chefIngenjorId) };
     }
 
     // ---------------------------------------------------------------
@@ -331,7 +344,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
         BRANSLE_OVERVIKT_FAKTOR, BRANSLE_SPARKORNING_FAKTOR, BRANSLE_DNF_FAKTOR,
         DACK_ALTERNATIV, DACK_EFFEKT, POANGSTABELL, STRATEGIER, SKADE_VIKT_STIL,
         forarForBil, forarReserver, arForareSkadad, forarForBilIRacet, nastaRaceNyckel, bilParts,
-        snittFormagaMedChef, personalFormagaForBil,
+        snittFormagaMedChef, summaFormagaMedChef, personalFormagaForBil,
         beraknaRekommenderatBransle, hamtaBransleForLag, beraknaBransleEffekt,
         komponentBidrag, standardTaktik, beraknaTaktikBidrag, slumpaTaktikVarden,
         simuleraForarPrestation, beraknaBilPoang, slumpBrus, slumpaStrategi, berakaDepaBonus,
