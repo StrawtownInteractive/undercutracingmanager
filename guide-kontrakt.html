@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6674737196022137">
+<title>Kontrakt och transfermarknad – Undercut Racing Manager</title>
+<meta name="description" content="Så förhandlar du kontrakt, skyddar dig mot friköpsklausuler och gör bra affärer på transfermarknaden i Undercut Racing Manager.">
+<link rel="canonical" href="https://undercutmanager.com/guide-kontrakt.html">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6674737196022137" crossorigin="anonymous"></script>
+<style>:root {
+            /* Spelet har bara ett (mörkt) tema, men utan denna deklaration
+               ritar Chrome/Safari ändå upp NATIVA formulärkontroller (t.ex.
+               <select>-listan när den fälls ut, kryssrutor, scrollbars) i
+               webbläsarens ljusa standardtema, vilket sticker ut skarpt mot
+               resten av det annars mörka gränssnittet – se t.ex.
+               serie-valjaren i Lagsidan. color-scheme: dark ber webbläsaren
+               rita dessa i sin mörka variant istället, i linje med spelets
+               egna --surface/--text-färger. */
+            color-scheme: dark;
+
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+            --bg: #0a0b0d;
+            --surface: #16181d;
+            --surface-2: #1c1f26;
+            --surface-hover: #21252c;
+            --border: #262a31;
+            --border-strong: #363b44;
+
+            --text: #eef1f4;
+            --text-secondary: #9aa4b2;
+            --text-muted: #7c8896;
+
+            --accent: #ef4444;
+            --accent-hover: #dc2626;
+            --accent-soft: rgba(239, 68, 68, 0.14);
+
+            --blue: #1d9bf0;
+            --blue-hover: #1a8cd8;
+            --blue-soft: rgba(29, 155, 240, 0.14);
+
+            --success: #1d9bf0;
+            --success-hover: #1a8cd8;
+            --success-soft: rgba(29, 155, 240, 0.14);
+
+            --warning: #f59e0b;
+
+            --danger-strong: #b91c1c;
+            --danger-strong-hover: #7f1d1d;
+            --danger-soft: #f87171;
+
+            --purple: #a78bfa;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.6);
+            --shadow-pop: 0 8px 28px -8px rgba(0, 0, 0, 0.55);
+
+            --transition: 150ms ease;
+        }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.6; }
+a { color: var(--blue); text-underline-offset: 2px; }
+a:hover { color: #67c3ff; }
+.topp { position: sticky; top: 0; z-index: 10; background: rgba(10,11,13,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.topp-inre { max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topp-logo img { height: 34px; width: auto; display: block; }
+.topp nav { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+.topp nav a { color: var(--text-secondary); text-decoration: none; }
+.topp nav a:hover, .topp nav a[aria-current] { color: var(--text); }
+.knapp { display: inline-block; background: var(--accent); color: #fff !important; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; }
+.knapp:hover { background: var(--accent-hover); }
+main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 12px; }
+h2 { font-size: 21px; margin: 28px 0 8px; }
+h3 { font-size: 18px; margin: 0 0 10px; }
+.ingress { font-size: 17px; color: var(--text-secondary); max-width: 720px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin: 0 0 16px; box-shadow: var(--shadow-card); }
+.card ul { padding-left: 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+th { color: var(--text-secondary); }
+.tabell-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.man-toc-grid { display: grid; grid-template-columns: 1fr; gap: 4px 28px; }
+@media (min-width: 640px) { .man-toc-grid { grid-template-columns: 1fr 1fr; } }
+.man-toc-grid ul { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+.man-toc-heading { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+.man-toc-heading:first-child { margin-top: 0; }
+.funktioner { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 700px) { .funktioner { grid-template-columns: 1fr 1fr; } }
+.funktioner .card { margin: 0; }
+.cta { text-align: center; padding: 28px 20px; }
+.guidekort h3 a { color: var(--text); text-decoration: none; }
+.guidekort h3 a:hover { color: var(--blue); }
+.guidekort p { margin: 0; color: var(--text-secondary); font-size: 15px; }
+.las-mer { margin-top: 32px; }
+.las-mer ul { padding-left: 20px; }
+.brodsmula { font-size: 14px; color: var(--text-muted); margin: 0 0 4px; }
+.brodsmula a { color: var(--text-muted); }
+footer { border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: 18px 16px 28px; }
+footer a { color: var(--text-muted); }
+[id] { scroll-margin-top: 70px; }
+@media (max-width: 600px) { .topp { position: static; } .topp-logo img { height: 28px; } .topp nav { margin-left: 0; gap: 8px 14px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<header class="topp"><div class="topp-inre">
+<a class="topp-logo" href="./"><img src="assets/undercut-logo.png" alt="Undercut Racing Manager"></a>
+<nav><a href="om.html">Om spelet</a><a href="guider.html" aria-current="page">Guider</a><a href="manual.html">Manual</a><a href="vanliga-fragor.html">Vanliga frågor</a><a href="integritetspolicy.html">Integritetspolicy</a><a class="knapp" href="./">Spela gratis</a></nav>
+</div></header>
+<main>
+<p class="brodsmula"><a href="guider.html">Guider</a> › Kontrakt och transfermarknad</p>
+<h1>Kontrakt och transfermarknad: förhandla, köp och sälj</h1>
+<p class="ingress">Alla förare och all personal i Undercut Racing Manager har kontrakt – och eftersom varje lag leds av en riktig manager kan dina bästa förare köpas bort om du inte är uppmärksam. Den här guiden hjälper dig att förhandla smart och göra lönsamma affärer.</p>
+
+<h2>Så fungerar en förhandling</h2>
+<p>Du förhandlar från personens profilsida via knappen "Förhandla kontrakt". Där ser du personens krav och önskemål, och du bygger själv ditt erbjudande: veckolön, antal år, sign-on-bonus, prestationsbonusar, friköpsklausul och – för förare – eventuell förstaförarstatus.</p>
+<p>Det viktigaste verktyget är procentsiffran <strong>"Sannolikhet att acceptera"</strong>, som uppdateras direkt när du ändrar erbjudandet, tillsammans med en lista över vad som drar chansen upp eller ner. Använd den aktivt: justera ett villkor i taget och se vad som rör siffran mest. Ofta visar det sig att kontraktslängden eller en sign-on-bonus gör mer än en högre veckolön – och en engångsbonus är billigare än en lön som betalas varje vecka i flera år.</p>
+<p>Personen kan acceptera, avvisa eller lägga ett motbud. Men tålamodet är begränsat: efter några försök i rad tappar personen intresset och förhandlingen avbryts. Lägg hellre ett genomtänkt första bud än att pruta i små steg.</p>
+
+<h2>Vad påverkar chansen att få ett ja?</h2>
+<ul>
+<li><strong>Relationen till laget (0–100).</strong> 50 är neutralt; 100 ger +10 procentenheter och 0 ger −10. Relationen stiger med +8 varje gång ni kommer överens om ett kontrakt.</li>
+<li><strong>Din Team Principals förhandlingsförmåga.</strong> Den kan flytta chansen med upp till cirka 10 procentenheter jämfört med en genomsnittlig Team Principal.</li>
+<li><strong>Lagets kvalitet och moral.</strong> Ett framgångsrikt lag med hög moral är lättare att skriva på för.</li>
+<li><strong>Intresse från andra lag.</strong> Om en förare har kort tid kvar på kontraktet kan andra lag lägga lönebud, vilket höjer kraven.</li>
+</ul>
+
+<h2>Friköpsklausulen – både vapen och risk</h2>
+<p>Har en förare en friköpsklausul kan vilken annan manager som helst betala hela summan och ta över kontraktet direkt, utan att du kan stoppa det. Du får pengarna, men du förlorar föraren.</p>
+<p>Några saker att tänka på:</p>
+<div class="card"><ul>
+<li><strong>Sätt klausulen högt på dina viktigaste förare.</strong> En låg klausul gör det billigare att förhandla, men är en öppen inbjudan till konkurrenterna.</li>
+<li><strong>Första året är alltid skyddat.</strong> En persons klausul kan aldrig utlösas under personens första år i klubben.</li>
+<li><strong>Juniorer är extra skyddade.</strong> Ett prospekt som skrivs upp från juniorprogrammet får ett fyraårskontrakt vars klausul ingen kan utlösa – tills det omförhandlas.</li>
+<li><strong>Du kan själv använda klausuler.</strong> Hittar du en förare med en låg klausul hos ett annat lag kan det vara den snabbaste vägen till en bättre trupp.</li>
+</ul></div>
+<p>Under din egen Lagsida finns listan <em>Rivaler</em>, som visar vilka lag du har frikopt förare eller personal från de senaste säsongerna – och den finns förstås hos dina motståndare också.</p>
+
+<h2>Förstaförarstatus</h2>
+<p>En förare med förstaförarstatus förväntar sig att gynnas, och ett aktivt förstaförarkontrakt ger bilen ett litet extra bidrag i loppet. Men det finns en baksida: föraren får +1 i relation varje gång hen kommer före lagkamraten, och −3 när lagkamraten kommer före. Ge bara statusen till en förare som verkligen är bättre – och använd gärna teamorder för att stötta hen (se <a href="guide-taktik.html">taktikguiden</a>).</p>
+
+<h2>När kontraktet går ut</h2>
+<p>Varje säsong minskar "År kvar" med ett. När bara ett år återstår markeras kontraktet som Expiring, och du väljer mellan att förhandla förlängning, vänta och se eller låta kontraktet löpa ut. Låter du ett förarkontrakt gå ut tar reservföraren platsen – eller rekryteras en rookie om reservbänken är tom.</p>
+<p>För förare som närmar sig 30 är det ofta klokt att förlänga på kortare tid. Förmågan börjar sjunka efter 30, och ett långt kontrakt med hög lön blir då en belastning.</p>
+
+<h2>Transfermarknaden</h2>
+<p>Under fliken Marknad listas alla pågående auktioner. En auktion pågår i exakt sju dagar, och när tiden är ute går personen till högstbjudande – förutsatt att köparen har råd och plats i truppen när auktionen avgörs.</p>
+<h3>Som köpare</h3>
+<ul>
+<li>Bestäm ditt maxpris innan du lägger första budet, och håll dig till det.</li>
+<li>Kontrollera budget och truppstorlek innan deadline. Ett vunnet bud som du inte har råd med eller plats för går inte igenom.</li>
+<li>Titta på ålder och körstil, inte bara förmåga – se <a href="guide-personal.html">personalguiden</a>.</li>
+<li>Kolla transferhistoriken. Där ser du vad liknande förare faktiskt har sålts för, vilket är det bästa underlaget för ett rimligt bud.</li>
+</ul>
+<h3>Som säljare</h3>
+<ul>
+<li>Sälj förare innan nedgången efter 30 syns i siffrorna, inte efter.</li>
+<li>Sälj överflödig personal – varje anställd som inte höjer snittet på sin bil kostar 100 000 kr i veckan.</li>
+<li>En auktion avbryts om du sparkar personen under tiden, så låt den löpa klart.</li>
+</ul>
+
+<h2>Sammanfattning</h2>
+<div class="card"><ul>
+<li>Använd sannolikhetssiffran aktivt och lägg ett genomtänkt första bud.</li>
+<li>Höga friköpsklausuler på nyckelförare.</li>
+<li>Förstaförarstatus bara till den tydligt bästa föraren.</li>
+<li>Korta förlängningar för förare runt 30.</li>
+<li>Bestäm maxpris i förväg och kontrollera budget före auktionens slut.</li>
+</ul></div>
+<div class="card las-mer"><h3>Läs vidare</h3><ul><li><a href="guide-seriepyramiden.html">Seriepyramiden: så tar du dig till Masters League</a></li><li><a href="guide-hemmabana.html">Hemmabanan: forma banan efter din bil</a></li><li><a href="vad-ar-en-undercut.html">Vad är en undercut? Depåtaktiken som gav spelet sitt namn</a></li></ul><p><a href="guider.html">Alla guider →</a></p></div><div class="card cta"><h2 style="margin-top:0">Testa i ditt eget stall</h2><p>Undercut Racing Manager är gratis och körs direkt i webbläsaren.</p><a class="knapp" href="./">Spela gratis</a></div>
+</main>
+<footer>&copy; 2026 Strawtown Interactive. All rights reserved. &nbsp;·&nbsp; <a href="om.html">Om spelet</a> &nbsp;·&nbsp; <a href="guider.html">Guider</a> &nbsp;·&nbsp; <a href="manual.html">Manual</a> &nbsp;·&nbsp; <a href="vanliga-fragor.html">Vanliga frågor</a> &nbsp;·&nbsp; <a href="integritetspolicy.html">Integritetspolicy</a> &nbsp;·&nbsp; <a href="./">Till spelet</a></footer>
+</body>
+</html>

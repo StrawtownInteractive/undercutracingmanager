@@ -26,6 +26,7 @@
     </script>
     <meta name="google-adsense-account" content="ca-pub-6674737196022137">
     <title>Undercut Racing Manager</title>
+    <meta name="description" content="Gratis managerspel om racing i webbläsaren. Bygg ditt stall, utveckla bilarna, sätt taktiken och tävla mot riktiga managers i en seriepyramid med fem divisioner.">
     <link rel="icon" type="image/png" href="assets/favicon.png">
 
     <!-- =====================================================================
@@ -2238,6 +2239,7 @@
         .ad-slot.ad-live ins.adsbygoogle { display: block; width: 100%; }
         .ad-slot.ad-live:has(ins.adsbygoogle[data-ad-status="unfilled"]) { display: none; } /* ingen annons att visa → ingen tom yta */
         .ad-top { min-height: 60px; }
+        body:has(#auth-screen:not([hidden])) .ad-slot { display: none !important; } /* inga annonser på inloggningssidan */
         .ad-bottom { min-height: 60px; margin-bottom: 4px; }
 
         /* --- Cookie-banner ---------------------------------------------- */
@@ -2852,6 +2854,10 @@
             <!-- Öppna informationssidor (byggs av bygg-infosidor.py) – nåbara utan konto. -->
             <nav class="auth-infolankar">
                 <a href="om.html" data-i18n="infoOmSpelet">Om spelet</a>
+                <span aria-hidden="true">·</span>
+                <a href="guider.html">Guider</a>
+                <span aria-hidden="true">·</span>
+                <a href="vanliga-fragor.html">Vanliga frågor</a>
                 <span aria-hidden="true">·</span>
                 <a href="manual.html" data-i18n="appManual">Manual</a>
                 <span aria-hidden="true">·</span>
@@ -29064,6 +29070,10 @@
 
         function visaSpelet(user, nyttLagNamn, nyttArenaNamn, nyttLand) {
             authScreen.hidden = true;
+            if (window.ADSENSE_VANTAR_PA_INLOGGNING && typeof window.loadAds === 'function') {
+                window.ADSENSE_VANTAR_PA_INLOGGNING = false;
+                window.loadAds();
+            }
             appContainer.style.display = '';
             const namn = (user.user_metadata && user.user_metadata.username)
                 || (user.email ? user.email.split('@')[0] : '-');
@@ -29479,6 +29489,11 @@
             // annonsenheter under Annonser → Efter annonsenhet i AdSense).
             // ============================================================
             if (ADSENSE_LADDAD) return;
+            // Inga annonser på inloggningssidan (en skärm utan eget innehåll
+            // bryter mot AdSense-policyn). visaSpelet() anropar loadAds() igen
+            // när spelaren har loggat in.
+            var authVy = document.getElementById('auth-screen');
+            if (authVy && !authVy.hidden) { window.ADSENSE_VANTAR_PA_INLOGGNING = true; return; }
             ADSENSE_LADDAD = true;
             var s = document.createElement('script');
             s.async = true;
